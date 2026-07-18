@@ -1,5 +1,21 @@
 # Demo Accounts (local/staging only)
 
+## Temporary local auth (created for sandbox)
+
+Use these first while iterating on login + admin flows. Passwords are plaintext in the in-memory school-api seed — **local/demo only**.
+
+School API defaults to `127.0.0.1:8082`. Session tokens are random opaque values issued at login (not guessable from student id). Do not expose this API on a shared network.
+
+| Name | Role | Login | Password |
+|---|---|---|---|
+| Platform Administrator | `platform_admin` | `temp.admin@masterofsword.local` | `MoS-Temp-PlatformAdmin-2026!` |
+| Temp Local Student | `student` | `temp.student@masterofsword.local` | `MoS-Temp-Student-2026!` |
+
+- Platform admin lands on `/admin` (school roster + content authoring + `/studio`).
+- Student lands on onboarding/profile cabinet.
+
+## Excel demo students
+
 Source: `Мастер Меча.xlsx` hash `389345302d95` as-of `2026-07-19`
 
 | Name | Login | Password |

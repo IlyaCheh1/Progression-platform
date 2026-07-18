@@ -20,7 +20,7 @@ python scripts/excel_seed.py
 go build -o bin/school-api.exe ./apps/school-api/cmd/school-api
 go build -o bin/platform-api.exe ./apps/platform-api/cmd/platform-api
 go build -o bin/auth-adapter.exe ./apps/auth-adapter/cmd/auth-adapter
-./bin/school-api.exe          # :8082 — loads infra/local/seed/demo-students.json
+./bin/school-api.exe          # 127.0.0.1:8082 — loads demo students + temp admin auth
 ./bin/platform-api.exe        # :8081
 ./bin/auth-adapter.exe        # :8083 OnlyID sandbox
 pnpm --filter @mos/web dev    # :3000

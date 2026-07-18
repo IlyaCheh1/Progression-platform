@@ -5,6 +5,13 @@ import { useEffect, useState } from "react";
 
 const VIDEOS = ["1.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4", "6.mp4"];
 
+/** S3/CDN base (no trailing slash), e.g. https://bucket.selstorage.ru/<bucket>/media/hero */
+const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? "/media/hero").replace(/\/$/, "");
+
+function mediaUrl(file: string) {
+  return `${MEDIA_BASE}/${file}`;
+}
+
 export default function Hero() {
   const [idx, setIdx] = useState(0);
   const [reduced, setReduced] = useState(false);
@@ -17,7 +24,7 @@ export default function Hero() {
     return () => clearInterval(t);
   }, []);
 
-  const poster = `/media/hero/${idx + 1}.png`;
+  const poster = mediaUrl(`${idx + 1}.png`);
 
   return (
     <section id="hero" className="relative min-h-screen w-full overflow-hidden">
@@ -30,7 +37,7 @@ export default function Hero() {
           loop
           playsInline
           poster={poster}
-          src={`/media/hero/${VIDEOS[idx]}`}
+          src={mediaUrl(VIDEOS[idx])}
         />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element

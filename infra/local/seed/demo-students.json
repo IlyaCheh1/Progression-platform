@@ -3,7 +3,7 @@
   "sourceHash": "389345302d956197251dff1a3291ca05bf64d534235871048b792b4cc5cc8dda",
   "asOf": "2026-07-19",
   "sheet": "июль",
-  "count": 45,
+  "count": 47,
   "accounts": [
     {
       "studentId": "student-maks-kiselev",
@@ -1638,7 +1638,30 @@
       "name": "Synthetic Adult",
       "login": "demo.adult@masterofsword.local",
       "password": "MoS-Demo-Adult-2026!",
+      "role": "student",
       "characterId": "char-synthetic-adult",
+      "masteryPointsAsOf": {},
+      "masteryUnits": {},
+      "ranks": {}
+    },
+    {
+      "studentId": "student-temp-local",
+      "name": "Temp Local Student",
+      "login": "temp.student@masterofsword.local",
+      "password": "MoS-Temp-Student-2026!",
+      "role": "student",
+      "characterId": "char-temp-local",
+      "masteryPointsAsOf": {},
+      "masteryUnits": {},
+      "ranks": {}
+    },
+    {
+      "studentId": "admin-platform",
+      "name": "Platform Administrator",
+      "login": "temp.admin@masterofsword.local",
+      "password": "MoS-Temp-PlatformAdmin-2026!",
+      "role": "platform_admin",
+      "characterId": "char-platform-admin",
       "masteryPointsAsOf": {},
       "masteryUnits": {},
       "ranks": {}

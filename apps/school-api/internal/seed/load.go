@@ -15,6 +15,7 @@ type fileShape struct {
 		Name         string             `json:"name"`
 		Login        string             `json:"login"`
 		Password     string             `json:"password"`
+		Role         string             `json:"role"`
 		CharacterID  string             `json:"characterId"`
 		Mastery      map[string]float64 `json:"masteryPointsAsOf"`
 		MasteryUnits map[string]int64   `json:"masteryUnits"`
@@ -36,6 +37,10 @@ func LoadDemo(p *engines.Platform, root string) (int, error) {
 		if _, err := p.CreateCharacter(a.CharacterID, "user-"+a.StudentID); err != nil {
 			// already exists on reload — ignore
 		}
+		role := a.Role
+		if role == "" {
+			role = engines.RoleStudent
+		}
 		st := engines.Student{
 			ID:          a.StudentID,
 			DisplayName: a.Name,
@@ -43,6 +48,7 @@ func LoadDemo(p *engines.Platform, root string) (int, error) {
 			CharacterID: a.CharacterID,
 			Login:       a.Login,
 			Password:    a.Password,
+			Role:        role,
 			Mastery:     map[string]int64{},
 			Ranks:       map[string]int{},
 		}

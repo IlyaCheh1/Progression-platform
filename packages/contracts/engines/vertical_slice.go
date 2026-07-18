@@ -1,6 +1,8 @@
 package engines
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"sync"
 
@@ -13,6 +15,10 @@ import (
 const (
 	TenantDemo = "tenant.school.fencing.demo"
 	RealmKey   = "school.fencing"
+
+	// Temporary local roles until OnlyID + RBAC land.
+	RoleStudent       = "student"
+	RolePlatformAdmin = "platform_admin"
 )
 
 // Character is a platform Character (not a school Student).
@@ -33,8 +39,22 @@ type Student struct {
 	CharacterID string           `json:"characterId"`
 	Login       string           `json:"login"`
 	Password    string           `json:"password,omitempty"`
+	Role        string           `json:"role"`
 	Mastery     map[string]int64 `json:"mastery"` // weaponKey -> units
 	Ranks       map[string]int   `json:"ranks"`
+}
+
+// NormalizedRole returns a concrete role for auth checks.
+func (s *Student) NormalizedRole() string {
+	if s == nil || s.Role == "" {
+		return RoleStudent
+	}
+	return s.Role
+}
+
+// IsPlatformAdmin reports whether the principal may use school admin + content authoring.
+func (s *Student) IsPlatformAdmin() bool {
+	return s != nil && s.NormalizedRole() == RolePlatformAdmin
 }
 
 type Platform struct {
@@ -45,6 +65,7 @@ type Platform struct {
 	characters map[string]*Character
 	students   map[string]*Student
 	users      map[string]*Student // login -> student
+	sessions   map[string]string   // opaque access token -> studentID
 	audit      []string
 }
 
@@ -56,6 +77,7 @@ func NewPlatform() *Platform {
 		characters: make(map[string]*Character),
 		students:   make(map[string]*Student),
 		users:      make(map[string]*Student),
+		sessions:   make(map[string]string),
 	}
 }
 
@@ -81,6 +103,9 @@ func (p *Platform) UpsertStudent(s Student) {
 	if s.Ranks == nil {
 		s.Ranks = map[string]int{}
 	}
+	if s.Role == "" {
+		s.Role = RoleStudent
+	}
 	cp := s
 	p.students[s.ID] = &cp
 	if s.Login != "" {
@@ -96,6 +121,37 @@ func (p *Platform) Authenticate(login, password string) (*Student, bool) {
 		return nil, false
 	}
 	return s, true
+}
+
+// IssueAccessToken creates a random opaque session token after successful login.
+func (p *Platform) IssueAccessToken(studentID string) (string, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if _, ok := p.students[studentID]; !ok {
+		return "", fmt.Errorf("student not found")
+	}
+	var buf [32]byte
+	if _, err := rand.Read(buf[:]); err != nil {
+		return "", err
+	}
+	token := hex.EncodeToString(buf[:])
+	p.sessions[token] = studentID
+	return token, nil
+}
+
+// ResolveAccessToken maps opaque session tokens to a principal.
+func (p *Platform) ResolveAccessToken(token string) (*Student, bool) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if token == "" {
+		return nil, false
+	}
+	id, ok := p.sessions[token]
+	if !ok {
+		return nil, false
+	}
+	s, ok := p.students[id]
+	return s, ok
 }
 
 func (p *Platform) GetStudent(id string) (*Student, bool) {

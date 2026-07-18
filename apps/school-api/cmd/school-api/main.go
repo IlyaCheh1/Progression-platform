@@ -5,19 +5,26 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/masterofsword/contracts/engines"
+	"github.com/masterofsword/school-api/internal/admincontent"
 	"github.com/masterofsword/school-api/internal/seed"
 )
 
 // Shared in-process platform for local modular monolith slice.
 // Production: school-api publishes events; platform-worker consumes.
 var platform = engines.NewPlatform()
+var contentStore *admincontent.Store
 
 func main() {
+	root := seed.FindRoot()
 	seed.MustLoad(platform)
-	addr := env("SCHOOL_API_ADDR", ":8082")
+	contentStore = admincontent.MustLoad(root)
+
+	// Default loopback-only: temporary local auth must not be exposed on LAN.
+	addr := env("SCHOOL_API_ADDR", "127.0.0.1:8082")
 	mux := http.NewServeMux()
 	var mu sync.Mutex
 
@@ -61,15 +68,67 @@ func main() {
 			http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
 			return
 		}
+		token, err := platform.IssueAccessToken(s.ID)
+		if err != nil {
+			http.Error(w, `{"error":"token_issue_failed"}`, http.StatusInternalServerError)
+			return
+		}
 		public := *s
 		public.Password = ""
 		writeJSON(w, map[string]any{
-			"accessToken": "demo." + s.ID,
+			"accessToken": token,
+			"role":        s.NormalizedRole(),
 			"student":     public,
 		})
 	})
 
+	mux.HandleFunc("GET /v1/admin/students", requirePlatformAdmin(func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		list := platform.ListStudents()
+		out := make([]engines.Student, 0, len(list))
+		for _, s := range list {
+			cp := *s
+			cp.Password = ""
+			out = append(out, cp)
+		}
+		writeJSON(w, out)
+	}))
+
+	mux.HandleFunc("GET /v1/admin/content", requirePlatformAdmin(func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		writeJSON(w, contentStore.Snapshot())
+	}))
+
+	mux.HandleFunc("POST /v1/admin/content/quests", requirePlatformAdmin(func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body admincontent.Quest
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		if err := contentStore.UpsertQuest(body); err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		writeJSON(w, map[string]any{"ok": true, "quest": body})
+	}))
+
+	mux.HandleFunc("POST /v1/admin/content/achievements", requirePlatformAdmin(func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body admincontent.Achievement
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		if err := contentStore.UpsertAchievement(body); err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		writeJSON(w, map[string]any{"ok": true, "achievement": body})
+	}))
+
 	mux.HandleFunc("POST /v1/attendance/confirm", func(w http.ResponseWriter, r *http.Request) {
+		actor, ok := principalFromRequest(r)
+		if !ok {
+			http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
+			return
+		}
 		var body struct {
 			StudentID    string `json:"studentId"`
 			AttendanceID string `json:"attendanceId"`
@@ -77,6 +136,10 @@ func main() {
 		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		if !actor.IsPlatformAdmin() && actor.ID != body.StudentID {
+			http.Error(w, `{"error":"forbidden"}`, http.StatusForbidden)
 			return
 		}
 		mu.Lock()
@@ -92,13 +155,22 @@ func main() {
 		lvl, granted, err := platform.RecordAttendance(s.CharacterID, body.AttendanceID, body.XP)
 		mu.Unlock()
 		if err != nil {
-			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			http.Error(w, `{"error":"attendance_failed"}`, http.StatusBadRequest)
 			return
 		}
 		writeJSON(w, map[string]any{"level": lvl, "granted": granted})
 	})
 
 	mux.HandleFunc("POST /v1/mastery/snapshot", func(w http.ResponseWriter, r *http.Request) {
+		actor, ok := principalFromRequest(r)
+		if !ok {
+			http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
+			return
+		}
+		if !actor.IsPlatformAdmin() {
+			http.Error(w, `{"error":"forbidden"}`, http.StatusForbidden)
+			return
+		}
 		var body struct {
 			StudentID   string  `json:"studentId"`
 			WeaponAlias string  `json:"weaponAlias"`
@@ -109,17 +181,43 @@ func main() {
 			return
 		}
 		if err := platform.ApplyMasterySnapshot(body.StudentID, body.WeaponAlias, body.Points); err != nil {
-			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			http.Error(w, `{"error":"mastery_failed"}`, http.StatusBadRequest)
 			return
 		}
 		writeJSON(w, map[string]any{"ok": true})
 	})
 
-	// Expose platform for seed tooling in same process via import pattern — seed uses shared package.
-	_ = mu
-
 	log.Printf("school-api listening on %s", addr)
 	log.Fatal(http.ListenAndServe(addr, withCORS(mux)))
+}
+
+type adminHandler func(w http.ResponseWriter, r *http.Request, actor *engines.Student)
+
+func requirePlatformAdmin(next adminHandler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		actor, ok := principalFromRequest(r)
+		if !ok {
+			http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
+			return
+		}
+		if !actor.IsPlatformAdmin() {
+			http.Error(w, `{"error":"forbidden"}`, http.StatusForbidden)
+			return
+		}
+		next(w, r, actor)
+	}
+}
+
+func principalFromRequest(r *http.Request) (*engines.Student, bool) {
+	h := r.Header.Get("Authorization")
+	if h == "" {
+		return nil, false
+	}
+	const prefix = "Bearer "
+	if !strings.HasPrefix(h, prefix) {
+		return nil, false
+	}
+	return platform.ResolveAccessToken(strings.TrimSpace(h[len(prefix):]))
 }
 
 func withCORS(next http.Handler) http.Handler {

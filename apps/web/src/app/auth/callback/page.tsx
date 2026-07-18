@@ -13,6 +13,7 @@ export default function AuthCallbackPage() {
       login: "oauth@masterofsword.local",
       characterId: "char-oauth-demo",
       accessToken: "demo-oauth",
+      role: "student",
     });
     router.replace(hasProfile() ? "/profile" : "/onboarding");
   }, [router]);

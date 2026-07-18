@@ -8,6 +8,12 @@
     "lint:web": "pnpm --filter @mos/web lint",
     "test:web": "pnpm --filter @mos/web test",
     "seed:demo": "python scripts/excel_seed.py",
-    "import:excel": "python scripts/excel_seed.py"
+    "import:excel": "python scripts/excel_seed.py",
+    "upload:hero-s3": "node scripts/upload-hero-media-to-s3.mjs",
+    "upload:hero-s3:local": "node --env-file=infra/local/.env scripts/upload-hero-media-to-s3.mjs",
+    "upload:hero-s3:coolify": "sh scripts/coolify-upload-hero-s3.sh"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1090.0"
   }
 }
