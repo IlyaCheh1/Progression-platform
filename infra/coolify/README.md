@@ -9,6 +9,30 @@
 
 Шаблон переменных: [`env.example`](./env.example).
 
+## Configuration web (обязательно)
+
+Если Start Command пустой, контейнер уходит в restart loop:
+
+```text
+/bin/bash: -c: option requires an argument
+```
+
+И Terminal пишет: *No containers are running…*
+
+В **Configuration → General / Build** задай явно:
+
+| Поле | Значение |
+|---|---|
+| Base Directory | `/` (корень репо) |
+| Install Command | `pnpm install --frozen-lockfile` |
+| Build Command | `pnpm --filter @mos/web build` |
+| Start Command | `pnpm --filter @mos/web start` |
+| Port | `3000` |
+
+Либо оставь пустым и используй `nixpacks.toml` из корня репо (после деплоя свежего коммита).
+
+После правки — **Redeploy**, дождись статуса Running, потом открывай Terminal.
+
 ## Web (Coolify → Environment)
 
 | Переменная | Обязательно | Когда |

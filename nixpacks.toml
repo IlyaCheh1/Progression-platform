@@ -1,0 +1,14 @@
+# Coolify / Nixpacks: deploy the Next.js web app from the monorepo root.
+providers = ["node"]
+
+[phases.setup]
+nixPkgs = ["nodejs_22", "pnpm"]
+
+[phases.install]
+cmds = ["pnpm install --frozen-lockfile"]
+
+[phases.build]
+cmds = ["pnpm --filter @mos/web build"]
+
+[start]
+cmd = "pnpm --filter @mos/web start"
