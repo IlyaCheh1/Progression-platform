@@ -1,0 +1,1647 @@
+{
+  "source": "Мастер Меча.xlsx",
+  "sourceHash": "389345302d956197251dff1a3291ca05bf64d534235871048b792b4cc5cc8dda",
+  "asOf": "2026-07-19",
+  "sheet": "июль",
+  "count": 45,
+  "accounts": [
+    {
+      "studentId": "student-maks-kiselev",
+      "name": "Макс Киселев",
+      "login": "demo.maks-kiselev@masterofsword.local",
+      "password": "MoS-Demo-MaksKiselev-2026!",
+      "characterId": "char-maks-kiselev",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 7896.92,
+        "due spade": 2000.0,
+        "spada e scudo": 9064.74,
+        "spada a due mani": 8806.87,
+        "spadone": 8130.84,
+        "acia & alabarda": 7444.63,
+        "spiedo & partesana": 2000.0,
+        "spiedo & scudo": 2000.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 78969200,
+        "due_spade": 20000000,
+        "spada_e_scudo": 90647400,
+        "spada_a_due_mani": 88068700,
+        "spadone": 81308400,
+        "acia_alabarda": 74446300,
+        "spiedo_partesana": 20000000,
+        "spiedo_e_scudo": 20000000
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 10,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 10,
+        "spadone": 10,
+        "acia_alabarda": 10,
+        "spiedo_partesana": 10,
+        "spiedo_e_scudo": 10
+      }
+    },
+    {
+      "studentId": "student-anatoliy-bychkov",
+      "name": "Анатолий Бычков",
+      "login": "demo.anatoliy-bychkov@masterofsword.local",
+      "password": "MoS-Demo-AnatoliyBychkov-2026!",
+      "characterId": "char-anatoliy-bychkov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 1257.12,
+        "due spade": 5048.89,
+        "spada e scudo": 362.04999999999995,
+        "spada a due mani": 2000.0,
+        "spadone": 396.32000000000005,
+        "acia & alabarda": 168.72000000000003,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 2000.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 12571200,
+        "due_spade": 50488900,
+        "spada_e_scudo": 3620500,
+        "spada_a_due_mani": 20000000,
+        "spadone": 3963200,
+        "acia_alabarda": 1687200,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 20000000
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 10,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 10,
+        "spadone": 10,
+        "acia_alabarda": 10,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 10
+      }
+    },
+    {
+      "studentId": "student-margarita-tuzova",
+      "name": "Маргарита Тузова",
+      "login": "demo.margarita-tuzova@masterofsword.local",
+      "password": "MoS-Demo-MargaritaTuzova-2026!",
+      "characterId": "char-margarita-tuzova",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 5889.13,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 58891300,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-tatyana-gribanova",
+      "name": "Татьяна Грибанова",
+      "login": "demo.tatyana-gribanova@masterofsword.local",
+      "password": "MoS-Demo-TatyanaGribanova-2026!",
+      "characterId": "char-tatyana-gribanova",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-nikolay-lobaev",
+      "name": "Николай Лобаев",
+      "login": "demo.nikolay-lobaev@masterofsword.local",
+      "password": "MoS-Demo-NikolayLobaev-2026!",
+      "characterId": "char-nikolay-lobaev",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 57989.770000000004,
+        "due spade": 0.0,
+        "spada e scudo": 20000.39,
+        "spada a due mani": 2000.0,
+        "spadone": 15200.490000000002,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 2350.0,
+        "spiedo & scudo": 9041.94
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 579897700,
+        "due_spade": 0,
+        "spada_e_scudo": 200003900,
+        "spada_a_due_mani": 20000000,
+        "spadone": 152004900,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 23500000,
+        "spiedo_e_scudo": 90419400
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 0,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 10,
+        "spadone": 10,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 10,
+        "spiedo_e_scudo": 10
+      }
+    },
+    {
+      "studentId": "student-sergey-vlasenko",
+      "name": "Сергей Власенко",
+      "login": "demo.sergey-vlasenko@masterofsword.local",
+      "password": "MoS-Demo-SergeyVlasenko-2026!",
+      "characterId": "char-sergey-vlasenko",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 10304.409999999998,
+        "due spade": 1208.3500000000001,
+        "spada e scudo": 30101.551999999996,
+        "spada a due mani": 13349.908,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 434.46000000000004
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 103044100,
+        "due_spade": 12083500,
+        "spada_e_scudo": 301015520,
+        "spada_a_due_mani": 133499080,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 4344600
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 10,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 10
+      }
+    },
+    {
+      "studentId": "student-artem-shumilov",
+      "name": "Артем Шумилов",
+      "login": "demo.artem-shumilov@masterofsword.local",
+      "password": "MoS-Demo-ArtemShumilov-2026!",
+      "characterId": "char-artem-shumilov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 5622.2300000000005,
+        "spadone": 2131.02,
+        "acia & alabarda": 6408.349999999999,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 56222300,
+        "spadone": 21310200,
+        "acia_alabarda": 64083500,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 10,
+        "acia_alabarda": 10,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-ivan-bobrovskiy",
+      "name": "Иван Бобровский",
+      "login": "demo.ivan-bobrovskiy@masterofsword.local",
+      "password": "MoS-Demo-IvanBobrovskiy-2026!",
+      "characterId": "char-ivan-bobrovskiy",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-aleksey-shapovalov",
+      "name": "Алексей Шаповалов",
+      "login": "demo.aleksey-shapovalov@masterofsword.local",
+      "password": "MoS-Demo-AlekseyShapovalov-2026!",
+      "characterId": "char-aleksey-shapovalov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 2473.78,
+        "due spade": 0.0,
+        "spada e scudo": 11144.75,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 6160.42,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 24737800,
+        "due_spade": 0,
+        "spada_e_scudo": 111447500,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 61604200,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 0,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 10,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-dmitriy-kanygin",
+      "name": "Дмитрий Каныгин",
+      "login": "demo.dmitriy-kanygin@masterofsword.local",
+      "password": "MoS-Demo-DmitriyKanygin-2026!",
+      "characterId": "char-dmitriy-kanygin",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 22.839999999999975,
+        "due spade": 0.0,
+        "spada e scudo": 3431.32,
+        "spada a due mani": 8662.07,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 228400,
+        "due_spade": 0,
+        "spada_e_scudo": 34313200,
+        "spada_a_due_mani": 86620700,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 2,
+        "due_spade": 0,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-anastasiya-soloveva",
+      "name": "Анастасия Соловьева",
+      "login": "demo.anastasiya-soloveva@masterofsword.local",
+      "password": "MoS-Demo-AnastasiyaSoloveva-2026!",
+      "characterId": "char-anastasiya-soloveva",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 475.7099999999999,
+        "due spade": 0.0,
+        "spada e scudo": 2623.42,
+        "spada a due mani": 20764.910000000007,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 4757100,
+        "due_spade": 0,
+        "spada_e_scudo": 26234200,
+        "spada_a_due_mani": 207649100,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 0,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-aleksandra-zhigacheva",
+      "name": "Александра Жигачева",
+      "login": "demo.aleksandra-zhigacheva@masterofsword.local",
+      "password": "MoS-Demo-AleksandraZhigacheva-2026!",
+      "characterId": "char-aleksandra-zhigacheva",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 2935.8700000000003,
+        "due spade": 6000.0,
+        "spada e scudo": 6001.3099999999995,
+        "spada a due mani": 0.0,
+        "spadone": 1056.33,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 29358700,
+        "due_spade": 60000000,
+        "spada_e_scudo": 60013100,
+        "spada_a_due_mani": 0,
+        "spadone": 10563300,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 10,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 0,
+        "spadone": 10,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-kirill-zhigachev",
+      "name": "Кирилл Жигачев",
+      "login": "demo.kirill-zhigachev@masterofsword.local",
+      "password": "MoS-Demo-KirillZhigachev-2026!",
+      "characterId": "char-kirill-zhigachev",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 199.46,
+        "due spade": 888.27,
+        "spada e scudo": 99.67000000000002,
+        "spada a due mani": 0.0,
+        "spadone": 14365.009999999998,
+        "acia & alabarda": 2158.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 1994600,
+        "due_spade": 8882700,
+        "spada_e_scudo": 996700,
+        "spada_a_due_mani": 0,
+        "spadone": 143650100,
+        "acia_alabarda": 21580000,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 10,
+        "spada_e_scudo": 9,
+        "spada_a_due_mani": 0,
+        "spadone": 10,
+        "acia_alabarda": 10,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-kseniya-izmaylovskaya",
+      "name": "Ксения Измайловская",
+      "login": "demo.kseniya-izmaylovskaya@masterofsword.local",
+      "password": "MoS-Demo-KseniyaIzmaylovskaya-2026!",
+      "characterId": "char-kseniya-izmaylovskaya",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 2874.6200000000003,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 28746200,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-margarita-kukushkina",
+      "name": "Маргарита Кукушкина",
+      "login": "demo.margarita-kukushkina@masterofsword.local",
+      "password": "MoS-Demo-MargaritaKukushkina-2026!",
+      "characterId": "char-margarita-kukushkina",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 919.64,
+        "due spade": 3218.01,
+        "spada e scudo": 1530.92,
+        "spada a due mani": 10177.77,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 9196400,
+        "due_spade": 32180100,
+        "spada_e_scudo": 15309200,
+        "spada_a_due_mani": 101777700,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 10,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-aleksandra-selivanova",
+      "name": "Александра Селиванова",
+      "login": "demo.aleksandra-selivanova@masterofsword.local",
+      "password": "MoS-Demo-AleksandraSelivanova-2026!",
+      "characterId": "char-aleksandra-selivanova",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 3826.4500000000003,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 38264500,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-konstantin-kiselev",
+      "name": "Константин Киселев",
+      "login": "demo.konstantin-kiselev@masterofsword.local",
+      "password": "MoS-Demo-KonstantinKiselev-2026!",
+      "characterId": "char-konstantin-kiselev",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 308.15999999999997,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 3081600,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-daniil-kiselev",
+      "name": "Даниил Киселев",
+      "login": "demo.daniil-kiselev@masterofsword.local",
+      "password": "MoS-Demo-DaniilKiselev-2026!",
+      "characterId": "char-daniil-kiselev",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 892.8899999999999,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 8928900,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-grigoriy-firsov",
+      "name": "Григорий Фирсов",
+      "login": "demo.grigoriy-firsov@masterofsword.local",
+      "password": "MoS-Demo-GrigoriyFirsov-2026!",
+      "characterId": "char-grigoriy-firsov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 20065.31,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 200653100,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-dmitriy-kruglov",
+      "name": "Дмитрий Круглов",
+      "login": "demo.dmitriy-kruglov@masterofsword.local",
+      "password": "MoS-Demo-DmitriyKruglov-2026!",
+      "characterId": "char-dmitriy-kruglov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 2000.0,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 20000000,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-katerina-vetrova",
+      "name": "Катерина Ветрова",
+      "login": "demo.katerina-vetrova@masterofsword.local",
+      "password": "MoS-Demo-KaterinaVetrova-2026!",
+      "characterId": "char-katerina-vetrova",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 777.81,
+        "due spade": 0.0,
+        "spada e scudo": 3717.27,
+        "spada a due mani": 16390.47,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 7778100,
+        "due_spade": 0,
+        "spada_e_scudo": 37172700,
+        "spada_a_due_mani": 163904700,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 0,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-aleksandr-lebedev",
+      "name": "Александр Лебедев",
+      "login": "demo.aleksandr-lebedev@masterofsword.local",
+      "password": "MoS-Demo-AleksandrLebedev-2026!",
+      "characterId": "char-aleksandr-lebedev",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 570.72,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 0.0,
+        "spadone": 3528.27,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 5707200,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 35282700,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 10,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-natalya-kiyashko",
+      "name": "Наталья Кияшко",
+      "login": "demo.natalya-kiyashko@masterofsword.local",
+      "password": "MoS-Demo-NatalyaKiyashko-2026!",
+      "characterId": "char-natalya-kiyashko",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 7376.19,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 73761900,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-ivan-kovalkov",
+      "name": "Иван Ковальков",
+      "login": "demo.ivan-kovalkov@masterofsword.local",
+      "password": "MoS-Demo-IvanKovalkov-2026!",
+      "characterId": "char-ivan-kovalkov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 439.83000000000004,
+        "due spade": 2004.69,
+        "spada e scudo": 1137.96,
+        "spada a due mani": 4361.92,
+        "spadone": 0.0,
+        "acia & alabarda": 2000.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 4398300,
+        "due_spade": 20046900,
+        "spada_e_scudo": 11379600,
+        "spada_a_due_mani": 43619200,
+        "spadone": 0,
+        "acia_alabarda": 20000000,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 10,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 10,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-georgiy-yuklyaevskih",
+      "name": "Георгий Юкляевских",
+      "login": "demo.georgiy-yuklyaevskih@masterofsword.local",
+      "password": "MoS-Demo-GeorgiyYuklyaevskih-2026!",
+      "characterId": "char-georgiy-yuklyaevskih",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 0.0,
+        "spadone": 13134.190000000002,
+        "acia & alabarda": 1326.65,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 131341900,
+        "acia_alabarda": 13266500,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 10,
+        "acia_alabarda": 10,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-pavel-zaharov",
+      "name": "Павел Захаров",
+      "login": "demo.pavel-zaharov@masterofsword.local",
+      "password": "MoS-Demo-PavelZaharov-2026!",
+      "characterId": "char-pavel-zaharov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 0.0,
+        "spadone": 3730.1,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 37301000,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 10,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-aleksandr-buzaev",
+      "name": "Александр Бузаев",
+      "login": "demo.aleksandr-buzaev@masterofsword.local",
+      "password": "MoS-Demo-AleksandrBuzaev-2026!",
+      "characterId": "char-aleksandr-buzaev",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-dmitriy-vlasov",
+      "name": "Дмитрий Власов",
+      "login": "demo.dmitriy-vlasov@masterofsword.local",
+      "password": "MoS-Demo-DmitriyVlasov-2026!",
+      "characterId": "char-dmitriy-vlasov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 7.389999999999986,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 904.0000000000002,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 73900,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 9040000,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 10,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-kirill-shelamov",
+      "name": "Кирилл Шеламов",
+      "login": "demo.kirill-shelamov@masterofsword.local",
+      "password": "MoS-Demo-KirillShelamov-2026!",
+      "characterId": "char-kirill-shelamov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 876.1299999999999,
+        "due spade": 0.0,
+        "spada e scudo": 6103.22,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 1644.8,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 8761300,
+        "due_spade": 0,
+        "spada_e_scudo": 61032200,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 16448000,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 0,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 10,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-nikita-vorobev",
+      "name": "Никита Воробьев",
+      "login": "demo.nikita-vorobev@masterofsword.local",
+      "password": "MoS-Demo-NikitaVorobev-2026!",
+      "characterId": "char-nikita-vorobev",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-georgiy-novikov",
+      "name": "Георгий Новиков",
+      "login": "demo.georgiy-novikov@masterofsword.local",
+      "password": "MoS-Demo-GeorgiyNovikov-2026!",
+      "characterId": "char-georgiy-novikov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 10725.05,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 107250500,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-ulyana-gribanova",
+      "name": "Ульяна Грибанова",
+      "login": "demo.ulyana-gribanova@masterofsword.local",
+      "password": "MoS-Demo-UlyanaGribanova-2026!",
+      "characterId": "char-ulyana-gribanova",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-kirill-krasnoschekov",
+      "name": "Кирилл Краснощеков",
+      "login": "demo.kirill-krasnoschekov@masterofsword.local",
+      "password": "MoS-Demo-KirillKrasnoschekov-2026!",
+      "characterId": "char-kirill-krasnoschekov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": -32.73000000000002,
+        "spadone": 63.14999999999998,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": -327300,
+        "spadone": 631500,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 6,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-vasilisa-lyashuk",
+      "name": "Василиса Ляшук",
+      "login": "demo.vasilisa-lyashuk@masterofsword.local",
+      "password": "MoS-Demo-VasilisaLyashuk-2026!",
+      "characterId": "char-vasilisa-lyashuk",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 1134.88,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 11348800,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-demetra-yanidi",
+      "name": "Деметра Яниди",
+      "login": "demo.demetra-yanidi@masterofsword.local",
+      "password": "MoS-Demo-DemetraYanidi-2026!",
+      "characterId": "char-demetra-yanidi",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 1428.3000000000002,
+        "due spade": 5076.38,
+        "spada e scudo": 0.0,
+        "spada a due mani": 6124.51,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 14283000,
+        "due_spade": 50763800,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 61245100,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 10,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-innokentiy-ordin",
+      "name": "Иннокентий Ордин",
+      "login": "demo.innokentiy-ordin@masterofsword.local",
+      "password": "MoS-Demo-InnokentiyOrdin-2026!",
+      "characterId": "char-innokentiy-ordin",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 2322.4600000000005,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 8788.919999999998,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 23224600,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 87889200,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-sergey-harlamov",
+      "name": "Сергей Харламов",
+      "login": "demo.sergey-harlamov@masterofsword.local",
+      "password": "MoS-Demo-SergeyHarlamov-2026!",
+      "characterId": "char-sergey-harlamov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-sergey-shreder",
+      "name": "Сергей Шредер",
+      "login": "demo.sergey-shreder@masterofsword.local",
+      "password": "MoS-Demo-SergeyShreder-2026!",
+      "characterId": "char-sergey-shreder",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-ilya-kuznetsov",
+      "name": "Илья Кузнецов",
+      "login": "demo.ilya-kuznetsov@masterofsword.local",
+      "password": "MoS-Demo-IlyaKuznetsov-2026!",
+      "characterId": "char-ilya-kuznetsov",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 6489.38,
+        "due spade": 0.0,
+        "spada e scudo": 4316.71,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 64893800,
+        "due_spade": 0,
+        "spada_e_scudo": 43167100,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 0,
+        "spada_e_scudo": 10,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-lesli-aleksis",
+      "name": "Лесли Алексис",
+      "login": "demo.lesli-aleksis@masterofsword.local",
+      "password": "MoS-Demo-LesliAleksis-2026!",
+      "characterId": "char-lesli-aleksis",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 6.639999999999986,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 66400,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-anna-egorova",
+      "name": "Анна Егорова",
+      "login": "demo.anna-egorova@masterofsword.local",
+      "password": "MoS-Demo-AnnaEgorova-2026!",
+      "characterId": "char-anna-egorova",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": -76.08,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": -760800,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-sofya-sokolyanskaya",
+      "name": "Софья Соколянская",
+      "login": "demo.sofya-sokolyanskaya@masterofsword.local",
+      "password": "MoS-Demo-SofyaSokolyanskaya-2026!",
+      "characterId": "char-sofya-sokolyanskaya",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 14.889999999999986,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 148900,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 1,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-artur-arifullin",
+      "name": "Артур Арифуллин",
+      "login": "demo.artur-arifullin@masterofsword.local",
+      "password": "MoS-Demo-ArturArifullin-2026!",
+      "characterId": "char-artur-arifullin",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 0.0,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 231.75,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 2317500,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 0,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 10,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-aleksandr-don",
+      "name": "Александр Дон",
+      "login": "demo.aleksandr-don@masterofsword.local",
+      "password": "MoS-Demo-AleksandrDon-2026!",
+      "characterId": "char-aleksandr-don",
+      "masteryPointsAsOf": {
+        "spada a uno mano": 654.62,
+        "due spade": 0.0,
+        "spada e scudo": 0.0,
+        "spada a due mani": 0.0,
+        "spadone": 0.0,
+        "acia & alabarda": 0.0,
+        "spiedo & partesana": 0.0,
+        "spiedo & scudo": 0.0
+      },
+      "masteryUnits": {
+        "spada_a_uno_mano": 6546200,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      },
+      "ranks": {
+        "spada_a_uno_mano": 10,
+        "due_spade": 0,
+        "spada_e_scudo": 0,
+        "spada_a_due_mani": 0,
+        "spadone": 0,
+        "acia_alabarda": 0,
+        "spiedo_partesana": 0,
+        "spiedo_e_scudo": 0
+      }
+    },
+    {
+      "studentId": "student-synthetic-adult",
+      "name": "Synthetic Adult",
+      "login": "demo.adult@masterofsword.local",
+      "password": "MoS-Demo-Adult-2026!",
+      "characterId": "char-synthetic-adult",
+      "masteryPointsAsOf": {},
+      "masteryUnits": {},
+      "ranks": {}
+    }
+  ]
+}

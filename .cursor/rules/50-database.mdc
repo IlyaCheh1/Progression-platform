@@ -1,0 +1,16 @@
+---
+globs: "**/migrations/**/*, **/*.sql, **/schema.*, **/prisma/**/*, **/drizzle/**/*"
+alwaysApply: false
+---
+# Database rules
+
+- Treat migrations as production code: review, test, and make rollback or forward-fix strategy explicit.
+- Do not edit an already-applied migration unless the project explicitly permits it.
+- Prefer backward-compatible expand-and-contract changes for live systems.
+- Avoid destructive operations, full-table rewrites, and long locks without an operational plan.
+- Add indexes based on actual query patterns and assess write/storage cost.
+- Enforce important invariants in the database when practical, not only in application code.
+- Use parameterized queries and least-privilege credentials.
+- Keep tenant, ownership, and row-level access constraints explicit.
+- For data backfills, make batches resumable and idempotent with progress/verification queries.
+- Include verification SQL or tests for schema and data migrations.

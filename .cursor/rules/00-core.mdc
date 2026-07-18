@@ -1,0 +1,19 @@
+---
+alwaysApply: true
+---
+# Core engineering rules
+
+- Read the relevant code, tests, configuration, and documentation before editing.
+- For non-trivial work, produce an implementation plan before changing code.
+- Follow existing repository conventions unless the task explicitly requires changing them.
+- Prefer the smallest coherent diff that solves the root problem.
+- Do not rewrite unrelated code, generated files, lockfiles, or formatting across the repository.
+- Preserve public APIs, data contracts, and backwards compatibility unless a breaking change is approved.
+- Never hardcode secrets, credentials, private keys, production URLs, or tokens.
+- Never run destructive production, database, infrastructure, or deployment commands without explicit user approval.
+- Do not claim a command, test, build, migration, or deployment succeeded unless it was actually run and its result inspected.
+- Add or update tests for behavior changes and regressions.
+- Handle errors explicitly; do not swallow exceptions or return ambiguous failure states.
+- Reuse existing abstractions when they fit. Do not create speculative frameworks or premature generalization.
+- Keep changes reviewable. Split large tasks into logical steps and report material risks early.
+- At completion report: changed areas, verification performed, remaining risks, and follow-up work.

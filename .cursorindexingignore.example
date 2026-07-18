@@ -1,0 +1,25 @@
+# Generated and build output
+**/dist/
+**/build/
+**/.next/
+**/.nuxt/
+**/coverage/
+**/.turbo/
+**/.cache/
+**/storybook-static/
+
+# Generated clients and artifacts
+**/generated/
+**/*.generated.*
+**/openapi.generated.*
+**/graphql.generated.*
+
+# Large fixtures and snapshots
+**/__snapshots__/
+**/fixtures/large/
+**/test-results/
+**/playwright-report/
+
+# Vendored code
+**/vendor/
+**/third_party/

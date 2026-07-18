@@ -1,0 +1,16 @@
+---
+description: Architecture, module boundaries, contracts, and cross-cutting design decisions for complex changes.
+alwaysApply: false
+---
+# Architecture rules
+
+- Identify the current module boundaries and dependency direction before proposing a design.
+- Keep domain/business logic independent from UI, transport, framework, and persistence details.
+- Prefer explicit contracts and dependency injection at system boundaries.
+- Avoid circular dependencies and hidden global state.
+- Make side effects visible and isolate them behind adapters or services.
+- For cross-service or cross-package changes, document compatibility, rollout, and rollback strategy.
+- Introduce a new abstraction only when at least two concrete use cases justify it or the boundary is required for testing/security.
+- Record consequential architectural decisions in the repository's existing ADR or design-document format.
+- For concurrency, distributed workflows, caching, retries, or queues, define idempotency and failure semantics.
+- For any new external dependency, justify necessity, maintenance status, security implications, bundle/runtime cost, and removal path.

@@ -1,0 +1,52 @@
+@import "../tokens.css";
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Source+Sans+3:wght@400;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  background: var(--mos-bg);
+  color: var(--mos-text);
+  font-family: var(--mos-font-body);
+}
+
+body {
+  background-image:
+    radial-gradient(ellipse at top, rgba(212, 168, 75, 0.06), transparent 55%),
+    url("/media/ref-witcher.webp");
+  background-size: cover;
+  background-attachment: fixed;
+  background-blend-mode: soft-light;
+}
+
+.mos-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--mos-line), transparent);
+}
+
+.mos-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(212, 168, 75, 0.6);
+  background: rgba(20, 20, 22, 0.85);
+  padding: 0.625rem 1.25rem;
+  font-family: var(--mos-font-display);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--mos-amber);
+  transition: 0.2s ease;
+}
+.mos-btn:hover {
+  border-color: var(--mos-amber-hot);
+  background: rgba(212, 168, 75, 0.1);
+  color: var(--mos-amber-hot);
+  box-shadow: 0 0 24px var(--mos-amber-glow);
+}
+
+.video-overlay {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(11, 11, 12, 0.75) 70%, var(--mos-bg) 100%);
+}

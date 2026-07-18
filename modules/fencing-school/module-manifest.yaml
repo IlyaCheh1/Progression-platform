@@ -1,0 +1,7 @@
+# Copied canonical manifest — see Master of the Sword module/fencing-school/module-manifest.yaml
+moduleKey: school.fencing
+moduleVersion: 1.0.0
+status: DRAFT
+producer: fencing-school-module
+realmKey: school.fencing
+tenantMode: MULTI_TENANT

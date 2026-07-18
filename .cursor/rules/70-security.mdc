@@ -1,0 +1,16 @@
+---
+description: Security requirements for authentication, authorization, payments, secrets, uploads, and untrusted data.
+alwaysApply: false
+---
+# Security rules
+
+- Treat all user, network, file, database, webhook, and third-party data as untrusted.
+- Enforce authorization server-side on every protected resource and action.
+- Use safe framework APIs for HTML, SQL, shell, paths, URLs, redirects, and templates; never concatenate untrusted input into executable contexts.
+- Protect state-changing browser requests against CSRF where relevant.
+- Use secure cookie attributes and short-lived, scoped credentials.
+- Validate file type, size, name, storage path, and access controls for uploads.
+- Do not log secrets, tokens, passwords, session identifiers, payment data, or unnecessary personal data.
+- Apply rate limits and abuse controls to authentication, password reset, invitations, search, exports, and expensive endpoints.
+- Keep dependencies patched and avoid adding abandoned packages for security-sensitive tasks.
+- For security-sensitive changes, invoke the security-auditor subagent and resolve critical/high findings before completion.

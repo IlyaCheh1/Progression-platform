@@ -1,0 +1,14 @@
+:root {
+  --mos-bg: #0b0b0c;
+  --mos-bg-elevated: #141416;
+  --mos-stone: #1a1a1d;
+  --mos-text: #c8c6c2;
+  --mos-text-muted: #8a8780;
+  --mos-amber: #d4a84b;
+  --mos-amber-hot: #f0c35a;
+  --mos-amber-glow: rgba(212, 168, 75, 0.35);
+  --mos-line: #5a574f;
+  --mos-danger: #c45c2a;
+  --mos-font-display: "Cinzel", "Times New Roman", serif;
+  --mos-font-body: "Source Sans 3", "Segoe UI", sans-serif;
+}

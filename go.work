@@ -1,0 +1,9 @@
+go 1.22
+
+use (
+	./apps/platform-api
+	./apps/school-api
+	./apps/auth-adapter
+	./packages/contracts
+	./scripts/excel-import
+)

@@ -1,0 +1,16 @@
+---
+globs: "**/api/**/*, **/server/**/*, **/backend/**/*, **/*controller*, **/*handler*, **/*service*"
+alwaysApply: false
+---
+# Backend and API rules
+
+- Validate and normalize all external input at the boundary.
+- Authenticate first, then authorize access to the specific resource and action.
+- Keep transport/controller code thin; place business rules in testable services or domain modules.
+- Return stable, documented error codes and avoid leaking internal details.
+- Make writes idempotent where retries are possible.
+- Use transactions when multiple writes must succeed or fail together.
+- Add timeouts, cancellation, bounded retries, and backoff for external calls where appropriate.
+- Emit structured logs and useful correlation identifiers without logging secrets or sensitive payloads.
+- Define pagination, filtering, ordering, rate limits, and maximum payload sizes for collection endpoints.
+- Update API schemas, clients, and contract tests together.

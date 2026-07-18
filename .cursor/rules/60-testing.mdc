@@ -1,0 +1,14 @@
+---
+description: Testing strategy, regression coverage, and verification for changed behavior.
+alwaysApply: false
+---
+# Testing rules
+
+- Match test level to risk: unit for domain logic, integration for boundaries, E2E for critical user journeys.
+- Add a regression test before or with every bug fix when reproducible.
+- Test observable behavior and contracts, not implementation details.
+- Keep tests deterministic; control time, randomness, network, and external services.
+- Do not weaken assertions, skip tests, or increase retries merely to hide failures.
+- Cover negative paths, authorization, validation, boundary values, and failure recovery.
+- Run the narrowest relevant test first, then broader project checks before completion.
+- Report exact commands run and any checks not run.

@@ -1,0 +1,131 @@
+moduleKey: school.fencing
+moduleVersion: 1.0.0
+status: DRAFT
+producer: fencing-school-module
+realmKey: school.fencing
+tenantMode: MULTI_TENANT
+tenantId: null
+activationBlockers:
+  - TENANT_ID_REQUIRED
+  - LEGAL_AND_GUARDIAN_POLICY_APPROVAL_REQUIRED
+  - PROVIDER_SELECTION_REQUIRED
+
+trustedTime:
+  timeZone: Europe/Moscow
+  dayBoundary: "03:00:00"
+  scheduleOwner: school-scheduling
+
+businessCapabilities:
+  - key: identity-association
+    owner: school-identity
+  - key: crm
+    owner: school-crm
+  - key: scheduling
+    owner: school-scheduling
+  - key: booking
+    owner: school-booking
+  - key: commerce
+    owner: school-commerce
+  - key: attendance
+    owner: school-training
+  - key: training-record
+    owner: school-training
+  - key: weapon-mastery
+    owner: school-mastery
+  - key: communications
+    owner: school-communications
+  - key: content-and-marketing
+    owner: school-content
+  - key: reporting
+    owner: school-analytics
+
+characterAssociation:
+  businessSubjectType: STUDENT
+  cardinality: ONE_ACTIVE_CHARACTER_PER_STUDENT
+  anonymousCharacterCreation: DISABLED
+  guardianAware: true
+  reassignmentPolicy: ELEVATED_REVIEW
+
+progression:
+  primaryTrackKey: platform.standard.100
+  primaryTrackVersion: 1
+  moduleSpecificPrimaryTrack: null
+  domainMasteryOwner: school-mastery
+  negativePrimaryExperience: FORBIDDEN
+
+produces:
+  - school.student.enrolled.v1
+  - school.trial.booking.created.v1
+  - school.trial.attendance.recorded.v1
+  - school.membership.activated.v1
+  - school.membership.renewed.v1
+  - school.membership.frozen.v1
+  - school.membership.expired.v1
+  - school.training.session.completed.v1
+  - school.training.attendance.recorded.v1
+  - school.training.attendance.corrected.v1
+  - school.training.exercise.recorded.v1
+  - school.training.record.voided.v1
+  - school.weapon.mastery.points.applied.v1
+  - school.weapon.mastery.rank.changed.v1
+  - school.weapon.monthly.bonus.rolled.v1
+  - school.referral.qualified.v1
+  - school.event.participation.recorded.v1
+  - school.booking.confirmed.v1
+  - school.booking.cancelled.v1
+  - school.payment.completed.v1
+  - school.payment.refunded.v1
+
+consumes:
+  - character.created.v1
+  - character.closed.v1
+  - character.module.association.created.v1
+  - character.module.association.changed.v1
+  - progression.level.changed.v1
+  - reward.granted.v1
+  - reward.revoked.v1
+  - quest.completed.v1
+  - achievement.unlocked.v1
+  - inventory.item.acquired.v1
+  - inventory.item.consumed.v1
+  - season.content.binding.activated.v1
+  - character.presentation.changed.v1
+
+contentBundle:
+  bundleKey: school.fencing.starter
+  bundleVersion: 1
+  rewardPolicySet: school.fencing.rewards.v1
+  questCampaign: school.fencing.path.v1
+  achievementSet: school.fencing.achievements.v1
+  itemCollection: school.fencing.starter-items.v1
+  talentTree: school.fencing.discipline.v1
+  seasonDefinition: school.fencing.academic-year.v1
+
+privacy:
+  defaultClassification: INTERNAL
+  minorsMode: RESTRICTED
+  publicProgressionDefault: PRIVATE
+  publicLeaderboards: DISABLED
+  rawTrainingLoadAudience:
+    - STUDENT_OR_GUARDIAN
+    - ASSIGNED_COACH
+    - AUTHORIZED_ADMIN
+  prohibitedPlatformPayloads:
+    - medicalDocuments
+    - paymentInstrument
+    - payrollDetails
+    - accessCodes
+    - crmFreeText
+    - guardianContactDetails
+
+operations:
+  availabilityTarget: "99.5%"
+  bookingApiP95TargetMs: 300
+  outboxLagAlertSeconds: 60
+  backupRetentionDays: 30
+  supportOwner: school-operations
+  reconciliation:
+    - attendance-to-reward
+    - payment-to-fiscal-receipt
+    - training-record-to-mastery
+    - reward-to-owner-fulfillment

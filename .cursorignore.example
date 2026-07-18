@@ -1,0 +1,35 @@
+# Secrets and credentials
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+**/*secret*
+**/*credential*
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/id_rsa*
+
+# Cloud and infrastructure state
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/.pulumi/
+**/.aws/
+**/.kube/
+
+# Production data and database dumps
+**/*.dump
+**/*.sql.gz
+**/backups/
+**/prod-data/
+**/production-data/
+
+# Local auth/session data
+**/.auth/
+**/storage-state.json
+**/.playwright/.auth/
+
+# Private local notes
+**/.private/

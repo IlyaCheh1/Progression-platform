@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "sentry": {
+      "url": "https://mcp.sentry.dev/mcp"
+    },
+    "figma": {
+      "url": "https://mcp.figma.com/mcp"
+    },
+    "supabase-readonly": {
+      "url": "https://mcp.supabase.com/mcp?project_ref=${env:SUPABASE_PROJECT_REF}&read_only=true&features=database,docs"
+    }
+  }
+}

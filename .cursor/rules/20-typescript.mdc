@@ -1,0 +1,15 @@
+---
+globs: "**/*.ts, **/*.tsx, **/*.mts, **/*.cts"
+alwaysApply: false
+---
+# TypeScript rules
+
+- Keep strict typing. Do not use `any` unless an external boundary makes it unavoidable and the reason is documented.
+- Prefer `unknown` plus validation/narrowing for untrusted data.
+- Derive types from schemas or canonical domain models rather than duplicating shapes.
+- Use discriminated unions for state machines and result variants.
+- Avoid unsafe type assertions. Validate at runtime where data crosses process, network, storage, or user-input boundaries.
+- Keep exported APIs explicit and stable.
+- Prefer pure functions for domain transformations.
+- Do not suppress compiler or linter errors globally to make a change pass.
+- Preserve the project's import style, module system, formatter, and package manager.

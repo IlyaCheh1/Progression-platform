@@ -1,0 +1,13 @@
+{
+  "name": "master-of-sword",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev:web": "pnpm --filter @mos/web dev",
+    "build:web": "pnpm --filter @mos/web build",
+    "lint:web": "pnpm --filter @mos/web lint",
+    "test:web": "pnpm --filter @mos/web test",
+    "seed:demo": "python scripts/excel_seed.py",
+    "import:excel": "python scripts/excel_seed.py"
+  }
+}

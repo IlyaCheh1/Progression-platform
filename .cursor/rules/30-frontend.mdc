@@ -1,0 +1,16 @@
+---
+globs: "**/*.tsx, **/*.jsx, **/*.vue, **/*.svelte, **/*.css, **/*.scss"
+alwaysApply: false
+---
+# Frontend and UI rules
+
+- Reuse the project's design system, tokens, primitives, and existing components before creating new ones.
+- Implement loading, empty, error, success, disabled, and permission-denied states where applicable.
+- Build responsive behavior intentionally; do not only optimize for one viewport.
+- Preserve keyboard navigation, visible focus, semantic HTML, labels, accessible names, and sensible reading order.
+- Do not encode essential meaning using color alone.
+- Keep server data, local UI state, form state, and URL state separate.
+- Avoid unnecessary client-side rendering, effects, re-renders, and large dependencies.
+- Use image and asset formats consistent with the repository; do not embed external assets without permission.
+- Validate forms on both client and server boundaries.
+- Verify significant UI changes in a real browser and test critical flows.

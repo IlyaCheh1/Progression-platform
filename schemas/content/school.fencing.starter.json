@@ -1,0 +1,61 @@
+{
+  "bundleKey": "school.fencing.starter",
+  "bundleVersion": 1,
+  "source": "Master of the Sword module/fencing-school/104-content-pack.md",
+  "quests": [
+    { "key": "path.safety", "title": "Сначала безопасность", "type": "ONBOARDING", "xp": 300 },
+    { "key": "path.first_trial", "title": "Первый выход в зал", "type": "ONBOARDING", "xp": 300 },
+    { "key": "path.first_record", "title": "Запись в хронике", "type": "ONBOARDING", "xp": 300 },
+    { "key": "path.choose_weapon", "title": "Выбери путь", "type": "ONBOARDING", "xp": 250 },
+    { "key": "path.monthly_roll", "title": "Бросок судьбы", "type": "ONBOARDING", "xp": 150 },
+    { "key": "path.open_inventory", "title": "Арсенал героя", "type": "ONBOARDING", "xp": 100 },
+    { "key": "path.choose_cosmetic", "title": "Собственный герб", "type": "ONBOARDING", "xp": 100 },
+    { "key": "path.complete", "title": "Путь начат", "type": "ONBOARDING", "xp": 1000 },
+    { "key": "training.ready", "title": "Готовность", "type": "DAILY", "xp": 100 },
+    { "key": "training.focus", "title": "Технический фокус", "type": "DAILY", "xp": 150 },
+    { "key": "training.balance", "title": "Обе стороны", "type": "DAILY", "xp": 100 },
+    { "key": "training.partner", "title": "Работа в паре", "type": "DAILY", "xp": 150 },
+    { "key": "training.reflection", "title": "Страница хроники", "type": "WEEKLY", "xp": 100 },
+    { "key": "weekly.rhythm.3", "title": "Три шага вперёд", "type": "WEEKLY", "xp": 500 },
+    { "key": "weekly.two_paths", "title": "Два пути", "type": "WEEKLY", "xp": 400 },
+    { "key": "weekly.curriculum", "title": "Урок мастера", "type": "WEEKLY", "xp": 400 },
+    { "key": "weekly.history", "title": "След Мароццо", "type": "WEEKLY", "xp": 250 },
+    { "key": "weekly.community", "title": "Товарищ по залу", "type": "WEEKLY", "xp": 300 },
+    { "key": "monthly.roll", "title": "Восемь граней", "type": "MONTHLY", "xp": 150 },
+    { "key": "monthly.new_path", "title": "Новый клинок", "type": "MONTHLY", "xp": 500 },
+    { "key": "monthly.consistency", "title": "Без спешки, без перерыва", "type": "MONTHLY", "xp": 750 }
+  ],
+  "achievements": [
+    { "key": "start.inventory", "title": "Первый трофей", "tiers": 1, "xp": 250 },
+    { "key": "start.quest", "title": "Задание выполнено", "tiers": 1, "xp": 250 },
+    { "key": "practice.sessions", "title": "Практика зала", "tiers": [1, 10, 25, 50, 100, 250, 500], "xp": 250 },
+    { "key": "mastery.first_rank", "title": "Первый знак", "tiers": 1, "xp": 750 },
+    { "key": "mastery.four_paths", "title": "Четыре пути", "tiers": 1, "xp": 1500 },
+    { "key": "mastery.eight_paths", "title": "Универсальный воин", "tiers": 1, "xp": 3000 },
+    { "key": "mastery.two_rank_five", "title": "Две школы", "tiers": 1, "xp": 3000 },
+    { "key": "mastery.one_rank_ten", "title": "Мастер оружия", "tiers": 1, "xp": 0 },
+    { "key": "curriculum.marozzo", "title": "Ученик Мароццо", "tiers": 1, "xp": 0 },
+    { "key": "community.events", "title": "События школы", "tiers": [1, 5, 10, 25], "xp": 0 }
+  ],
+  "talents": [
+    { "key": "discipline.observer", "title": "Наблюдатель техники", "rank": 1 },
+    { "key": "discipline.chronicler", "title": "Хронист", "rank": 1 },
+    { "key": "discipline.scholar", "title": "Учёный зала", "rank": 1 },
+    { "key": "discipline.pathfinder", "title": "Следопыт", "rank": 1 },
+    { "key": "discipline.companion", "title": "Товарищ", "rank": 1 },
+    { "key": "discipline.curator", "title": "Хранитель облика", "rank": 1 },
+    { "key": "discipline.archivist", "title": "Архивариус", "rank": 1 },
+    { "key": "discipline.herald", "title": "Глашатай", "rank": 1 },
+    { "key": "discipline.collector", "title": "Коллекционер", "rank": 1 },
+    { "key": "discipline.universalist", "title": "Универсалист", "rank": 1 },
+    { "key": "discipline.steward", "title": "Стюард", "rank": 1 },
+    { "key": "discipline.master", "title": "Мастер дисциплины", "rank": 1 }
+  ],
+  "schools": [
+    { "key": "witcher", "title": "Курс Ведьмака", "description": "Силовая работа клинком, мобильность и выносливость в духе школы Волка." },
+    { "key": "east", "title": "Клинки Востока", "description": "Восточные системы клинка: ритм, дистанция и точность." },
+    { "key": "spanish_rapier", "title": "Испанская рапира", "description": "Verdadera Destreza: геометрия, контроль центра и тактическая ясность." },
+    { "key": "italian_rapier", "title": "Итальянская рапира", "description": "Итальянская школа: темп, финты и работа в ближней дистанции." },
+    { "key": "artistic", "title": "Артистическое фехтование", "description": "Сценическая техника, пластика и безопасная постановка боя." }
+  ]
+}

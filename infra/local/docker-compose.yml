@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: mos
+      POSTGRES_PASSWORD: mos
+      POSTGRES_DB: mos
+    ports:
+      - "5432:5432"
+    volumes:
+      - mos_pg:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: mosminio
+      MINIO_ROOT_PASSWORD: mosminio123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - mos_minio:/data
+
+  nats:
+    image: nats:2-alpine
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
+volumes:
+  mos_pg:
+  mos_minio:
