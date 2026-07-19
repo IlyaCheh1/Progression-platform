@@ -162,4 +162,6 @@ function writeIcons(map, dir) {
 
 writeIcons(QUEST_SYMBOL, outQuests);
 writeIcons(ACH_SYMBOL, outAch);
-console.log(`Generated ${Object.keys(QUEST_SYMBOL).length} quest + ${Object.keys(ACH_SYMBOL).length} achievement icons`);
+console.log(
+  `Generated ${Object.keys(QUEST_SYMBOL).length} quest + ${Object.keys(ACH_SYMBOL).length} achievement icons`,
+);

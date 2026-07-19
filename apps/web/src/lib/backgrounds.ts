@@ -2,6 +2,7 @@
 export type BackgroundId =
   | "onboarding_background"
   | "northern_lights"
+  | "mountain_terrace"
   | "prison"
   | "building_castle"
   | "volcano"
@@ -22,8 +23,20 @@ export type ProfileBackground = {
   src: string;
 };
 
-export const DEFAULT_BACKGROUND_ID: BackgroundId = "northern_lights";
+/** Раскладка сцены профиля: куда смотрит фон и где стоят ноги персонажа. */
+export type StageBackgroundLayout = {
+  backgroundPosition: string;
+  /** Доп. классы для контейнера фигуры (поднять/опустить ноги на площадку). */
+  figureClassName?: string;
+};
+
+/** Пока один общий стартовый фон для всех персонажей. */
+export const DEFAULT_BACKGROUND_ID: BackgroundId = "mountain_terrace";
 export const ONBOARDING_BACKGROUND_ID: BackgroundId = "onboarding_background";
+
+export function defaultBackgroundForGender(_gender?: "MALE" | "FEMALE"): BackgroundId {
+  return DEFAULT_BACKGROUND_ID;
+}
 
 /** Numeric legacy keys from ранней версии MoS → OG slug. */
 const LEGACY_NUMERIC_MAP: Record<string, BackgroundId> = {
@@ -49,6 +62,13 @@ export const PROFILE_BACKGROUNDS: ProfileBackground[] = [
     category: "nature",
     unlock: "default",
     src: "/media/backgrounds/northern_lights.webp",
+  },
+  {
+    id: "mountain_terrace",
+    label: "Горная терраса",
+    category: "fantasy",
+    unlock: "default",
+    src: "/media/backgrounds/mountain_terrace.webp",
   },
   {
     id: "prison",
@@ -130,6 +150,25 @@ export const PROFILE_BACKGROUNDS: ProfileBackground[] = [
 ];
 
 const BACKGROUND_BY_ID = new Map(PROFILE_BACKGROUNDS.map((item) => [item.id, item]));
+
+/** Подгонка ног персонажа под горизонт/площадку конкретного фона. */
+export const STAGE_LAYOUT_BY_BACKGROUND: Partial<Record<BackgroundId, StageBackgroundLayout>> = {
+  mountain_terrace: {
+    // Каменная площадка в нижней трети кадра; чуть поднимаем точку привязки,
+    // чтобы ноги стояли на плитах, а не на обрыве у низа картинки.
+    backgroundPosition: "center 72%",
+    figureClassName: "character-stage-figure--terrace mb-[3vh] md:mb-[5vh]",
+  },
+};
+
+export function stageLayoutForBackground(id?: string | null): StageBackgroundLayout {
+  const normalized = normalizeBackgroundId(id);
+  return (
+    STAGE_LAYOUT_BY_BACKGROUND[normalized] ?? {
+      backgroundPosition: "center center",
+    }
+  );
+}
 
 export function getBackgroundById(id?: string | null): ProfileBackground | null {
   const raw = (id ?? "").trim();

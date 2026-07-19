@@ -10,9 +10,10 @@
  * Optional: S3_REGION, S3_PUBLIC_BASE_URL, S3_PREFIX=media/content-icons
  */
 import { createReadStream, existsSync, readdirSync, statSync } from "node:fs";
-import { basename, join, relative, resolve } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { buildMediaBaseUrl, buildPublicObjectUrl } from "./lib/s3-public-url.mjs";
 
 const scriptRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const prefix = (process.env.S3_PREFIX || "media/content-icons").replace(/^\/+|\/+$/g, "");
@@ -56,17 +57,11 @@ const contentTypes = {
 };
 
 function publicUrl(key) {
-  if (publicBase) {
-    return `${publicBase.replace(/\/$/, "")}/${bucket}/${key}`;
-  }
-  return `${endpoint.replace(/\/$/, "")}/${bucket}/${key}`;
+  return buildPublicObjectUrl({ publicBase, endpoint, bucket, key });
 }
 
 function mediaBaseUrl() {
-  if (publicBase) {
-    return `${publicBase.replace(/\/$/, "")}/${bucket}/${prefix}`;
-  }
-  return `${endpoint.replace(/\/$/, "")}/${bucket}/${prefix}`;
+  return buildMediaBaseUrl({ publicBase, endpoint, bucket, prefix });
 }
 
 function collectIconFiles(dir, acc = []) {

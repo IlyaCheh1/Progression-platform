@@ -11,6 +11,7 @@ apps/support-chat/config.local.yml
 .DS_Store
 bin/
 tmp/
+tmp-higgs/
 .idea/
 .vscode/
 docs/demo-accounts.local.md

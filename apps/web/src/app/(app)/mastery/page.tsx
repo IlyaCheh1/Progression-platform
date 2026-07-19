@@ -6,17 +6,11 @@ import { useRouter } from "next/navigation";
 import { fetchMastery, type MasteryTrack } from "@/lib/school-api";
 import { loadSession } from "@/lib/session";
 import { routes } from "@/lib/routes";
+import { WEAPONS } from "@/lib/weapons";
 
-const weaponLabels: Record<string, string> = {
-  spada_a_uno_mano: "Одноручный меч",
-  due_spade: "Два меча",
-  spada_e_scudo: "Меч и щит",
-  spada_a_due_mani: "Двуручный меч",
-  spadone: "Спадоне",
-  acia_alabarda: "Топор и алебарда",
-  spiedo_partesana: "Копьё и протазан",
-  spiedo_e_scudo: "Копьё и щит",
-};
+const weaponLabels: Record<string, string> = Object.fromEntries(
+  WEAPONS.map((w) => [w.key, w.label]),
+);
 
 export default function MasteryPage() {
   const router = useRouter();

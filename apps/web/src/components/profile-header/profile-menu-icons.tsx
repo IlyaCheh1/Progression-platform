@@ -29,6 +29,30 @@ export function IconProfileCabinet(props: IconProps) {
   );
 }
 
+/** Админка — щит */
+export function IconProfileAdmin(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path
+        d="M12 2.5 4.5 5.5v6.2c0 4.8 3.2 9.1 7.5 10.8 4.3-1.7 7.5-6 7.5-10.8V5.5L12 2.5Zm0 2.2 5.5 2.1v5.4c0 3.5-2.3 6.7-5.5 8.1-3.2-1.4-5.5-4.6-5.5-8.1V6.8L12 4.7Zm-.75 4.3h1.5v4.8h-1.5V9Zm0 6.2h1.5V17h-1.5v-1.8Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/** Studio — кисть на холсте */
+export function IconProfileStudio(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path
+        d="M4 4h11v2H6v10H4V4Zm3 3h13v13H7V7Zm2 2v9h9V9H9Zm7.2 1.3 1.5 1.5-4.4 4.4H11.3v-2l4.9-3.9Zm1.9-.6.9.9c.4.4.4 1 0 1.4l-.7.7-1.5-1.5.7-.7c.4-.4 1-.4 1.4 0Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 /** OG main/frontend — out.svg */
 export function IconProfileLogout(props: IconProps) {
   return (

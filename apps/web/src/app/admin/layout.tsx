@@ -65,7 +65,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               );
             })}
             <Link href={routes.studio} className="border border-mos-line/40 px-3 py-1 text-xs uppercase tracking-widest text-mos-muted hover:text-mos-text">
-              Studio
+              Студия
             </Link>
             <Link href={routes.home} className="border border-mos-line/40 px-3 py-1 text-xs uppercase tracking-widest text-mos-muted hover:text-mos-text">
               Профиль

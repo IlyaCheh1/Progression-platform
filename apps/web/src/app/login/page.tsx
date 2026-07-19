@@ -87,6 +87,7 @@ export default function LoginPage() {
           ),
           gender,
           backgroundKey: normalizeBackgroundId(String(student.backgroundKey ?? DEFAULT_BACKGROUND_ID)),
+          avatarUrl: String(student.avatarUrl ?? ""),
           level: 1,
           xp: 0,
           xpToNextLevel: 500,

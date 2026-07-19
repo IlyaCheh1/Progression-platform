@@ -6,7 +6,7 @@ import ProfileHeader from "@/components/profile-header";
 import SupportChatRoot from "@/components/support-chat-root";
 import { useProfileShellData } from "@/hooks/use-profile-shell";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
-import { hasProfile, loadSession, type SessionUser } from "@/lib/session";
+import { hasProfile, loadSession, SESSION_CHANGED_EVENT, type SessionUser } from "@/lib/session";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -15,12 +15,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const shell = useProfileShellData(user, profile);
 
   useEffect(() => {
-    const session = loadSession();
-    if (!session) {
-      router.replace("/login");
-      return;
+    function syncSession() {
+      const session = loadSession();
+      if (!session) {
+        router.replace("/login");
+        return;
+      }
+      setUser(session);
     }
-    setUser(session);
+
+    syncSession();
+    window.addEventListener(SESSION_CHANGED_EVENT, syncSession);
+    return () => window.removeEventListener(SESSION_CHANGED_EVENT, syncSession);
   }, [router]);
 
   useEffect(() => {

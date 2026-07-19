@@ -63,7 +63,7 @@ export default function TalentsPage() {
       <div className="relative z-0 mx-auto mt-16 flex w-full max-w-[1600px] flex-1 flex-row items-stretch justify-around gap-0 overflow-x-auto px-2 md:mt-[220px] md:gap-4 md:px-4">
         {trees.map((tree) => (
           <div
-            key={tree.type}
+            key={tree.name}
             className="relative flex min-w-[180px] flex-1 flex-col items-center justify-end gap-2 md:min-w-0 md:gap-5"
           >
             <SkillThree

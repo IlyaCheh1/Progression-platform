@@ -27,7 +27,7 @@ function getRoleCabinetMenuItems(roles) {
   }
 
   if (normalized.includes("administrator") || normalized.includes("platform_admin")) {
-    items.push({ label: "Studio", href: "/studio" });
+    items.push({ label: "Студия", href: "/studio" });
   }
 
   return items;
@@ -67,7 +67,7 @@ test("profileDisplayName never uses session display name", () => {
 test("getRoleCabinetMenuItems exposes non-student cabinets", () => {
   const items = getRoleCabinetMenuItems(["student", "coach", "administrator"]);
   const labels = items.map((item) => item.label);
-  assert.deepEqual(labels, ["Админка", "Кабинет тренера", "Studio"]);
+  assert.deepEqual(labels, ["Админка", "Кабинет тренера", "Студия"]);
 });
 
 test("getSettingsTabs adds role-specific sections", () => {

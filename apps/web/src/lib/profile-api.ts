@@ -13,6 +13,7 @@ export type PlayerProfile = {
   selectedSkinId: OgCharacterId;
   gender: GenderId;
   backgroundKey: string;
+  avatarUrl: string;
   level: number;
   xp: number;
   xpToNextLevel: number;
@@ -25,8 +26,11 @@ export type SaveProfileInput = {
   selectedSkinId: OgCharacterId;
   gender: GenderId;
   backgroundKey?: string;
+  avatarUrl?: string | null;
   profileComplete?: boolean;
 };
+
+export const PROFILE_CHANGED_EVENT = "mos:profile-changed";
 
 export class ProfileApiError extends Error {
   readonly status: number;
@@ -50,6 +54,10 @@ const PROFILE_ERROR_MESSAGES: Record<string, string> = {
   invalid_skin: "Выбранный персонаж недоступен. Выберите другого.",
   invalid_gender: "Некорректный пол персонажа.",
   invalid_background: "Выбранный фон недоступен.",
+  character_not_owned: "Этот образ ещё не открыт.",
+  background_not_owned: "Этот фон ещё не открыт.",
+  invalid_avatar: "Некорректный формат аватара. Загрузите JPEG, PNG или WebP.",
+  avatar_too_large: "Аватар слишком большой. Выберите другое изображение.",
   bad_request: "Некорректные данные профиля.",
   "student not found": "Профиль не найден. Войдите снова.",
 };
@@ -91,6 +99,11 @@ export function readCachedProfile(): PlayerProfile | null {
   }
 }
 
+function notifyProfileChanged() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(PROFILE_CHANGED_EVENT));
+}
+
 export function writeCachedProfile(profile: PlayerProfile) {
   if (typeof window === "undefined") return;
   localStorage.setItem(CACHE_KEY, JSON.stringify(profile));
@@ -101,6 +114,12 @@ export function writeCachedProfile(profile: PlayerProfile) {
   if (profile.backgroundKey) {
     localStorage.setItem("mos.background", profile.backgroundKey);
   }
+  if (profile.avatarUrl) {
+    localStorage.setItem("mos.avatarUrl", profile.avatarUrl);
+  } else {
+    localStorage.removeItem("mos.avatarUrl");
+  }
+  notifyProfileChanged();
 }
 
 export function clearCachedProfile() {
@@ -112,6 +131,8 @@ export function clearCachedProfile() {
   localStorage.removeItem("mos.skin");
   localStorage.removeItem("mos.gender");
   localStorage.removeItem("mos.background");
+  localStorage.removeItem("mos.avatarUrl");
+  notifyProfileChanged();
 }
 
 function normalizeProfile(data: Record<string, unknown>): PlayerProfile {
@@ -130,6 +151,7 @@ function normalizeProfile(data: Record<string, unknown>): PlayerProfile {
     selectedSkinId,
     gender,
     backgroundKey: normalizeBackgroundId(String(data.backgroundKey ?? DEFAULT_BACKGROUND_ID)),
+    avatarUrl: typeof data.avatarUrl === "string" ? data.avatarUrl : "",
     level: Number(data.level ?? 1),
     xp: Number(data.xp ?? 0),
     xpToNextLevel: Number(data.xpToNextLevel ?? 500),
@@ -158,6 +180,7 @@ export async function saveMyProfile(session: SessionUser, input: SaveProfileInpu
         selectedSkinId: input.selectedSkinId,
         gender: input.gender,
         backgroundKey: input.backgroundKey ?? DEFAULT_BACKGROUND_ID,
+        avatarUrl: input.avatarUrl === undefined ? undefined : (input.avatarUrl ?? ""),
         profileComplete: input.profileComplete ?? true,
       }),
     });

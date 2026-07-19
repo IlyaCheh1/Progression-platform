@@ -14,11 +14,11 @@ function SchoolMenuItem({ title, subtitle, iconSrc }: SchoolMenuItemProps) {
     <button type="button" className="og-nav-popup-item">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={iconSrc} alt="" className="h-5 w-5 shrink-0 object-contain md:h-10 md:w-10" aria-hidden />
-      <div className="flex min-w-0 flex-col md:gap-1">
+      <div className="flex min-w-0 flex-1 flex-col md:gap-1">
         <span className="font-unbounded text-[8px] font-medium uppercase leading-3 tracking-wide text-primaryText md:text-[10px] md:leading-[14px]">
           {title}
         </span>
-        <span className="truncate font-golos text-[8px] leading-3 text-[var(--color-additionalText)] md:text-xs md:leading-4">
+        <span className="whitespace-normal font-golos text-[8px] leading-3 text-[var(--color-additionalText)] md:text-xs md:leading-4">
           {subtitle}
         </span>
       </div>
@@ -28,7 +28,7 @@ function SchoolMenuItem({ title, subtitle, iconSrc }: SchoolMenuItemProps) {
 
 export default function SchoolsMenu() {
   return (
-    <div className="og-nav-popup-menu w-[140px] md:w-[248px]">
+    <div className="og-nav-popup-menu w-[220px] md:w-[320px]">
       {directions.map((school) => (
         <SchoolMenuItem
           key={school.key}

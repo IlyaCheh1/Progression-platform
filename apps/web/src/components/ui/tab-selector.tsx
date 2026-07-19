@@ -18,7 +18,11 @@ type TabSelectorProps = {
   isLoading?: boolean;
 };
 
-/** OG inventory TabSelector — inactive tabs show icon only, active expands with label. */
+/**
+ * Inventory filter tabs.
+ * Icons stay in fixed slots (neighbors never shift on click);
+ * the active label sits beside the icon row so the bar width hugs content.
+ */
 export default function TabSelector({
   items,
   activeId,
@@ -26,66 +30,55 @@ export default function TabSelector({
   className,
   isLoading,
 }: TabSelectorProps) {
+  const activeItem = items.find((item) => item.id === activeId) ?? items[0];
+
   return (
     <div
       className={cn(
-        "box-border flex min-h-10 w-fit items-center gap-2 rounded-[24px] bg-[#141416] p-1 backdrop-blur-[25px] md:min-h-[60px] md:gap-4 md:px-3 md:py-2",
+        "box-border inline-flex w-max max-w-full items-center gap-2 rounded-[24px] bg-[#141416] p-1 backdrop-blur-[25px] md:gap-3 md:px-3 md:py-2",
         className,
       )}
       role="tablist"
     >
-      {items.map((item) => {
-        const active = item.id === activeId;
-        const disabled = item.disabled || isLoading;
+      <div className="flex shrink-0 items-center gap-2 md:gap-3">
+        {items.map((item) => {
+          const active = item.id === activeId;
+          const disabled = item.disabled || isLoading;
 
-        return (
-          <button
-            key={item.id}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            disabled={disabled}
-            onClick={() => {
-              if (disabled || active) return;
-              onChange(item.id);
-            }}
-            className={cn(
-              "box-border flex select-none flex-col overflow-hidden rounded-2xl transition-all duration-300 ease-in-out",
-              active
-                ? "w-auto items-start justify-start bg-[var(--color-controlsBlur)] px-3 py-2 md:px-4 md:py-2.5"
-                : "w-11 items-center justify-center px-3 py-2 hover:bg-[color-mix(in_srgb,var(--color-controlsBlur)_80%,transparent)] md:px-4 md:py-2.5",
-              disabled && "cursor-not-allowed opacity-60",
-            )}
-          >
-            <span
+          return (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              aria-label={item.label}
+              disabled={disabled}
+              onClick={() => {
+                if (disabled || active) return;
+                onChange(item.id);
+              }}
               className={cn(
-                "flex min-w-0 items-center transition-all duration-300 ease-in-out",
-                active ? "w-full justify-start gap-3" : "w-auto justify-center gap-0",
+                "box-border flex h-10 w-11 shrink-0 select-none items-center justify-center rounded-2xl md:h-11 md:w-12",
+                "transition-colors duration-200 ease-out",
+                active
+                  ? "bg-[var(--color-controlsBlur)] text-primaryText"
+                  : "text-[#64748B] hover:bg-[color-mix(in_srgb,var(--color-controlsBlur)_80%,transparent)]",
+                disabled && "cursor-not-allowed opacity-60",
               )}
             >
               {item.icon ? (
-                <span
-                  className={cn(
-                    "h-4 w-4 shrink-0 transition-colors duration-200 md:h-6 md:w-6",
-                    active ? "text-primaryText" : "text-[#64748B]",
-                  )}
-                >
-                  {item.icon}
-                </span>
+                <span className="h-4 w-4 shrink-0 md:h-6 md:w-6">{item.icon}</span>
               ) : null}
-              <span
-                className={cn(
-                  "overflow-hidden whitespace-nowrap font-medium text-primaryText transition-all duration-300 ease-in-out md:text-sm md:leading-5",
-                  "text-[10px] leading-[14px]",
-                  active ? "ml-0 max-w-[200px] opacity-100" : "ml-0 max-w-0 opacity-0",
-                )}
-              >
-                {item.label}
-              </span>
-            </span>
-          </button>
-        );
-      })}
+            </button>
+          );
+        })}
+      </div>
+
+      {activeItem ? (
+        <span className="min-w-0 truncate pr-2 font-medium text-[10px] leading-[14px] text-primaryText md:pr-1 md:text-sm md:leading-5">
+          {activeItem.label}
+        </span>
+      ) : null}
     </div>
   );
 }

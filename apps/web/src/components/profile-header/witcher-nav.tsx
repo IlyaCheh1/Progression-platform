@@ -43,6 +43,7 @@ function WitcherTab({
       aria-disabled={item.inDevelopment || undefined}
       className={cn(
         "witcher-nav-item group relative flex h-full min-w-[64px] flex-col items-center justify-center gap-0.5 px-2 transition-colors duration-300 md:min-w-[88px] md:gap-1 md:px-3",
+        item.dropdown && "min-w-[72px] overflow-visible md:min-w-[96px]",
         item.inDevelopment && "cursor-not-allowed",
         active ? "text-mos-amber" : "text-[#9a9690]/hover:text-[#c8c6c2]",
       )}
@@ -79,12 +80,13 @@ function WitcherTab({
             : "opacity-70 group-hover:opacity-90",
         )}
       >
-        <span className="inline-flex items-center gap-0.5">
+        {/* Label alone defines centering; chevron is absolute so it does not shift the icon */}
+        <span className="relative inline-block">
           {item.label}
           {item.dropdown ? (
             <IconDirectionDown
               className={cn(
-                "h-3 w-3 transition-transform duration-200 md:h-4 md:w-4",
+                "absolute left-[calc(100%+2px)] top-1/2 h-3 w-3 -translate-y-1/2 transition-transform duration-200 md:h-4 md:w-4",
                 isMenuOpen && "rotate-180",
               )}
             />

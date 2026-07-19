@@ -113,7 +113,7 @@ export default function TalentCard({
         <img
           src={talent.imageUrl}
           alt={talent.name}
-          className="h-8 w-8 rounded-lg object-cover md:h-[60px] md:w-[60px]"
+          className="h-8 w-8 rounded-full object-cover md:h-[60px] md:w-[60px]"
           onError={(e) => {
             e.currentTarget.src = "/media/ui/coin.png";
           }}
@@ -122,7 +122,7 @@ export default function TalentCard({
           <CooldownOverlay
             cooldownUntil={talent.cooldownUntil}
             cooldownTimeSeconds={talent.cooldownSeconds}
-            className="rounded-lg"
+            className="rounded-full"
           />
         ) : null}
       </div>

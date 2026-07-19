@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import AppearancePickerModal, {
-  type AppearancePickerMode,
-} from "@/components/appearance/appearance-picker-modal";
+import AppearancePickerModal from "@/components/appearance/appearance-picker-modal";
 import SettingsProfileHeader from "@/components/settings/profile-header";
 import NotificationsTab from "@/components/settings/tabs/notifications";
 import PersonalInfoTab from "@/components/settings/tabs/personal-info";
@@ -16,6 +14,7 @@ import SideBar from "@/components/side-bar";
 import { useAvatarPresentation } from "@/components/character-avatar";
 import { useAppearanceInventory } from "@/hooks/use-appearance-inventory";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
+import { AvatarUploadError, fileToAvatarDataUrl } from "@/lib/avatar-upload";
 import {
   messageForProfileError,
   saveMyProfile,
@@ -40,7 +39,7 @@ import {
   type PrivacyLocal,
 } from "@/lib/settings-local";
 import { hasRole, isAdminPrincipal } from "@/lib/rbac";
-import { clearSession, loadSession, type SessionUser } from "@/lib/session";
+import { clearSession, loadSession, patchSession, type SessionUser } from "@/lib/session";
 import type { GenderId } from "@/lib/avatars";
 
 export default function SettingsPage() {
@@ -49,7 +48,8 @@ export default function SettingsPage() {
   const { profile, setProfile } = usePlayerProfile(session);
   const presentation = useAvatarPresentation(profile ?? undefined);
   const appearance = useAppearanceInventory(session, { onProfileUpdated: setProfile });
-  const [pickerMode, setPickerMode] = useState<AppearancePickerMode | null>(null);
+  const [backgroundPickerOpen, setBackgroundPickerOpen] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const tabs = useMemo(() => getSettingsTabs(session?.roles ?? ["student"]), [session?.roles]);
   const roleLinks = useMemo(() => getRoleCabinetMenuItems(session?.roles ?? []), [session?.roles]);
@@ -63,6 +63,8 @@ export default function SettingsPage() {
   const [errors, setErrors] = useState<Partial<Record<"username" | "firstName" | "lastName" | "phone" | "about", string>>>({});
   const [notifyEmailError, setNotifyEmailError] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
+  const [avatarBusy, setAvatarBusy] = useState(false);
+  const [avatarError, setAvatarError] = useState<string>();
 
   useEffect(() => {
     const loaded = loadSession();
@@ -147,10 +149,13 @@ export default function SettingsPage() {
         selectedSkinId: profile.selectedSkinId,
         gender,
         backgroundKey: profile.backgroundKey,
+        avatarUrl: profile.avatarUrl ?? "",
         profileComplete: true,
       });
       writeCachedProfile(saved);
       setProfile(saved);
+      patchSession({ name: saved.username, profileComplete: saved.profileComplete });
+      setSession((prev) => (prev ? { ...prev, name: saved.username, profileComplete: saved.profileComplete } : prev));
     } catch (error) {
       if (error instanceof Error && (error.message === "validation" || error.message === "profile_not_ready")) {
         throw error;
@@ -162,24 +167,55 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleAvatarFile(file: File | undefined) {
+    if (!file || !session || !profile) return;
+    setAvatarBusy(true);
+    setAvatarError(undefined);
+    try {
+      const dataUrl = await fileToAvatarDataUrl(file);
+      const saved = await saveMyProfile(session, {
+        username: profile.username,
+        selectedSkinId: profile.selectedSkinId,
+        gender: profile.gender,
+        backgroundKey: profile.backgroundKey,
+        avatarUrl: dataUrl,
+        profileComplete: true,
+      });
+      writeCachedProfile(saved);
+      setProfile(saved);
+    } catch (error) {
+      if (error instanceof AvatarUploadError) {
+        setAvatarError(error.message);
+      } else {
+        setAvatarError(messageForProfileError(error));
+      }
+    } finally {
+      setAvatarBusy(false);
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
+    }
+  }
+
   if (!session) {
     return <main className="grid min-h-[50vh] place-items-center text-mos-muted">Загрузка…</main>;
   }
 
   const displayName = profileDisplayName(profile, session);
 
-  async function handleSelectCharacter(characterId: string) {
-    const ok = await appearance.equipCharacter(characterId);
-    if (ok) setPickerMode(null);
-  }
-
   async function handleSelectBackground(backgroundId: string) {
     const ok = await appearance.equipBackground(backgroundId);
-    if (ok) setPickerMode(null);
+    if (ok) setBackgroundPickerOpen(false);
   }
 
   return (
     <main className="mx-auto mb-20 mt-3 flex w-full max-w-[840px] flex-col items-center gap-3 px-3 md:mt-11 md:mb-40 md:gap-6 md:px-4">
+      <input
+        ref={avatarInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={(event) => void handleAvatarFile(event.target.files?.[0])}
+      />
+
       <SettingsProfileHeader
         username={displayName}
         rolesLabel={formatRoleBadges(session.roles)}
@@ -188,10 +224,13 @@ export default function SettingsPage() {
         xpToNext={profile?.xpToNextLevel ?? 500}
         selectedSkinId={presentation.selectedSkinId}
         gender={presentation.gender}
+        avatarUrl={profile?.avatarUrl}
         backgroundSrc={presentation.backgroundSrc}
-        onEditAvatar={() => setPickerMode("character")}
-        onEditBackground={() => setPickerMode("background")}
+        avatarBusy={avatarBusy}
+        onEditAvatar={() => avatarInputRef.current?.click()}
+        onEditBackground={() => setBackgroundPickerOpen(true)}
       />
+      {avatarError ? <p className="w-full text-center text-sm text-red-400">{avatarError}</p> : null}
 
       <div className="flex w-full flex-col items-start gap-3 md:flex-row md:gap-6">
         <div className="flex w-full flex-col gap-6 md:w-auto md:gap-12">
@@ -291,16 +330,16 @@ export default function SettingsPage() {
       </div>
 
       <AppearancePickerModal
-        open={pickerMode !== null}
-        mode={pickerMode ?? "character"}
-        title={pickerMode === "background" ? "Выберите фон профиля" : "Выберите аватар"}
+        open={backgroundPickerOpen}
+        mode="background"
+        title="Выберите фон профиля"
         characters={appearance.characters}
         backgrounds={appearance.backgrounds}
         equippingId={appearance.equippingId}
         loading={appearance.loading}
         error={appearance.error}
-        onClose={() => setPickerMode(null)}
-        onSelectCharacter={(characterId) => void handleSelectCharacter(characterId)}
+        onClose={() => setBackgroundPickerOpen(false)}
+        onSelectCharacter={() => undefined}
         onSelectBackground={(backgroundId) => void handleSelectBackground(backgroundId)}
       />
     </main>

@@ -323,29 +323,100 @@ ownership license, content hash and fallback.
 
 ------------------------------------------------------------------------
 
-# Talent Tree: Discipline of the Hall
+# Talent Forest: Activity Trees
 
 Talents unlock optional content and presentation utility. They do not multiply
 physical load, payment Rewards or primary training Experience.
 
-| talentKey | Rank | Effect |
-|---|---:|---|
-| `discipline.observer` | 1 | unlock “Technique Observer” optional Quest chain |
-| `discipline.chronicler` | 1 | unlock structured private reflection templates |
-| `discipline.scholar` | 1 | unlock advanced historical cards |
-| `discipline.pathfinder` | 1 | unlock a second optional Quest path per week |
-| `discipline.companion` | 1 | become eligible for coach-assigned mentoring Quests |
-| `discipline.curator` | 1 | unlock an additional cosmetic preset |
-| `discipline.archivist` | 1 | unlock expanded private mastery history visualization |
-| `discipline.herald` | 1 | unlock school-event reminder preferences |
-| `discipline.collector` | 1 | unlock a second public-safe trophy display slot |
-| `discipline.universalist` | 1 | unlock Eight Paths advanced campaign after four tracks open |
-| `discipline.steward` | 1 | unlock volunteer event Quest eligibility |
-| `discipline.master` | 1 | completion node; grants a cosmetic set, no XP modifier |
+Three equal trees (36 talents total). UI grid follows the OnlyGames profile
+contract: fixed **6×7** matrix, root at `[5,3]`, growth bottom-up, unlock via
+`requires` graph. Each tree has **9 passives** and **3 actives** with cooldowns
+**1 day / 7 days / 30 days** (`86400` / `604800` / `2592000` seconds).
 
-Implementation may use Talent acquisition facts as Quest eligibility. Any new
-feature-effect contract must be registered before activation; unsupported
-effects fail publication.
+| treeId | Bundle key | Display title | Theme |
+|---|---|---|---|
+| `arsenal.paths` | `school.fencing.arsenal.v1` | Путь клинка | оружие, техники, навыки |
+| `wolf.brotherhood` | `school.fencing.wolf.v1` | Братство Волка | сообщество (эстетика Ведьмака) |
+| `codex.lore` | `school.fencing.codex.v1` | Кодекс | знания, теория, стратегия |
+
+Братство Волка uses Witcher flavour (Каэр Морхен, Путь, медальон, контракты)
+for school-safe community activities only. No mutations, Trial of the Grasses,
+hunting, or cruelty.
+
+## Путь клинка (`arsenal.*`)
+
+| talentKey | Rank | Kind | CD | Effect |
+|---|---:|---|---|---|
+| `arsenal.daily_focus` | 1 | ACTIVE | 1д | Активирует одно опциональное задание на технический фокус на текущие локальные сутки |
+| `arsenal.stance` | 1 | PASSIVE | — | Открывает вводные подсказки учебной программы по каждому открытому оружейному пути |
+| `arsenal.guard` | 1 | PASSIVE | — | Открывает личные подсказки рефлексии о дистанции и тайминге после тренировки |
+| `arsenal.both_sides` | 1 | PASSIVE | — | Подсказка о доступности упражнений на обе стороны, если того требует программа |
+| `arsenal.weekly_review` | 1 | ACTIVE | 7д | Открывает структурированный личный разбор техники за последнюю неделю |
+| `arsenal.partner_drill` | 1 | PASSIVE | — | Открывает опциональную цепочку заданий «работа в паре» |
+| `arsenal.weapon_focus` | 1 | PASSIVE | — | Открывает еженедельный путь заданий с акцентом на одно оружие |
+| `arsenal.cross_training` | 1 | PASSIVE | — | После открытия двух путей открывает опциональную цель «второй путь на этой неделе» |
+| `arsenal.form_reader` | 1 | PASSIVE | — | Открывает карточки наблюдения техники по пройденной программе |
+| `arsenal.seal_keeper` | 1 | PASSIVE | — | Открывает раскладку коллекции оружейных печатей в профиле |
+| `arsenal.master_path` | 1 | PASSIVE | — | Завершающий узел; косметический набор «Путь клинка», без модификатора опыта |
+| `arsenal.monthly_path` | 1 | ACTIVE | 30д | Один раз меняет отображаемый акцент оружия и открывает превью главы «догоняющего» пути (без опыта) |
+
+## Братство Волка (`wolf.*`)
+
+| talentKey | Rank | Kind | CD | Effect |
+|---|---:|---|---|---|
+| `wolf.daily_call` | 1 | ACTIVE | 1д | Одна безопасная карточка приглашения на пробное занятие или событие (с учётом согласия) |
+| `wolf.hearth` | 1 | PASSIVE | — | Даёт доступ к заданиям приветствия и парной работы, которые назначает тренер |
+| `wolf.contract_prep` | 1 | PASSIVE | — | Открывает задания-чеклисты подготовки к мероприятию |
+| `wolf.medallion` | 1 | PASSIVE | — | Открывает настройки напоминаний о школьных событиях |
+| `wolf.weekly_fire` | 1 | ACTIVE | 7д | Открывает еженедельное сообщественное задание (пара / приветствие), если оно ещё не взято |
+| `wolf.brother` | 1 | PASSIVE | — | Даёт доступ к наставническим заданиям, которые назначает тренер |
+| `wolf.recruit` | 1 | PASSIVE | — | Открывает путь квалифицированного реферала (ваучер только после проверки, без авто-опыта) |
+| `wolf.keeper` | 1 | PASSIVE | — | Даёт доступ к волонтёрским заданиям на мероприятиях |
+| `wolf.tourney` | 1 | PASSIVE | — | Открывает контент подготовки к школьному турниру |
+| `wolf.master_lesson` | 1 | PASSIVE | — | Открывает подготовку к мастер-классу и шаблоны рефлексии |
+| `wolf.grandmaster` | 1 | PASSIVE | — | Завершающий узел; косметический набор «Братство Волка» |
+| `wolf.monthly_council` | 1 | ACTIVE | 30д | Открывает доступ к главе сезонной кампании сообщества или к подсветке события |
+
+## Кодекс (`codex.*`)
+
+| talentKey | Rank | Kind | CD | Effect |
+|---|---:|---|---|---|
+| `codex.daily_card` | 1 | ACTIVE | 1д | Выдаёт одну образовательную карточку или задание глоссария на сутки |
+| `codex.glossary` | 1 | PASSIVE | — | Открывает задание по глоссарию и терминологии |
+| `codex.marozzo` | 1 | PASSIVE | — | Открывает путь образовательной коллекции Мароццо |
+| `codex.scholar` | 1 | PASSIVE | — | Открывает расширенные исторические карточки |
+| `codex.weekly_study` | 1 | ACTIVE | 7д | Открывает главу продвинутой учебной цепочки заданий на неделю |
+| `codex.chronicler` | 1 | PASSIVE | — | Открывает шаблоны структурированной личной рефлексии |
+| `codex.strategist` | 1 | PASSIVE | — | Открывает еженедельные подсказки плана обучения (только отображение) |
+| `codex.pathfinder` | 1 | PASSIVE | — | Открывает второй опциональный путь заданий в неделю |
+| `codex.archivist` | 1 | PASSIVE | — | Расширяет личную визуализацию истории мастерства |
+| `codex.curator` | 1 | PASSIVE | — | Открывает дополнительный слот косметического пресета |
+| `codex.master` | 1 | PASSIVE | — | Завершающий узел; косметический набор «манускрипт» |
+| `codex.monthly_campaign` | 1 | ACTIVE | 30д | Открывает или продвигает доступ к образовательной главе «Восемь путей» (без требования ранга) |
+
+## Grid layout (6×7)
+
+Shared skeleton for all three trees (OnlyGames Gamer shape + two slots):
+
+```text
+col→   0  1  2  3  4  5  6
+r0     .  .  A  .  B  .  C
+r1     .  D  .  E  .  .  .
+r2     .  .  F  .  G  .  .
+r3     .  .  .  H  .  .  .
+r4     .  .  I  .  J  .  K
+r5     .  .  .  R  .  .  .
+```
+
+- `R` = daily active at `[5,3]`; `H` = weekly active at `[3,3]`; `C` = monthly active at `[0,6]`.
+- Requires (bottom-up, per tree): `I,J,K←[R]`; `H←[R,I,J]`; `F,G←[R,I,J,H]`;
+  `D,E←[R,I,J,H,F,G]`; `A←[R,I,J,H,F,G,D,E]`; `B←[A]`; `C←[A,B]`.
+
+Exact `position` / `requires` bindings are published in the starter content bundle.
+
+Implementation may use Talent acquisition and Skill activation facts as Quest
+eligibility. Any new feature-effect contract must be registered before
+activation; unsupported effects fail publication.
 
 ------------------------------------------------------------------------
 

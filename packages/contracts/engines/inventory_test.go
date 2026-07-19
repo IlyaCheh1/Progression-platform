@@ -26,7 +26,7 @@ func TestOnboardingGrantsCharactersAndBackgrounds(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(inv.Items) < 9 {
+	if len(inv.Items) < 5 {
 		t.Fatalf("expected starter cosmetics, got %d items: %+v", len(inv.Items), inv.Items)
 	}
 
@@ -43,18 +43,18 @@ func TestOnboardingGrantsCharactersAndBackgrounds(t *testing.T) {
 			ownedBgs[item.RefID] = true
 		}
 	}
-	if chars != 5 {
-		t.Fatalf("characters=%d want 5", chars)
+	if chars != 1 {
+		t.Fatalf("characters=%d want 1", chars)
 	}
-	if bgs < 4 {
-		t.Fatalf("backgrounds=%d want >=4", bgs)
+	if bgs < 5 {
+		t.Fatalf("backgrounds=%d want >=5", bgs)
 	}
-	for _, id := range []string{"1", "2", "3", "4", "5"} {
+	for _, id := range []string{"3"} {
 		if !ownedChars[id] {
 			t.Fatalf("missing character %s", id)
 		}
 	}
-	for _, id := range []string{"northern_lights", "prison", "building_castle", "volcano"} {
+	for _, id := range []string{"northern_lights", "mountain_terrace", "prison", "building_castle", "volcano"} {
 		if !ownedBgs[id] {
 			t.Fatalf("missing background %s", id)
 		}
@@ -75,12 +75,12 @@ func TestEquipOwnedCosmetics(t *testing.T) {
 	}
 
 	inv, err := p.EquipInventoryItem("s1", engines.EquipInventoryInput{
-		Kind: engines.InventoryKindCharacter, RefID: "1",
+		Kind: engines.InventoryKindCharacter, RefID: "3",
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if inv.EquippedCharacterID != "1" {
+	if inv.EquippedCharacterID != "3" {
 		t.Fatalf("character=%s", inv.EquippedCharacterID)
 	}
 
@@ -98,7 +98,7 @@ func TestEquipOwnedCosmetics(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if profile.SelectedSkinID != "1" || profile.BackgroundKey != "volcano" {
+	if profile.SelectedSkinID != "3" || profile.BackgroundKey != "volcano" {
 		t.Fatalf("profile not updated: %+v", profile)
 	}
 }

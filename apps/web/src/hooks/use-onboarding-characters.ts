@@ -11,6 +11,10 @@ import type { GenderId } from "@/lib/avatars";
 
 function createInitialPositions(characters: OgCharacter[]) {
   const positions: Record<string, number> = {};
+  if (characters.length === 1) {
+    positions[characters[0].id] = CENTER_CAROUSEL_INDEX;
+    return positions;
+  }
   characters.forEach((character, index) => {
     positions[character.id] = index;
   });

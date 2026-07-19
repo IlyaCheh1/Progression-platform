@@ -18,6 +18,7 @@ type ShellData = {
   currentXp: number;
   xpToNext: number;
   avatarLetter: string;
+  avatarUrl: string;
   selectedSkinId: OgCharacterId;
   gender: GenderId;
 };
@@ -29,6 +30,7 @@ const EMPTY_SHELL: ShellData = {
   currentXp: 0,
   xpToNext: XP_FALLBACK,
   avatarLetter: "У",
+  avatarUrl: "",
   selectedSkinId: "3",
   gender: "MALE",
 };
@@ -52,7 +54,8 @@ export function useProfileShellData(user: SessionUser | null, profile?: PlayerPr
       level: profile?.level ?? 1,
       currentXp: profile?.xp ?? 0,
       xpToNext: profile?.xpToNextLevel ?? XP_FALLBACK,
-      avatarLetter: characterInitial(selectedSkinId, gender),
+      avatarLetter: (profileDisplayName(profile, user)[0] || characterInitial(selectedSkinId, gender)).toUpperCase(),
+      avatarUrl: profile?.avatarUrl ?? "",
       selectedSkinId,
       gender,
     });

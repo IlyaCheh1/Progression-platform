@@ -179,10 +179,13 @@ sh scripts/coolify-upload-hero-s3.sh
 Скрипт зальёт `apps/web/public/media/hero/*` в бакет с префиксом `media/hero/` и напечатает:
 
 ```env
-NEXT_PUBLIC_MEDIA_BASE_URL=https://.../media/hero
+NEXT_PUBLIC_MEDIA_BASE_URL=https://<bucket-uuid>.selstorage.ru/media/hero
 ```
 
-Добавь эту переменную в web (Buildtime + Runtime) и сделай **Rebuild**.
+Для Selectel публичный URL — `https://<bucket-uuid>.selstorage.ru/<key>` **без** повторного имени бакета в пути.
+Если в env уже стоит `...selstorage.ru/<bucket>/media/hero` — убери сегмент `/<bucket>/`, иначе видео отдадут 404.
+
+Добавь `NEXT_PUBLIC_MEDIA_BASE_URL` в web (**Buildtime + Runtime**) и сделай **Rebuild** (переменная вшивается при сборке Next.js).
 
 ## Автодеплой не стартует
 

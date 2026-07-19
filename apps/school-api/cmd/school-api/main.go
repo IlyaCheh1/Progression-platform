@@ -109,16 +109,14 @@ func main() {
 		writeJSON(w, publicStudents(platform.ListStudents()))
 	}))
 
-	mux.HandleFunc("GET /v1/students/{id}", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /v1/students/{id}", authz.RequirePermission(platform, rbac.PermSchoolRead, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
 		s, ok := platform.GetStudent(r.PathValue("id"))
 		if !ok {
 			http.Error(w, `{"error":"not_found"}`, http.StatusNotFound)
 			return
 		}
-		cp := *s
-		cp.Password = ""
-		writeJSON(w, cp)
-	})
+		writeJSON(w, publicStudent(s))
+	}))
 
 	mux.HandleFunc("GET /v1/profile/me", authz.RequireAuth(platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
 		view, err := platform.ProfileForStudent(actor.ID)
@@ -131,7 +129,8 @@ func main() {
 
 	mux.HandleFunc("PUT /v1/profile/me", authz.RequireAuth(platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
 		var body engines.ProfileInput
-		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		limited := http.MaxBytesReader(w, r.Body, 512<<10) // avatar data URL + profile fields
+		if err := json.NewDecoder(limited).Decode(&body); err != nil {
 			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
 			return
 		}
@@ -372,12 +371,18 @@ func main() {
 	log.Fatal(http.ListenAndServe(addr, withCORS(mux)))
 }
 
+// publicStudent strips credentials and private media (avatar data URLs) from shared student payloads.
+func publicStudent(s *engines.Student) engines.Student {
+	cp := *s
+	cp.Password = ""
+	cp.AvatarURL = ""
+	return cp
+}
+
 func publicStudents(list []*engines.Student) []engines.Student {
 	out := make([]engines.Student, 0, len(list))
 	for _, s := range list {
-		cp := *s
-		cp.Password = ""
-		out = append(out, cp)
+		out = append(out, publicStudent(s))
 	}
 	return out
 }

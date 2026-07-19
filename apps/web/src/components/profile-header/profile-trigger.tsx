@@ -16,6 +16,7 @@ type ProfileTriggerProps = {
   currentXp: number;
   xpToNext: number;
   avatarLetter: string;
+  avatarUrl?: string;
   selectedSkinId: OgCharacterId;
   gender: GenderId;
   user: SessionUser;
@@ -27,6 +28,7 @@ export default function ProfileTrigger({
   currentXp,
   xpToNext,
   avatarLetter,
+  avatarUrl,
   selectedSkinId,
   gender,
   user,
@@ -54,6 +56,8 @@ export default function ProfileTrigger({
       <CharacterAvatar
         selectedSkinId={selectedSkinId}
         gender={gender}
+        imageSrc={avatarUrl}
+        fallbackLetter={avatarLetter || username}
         variant="head"
         className={cn(
           "h-9 w-9 rounded-2xl md:h-11 md:w-11",
@@ -76,6 +80,7 @@ export default function ProfileTrigger({
         username={username}
         selectedSkinId={selectedSkinId}
         gender={gender}
+        avatarUrl={avatarUrl}
         onClose={() => setIsOpen(false)}
       />
     </PopupMenu>

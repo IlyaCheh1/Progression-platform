@@ -163,13 +163,12 @@ export default function InventoryPage() {
 
   return (
     <main className="mx-auto mb-20 mt-3 max-w-[840px] px-3 md:mt-11 md:px-4">
-      <div className="flex flex-col items-center gap-3 md:flex-row md:items-start md:justify-start md:gap-6">
-        <div className="flex w-full flex-col gap-3 md:w-auto">
+      <div className="flex flex-col items-center gap-3 md:flex-row md:items-start md:justify-center md:gap-6">
+        <div className="flex w-fit max-w-full flex-col items-center gap-3">
           <TabSelector
             items={FILTER_ITEMS}
             activeId={filter}
             onChange={(id) => setFilter(id as FilterId)}
-            className="mx-auto w-fit md:w-full"
           />
 
           <div className="mobile-game-scroll og-inventory-grid-shell max-h-[calc(100lvh-140px)] pr-1">

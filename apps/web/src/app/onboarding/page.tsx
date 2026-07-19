@@ -8,7 +8,11 @@ import OnboardingFooter from "@/components/onboarding/onboarding-footer";
 import { useOnboardingCharacters } from "@/hooks/use-onboarding-characters";
 import { fetchMyProfile, messageForProfileError, ProfileApiError, saveMyProfile } from "@/lib/profile-api";
 import { clearSession, loadSession, patchSession } from "@/lib/session";
-import { DEFAULT_BACKGROUND_ID, onboardingBackgroundPath } from "@/lib/backgrounds";
+import {
+  backgroundImagePath,
+  defaultBackgroundForGender,
+  stageLayoutForBackground,
+} from "@/lib/backgrounds";
 
 const USERNAME_REGEX = /^[a-zA-Z0-9_-]{6,30}$/;
 
@@ -80,7 +84,7 @@ export default function OnboardingPage() {
         username: trimmed,
         selectedSkinId: getCenterCharacterId(),
         gender: selectedGender,
-        backgroundKey: DEFAULT_BACKGROUND_ID,
+        backgroundKey: defaultBackgroundForGender(selectedGender),
         profileComplete: true,
       });
       patchSession({ profileComplete: profile.profileComplete, name: profile.username });
@@ -98,10 +102,17 @@ export default function OnboardingPage() {
     }
   }
 
+  const defaultBackgroundId = defaultBackgroundForGender(selectedGender);
+  const stageBackgroundSrc = backgroundImagePath(defaultBackgroundId);
+  const stageLayout = stageLayoutForBackground(defaultBackgroundId);
+
   return (
     <main
       className="relative flex h-full min-h-lvh flex-1 flex-col bg-cover bg-bottom xl:bg-center"
-      style={{ backgroundImage: `url(${onboardingBackgroundPath()})` }}
+      style={{
+        backgroundImage: `url(${stageBackgroundSrc})`,
+        backgroundPosition: stageLayout.backgroundPosition,
+      }}
     >
       <GenderSelector
         className="z-10 mt-4 xl:mt-[42px]"

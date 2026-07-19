@@ -9,6 +9,8 @@ type ProfileMiniCardProps = {
   xpToNext: number;
   selectedSkinId?: OgCharacterId;
   gender?: GenderId;
+  avatarUrl?: string;
+  fallbackLetter?: string;
 };
 
 export default function ProfileMiniCard({
@@ -17,6 +19,8 @@ export default function ProfileMiniCard({
   xpToNext,
   selectedSkinId,
   gender,
+  avatarUrl,
+  fallbackLetter,
 }: ProfileMiniCardProps) {
   const xpProgressPercent = xpToNext > 0 ? (currentXp / xpToNext) * 100 : 0;
 
@@ -26,6 +30,8 @@ export default function ProfileMiniCard({
         progress={xpProgressPercent}
         selectedSkinId={selectedSkinId}
         gender={gender}
+        imageSrc={avatarUrl}
+        fallbackLetter={fallbackLetter}
         size="sm"
         width={3}
         showPercentage

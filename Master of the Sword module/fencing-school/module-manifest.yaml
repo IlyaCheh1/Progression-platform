@@ -98,7 +98,11 @@ contentBundle:
   questCampaign: school.fencing.path.v1
   achievementSet: school.fencing.achievements.v1
   itemCollection: school.fencing.starter-items.v1
-  talentTree: school.fencing.discipline.v1
+  talentForest: school.fencing.activity.v1
+  talentTrees:
+    - school.fencing.arsenal.v1
+    - school.fencing.wolf.v1
+    - school.fencing.codex.v1
   seasonDefinition: school.fencing.academic-year.v1
 
 privacy:

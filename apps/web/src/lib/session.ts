@@ -86,6 +86,7 @@ export function clearSession() {
   localStorage.removeItem("mos.skin");
   localStorage.removeItem("mos.gender");
   localStorage.removeItem("mos.background");
+  localStorage.removeItem("mos.avatarUrl");
   notifySessionChanged();
 }
 
@@ -122,5 +123,17 @@ export function homePathForRole(role: UserRole, profileReady: boolean): string {
 export function patchSession(partial: Partial<SessionUser>) {
   const current = loadSession();
   if (!current) return;
-  saveSession({ ...current, ...partial });
+  const next = { ...current, ...partial };
+  const unchanged =
+    next.studentId === current.studentId &&
+    next.name === current.name &&
+    next.login === current.login &&
+    next.characterId === current.characterId &&
+    next.accessToken === current.accessToken &&
+    next.role === current.role &&
+    next.profileComplete === current.profileComplete &&
+    next.roles.length === current.roles.length &&
+    next.roles.every((role, index) => role === current.roles[index]);
+  if (unchanged) return;
+  saveSession(next);
 }

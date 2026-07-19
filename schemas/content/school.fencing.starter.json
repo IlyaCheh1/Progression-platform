@@ -1,6 +1,6 @@
 {
   "bundleKey": "school.fencing.starter",
-  "bundleVersion": 2,
+  "bundleVersion": 4,
   "source": "Master of the Sword module/fencing-school/104-content-pack.md",
   "quests": [
     {
@@ -8,196 +8,224 @@
       "title": "Лист персонажа",
       "type": "ONBOARDING",
       "xp": 300,
-      "icon": "quests/path.profile.webp"
+      "icon": "quests/path.profile.webp",
+      "description": "Привяжите персонажа и заполните безопасный профиль ученика."
     },
     {
       "key": "path.safety",
       "title": "Сначала безопасность",
       "type": "ONBOARDING",
       "xp": 300,
-      "icon": "quests/path.safety.webp"
+      "icon": "quests/path.safety.webp",
+      "description": "Пройдите инструктаж по безопасности и получите подтверждение тренера."
     },
     {
       "key": "path.first_trial",
       "title": "Первый выход в зал",
       "type": "ONBOARDING",
       "xp": 300,
-      "icon": "quests/path.first_trial.webp"
+      "icon": "quests/path.first_trial.webp",
+      "description": "Посетите пробное занятие и получите подтверждение посещаемости."
     },
     {
       "key": "path.first_training",
       "title": "Первый салют",
       "type": "ONBOARDING",
       "xp": 500,
-      "icon": "quests/path.first_training.webp"
+      "icon": "quests/path.first_training.webp",
+      "description": "Посетите первое регулярное занятие в зале."
     },
     {
       "key": "path.first_record",
       "title": "Запись в хронике",
       "type": "ONBOARDING",
       "xp": 300,
-      "icon": "quests/path.first_record.webp"
+      "icon": "quests/path.first_record.webp",
+      "description": "Получите первую подтверждённую запись тренировки."
     },
     {
       "key": "path.choose_weapon",
       "title": "Выбери путь",
       "type": "ONBOARDING",
       "xp": 250,
-      "icon": "quests/path.choose_weapon.webp"
+      "icon": "quests/path.choose_weapon.webp",
+      "description": "Получите первое положительное начисление мастерства по любому оружию."
     },
     {
       "key": "path.monthly_roll",
       "title": "Бросок судьбы",
       "type": "ONBOARDING",
       "xp": 150,
-      "icon": "quests/path.monthly_roll.webp"
+      "icon": "quests/path.monthly_roll.webp",
+      "description": "Совершите первый действительный месячный бросок d8."
     },
     {
       "key": "path.open_inventory",
       "title": "Арсенал героя",
       "type": "ONBOARDING",
       "xp": 100,
-      "icon": "quests/path.open_inventory.webp"
+      "icon": "quests/path.open_inventory.webp",
+      "description": "Откройте инвентарь и осмотрите полученный предмет."
     },
     {
       "key": "path.choose_cosmetic",
       "title": "Собственный герб",
       "type": "ONBOARDING",
       "xp": 100,
-      "icon": "quests/path.choose_cosmetic.webp"
+      "icon": "quests/path.choose_cosmetic.webp",
+      "description": "Активируйте один доступный косметический элемент профиля."
     },
     {
       "key": "path.complete",
       "title": "Путь начат",
       "type": "ONBOARDING",
       "xp": 1000,
-      "icon": "quests/path.complete.webp"
+      "icon": "quests/path.complete.webp",
+      "description": "Завершите все предыдущие задания пути ученика."
     },
     {
       "key": "training.ready",
       "title": "Готовность",
       "type": "DAILY",
       "xp": 100,
-      "icon": "quests/training.ready.webp"
+      "icon": "quests/training.ready.webp",
+      "description": "Отметьте одно зачтённое посещение занятия."
     },
     {
       "key": "training.focus",
       "title": "Технический фокус",
       "type": "DAILY",
       "xp": 150,
-      "icon": "quests/training.focus.webp"
+      "icon": "quests/training.focus.webp",
+      "description": "Получите подтверждение тренера по одной учебной цели занятия."
     },
     {
       "key": "training.balance",
       "title": "Обе стороны",
       "type": "DAILY",
       "xp": 100,
-      "icon": "quests/training.balance.webp"
+      "icon": "quests/training.balance.webp",
+      "description": "Выполните упражнение с обеими сторонами, если этого требует программа."
     },
     {
       "key": "training.partner",
       "title": "Работа в паре",
       "type": "DAILY",
       "xp": 150,
-      "icon": "quests/training.partner.webp"
+      "icon": "quests/training.partner.webp",
+      "description": "Получите подтверждение тренера по парному упражнению."
     },
     {
       "key": "training.reflection",
       "title": "Страница хроники",
       "type": "WEEKLY",
       "xp": 100,
-      "icon": "quests/training.reflection.webp"
+      "icon": "quests/training.reflection.webp",
+      "description": "Заполните короткую рефлексию после занятия."
     },
     {
       "key": "weekly.rhythm.2",
       "title": "Держать ритм",
       "type": "WEEKLY",
       "xp": 300,
-      "icon": "quests/weekly.rhythm.2.webp"
+      "icon": "quests/weekly.rhythm.2.webp",
+      "description": "Посетите два занятия за одну учебную неделю школы."
     },
     {
       "key": "weekly.rhythm.3",
       "title": "Три шага вперёд",
       "type": "WEEKLY",
       "xp": 500,
-      "icon": "quests/weekly.rhythm.3.webp"
+      "icon": "quests/weekly.rhythm.3.webp",
+      "description": "Посетите три занятия за одну учебную неделю школы."
     },
     {
       "key": "weekly.two_paths",
       "title": "Два пути",
       "type": "WEEKLY",
       "xp": 400,
-      "icon": "quests/weekly.two_paths.webp"
+      "icon": "quests/weekly.two_paths.webp",
+      "description": "Получите положительное начисление мастерства по двум путям оружия."
     },
     {
       "key": "weekly.curriculum",
       "title": "Урок мастера",
       "type": "WEEKLY",
       "xp": 400,
-      "icon": "quests/weekly.curriculum.webp"
+      "icon": "quests/weekly.curriculum.webp",
+      "description": "Выполните три разные подтверждённые учебные цели."
     },
     {
       "key": "weekly.history",
       "title": "След Мароццо",
       "type": "WEEKLY",
       "xp": 250,
-      "icon": "quests/weekly.history.webp"
+      "icon": "quests/weekly.history.webp",
+      "description": "Пройдите одну образовательную карточку или глоссарийное задание."
     },
     {
       "key": "weekly.community",
       "title": "Товарищ по залу",
       "type": "WEEKLY",
       "xp": 300,
-      "icon": "quests/weekly.community.webp"
+      "icon": "quests/weekly.community.webp",
+      "description": "Выполните безопасное парное или приветственное задание от тренера."
     },
     {
       "key": "weekly.event_prep",
       "title": "Перед событием",
       "type": "WEEKLY",
       "xp": 300,
-      "icon": "quests/weekly.event_prep.webp"
+      "icon": "quests/weekly.event_prep.webp",
+      "description": "Пройдите чеклист подготовки к событию школы."
     },
     {
       "key": "monthly.roll",
       "title": "Восемь граней",
       "type": "MONTHLY",
       "xp": 150,
-      "icon": "quests/monthly.roll.webp"
+      "icon": "quests/monthly.roll.webp",
+      "description": "Совершите действительный месячный бросок d8."
     },
     {
       "key": "monthly.sessions.8",
       "title": "Дисциплина месяца",
       "type": "MONTHLY",
       "xp": 1000,
-      "icon": "quests/monthly.sessions.8.webp"
+      "icon": "quests/monthly.sessions.8.webp",
+      "description": "Посетите восемь зачтённых занятий за месяц."
     },
     {
       "key": "monthly.new_path",
       "title": "Новый клинок",
       "type": "MONTHLY",
       "xp": 500,
-      "icon": "quests/monthly.new_path.webp"
+      "icon": "quests/monthly.new_path.webp",
+      "description": "Впервые получите зачёт по ранее неоткрытому пути оружия."
     },
     {
       "key": "monthly.consistency",
       "title": "Без спешки, без перерыва",
       "type": "MONTHLY",
       "xp": 750,
-      "icon": "quests/monthly.consistency.webp"
+      "icon": "quests/monthly.consistency.webp",
+      "description": "Имейте зачтённые посещения в трёх разных неделях месяца."
     },
     {
       "key": "monthly.event",
       "title": "Жизнь школы",
       "type": "MONTHLY",
       "xp": 500,
-      "icon": "quests/monthly.event.webp"
+      "icon": "quests/monthly.event.webp",
+      "description": "Примите участие в одном зарегистрированном событии школы."
     },
     {
       "key": "season.eight_paths",
       "title": "Восемь путей",
       "type": "SEASONAL",
       "xp": 3000,
-      "icon": "quests/season.eight_paths.webp"
+      "icon": "quests/season.eight_paths.webp",
+      "description": "Пройдите все восемь глав сезонной кампании: история, безопасность, учебная цель, мастерство оружия и опциональное сообщество."
     }
   ],
   "achievements": [
@@ -206,42 +234,48 @@
       "title": "Первый салют",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/start.first_salute.webp"
+      "icon": "achievements/start.first_salute.webp",
+      "description": "Посетите первое регулярное занятие."
     },
     {
       "key": "start.safety",
       "title": "Береги себя и партнёра",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/start.safety.webp"
+      "icon": "achievements/start.safety.webp",
+      "description": "Пройдите подтверждённый инструктаж по безопасности."
     },
     {
       "key": "start.character",
       "title": "Герой вступает в зал",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/start.character.webp"
+      "icon": "achievements/start.character.webp",
+      "description": "Активируйте привязку персонажа к профилю."
     },
     {
       "key": "start.inventory",
       "title": "Первый трофей",
       "tiers": 1,
       "xp": 250,
-      "icon": "achievements/start.inventory.webp"
+      "icon": "achievements/start.inventory.webp",
+      "description": "Получите первый предмет в инвентарь."
     },
     {
       "key": "start.quest",
       "title": "Задание выполнено",
       "tiers": 1,
       "xp": 250,
-      "icon": "achievements/start.quest.webp"
+      "icon": "achievements/start.quest.webp",
+      "description": "Завершите первое задание."
     },
     {
       "key": "start.event",
       "title": "Часть школы",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/start.event.webp"
+      "icon": "achievements/start.event.webp",
+      "description": "Примите участие в первом зарегистрированном событии школы."
     },
     {
       "key": "practice.sessions",
@@ -256,7 +290,8 @@
         500
       ],
       "xp": 250,
-      "icon": "achievements/practice.sessions.webp"
+      "icon": "achievements/practice.sessions.webp",
+      "description": "Наберите зачтённые посещения занятий: 1, 10, 25, 50, 100, 250, 500."
     },
     {
       "key": "practice.weeks",
@@ -268,7 +303,8 @@
         52
       ],
       "xp": 0,
-      "icon": "achievements/practice.weeks.webp"
+      "icon": "achievements/practice.weeks.webp",
+      "description": "Недели с минимум двумя зачтёнными посещениями: 4, 12, 26, 52."
     },
     {
       "key": "practice.years",
@@ -280,56 +316,64 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/practice.years.webp"
+      "icon": "achievements/practice.years.webp",
+      "description": "Годовщины активного участия в школе: 1, 3, 5, 10 лет."
     },
     {
       "key": "practice.return",
       "title": "Возвращение в зал",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/practice.return.webp"
+      "icon": "achievements/practice.return.webp",
+      "description": "Вернитесь на первое зачтённое занятие после добровольного перерыва."
     },
     {
       "key": "mastery.first_rank",
       "title": "Первый знак",
       "tiers": 1,
       "xp": 750,
-      "icon": "achievements/mastery.first_rank.webp"
+      "icon": "achievements/mastery.first_rank.webp",
+      "description": "Достигните ранга 1 по любому пути оружия."
     },
     {
       "key": "mastery.four_paths",
       "title": "Четыре пути",
       "tiers": 1,
       "xp": 1500,
-      "icon": "achievements/mastery.four_paths.webp"
+      "icon": "achievements/mastery.four_paths.webp",
+      "description": "Достигните ранга 1 по четырём разным путям оружия."
     },
     {
       "key": "mastery.eight_paths",
       "title": "Универсальный воин",
       "tiers": 1,
       "xp": 3000,
-      "icon": "achievements/mastery.eight_paths.webp"
+      "icon": "achievements/mastery.eight_paths.webp",
+      "description": "Достигните ранга 1 по всем восьми путям оружия."
     },
     {
       "key": "mastery.two_rank_five",
       "title": "Две школы",
       "tiers": 1,
       "xp": 3000,
-      "icon": "achievements/mastery.two_rank_five.webp"
+      "icon": "achievements/mastery.two_rank_five.webp",
+      "description": "Достигните ранга 5 по двум путям оружия."
     },
     {
       "key": "mastery.one_rank_ten",
       "title": "Мастер оружия",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/mastery.one_rank_ten.webp"
+      "icon": "achievements/mastery.one_rank_ten.webp",
+      "description": "Достигните ранга 10 по одному пути оружия."
     },
     {
       "key": "mastery.all_rank_ten",
       "title": "Мастер Меча",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/mastery.all_rank_ten.webp"
+      "icon": "achievements/mastery.all_rank_ten.webp",
+      "description": "Достигните ранга 10 по всем восьми путям оружия."
     },
     {
       "key": "mastery.spada_a_una_mano.rank",
@@ -347,7 +391,8 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spada_a_una_mano.rank.webp"
+      "icon": "achievements/mastery.spada_a_una_mano.rank.webp",
+      "description": "Повышайте ранг мастерства по пути «одноручный меч» (1–10)."
     },
     {
       "key": "mastery.due_spade.rank",
@@ -365,7 +410,8 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.due_spade.rank.webp"
+      "icon": "achievements/mastery.due_spade.rank.webp",
+      "description": "Повышайте ранг мастерства по пути «два меча» (1–10)."
     },
     {
       "key": "mastery.spada_e_scudo.rank",
@@ -383,7 +429,8 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spada_e_scudo.rank.webp"
+      "icon": "achievements/mastery.spada_e_scudo.rank.webp",
+      "description": "Повышайте ранг мастерства по пути «меч и щит» (1–10)."
     },
     {
       "key": "mastery.spada_a_due_mani.rank",
@@ -401,7 +448,8 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spada_a_due_mani.rank.webp"
+      "icon": "achievements/mastery.spada_a_due_mani.rank.webp",
+      "description": "Повышайте ранг мастерства по пути «двуручный меч» (1–10)."
     },
     {
       "key": "mastery.spadone.rank",
@@ -419,7 +467,8 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spadone.rank.webp"
+      "icon": "achievements/mastery.spadone.rank.webp",
+      "description": "Повышайте ранг мастерства по пути «спадоне» (1–10)."
     },
     {
       "key": "mastery.ascia_e_alabarda.rank",
@@ -437,7 +486,8 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.ascia_e_alabarda.rank.webp"
+      "icon": "achievements/mastery.ascia_e_alabarda.rank.webp",
+      "description": "Повышайте ранг мастерства по пути «топор и алебарда» (1–10)."
     },
     {
       "key": "mastery.spiedo_e_partesana.rank",
@@ -455,7 +505,8 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spiedo_e_partesana.rank.webp"
+      "icon": "achievements/mastery.spiedo_e_partesana.rank.webp",
+      "description": "Повышайте ранг мастерства по пути «копьё и протазан» (1–10)."
     },
     {
       "key": "mastery.spiedo_e_scudo.rank",
@@ -473,7 +524,8 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spiedo_e_scudo.rank.webp"
+      "icon": "achievements/mastery.spiedo_e_scudo.rank.webp",
+      "description": "Повышайте ранг мастерства по пути «копьё и щит» (1–10)."
     },
     {
       "key": "curriculum.objectives",
@@ -485,14 +537,16 @@
         100
       ],
       "xp": 0,
-      "icon": "achievements/curriculum.objectives.webp"
+      "icon": "achievements/curriculum.objectives.webp",
+      "description": "Выполните подтверждённые учебные цели: 10, 25, 50, 100."
     },
     {
       "key": "curriculum.marozzo",
       "title": "Ученик Мароццо",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/curriculum.marozzo.webp"
+      "icon": "achievements/curriculum.marozzo.webp",
+      "description": "Завершите образовательную коллекцию Мароццо."
     },
     {
       "key": "community.events",
@@ -504,93 +558,42 @@
         25
       ],
       "xp": 0,
-      "icon": "achievements/community.events.webp"
+      "icon": "achievements/community.events.webp",
+      "description": "Участвуйте в событиях школы: 1, 5, 10, 25."
     },
     {
       "key": "community.mentor",
       "title": "Товарищ",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/community.mentor.webp"
+      "icon": "achievements/community.mentor.webp",
+      "description": "Выполните 5 подтверждённых заданий поддержки новичков."
     },
     {
       "key": "community.tournament",
       "title": "Турнир школы",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/community.tournament.webp"
+      "icon": "achievements/community.tournament.webp",
+      "description": "Примите участие в первом зарегистрированном турнире школы."
     },
     {
       "key": "community.masterclass",
       "title": "Мастер-класс",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/community.masterclass.webp"
+      "icon": "achievements/community.masterclass.webp",
+      "description": "Посетите первый мастер-класс."
     }
   ],
   "talents": [
     {
-      "key": "discipline.observer",
-      "title": "Наблюдатель техники",
+      "key": "arsenal.daily_focus",
+      "title": "Дневной фокус",
       "rank": 1,
-      "description": "Открывает цепочку заданий «Наблюдатель техники».",
-      "treeId": "discipline.observation",
-      "kind": "PASSIVE",
-      "position": [
-        5,
-        1
-      ],
-      "requires": [],
-      "maxTier": 1,
-      "effects": {
-        "Задания": "цепочка «Наблюдатель техники»"
-      }
-    },
-    {
-      "key": "discipline.chronicler",
-      "title": "Хронист",
-      "rank": 1,
-      "description": "Открывает шаблоны структурированной личной рефлексии.",
-      "treeId": "discipline.observation",
-      "kind": "PASSIVE",
-      "position": [
-        3,
-        1
-      ],
-      "requires": [
-        "discipline.observer"
-      ],
-      "maxTier": 1,
-      "effects": {
-        "Рефлексия": "структурированные шаблоны"
-      }
-    },
-    {
-      "key": "discipline.archivist",
-      "title": "Архивариус",
-      "rank": 1,
-      "description": "Расширяет визуализацию личной истории мастерства.",
-      "treeId": "discipline.observation",
-      "kind": "PASSIVE",
-      "position": [
-        1,
-        1
-      ],
-      "requires": [
-        "discipline.chronicler"
-      ],
-      "maxTier": 1,
-      "effects": {
-        "История": "расширенная визуализация мастерства"
-      }
-    },
-    {
-      "key": "discipline.scholar",
-      "title": "Учёный зала",
-      "rank": 1,
-      "description": "Открывает расширенные исторические карточки.",
-      "treeId": "discipline.chronicle",
-      "kind": "PASSIVE",
+      "description": "Активирует одно опциональное задание на технический фокус на текущие локальные сутки",
+      "treeId": "arsenal.paths",
+      "kind": "ACTIVE_TYPE",
       "position": [
         5,
         3
@@ -598,159 +601,792 @@
       "requires": [],
       "maxTier": 1,
       "effects": {
-        "Карточки": "расширенные исторические материалы"
-      }
+        "Эффект": "Активирует одно опциональное задание на технический фокус на текущие локальные сутки"
+      },
+      "cooldownSeconds": 86400,
+      "icon": "talents/arsenal.daily_focus.png"
     },
     {
-      "key": "discipline.herald",
-      "title": "Глашатай",
+      "key": "arsenal.stance",
+      "title": "Стойка новичка",
       "rank": 1,
-      "description": "Открывает настройки напоминаний о событиях школы.",
-      "treeId": "discipline.chronicle",
+      "description": "Открывает вводные подсказки учебной программы по каждому открытому оружейному пути",
+      "treeId": "arsenal.paths",
       "kind": "PASSIVE",
       "position": [
-        3,
-        3
+        4,
+        2
       ],
       "requires": [
-        "discipline.scholar"
+        "arsenal.daily_focus"
       ],
       "maxTier": 1,
       "effects": {
-        "События": "напоминания о мероприятиях школы"
-      }
+        "Эффект": "Открывает вводные подсказки учебной программы по каждому открытому оружейному пути"
+      },
+      "icon": "talents/arsenal.stance.png"
     },
     {
-      "key": "discipline.collector",
-      "title": "Коллекционер",
+      "key": "arsenal.guard",
+      "title": "Чувство дистанции",
       "rank": 1,
-      "description": "Открывает второй публичный слот для трофеев.",
-      "treeId": "discipline.chronicle",
+      "description": "Открывает личные подсказки рефлексии о дистанции и тайминге после тренировки",
+      "treeId": "arsenal.paths",
       "kind": "PASSIVE",
       "position": [
-        1,
-        3
+        4,
+        4
       ],
       "requires": [
-        "discipline.herald"
+        "arsenal.daily_focus"
       ],
       "maxTier": 1,
       "effects": {
-        "Трофеи": "второй публичный слот"
-      }
+        "Эффект": "Открывает личные подсказки рефлексии о дистанции и тайминге после тренировки"
+      },
+      "icon": "talents/arsenal.guard.png"
     },
     {
-      "key": "discipline.pathfinder",
-      "title": "Следопыт",
+      "key": "arsenal.both_sides",
+      "title": "Обе стороны",
       "rank": 1,
-      "description": "Открывает второй необязательный путь заданий на неделю.",
-      "treeId": "discipline.path",
+      "description": "Подсказка о доступности упражнений на обе стороны, если того требует программа",
+      "treeId": "arsenal.paths",
       "kind": "PASSIVE",
       "position": [
-        5,
-        5
-      ],
-      "requires": [],
-      "maxTier": 1,
-      "effects": {
-        "Задания": "второй путь на неделю"
-      }
-    },
-    {
-      "key": "discipline.companion",
-      "title": "Товарищ",
-      "rank": 1,
-      "description": "Делает доступными наставнические задания от тренера.",
-      "treeId": "discipline.path",
-      "kind": "PASSIVE",
-      "position": [
-        3,
-        5
-      ],
-      "requires": [
-        "discipline.pathfinder"
-      ],
-      "maxTier": 1,
-      "effects": {
-        "Наставничество": "задания от тренера"
-      }
-    },
-    {
-      "key": "discipline.steward",
-      "title": "Стюард",
-      "rank": 1,
-      "description": "Делает доступными волонтёрские задания на событиях.",
-      "treeId": "discipline.path",
-      "kind": "PASSIVE",
-      "position": [
-        1,
-        5
-      ],
-      "requires": [
-        "discipline.companion"
-      ],
-      "maxTier": 1,
-      "effects": {
-        "События": "волонтёрские задания"
-      }
-    },
-    {
-      "key": "discipline.curator",
-      "title": "Хранитель облика",
-      "rank": 1,
-      "description": "Открывает дополнительный косметический пресет.",
-      "treeId": "discipline.hall",
-      "kind": "PASSIVE",
-      "position": [
-        5,
-        6
-      ],
-      "requires": [],
-      "maxTier": 1,
-      "effects": {
-        "Облик": "дополнительный косметический пресет"
-      }
-    },
-    {
-      "key": "discipline.universalist",
-      "title": "Универсалист",
-      "rank": 1,
-      "description": "Открывает кампанию «Восемь путей» после четырёх направлений.",
-      "treeId": "discipline.hall",
-      "kind": "PASSIVE",
-      "position": [
-        3,
+        4,
         6
       ],
       "requires": [
-        "discipline.curator"
+        "arsenal.daily_focus"
       ],
       "maxTier": 1,
       "effects": {
-        "Кампания": "«Восемь путей»"
-      }
+        "Эффект": "Подсказка о доступности упражнений на обе стороны, если того требует программа"
+      },
+      "icon": "talents/arsenal.both_sides.png"
     },
     {
-      "key": "discipline.master",
-      "title": "Мастер дисциплины",
+      "key": "arsenal.weekly_review",
+      "title": "Разбор недели",
       "rank": 1,
-      "description": "Итоговый узел: набор косметики без изменения опыта.",
-      "treeId": "discipline.hall",
+      "description": "Открывает структурированный личный разбор техники за последнюю неделю",
+      "treeId": "arsenal.paths",
+      "kind": "ACTIVE_TYPE",
+      "position": [
+        3,
+        3
+      ],
+      "requires": [
+        "arsenal.daily_focus",
+        "arsenal.stance",
+        "arsenal.guard"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает структурированный личный разбор техники за последнюю неделю"
+      },
+      "cooldownSeconds": 604800,
+      "icon": "talents/arsenal.weekly_review.png"
+    },
+    {
+      "key": "arsenal.partner_drill",
+      "title": "Работа в паре",
+      "rank": 1,
+      "description": "Открывает опциональную цепочку заданий «работа в паре»",
+      "treeId": "arsenal.paths",
       "kind": "PASSIVE",
+      "position": [
+        2,
+        2
+      ],
+      "requires": [
+        "arsenal.daily_focus",
+        "arsenal.stance",
+        "arsenal.guard",
+        "arsenal.weekly_review"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает опциональную цепочку заданий «работа в паре»"
+      },
+      "icon": "talents/arsenal.partner_drill.png"
+    },
+    {
+      "key": "arsenal.weapon_focus",
+      "title": "Фокус оружия",
+      "rank": 1,
+      "description": "Открывает еженедельный путь заданий с акцентом на одно оружие",
+      "treeId": "arsenal.paths",
+      "kind": "PASSIVE",
+      "position": [
+        2,
+        4
+      ],
+      "requires": [
+        "arsenal.daily_focus",
+        "arsenal.stance",
+        "arsenal.guard",
+        "arsenal.weekly_review"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает еженедельный путь заданий с акцентом на одно оружие"
+      },
+      "icon": "talents/arsenal.weapon_focus.png"
+    },
+    {
+      "key": "arsenal.cross_training",
+      "title": "Смежный клинок",
+      "rank": 1,
+      "description": "После открытия двух путей открывает опциональную цель «второй путь на этой неделе»",
+      "treeId": "arsenal.paths",
+      "kind": "PASSIVE",
+      "position": [
+        1,
+        1
+      ],
+      "requires": [
+        "arsenal.daily_focus",
+        "arsenal.stance",
+        "arsenal.guard",
+        "arsenal.weekly_review",
+        "arsenal.partner_drill",
+        "arsenal.weapon_focus"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "После открытия двух путей открывает опциональную цель «второй путь на этой неделе»"
+      },
+      "icon": "talents/arsenal.cross_training.png"
+    },
+    {
+      "key": "arsenal.form_reader",
+      "title": "Читатель формы",
+      "rank": 1,
+      "description": "Открывает карточки наблюдения техники по пройденной программе",
+      "treeId": "arsenal.paths",
+      "kind": "PASSIVE",
+      "position": [
+        1,
+        3
+      ],
+      "requires": [
+        "arsenal.daily_focus",
+        "arsenal.stance",
+        "arsenal.guard",
+        "arsenal.weekly_review",
+        "arsenal.partner_drill",
+        "arsenal.weapon_focus"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает карточки наблюдения техники по пройденной программе"
+      },
+      "icon": "talents/arsenal.form_reader.png"
+    },
+    {
+      "key": "arsenal.seal_keeper",
+      "title": "Хранитель печатей",
+      "rank": 1,
+      "description": "Открывает раскладку коллекции оружейных печатей в профиле",
+      "treeId": "arsenal.paths",
+      "kind": "PASSIVE",
+      "position": [
+        0,
+        2
+      ],
+      "requires": [
+        "arsenal.daily_focus",
+        "arsenal.stance",
+        "arsenal.guard",
+        "arsenal.weekly_review",
+        "arsenal.partner_drill",
+        "arsenal.weapon_focus",
+        "arsenal.cross_training",
+        "arsenal.form_reader"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает раскладку коллекции оружейных печатей в профиле"
+      },
+      "icon": "talents/arsenal.seal_keeper.png"
+    },
+    {
+      "key": "arsenal.master_path",
+      "title": "Мастерский путь",
+      "rank": 1,
+      "description": "Завершающий узел; косметический набор «Путь клинка», без модификатора опыта",
+      "treeId": "arsenal.paths",
+      "kind": "PASSIVE",
+      "position": [
+        0,
+        4
+      ],
+      "requires": [
+        "arsenal.seal_keeper"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Завершающий узел; косметический набор «Путь клинка», без модификатора опыта"
+      },
+      "icon": "talents/arsenal.master_path.png"
+    },
+    {
+      "key": "arsenal.monthly_path",
+      "title": "Смена акцента",
+      "rank": 1,
+      "description": "Один раз меняет отображаемый акцент оружия и открывает превью главы «догоняющего» пути (без опыта)",
+      "treeId": "arsenal.paths",
+      "kind": "ACTIVE_TYPE",
       "position": [
         0,
         6
       ],
       "requires": [
-        "discipline.universalist",
-        "discipline.archivist",
-        "discipline.collector",
-        "discipline.steward"
+        "arsenal.seal_keeper",
+        "arsenal.master_path"
       ],
       "maxTier": 1,
       "effects": {
-        "Награда": "косметический набор"
-      }
+        "Эффект": "Один раз меняет отображаемый акцент оружия и открывает превью главы «догоняющего» пути (без опыта)"
+      },
+      "cooldownSeconds": 2592000,
+      "icon": "talents/arsenal.monthly_path.png"
+    },
+    {
+      "key": "wolf.daily_call",
+      "title": "Сигнал медальона",
+      "rank": 1,
+      "description": "Одна безопасная карточка приглашения на пробное занятие или событие (с учётом согласия)",
+      "treeId": "wolf.brotherhood",
+      "kind": "ACTIVE_TYPE",
+      "position": [
+        5,
+        3
+      ],
+      "requires": [],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Одна безопасная карточка приглашения на пробное занятие или событие (с учётом согласия)"
+      },
+      "cooldownSeconds": 86400,
+      "icon": "talents/wolf.daily_call.png"
+    },
+    {
+      "key": "wolf.hearth",
+      "title": "Очаг Каэр Морхена",
+      "rank": 1,
+      "description": "Даёт доступ к заданиям приветствия и парной работы, которые назначает тренер",
+      "treeId": "wolf.brotherhood",
+      "kind": "PASSIVE",
+      "position": [
+        4,
+        2
+      ],
+      "requires": [
+        "wolf.daily_call"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Даёт доступ к заданиям приветствия и парной работы, которые назначает тренер"
+      },
+      "icon": "talents/wolf.hearth.png"
+    },
+    {
+      "key": "wolf.contract_prep",
+      "title": "К контракту готов",
+      "rank": 1,
+      "description": "Открывает задания-чеклисты подготовки к мероприятию",
+      "treeId": "wolf.brotherhood",
+      "kind": "PASSIVE",
+      "position": [
+        4,
+        4
+      ],
+      "requires": [
+        "wolf.daily_call"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает задания-чеклисты подготовки к мероприятию"
+      },
+      "icon": "talents/wolf.contract_prep.png"
+    },
+    {
+      "key": "wolf.medallion",
+      "title": "Зов медальона",
+      "rank": 1,
+      "description": "Открывает настройки напоминаний о школьных событиях",
+      "treeId": "wolf.brotherhood",
+      "kind": "PASSIVE",
+      "position": [
+        4,
+        6
+      ],
+      "requires": [
+        "wolf.daily_call"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает настройки напоминаний о школьных событиях"
+      },
+      "icon": "talents/wolf.medallion.png"
+    },
+    {
+      "key": "wolf.weekly_fire",
+      "title": "Ночь у костра",
+      "rank": 1,
+      "description": "Открывает еженедельное сообщественное задание (пара / приветствие), если оно ещё не взято",
+      "treeId": "wolf.brotherhood",
+      "kind": "ACTIVE_TYPE",
+      "position": [
+        3,
+        3
+      ],
+      "requires": [
+        "wolf.daily_call",
+        "wolf.hearth",
+        "wolf.contract_prep"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает еженедельное сообщественное задание (пара / приветствие), если оно ещё не взято"
+      },
+      "cooldownSeconds": 604800,
+      "icon": "talents/wolf.weekly_fire.png"
+    },
+    {
+      "key": "wolf.brother",
+      "title": "Брат по Пути",
+      "rank": 1,
+      "description": "Даёт доступ к наставническим заданиям, которые назначает тренер",
+      "treeId": "wolf.brotherhood",
+      "kind": "PASSIVE",
+      "position": [
+        2,
+        2
+      ],
+      "requires": [
+        "wolf.daily_call",
+        "wolf.hearth",
+        "wolf.contract_prep",
+        "wolf.weekly_fire"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Даёт доступ к наставническим заданиям, которые назначает тренер"
+      },
+      "icon": "talents/wolf.brother.png"
+    },
+    {
+      "key": "wolf.recruit",
+      "title": "Приведи на Путь",
+      "rank": 1,
+      "description": "Открывает путь квалифицированного реферала (ваучер только после проверки, без авто-опыта)",
+      "treeId": "wolf.brotherhood",
+      "kind": "PASSIVE",
+      "position": [
+        2,
+        4
+      ],
+      "requires": [
+        "wolf.daily_call",
+        "wolf.hearth",
+        "wolf.contract_prep",
+        "wolf.weekly_fire"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает путь квалифицированного реферала (ваучер только после проверки, без авто-опыта)"
+      },
+      "icon": "talents/wolf.recruit.png"
+    },
+    {
+      "key": "wolf.keeper",
+      "title": "Хранитель крепости",
+      "rank": 1,
+      "description": "Даёт доступ к волонтёрским заданиям на мероприятиях",
+      "treeId": "wolf.brotherhood",
+      "kind": "PASSIVE",
+      "position": [
+        1,
+        1
+      ],
+      "requires": [
+        "wolf.daily_call",
+        "wolf.hearth",
+        "wolf.contract_prep",
+        "wolf.weekly_fire",
+        "wolf.brother",
+        "wolf.recruit"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Даёт доступ к волонтёрским заданиям на мероприятиях"
+      },
+      "icon": "talents/wolf.keeper.png"
+    },
+    {
+      "key": "wolf.tourney",
+      "title": "Турнир школ",
+      "rank": 1,
+      "description": "Открывает контент подготовки к школьному турниру",
+      "treeId": "wolf.brotherhood",
+      "kind": "PASSIVE",
+      "position": [
+        1,
+        3
+      ],
+      "requires": [
+        "wolf.daily_call",
+        "wolf.hearth",
+        "wolf.contract_prep",
+        "wolf.weekly_fire",
+        "wolf.brother",
+        "wolf.recruit"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает контент подготовки к школьному турниру"
+      },
+      "icon": "talents/wolf.tourney.png"
+    },
+    {
+      "key": "wolf.master_lesson",
+      "title": "Урок ведьмака",
+      "rank": 1,
+      "description": "Открывает подготовку к мастер-классу и шаблоны рефлексии",
+      "treeId": "wolf.brotherhood",
+      "kind": "PASSIVE",
+      "position": [
+        0,
+        2
+      ],
+      "requires": [
+        "wolf.daily_call",
+        "wolf.hearth",
+        "wolf.contract_prep",
+        "wolf.weekly_fire",
+        "wolf.brother",
+        "wolf.recruit",
+        "wolf.keeper",
+        "wolf.tourney"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает подготовку к мастер-классу и шаблоны рефлексии"
+      },
+      "icon": "talents/wolf.master_lesson.png"
+    },
+    {
+      "key": "wolf.grandmaster",
+      "title": "Гроссмейстер Волка",
+      "rank": 1,
+      "description": "Завершающий узел; косметический набор «Братство Волка»",
+      "treeId": "wolf.brotherhood",
+      "kind": "PASSIVE",
+      "position": [
+        0,
+        4
+      ],
+      "requires": [
+        "wolf.master_lesson"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Завершающий узел; косметический набор «Братство Волка»"
+      },
+      "icon": "talents/wolf.grandmaster.png"
+    },
+    {
+      "key": "wolf.monthly_council",
+      "title": "Совет школы",
+      "rank": 1,
+      "description": "Открывает доступ к главе сезонной кампании сообщества или к подсветке события",
+      "treeId": "wolf.brotherhood",
+      "kind": "ACTIVE_TYPE",
+      "position": [
+        0,
+        6
+      ],
+      "requires": [
+        "wolf.master_lesson",
+        "wolf.grandmaster"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает доступ к главе сезонной кампании сообщества или к подсветке события"
+      },
+      "cooldownSeconds": 2592000,
+      "icon": "talents/wolf.monthly_council.png"
+    },
+    {
+      "key": "codex.daily_card",
+      "title": "Карточка дня",
+      "rank": 1,
+      "description": "Выдаёт одну образовательную карточку или задание глоссария на сутки",
+      "treeId": "codex.lore",
+      "kind": "ACTIVE_TYPE",
+      "position": [
+        5,
+        3
+      ],
+      "requires": [],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Выдаёт одну образовательную карточку или задание глоссария на сутки"
+      },
+      "cooldownSeconds": 86400,
+      "icon": "talents/codex.daily_card.png"
+    },
+    {
+      "key": "codex.glossary",
+      "title": "Словарь зала",
+      "rank": 1,
+      "description": "Открывает задание по глоссарию и терминологии",
+      "treeId": "codex.lore",
+      "kind": "PASSIVE",
+      "position": [
+        4,
+        2
+      ],
+      "requires": [
+        "codex.daily_card"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает задание по глоссарию и терминологии"
+      },
+      "icon": "talents/codex.glossary.png"
+    },
+    {
+      "key": "codex.marozzo",
+      "title": "След Мароццо",
+      "rank": 1,
+      "description": "Открывает путь образовательной коллекции Мароццо",
+      "treeId": "codex.lore",
+      "kind": "PASSIVE",
+      "position": [
+        4,
+        4
+      ],
+      "requires": [
+        "codex.daily_card"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает путь образовательной коллекции Мароццо"
+      },
+      "icon": "talents/codex.marozzo.png"
+    },
+    {
+      "key": "codex.scholar",
+      "title": "Ученик трактата",
+      "rank": 1,
+      "description": "Открывает расширенные исторические карточки",
+      "treeId": "codex.lore",
+      "kind": "PASSIVE",
+      "position": [
+        4,
+        6
+      ],
+      "requires": [
+        "codex.daily_card"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает расширенные исторические карточки"
+      },
+      "icon": "talents/codex.scholar.png"
+    },
+    {
+      "key": "codex.weekly_study",
+      "title": "Неделя трактата",
+      "rank": 1,
+      "description": "Открывает главу продвинутой учебной цепочки заданий на неделю",
+      "treeId": "codex.lore",
+      "kind": "ACTIVE_TYPE",
+      "position": [
+        3,
+        3
+      ],
+      "requires": [
+        "codex.daily_card",
+        "codex.glossary",
+        "codex.marozzo"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает главу продвинутой учебной цепочки заданий на неделю"
+      },
+      "cooldownSeconds": 604800,
+      "icon": "talents/codex.weekly_study.png"
+    },
+    {
+      "key": "codex.chronicler",
+      "title": "Хронист",
+      "rank": 1,
+      "description": "Открывает шаблоны структурированной личной рефлексии",
+      "treeId": "codex.lore",
+      "kind": "PASSIVE",
+      "position": [
+        2,
+        2
+      ],
+      "requires": [
+        "codex.daily_card",
+        "codex.glossary",
+        "codex.marozzo",
+        "codex.weekly_study"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает шаблоны структурированной личной рефлексии"
+      },
+      "icon": "talents/codex.chronicler.png"
+    },
+    {
+      "key": "codex.strategist",
+      "title": "Стратег обучения",
+      "rank": 1,
+      "description": "Открывает еженедельные подсказки плана обучения (только отображение)",
+      "treeId": "codex.lore",
+      "kind": "PASSIVE",
+      "position": [
+        2,
+        4
+      ],
+      "requires": [
+        "codex.daily_card",
+        "codex.glossary",
+        "codex.marozzo",
+        "codex.weekly_study"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает еженедельные подсказки плана обучения (только отображение)"
+      },
+      "icon": "talents/codex.strategist.png"
+    },
+    {
+      "key": "codex.pathfinder",
+      "title": "Следопыт",
+      "rank": 1,
+      "description": "Открывает второй опциональный путь заданий в неделю",
+      "treeId": "codex.lore",
+      "kind": "PASSIVE",
+      "position": [
+        1,
+        1
+      ],
+      "requires": [
+        "codex.daily_card",
+        "codex.glossary",
+        "codex.marozzo",
+        "codex.weekly_study",
+        "codex.chronicler",
+        "codex.strategist"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает второй опциональный путь заданий в неделю"
+      },
+      "icon": "talents/codex.pathfinder.png"
+    },
+    {
+      "key": "codex.archivist",
+      "title": "Архивариус",
+      "rank": 1,
+      "description": "Расширяет личную визуализацию истории мастерства",
+      "treeId": "codex.lore",
+      "kind": "PASSIVE",
+      "position": [
+        1,
+        3
+      ],
+      "requires": [
+        "codex.daily_card",
+        "codex.glossary",
+        "codex.marozzo",
+        "codex.weekly_study",
+        "codex.chronicler",
+        "codex.strategist"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Расширяет личную визуализацию истории мастерства"
+      },
+      "icon": "talents/codex.archivist.png"
+    },
+    {
+      "key": "codex.curator",
+      "title": "Куратор",
+      "rank": 1,
+      "description": "Открывает дополнительный слот косметического пресета",
+      "treeId": "codex.lore",
+      "kind": "PASSIVE",
+      "position": [
+        0,
+        2
+      ],
+      "requires": [
+        "codex.daily_card",
+        "codex.glossary",
+        "codex.marozzo",
+        "codex.weekly_study",
+        "codex.chronicler",
+        "codex.strategist",
+        "codex.pathfinder",
+        "codex.archivist"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает дополнительный слот косметического пресета"
+      },
+      "icon": "talents/codex.curator.png"
+    },
+    {
+      "key": "codex.master",
+      "title": "Мастер кодекса",
+      "rank": 1,
+      "description": "Завершающий узел; косметический набор «манускрипт»",
+      "treeId": "codex.lore",
+      "kind": "PASSIVE",
+      "position": [
+        0,
+        4
+      ],
+      "requires": [
+        "codex.curator"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Завершающий узел; косметический набор «манускрипт»"
+      },
+      "icon": "talents/codex.master.png"
+    },
+    {
+      "key": "codex.monthly_campaign",
+      "title": "Кампания знаний",
+      "rank": 1,
+      "description": "Открывает или продвигает доступ к образовательной главе «Восемь путей» (без требования ранга)",
+      "treeId": "codex.lore",
+      "kind": "ACTIVE_TYPE",
+      "position": [
+        0,
+        6
+      ],
+      "requires": [
+        "codex.curator",
+        "codex.master"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Эффект": "Открывает или продвигает доступ к образовательной главе «Восемь путей» (без требования ранга)"
+      },
+      "cooldownSeconds": 2592000,
+      "icon": "talents/codex.monthly_campaign.png"
     }
   ],
   "items": [
@@ -1007,24 +1643,19 @@
   ],
   "talentTrees": [
     {
-      "id": "discipline.observation",
-      "title": "Наблюдение",
+      "id": "arsenal.paths",
+      "title": "Путь клинка",
       "theme": "blade"
     },
     {
-      "id": "discipline.chronicle",
-      "title": "Хроника",
-      "theme": "chronicle"
-    },
-    {
-      "id": "discipline.path",
-      "title": "Путь",
+      "id": "wolf.brotherhood",
+      "title": "Братство Волка",
       "theme": "path"
     },
     {
-      "id": "discipline.hall",
-      "title": "Зал",
-      "theme": "school"
+      "id": "codex.lore",
+      "title": "Кодекс",
+      "theme": "chronicle"
     }
   ]
 }

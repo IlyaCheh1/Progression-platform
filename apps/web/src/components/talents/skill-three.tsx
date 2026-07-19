@@ -117,7 +117,8 @@ export default function SkillThree({
   return (
     <div
       className={cn(
-        "relative -ml-3 grid h-full max-h-[280px] w-full max-w-[350px] grid-cols-7 items-end justify-center gap-x-2 gap-y-0 md:-ml-8 md:max-h-[650px] md:gap-x-[18px]",
+        // OG skill-three contract: fixed 6×7 board, items-end, grid-cols-7
+        "relative -ml-3 grid h-full max-h-[250px] w-full max-w-[350px] grid-cols-7 items-end justify-center gap-x-[18px] gap-y-0 max-xl:max-w-[200px] max-xl:gap-x-2 max-xl:gap-y-0 md:-ml-8 md:max-h-[650px]",
         className,
       )}
     >

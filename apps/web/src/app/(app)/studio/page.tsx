@@ -120,7 +120,7 @@ export default function StudioPage() {
       <header className="bg-secondaryBg flex w-full flex-col gap-4 rounded-2xl p-4 backdrop-blur-[20px] md:flex-row md:items-end md:justify-between md:rounded-[32px] md:p-8">
         <div className="space-y-2">
           <p className="font-golos text-[10px] uppercase tracking-[0.18em] text-mos-amber md:text-xs">
-            Partner Content Studio
+            Контент-студия
           </p>
           <h1 className="font-display text-xl font-medium text-mos-text md:text-3xl">Каталог контента</h1>
           <p className="max-w-xl font-golos text-sm text-mos-muted">
@@ -166,6 +166,7 @@ export default function StudioPage() {
                   meta={quest.key}
                   badge={quest.type}
                   value={`+${quest.xp} XP`}
+                  description={quest.description}
                 />
               ))}
             </CatalogPanel>
@@ -184,6 +185,7 @@ export default function StudioPage() {
                   meta={item.key}
                   badge={formatTiers(item.tiers)}
                   value={item.xp > 0 ? `+${item.xp} XP` : "—"}
+                  description={item.description}
                 />
               ))}
             </CatalogPanel>

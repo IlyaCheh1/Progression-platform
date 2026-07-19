@@ -146,9 +146,9 @@ export default function StorePage() {
     <div
       className="relative flex min-h-[calc(100vh-72px)] flex-1 flex-row items-start justify-center gap-4 bg-no-repeat px-3 py-3 md:gap-8 md:px-6 md:py-12 md:pt-16"
       style={{
-        backgroundImage: "url(/media/ui/store-background.png)",
-        backgroundSize: "100%",
-        backgroundPosition: "top -200px left 180px",
+        backgroundImage: "url(/media/ui/store-background.webp)",
+        backgroundSize: "cover",
+        backgroundPosition: "center top",
       }}
     >
       <div className="flex flex-col gap-3">
@@ -190,7 +190,7 @@ export default function StorePage() {
       <div className="flex flex-col gap-3">
         <GradientLabel color="orange">
           <h5 className="inline-flex items-center gap-2.5 font-display text-xs font-medium text-[#ee4810] md:text-[17px]">
-            Лавка Сидоровича
+            Лавка мастера Хаттори
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/media/ui/store-owner.png" alt="" className="h-4 w-4" />
           </h5>
@@ -241,17 +241,12 @@ function OfferGrid({
                 selectedId === item.id && "og-inventory-slot--selected",
               )}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={item.imageSrc}
-                alt={item.title}
-                className={cn(
-                  "h-full w-full object-cover drop-shadow-[0_8px_16px_rgba(212,168,75,0.2)]",
-                  item.kind === "character" ? "object-top" : "object-center",
-                )}
-              />
+              <span className="og-inventory-slot-inner">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={item.imageSrc} alt={item.title} />
+              </span>
               {showPrice ? (
-                <span className="absolute bottom-1 left-1/2 flex -translate-x-1/2 items-center gap-0.5 rounded bg-black/55 px-1 font-display text-[10px] text-mos-text">
+                <span className="absolute bottom-1 left-1/2 z-[3] flex -translate-x-1/2 items-center gap-0.5 rounded bg-black/55 px-1 font-display text-[10px] text-mos-text">
                   {item.price}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/media/ui/coin.png" alt="" className="h-3 w-3" />

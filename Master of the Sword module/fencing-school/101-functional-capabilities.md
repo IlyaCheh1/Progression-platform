@@ -90,7 +90,7 @@ programs and family payments.
 | FS-RPG-01 | Primary Level 1-100 | MVP | Progression binding | standard platform profile only |
 | FS-RPG-02 | Starter Rewards and quests | MVP | Platform content | onboarding, attendance, consistency and learning |
 | FS-RPG-03 | Achievements and Items | MVP | Platform content | starter set, weapon recognition and cosmetics |
-| FS-RPG-04 | Talents and Season | Phase 2 | Platform content | non-pay-to-win utility tree and academic Season |
+| FS-RPG-04 | Talents and Season | Phase 2 | Platform content | non-pay-to-win utility trees (Путь клинка, Братство Волка, Кодекс) and academic Season |
 | FS-RPG-05 | Content administration | MVP | Control plane | draft, preview, dependency validation, approval and rollback |
 | FS-MSG-01 | Transactional notifications | MVP | Communications | Telegram preferred, SMS fallback, e-mail where appropriate |
 | FS-MSG-02 | Reminder schedule | MVP | Communications | trial 24h/2h and membership expiry 3 days |

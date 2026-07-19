@@ -204,27 +204,40 @@ body {
   background: var(--color-secondaryBg);
   width: var(--og-slot-w);
   height: var(--og-slot-h);
+}
+
+/* Frame above the image so landscape covers don't hide the border */
+.og-inventory-slot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .og-inventory-slot-inner {
-  @apply relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg px-2 py-3 md:rounded-2xl;
+  @apply relative z-0 flex h-full w-full items-center justify-center overflow-hidden rounded-lg px-2 py-3 md:rounded-2xl;
 }
 
 .og-inventory-slot img {
-  @apply h-full w-full object-contain object-center drop-shadow-[0_8px_16px_rgba(212,168,75,0.2)] transition-opacity duration-300;
+  @apply relative z-0 h-full w-full object-contain object-center drop-shadow-[0_8px_16px_rgba(212,168,75,0.2)] transition-opacity duration-300;
 }
 
 .og-inventory-slot:hover {
   background: color-mix(in srgb, var(--mos-stone) 80%, transparent);
+}
+
+.og-inventory-slot:hover::after {
   box-shadow: inset 0 0 0 1px rgba(212, 168, 75, 0.22);
 }
 
-.og-inventory-slot--equipped {
+.og-inventory-slot--equipped::after {
   box-shadow: inset 0 0 0 2px #7dba5a;
 }
 
-.og-inventory-slot--selected {
+.og-inventory-slot--selected::after {
   box-shadow: inset 0 0 0 2px var(--mos-amber);
 }
 
@@ -239,13 +252,24 @@ body {
 .character-stage-figure {
   height: clamp(190px, 36vh, 46vh);
   max-height: min(46vh, calc(100vh - 72px - 180px));
-  width: auto;
+  width: 100%;
+}
+
+/* Стоячий персонаж на горной террасе: чуть компактнее, ноги на каменной площадке */
+.character-stage-figure--terrace {
+  height: clamp(200px, 38vh, 48vh);
+  max-height: min(48vh, calc(100vh - 72px - 200px));
 }
 
 @media (min-width: 768px) {
   .character-stage-figure {
     height: clamp(280px, 48vh, 58vh);
     max-height: min(58vh, calc(100vh - 72px - 200px));
+  }
+
+  .character-stage-figure--terrace {
+    height: clamp(300px, 50vh, 56vh);
+    max-height: min(56vh, calc(100vh - 72px - 220px));
   }
 }
 
@@ -254,6 +278,11 @@ body {
     height: clamp(360px, 54vh, 64vh);
     max-height: min(64vh, calc(100vh - 72px - 220px));
   }
+
+  .character-stage-figure--terrace {
+    height: clamp(380px, 52vh, 60vh);
+    max-height: min(60vh, calc(100vh - 72px - 240px));
+  }
 }
 
 @media (min-width: 2400px) {
@@ -261,6 +290,12 @@ body {
     height: min(68vh, calc(100vh - 72px - 240px));
     max-height: 68vh;
     max-width: 68vh;
+  }
+
+  .character-stage-figure--terrace {
+    height: min(62vh, calc(100vh - 72px - 260px));
+    max-height: 62vh;
+    max-width: 62vh;
   }
 }
 

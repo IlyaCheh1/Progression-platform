@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import AppearancePickerModal, {
-  type AppearancePickerMode,
-} from "@/components/appearance/appearance-picker-modal";
+import AppearancePickerModal from "@/components/appearance/appearance-picker-modal";
 import CharacterStage from "@/components/character-stage";
 import DailyTasks from "@/components/daily-tasks";
+import WeaponMasteryPanel from "@/components/weapon-mastery-panel";
 import { useAvatarPresentation } from "@/components/character-avatar";
 import { useAppearanceInventory } from "@/hooks/use-appearance-inventory";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
@@ -19,7 +18,7 @@ export default function ProfilePage() {
   const { profile, setProfile } = usePlayerProfile(user);
   const presentation = useAvatarPresentation(profile ?? undefined);
   const appearance = useAppearanceInventory(user, { onProfileUpdated: setProfile });
-  const [pickerMode, setPickerMode] = useState<AppearancePickerMode | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const daily = content.quests.filter((q) => q.type === "DAILY").slice(0, 3);
 
   const username = profileDisplayName(profile, user);
@@ -29,12 +28,7 @@ export default function ProfilePage() {
 
   async function handleSelectCharacter(characterId: string) {
     const ok = await appearance.equipCharacter(characterId);
-    if (ok) setPickerMode(null);
-  }
-
-  async function handleSelectBackground(backgroundId: string) {
-    const ok = await appearance.equipBackground(backgroundId);
-    if (ok) setPickerMode(null);
+    if (ok) setPickerOpen(false);
   }
 
   return (
@@ -44,6 +38,7 @@ export default function ProfilePage() {
         selectedSkinId={presentation.selectedSkinId}
         gender={presentation.gender}
         backgroundSrc={presentation.backgroundSrc}
+        backgroundKey={profile?.backgroundKey}
       >
         <DailyTasks
           userLevel={level}
@@ -52,13 +47,21 @@ export default function ProfilePage() {
           tasks={daily}
           selectedSkinId={presentation.selectedSkinId}
           gender={presentation.gender}
+          avatarUrl={profile?.avatarUrl}
+          fallbackLetter={username}
           className="absolute left-4 top-0 z-20 mt-8 md:left-8 md:mt-[72px]"
+        />
+
+        <WeaponMasteryPanel
+          mastery={profile?.mastery}
+          ranks={profile?.ranks}
+          className="absolute right-4 top-0 z-20 mt-8 md:right-8 md:mt-[72px]"
         />
 
         <div className="absolute bottom-24 left-1/2 z-30 flex -translate-x-1/2 flex-wrap items-center justify-center gap-2 md:bottom-32">
           <button
             type="button"
-            onClick={() => setPickerMode("character")}
+            onClick={() => setPickerOpen(true)}
             className={cn(
               "og-btn og-btn-secondary og-btn-sm inline-flex items-center gap-2 uppercase",
               appearance.equippingId?.startsWith("character:") && "opacity-70",
@@ -72,20 +75,6 @@ export default function ProfilePage() {
               <circle cx="12" cy="13" r="3.5" />
             </svg>
             Сменить образ
-          </button>
-          <button
-            type="button"
-            onClick={() => setPickerMode("background")}
-            className={cn(
-              "og-btn og-btn-secondary og-btn-sm inline-flex items-center gap-2 uppercase",
-              appearance.equippingId?.startsWith("background:") && "opacity-70",
-            )}
-          >
-            <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.75">
-              <path d="M4 5h16v14H4z" strokeLinejoin="round" />
-              <path d="M4 15l4-4 3 3 5-6 4 5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Сменить фон
           </button>
         </div>
 
@@ -112,17 +101,17 @@ export default function ProfilePage() {
       </CharacterStage>
 
       <AppearancePickerModal
-        open={pickerMode !== null}
-        mode={pickerMode ?? "character"}
-        title={pickerMode === "background" ? "Выберите фон профиля" : "Выберите образ"}
+        open={pickerOpen}
+        mode="character"
+        title="Выберите образ"
         characters={appearance.characters}
         backgrounds={appearance.backgrounds}
         equippingId={appearance.equippingId}
         loading={appearance.loading}
         error={appearance.error}
-        onClose={() => setPickerMode(null)}
+        onClose={() => setPickerOpen(false)}
         onSelectCharacter={(characterId) => void handleSelectCharacter(characterId)}
-        onSelectBackground={(backgroundId) => void handleSelectBackground(backgroundId)}
+        onSelectBackground={() => undefined}
       />
     </>
   );

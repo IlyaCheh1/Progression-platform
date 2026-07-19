@@ -151,7 +151,7 @@ export default function AchievementsPage() {
             {mode === "achievements" ? <AchievementStatistics {...stats} /> : null}
           </div>
 
-          <div className="mobile-game-scroll flex max-h-[calc(100lvh-140px)] flex-1 flex-col gap-3 overflow-y-auto md:max-h-[calc(100lvh-200px)] md:gap-6">
+          <div className="mobile-game-scroll flex max-h-[calc(100lvh-140px)] flex-1 flex-col gap-3 overflow-y-auto pr-3 md:max-h-[calc(100lvh-200px)] md:gap-6 md:pr-4">
             {mode === "achievements"
               ? sortedAchievements.map((a) => {
                   const isStackable = Array.isArray(a.tiers) && a.tiers.length > 1;
@@ -160,7 +160,7 @@ export default function AchievementsPage() {
                       <StackableCard
                         key={a.key}
                         title={a.title}
-                        description={a.key}
+                        description={a.description || a.key}
                         iconUrl={achievementIconUrl(a.key, a.icon)}
                         stages={a.stages}
                         pinned={!!pinned[a.key]}
@@ -173,7 +173,7 @@ export default function AchievementsPage() {
                     <SingleCard
                       key={a.key}
                       title={a.title}
-                      description={a.key}
+                      description={a.description || a.key}
                       iconUrl={achievementIconUrl(a.key, a.icon)}
                       current={1}
                       target={1}
@@ -189,7 +189,7 @@ export default function AchievementsPage() {
                   <TaskCard
                     key={q.key}
                     title={q.title}
-                    description={`${q.type} · ${q.key}`}
+                    description={q.description || `${q.type} · ${q.key}`}
                     iconUrl={questIconUrl(q.key, q.icon)}
                     current={1}
                     target={1}

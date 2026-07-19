@@ -57,15 +57,21 @@ export type MosTalentTree = {
 };
 
 const DEFAULT_TREES: ContentTalentTree[] = [
-  { id: "discipline.observation", title: "Наблюдение", theme: "blade" },
-  { id: "discipline.chronicle", title: "Хроника", theme: "chronicle" },
-  { id: "discipline.path", title: "Путь", theme: "path" },
-  { id: "discipline.hall", title: "Зал", theme: "school" },
+  { id: "arsenal.paths", title: "Путь клинка", theme: "blade" },
+  { id: "wolf.brotherhood", title: "Братство Волка", theme: "path" },
+  { id: "codex.lore", title: "Кодекс", theme: "chronicle" },
 ];
 
 function talentIconUrl(key: string, icon?: string): string {
   if (icon) {
-    return icon.startsWith("/") ? icon : `/media/content-icons/${icon}`;
+    if (
+      icon.startsWith("http://") ||
+      icon.startsWith("https://") ||
+      icon.startsWith("/")
+    ) {
+      return icon;
+    }
+    return `/media/content-icons/${icon}`;
   }
   return `/media/content-icons/talents/${key}.png`;
 }

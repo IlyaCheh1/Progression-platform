@@ -15,13 +15,14 @@ const (
 // Starter backgrounds granted on onboarding (default unlock catalog).
 var starterBackgroundKeys = []string{
 	"northern_lights",
+	"mountain_terrace",
 	"prison",
 	"building_castle",
 	"volcano",
 }
 
-var maleCharacterIDs = []string{"1", "2", "3", "4", "5"}
-var femaleCharacterIDs = []string{"6", "7", "8", "9", "10"}
+var maleCharacterIDs = []string{"3"}
+var femaleCharacterIDs = []string{"8"}
 
 // InventoryHolding is a unique cosmetic owned by a student.
 type InventoryHolding struct {

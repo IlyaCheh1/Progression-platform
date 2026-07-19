@@ -123,3 +123,79 @@ export const achievementPrompts = {
   "community.masterclass":
     "Master demonstrating technique to circle of students, masterclass workshop",
 };
+
+/** Talent forest icons — same STYLE_SUFFIX as quests/achievements. */
+export const talentPrompts = {
+  "arsenal.daily_focus":
+    "Single glowing blade tip in a circular focus ring, daily technical focus talent",
+  "arsenal.stance":
+    "Novice fencer in basic guard stance with sword, beginner stance talent",
+  "arsenal.guard":
+    "Two blades measuring distance on a fencing piste, sense of measure talent",
+  "arsenal.both_sides":
+    "Mirrored left and right sword cuts forming a balanced emblem, both sides talent",
+  "arsenal.weekly_review":
+    "Open training chronicle with sketched sword forms, weekly technique review talent",
+  "arsenal.partner_drill":
+    "Two fencers crossing blades in a partner drill, pair work talent",
+  "arsenal.weapon_focus":
+    "One highlighted sword among a weapon rack, single weapon focus talent",
+  "arsenal.cross_training":
+    "Two adjacent weapon paths merging, cross-training adjacent blade talent",
+  "arsenal.form_reader":
+    "Eye reading geometric fencing diagrams from a treatise page, form reader talent",
+  "arsenal.seal_keeper":
+    "Collection of bronze weapon seals arranged in a crest, seal keeper talent",
+  "arsenal.master_path":
+    "Golden path of blades leading to a master seal, master path completion talent",
+  "arsenal.monthly_path":
+    "Sword changing accent glow under a crescent moon, monthly path accent talent",
+  "wolf.daily_call":
+    "Wolf school medallion glowing with a signal pulse, daily call talent",
+  "wolf.hearth":
+    "Warm hearth fire in a stone keep hall, Kaer Morhen hearth welcome talent",
+  "wolf.contract_prep":
+    "Rolled contract scroll with a wolf seal beside a sword, contract prep talent",
+  "wolf.medallion":
+    "Wolf medallion on a chain resonating softly, medallion call talent",
+  "wolf.weekly_fire":
+    "Companions gathered around a campfire with swords nearby, night by the fire talent",
+  "wolf.brother":
+    "Two wolf-school fencers clasping forearms as brothers of the Path, brother talent",
+  "wolf.recruit":
+    "Wolf medallion offered to a newcomer on the Path, recruit a friend talent",
+  "wolf.keeper":
+    "Keeper standing watch at a fortress gate with wolf crest, fortress keeper talent",
+  "wolf.tourney":
+    "Tournament banners of rival schools with crossed swords, school tourney talent",
+  "wolf.master_lesson":
+    "Veteran witcher-school fencing master teaching a student, witcher lesson talent",
+  "wolf.grandmaster":
+    "Grandmaster wolf crest with silver medallion and laurel, Wolf grandmaster talent",
+  "wolf.monthly_council":
+    "Council table with wolf medallions and school banners, monthly school council talent",
+  "codex.daily_card":
+    "Single illuminated manuscript card with fencing diagram, daily knowledge card talent",
+  "codex.glossary":
+    "Open glossary book with fencing terms and ink quill, hall dictionary talent",
+  "codex.marozzo":
+    "Marozzo treatise page with geometric guards, Marozzo trail talent",
+  "codex.scholar":
+    "Scholar reading an ancient fencing treatise by candlelight, treatise student talent",
+  "codex.weekly_study":
+    "Stack of treatise chapters with a week candle mark, week of the treatise talent",
+  "codex.chronicler":
+    "Chronicler writing in a leather journal after training, chronicler talent",
+  "codex.strategist":
+    "Tactical board with weapon markers and learning plan arrows, learning strategist talent",
+  "codex.pathfinder":
+    "Second glowing quest path branching from a main road, pathfinder talent",
+  "codex.archivist":
+    "Archive shelves of mastery scrolls and weapon seals, archivist talent",
+  "codex.curator":
+    "Cosmetic crest palette and heraldic presets on a desk, curator talent",
+  "codex.master":
+    "Master codex tome with bronze clasps and sword emblem, master of the codex talent",
+  "codex.monthly_campaign":
+    "Eight Paths educational campaign banner with manuscript wheel, monthly knowledge campaign talent",
+};

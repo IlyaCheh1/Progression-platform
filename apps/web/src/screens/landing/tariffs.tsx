@@ -447,13 +447,13 @@ export default function Tariffs() {
         <div className="reveal-fade px-6 text-center">
           <h2 className="font-unbounded text-3xl tracking-[0.12em] text-mos-amber md:text-5xl">Тарифы</h2>
           <p className="mx-auto mt-3 max-w-2xl font-golos text-mos-muted">
-            Два раздела: групповые и индивидуальные тренировки.
+            Два раздела: групповые и персональные тренировки.
           </p>
           <div className="mt-6 inline-flex rounded-2xl border border-mos-line/40 bg-mos-stone/60 p-1">
             {(
               [
                 { id: "group", label: "Групповые" },
-                { id: "solo", label: "Индивидуальные" },
+                { id: "solo", label: "Персональные" },
               ] as const
             ).map((item) => (
               <button

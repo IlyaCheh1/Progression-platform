@@ -9,6 +9,8 @@ type ProgressCircleProps = {
   progress: number;
   selectedSkinId?: OgCharacterId;
   gender?: GenderId;
+  imageSrc?: string | null;
+  fallbackLetter?: string;
   size?: "sm" | "lg";
   className?: string;
   showPercentage?: boolean;
@@ -21,6 +23,8 @@ export default function ProgressCircle({
   progress,
   selectedSkinId,
   gender = "MALE",
+  imageSrc,
+  fallbackLetter,
   size = "sm",
   className,
   showPercentage = true,
@@ -43,22 +47,21 @@ export default function ProgressCircle({
       )}
     >
       <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
-        {selectedSkinId ? (
-          <CharacterAvatar
-            selectedSkinId={selectedSkinId}
-            gender={gender}
-            variant="head"
-            className={cn(
-              "rounded-full",
-              size === "sm"
-                ? "h-[41px] w-[41px] md:h-[57px] md:w-[57px]"
-                : "h-[118px] w-[118px] md:h-[143px] md:w-[143px]",
-            )}
-            imageClassName="object-cover object-top"
-          />
-        ) : (
-          <div className="h-[80%] w-[80%] rounded-full bg-mos-stone" />
-        )}
+        <CharacterAvatar
+          selectedSkinId={selectedSkinId}
+          gender={gender}
+          imageSrc={imageSrc}
+          fallbackLetter={fallbackLetter}
+          preferUploadedAvatar
+          variant="head"
+          className={cn(
+            "rounded-full",
+            size === "sm"
+              ? "h-[41px] w-[41px] md:h-[57px] md:w-[57px]"
+              : "h-[118px] w-[118px] md:h-[143px] md:w-[143px]",
+          )}
+          imageClassName="object-cover object-center"
+        />
       </div>
 
       <svg

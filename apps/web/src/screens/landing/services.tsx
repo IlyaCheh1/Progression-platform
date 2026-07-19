@@ -168,7 +168,7 @@ export default function Services() {
                 className="block cursor-pointer border-0 bg-transparent p-0 text-left font-unbounded text-[calc(2.25rem-2pt)] font-medium leading-tight transition-all duration-300 md:text-6xl"
                 style={modeTitleStyle("solo", mode, hoveredMode)}
               >
-                Индивидуальные
+                Персональные
               </button>
             </div>
             <p

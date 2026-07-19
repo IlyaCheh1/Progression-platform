@@ -15,10 +15,12 @@ type SettingsProfileHeaderProps = {
   xpToNext: number;
   selectedSkinId: OgCharacterId;
   gender: GenderId;
+  avatarUrl?: string;
   backgroundSrc: string;
   online?: boolean;
   onEditAvatar?: () => void;
   onEditBackground?: () => void;
+  avatarBusy?: boolean;
 };
 
 export default function SettingsProfileHeader({
@@ -29,10 +31,12 @@ export default function SettingsProfileHeader({
   xpToNext,
   selectedSkinId,
   gender,
+  avatarUrl,
   backgroundSrc,
   online = true,
   onEditAvatar,
   onEditBackground,
+  avatarBusy = false,
 }: SettingsProfileHeaderProps) {
   const progressPercent = xpToNext > 0 ? (currentXp / xpToNext) * 100 : 0;
 
@@ -61,24 +65,30 @@ export default function SettingsProfileHeader({
             <button
               type="button"
               onClick={onEditAvatar}
-              disabled={!onEditAvatar}
+              disabled={!onEditAvatar || avatarBusy}
               className={cn(
                 "group relative -mt-10 shrink-0 md:-mt-12",
                 onEditAvatar && "cursor-pointer rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mos-amber",
-                !onEditAvatar && "cursor-default",
+                (!onEditAvatar || avatarBusy) && "cursor-default",
+                avatarBusy && "opacity-70",
               )}
-              aria-label={onEditAvatar ? "Сменить аватар" : undefined}
+              aria-label={onEditAvatar ? "Загрузить аватар" : undefined}
             >
               <ProgressCircle
                 progress={progressPercent}
                 selectedSkinId={selectedSkinId}
                 gender={gender}
+                imageSrc={avatarUrl}
+                fallbackLetter={username}
                 size="lg"
                 width={6}
                 showPercentage
               />
               {onEditAvatar ? (
-                <AppearanceEditBadge label="Аватар" className="bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap" />
+                <AppearanceEditBadge
+                  label={avatarBusy ? "Загрузка…" : "Аватар"}
+                  className="bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap"
+                />
               ) : null}
             </button>
 

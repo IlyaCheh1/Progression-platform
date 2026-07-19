@@ -13,6 +13,8 @@ type DailyTasksProps = {
   tasks: Quest[];
   selectedSkinId?: OgCharacterId;
   gender?: GenderId;
+  avatarUrl?: string;
+  fallbackLetter?: string;
   className?: string;
 };
 
@@ -23,6 +25,8 @@ export default function DailyTasks({
   tasks,
   selectedSkinId,
   gender,
+  avatarUrl,
+  fallbackLetter,
   className,
 }: DailyTasksProps) {
   return (
@@ -38,6 +42,8 @@ export default function DailyTasks({
         xpToNext={xpToNext}
         selectedSkinId={selectedSkinId}
         gender={gender}
+        avatarUrl={avatarUrl}
+        fallbackLetter={fallbackLetter}
       />
 
       <div className="flex w-full flex-col gap-2">

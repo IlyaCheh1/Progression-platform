@@ -10,19 +10,21 @@ import (
 )
 
 type Quest struct {
-	Key   string `json:"key"`
-	Title string `json:"title"`
-	Type  string `json:"type"`
-	XP    int    `json:"xp"`
-	Icon  string `json:"icon,omitempty"`
+	Key         string `json:"key"`
+	Title       string `json:"title"`
+	Type        string `json:"type"`
+	XP          int    `json:"xp"`
+	Description string `json:"description,omitempty"`
+	Icon        string `json:"icon,omitempty"`
 }
 
 type Achievement struct {
-	Key   string `json:"key"`
-	Title string `json:"title"`
-	Tiers any    `json:"tiers"`
-	XP    int    `json:"xp"`
-	Icon  string `json:"icon,omitempty"`
+	Key         string `json:"key"`
+	Title       string `json:"title"`
+	Tiers       any    `json:"tiers"`
+	XP          int    `json:"xp"`
+	Description string `json:"description,omitempty"`
+	Icon        string `json:"icon,omitempty"`
 }
 
 type TalentTreeDef struct {

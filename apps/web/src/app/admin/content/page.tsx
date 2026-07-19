@@ -450,7 +450,7 @@ export default function AdminContentPage() {
                     disabledKey={Boolean(editingKey)}
                     onKey={(value) => setTalentForm((f) => ({ ...f, key: value }))}
                     onTitle={(value) => setTalentForm((f) => ({ ...f, title: value }))}
-                    keyPlaceholder="discipline.custom"
+                    keyPlaceholder="arsenal.custom"
                   />
                   <FormField label="Rank" htmlFor="talent_rank">
                     <Input

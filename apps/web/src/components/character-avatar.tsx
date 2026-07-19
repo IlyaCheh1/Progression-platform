@@ -15,6 +15,14 @@ type CharacterAvatarProps = {
   selectedSkinId?: string | null;
   gender: GenderId;
   variant?: "head" | "full";
+  /**
+   * Uploaded profile avatar. For head variant, character art is never used as a stand-in —
+   * only a custom image or letter fallback is shown.
+   */
+  imageSrc?: string | null;
+  /** When true (default for head), never fall back to character portrait. */
+  preferUploadedAvatar?: boolean;
+  fallbackLetter?: string;
   className?: string;
   imageClassName?: string;
 };
@@ -23,11 +31,24 @@ export default function CharacterAvatar({
   selectedSkinId,
   gender,
   variant = "head",
+  imageSrc,
+  preferUploadedAvatar = variant === "head",
+  fallbackLetter,
   className,
   imageClassName,
 }: CharacterAvatarProps) {
-  const src = variant === "full" ? characterFullPath(selectedSkinId, gender) : characterAvatarPath(selectedSkinId, gender);
+  const customSrc = imageSrc?.trim() ? imageSrc.trim() : "";
+  const useLetterOnly = variant === "head" && preferUploadedAvatar && !customSrc;
+  const src =
+    customSrc ||
+    (useLetterOnly
+      ? ""
+      : variant === "full"
+        ? characterFullPath(selectedSkinId, gender)
+        : characterAvatarPath(selectedSkinId, gender));
   const character = getCharacterById(normalizeSelectedSkinId(selectedSkinId, gender));
+  const alt = customSrc ? "Аватар" : (character?.name ?? "Персонаж");
+  const letter = (fallbackLetter?.trim() || characterInitial(selectedSkinId, gender)).slice(0, 1).toUpperCase();
 
   return (
     <div
@@ -37,24 +58,39 @@ export default function CharacterAvatar({
         className,
       )}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt={character?.name ?? "Персонаж"}
-        className={cn("h-full w-full object-contain", imageClassName)}
-        onError={(event) => {
-          const target = event.currentTarget;
-          target.style.display = "none";
-          const fallback = target.nextElementSibling as HTMLElement | null;
-          if (fallback) fallback.style.display = "grid";
-        }}
-      />
-      <div
-        className="hidden h-full w-full place-items-center bg-mos-stone/70 font-display text-2xl text-mos-amber"
-        aria-hidden
-      >
-        {characterInitial(selectedSkinId, gender)}
-      </div>
+      {src ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={alt}
+            className={cn(
+              "h-full w-full",
+              customSrc ? "object-cover object-center" : "object-contain",
+              imageClassName,
+            )}
+            onError={(event) => {
+              const target = event.currentTarget;
+              target.style.display = "none";
+              const fallback = target.nextElementSibling as HTMLElement | null;
+              if (fallback) fallback.style.display = "grid";
+            }}
+          />
+          <div
+            className="hidden h-full w-full place-items-center bg-mos-stone/70 font-display text-2xl text-mos-amber"
+            aria-hidden
+          >
+            {letter}
+          </div>
+        </>
+      ) : (
+        <div
+          className="grid h-full w-full place-items-center bg-mos-stone/70 font-display text-2xl text-mos-amber"
+          aria-label="Аватар"
+        >
+          {letter}
+        </div>
+      )}
     </div>
   );
 }

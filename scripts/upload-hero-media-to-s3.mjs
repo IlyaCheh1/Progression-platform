@@ -22,6 +22,7 @@ import { createReadStream, existsSync, readdirSync, statSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { buildMediaBaseUrl, buildPublicObjectUrl } from "./lib/s3-public-url.mjs";
 
 const scriptRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const cwd = process.cwd();
@@ -73,17 +74,11 @@ const contentTypes = {
 };
 
 function publicUrl(key) {
-  if (publicBase) {
-    return `${publicBase.replace(/\/$/, "")}/${bucket}/${key}`;
-  }
-  return `${endpoint.replace(/\/$/, "")}/${bucket}/${key}`;
+  return buildPublicObjectUrl({ publicBase, endpoint, bucket, key });
 }
 
 function mediaBaseUrl() {
-  if (publicBase) {
-    return `${publicBase.replace(/\/$/, "")}/${bucket}/${prefix}`;
-  }
-  return `${endpoint.replace(/\/$/, "")}/${bucket}/${prefix}`;
+  return buildMediaBaseUrl({ publicBase, endpoint, bucket, prefix });
 }
 
 const client = new S3Client({

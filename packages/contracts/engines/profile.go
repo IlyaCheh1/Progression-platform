@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+const maxAvatarURLLen = 450_000
+
 var allowedSkins = map[string]struct{}{
 	"novice":  {},
 	"scholar": {},
@@ -42,6 +44,7 @@ var allowedGenders = map[string]struct{}{
 var allowedBackgrounds = map[string]struct{}{
 	"onboarding_background": {},
 	"northern_lights":         {},
+	"mountain_terrace":        {},
 	"prison":                  {},
 	"building_castle":         {},
 	"volcano":                 {},
@@ -65,19 +68,20 @@ var legacyBackgroundKeys = map[string]string{
 }
 
 const (
-	defaultBackgroundKey  = "northern_lights"
+	defaultBackgroundKey  = "mountain_terrace"
 	defaultMaleCharacterID   = "3"
 	defaultFemaleCharacterID = "8"
 )
 
 // ProfileInput updates RPG presentation / onboarding state for a student.
 type ProfileInput struct {
-	Username        string `json:"username"`
-	SelectedSkinID  string `json:"selectedSkinId"`
-	Skin            string `json:"skin"` // legacy
-	Gender          string `json:"gender"`
-	BackgroundKey   string `json:"backgroundKey"`
-	ProfileComplete bool   `json:"profileComplete"`
+	Username        string  `json:"username"`
+	SelectedSkinID  string  `json:"selectedSkinId"`
+	Skin            string  `json:"skin"` // legacy
+	Gender          string  `json:"gender"`
+	BackgroundKey   string  `json:"backgroundKey"`
+	AvatarURL       *string `json:"avatarUrl"`
+	ProfileComplete bool    `json:"profileComplete"`
 }
 
 // ProfileView is returned by GET /v1/profile/me.
@@ -91,6 +95,7 @@ type ProfileView struct {
 	Skin            string           `json:"skin,omitempty"`
 	Gender          string           `json:"gender"`
 	BackgroundKey   string           `json:"backgroundKey"`
+	AvatarURL       string           `json:"avatarUrl,omitempty"`
 	Level           int              `json:"level"`
 	XP              int64            `json:"xp"`
 	XPToNextLevel   int64            `json:"xpToNextLevel"`
@@ -138,6 +143,13 @@ func (p *Platform) UpdateStudentProfile(studentID string, in ProfileInput) (*Pro
 		}
 		in.BackgroundKey = normalized
 	}
+	if in.AvatarURL != nil {
+		normalized, err := normalizeAvatarURL(*in.AvatarURL)
+		if err != nil {
+			return nil, err
+		}
+		*in.AvatarURL = normalized
+	}
 
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -156,15 +168,22 @@ func (p *Platform) UpdateStudentProfile(studentID string, in ProfileInput) (*Pro
 		s.Gender = in.Gender
 	}
 
-	// After onboarding, appearance changes require inventory ownership.
+	// After onboarding, appearance *changes* require inventory ownership.
+	// Re-saving the currently equipped skin/background (e.g. nickname-only update) must succeed.
 	// Backfill starter cosmetics for profiles completed before inventory existed.
 	if wasComplete {
 		p.grantOnboardingCosmeticsLocked(s)
-		if in.SelectedSkinID != "" && !p.ownsHoldingLocked(studentID, InventoryKindCharacter, in.SelectedSkinID) {
-			return nil, fmt.Errorf("character_not_owned")
+		currentSkin := normalizedCharacterID(s.SelectedSkinID, s.Gender)
+		if in.SelectedSkinID != "" && in.SelectedSkinID != currentSkin {
+			if !p.ownsHoldingLocked(studentID, InventoryKindCharacter, in.SelectedSkinID) {
+				return nil, fmt.Errorf("character_not_owned")
+			}
 		}
-		if in.BackgroundKey != "" && !p.ownsHoldingLocked(studentID, InventoryKindBackground, in.BackgroundKey) {
-			return nil, fmt.Errorf("background_not_owned")
+		currentBackground := normalizedBackgroundKey(s.BackgroundKey)
+		if in.BackgroundKey != "" && in.BackgroundKey != currentBackground {
+			if !p.ownsHoldingLocked(studentID, InventoryKindBackground, in.BackgroundKey) {
+				return nil, fmt.Errorf("background_not_owned")
+			}
 		}
 	}
 
@@ -179,6 +198,9 @@ func (p *Platform) UpdateStudentProfile(studentID string, in ProfileInput) (*Pro
 	}
 	if in.BackgroundKey != "" {
 		s.BackgroundKey = in.BackgroundKey
+	}
+	if in.AvatarURL != nil {
+		s.AvatarURL = *in.AvatarURL
 	}
 	if s.SelectedSkinID == "" && s.Skin != "" {
 		if mapped, ok := legacySkinToCharacter[s.Skin]; ok {
@@ -226,6 +248,7 @@ func profileViewLocked(p *Platform, s *Student) *ProfileView {
 		Skin:            s.Skin,
 		Gender:          gender,
 		BackgroundKey:   normalizedBackgroundKey(s.BackgroundKey),
+		AvatarURL:       s.AvatarURL,
 		Level:           1,
 		Mastery:         cloneMastery(s.Mastery),
 		Ranks:           cloneRanks(s.Ranks),
@@ -254,6 +277,26 @@ func profileUsername(s *Student) string {
 		return s.ProfileUsername
 	}
 	return s.DisplayName
+}
+
+func normalizeAvatarURL(raw string) (string, error) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return "", nil
+	}
+	if len(raw) > maxAvatarURLLen {
+		return "", fmt.Errorf("avatar_too_large")
+	}
+	lower := strings.ToLower(raw)
+	switch {
+	case strings.HasPrefix(lower, "data:image/jpeg;base64,"),
+		strings.HasPrefix(lower, "data:image/jpg;base64,"),
+		strings.HasPrefix(lower, "data:image/png;base64,"),
+		strings.HasPrefix(lower, "data:image/webp;base64,"):
+		return raw, nil
+	default:
+		return "", fmt.Errorf("invalid_avatar")
+	}
 }
 
 func cloneMastery(in map[string]int64) map[string]int64 {

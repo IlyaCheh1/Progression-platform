@@ -5,7 +5,31 @@ import Button from "@/components/ui/button";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 
 const VIDEOS = ["1.mp4", "6.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4"];
-const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? "/media/hero").replace(/\/$/, "");
+
+/**
+ * Selectel public domain is https://<bucket-uuid>.selstorage.ru/<key>.
+ * Older upload scripts printed .../selstorage.ru/<bucket>/media/hero — strip the extra segment.
+ */
+function normalizeMediaBase(raw: string): string {
+  const trimmed = raw.trim().replace(/\/$/, "");
+  try {
+    const url = new URL(trimmed);
+    const host = url.hostname.toLowerCase();
+    if (host.endsWith(".selstorage.ru") || host.endsWith(".selcdn.ru")) {
+      const parts = url.pathname.split("/").filter(Boolean);
+      const mediaIdx = parts.indexOf("media");
+      if (mediaIdx > 0) {
+        url.pathname = `/${parts.slice(mediaIdx).join("/")}`;
+        return url.toString().replace(/\/$/, "");
+      }
+    }
+  } catch {
+    // relative /media/hero
+  }
+  return trimmed;
+}
+
+const MEDIA_BASE = normalizeMediaBase(process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? "/media/hero");
 
 function mediaUrl(file: string) {
   return `${MEDIA_BASE}/${file}`;
@@ -266,9 +290,9 @@ export default function Hero() {
 
       <div className="absolute bottom-8 left-1/2 z-10 flex w-[calc(100%-1.5rem)] max-w-xl -translate-x-1/2 flex-col items-center gap-2 px-3 text-center sm:w-auto sm:px-6">
         <p className="font-golos text-[calc(0.875rem+2pt)] font-medium leading-relaxed text-white/60 md:text-[calc(0.875rem+4pt)]">
-          Школа исторического фехтования с RPG-развитием:
+          Школа исторического фехтования с RPG-прокачкой:
           <br />
-          опыт за тренировки, достижения и путь мастерства.
+          опыт, способности, достижения и награды за тренировки.
         </p>
         <div className="relative h-12 w-px overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
           <div

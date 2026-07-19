@@ -52,8 +52,9 @@ type Student struct {
 	SelectedSkinID  string           `json:"selectedSkinId,omitempty"`
 	Skin            string           `json:"skin,omitempty"` // legacy MoS skins, migrated to selectedSkinId
 	Gender          string           `json:"gender,omitempty"`
-	BackgroundKey   string           `json:"backgroundKey,omitempty"`
-	EquippedTitleKey string          `json:"equippedTitleKey,omitempty"`
+	BackgroundKey    string `json:"backgroundKey,omitempty"`
+	AvatarURL        string `json:"avatarUrl,omitempty"`
+	EquippedTitleKey string `json:"equippedTitleKey,omitempty"`
 }
 
 // NormalizedRole returns the primary role for routing/display.

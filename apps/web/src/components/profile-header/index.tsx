@@ -13,6 +13,7 @@ type ProfileHeaderProps = {
   currentXp: number;
   xpToNext: number;
   avatarLetter: string;
+  avatarUrl?: string;
   selectedSkinId: import("@/lib/characters").OgCharacterId;
   gender: import("@/lib/avatars").GenderId;
 };
@@ -24,15 +25,16 @@ export default function ProfileHeader({
   currentXp,
   xpToNext,
   avatarLetter,
+  avatarUrl,
   selectedSkinId,
   gender,
 }: ProfileHeaderProps) {
   return (
     <header className="witcher-header relative z-40">
-      <div className="mx-auto flex h-14 max-w-[1400px] items-stretch gap-2 px-2 md:h-[72px] md:gap-4 md:px-6">
+      <div className="flex h-14 w-full items-stretch gap-2 px-3 md:h-[72px] md:gap-4 md:px-5">
         <Link
           href="/profile"
-          className="flex flex-1 items-center transition-opacity hover:opacity-80"
+          className="flex min-w-0 flex-1 items-center justify-start transition-opacity hover:opacity-80"
           aria-label="Мастер меча — профиль"
         >
           <AppLogo size={28} className="md:hidden" />
@@ -41,7 +43,7 @@ export default function ProfileHeader({
 
         <WitcherNav />
 
-        <div className="ml-auto flex flex-1 items-center justify-end">
+        <div className="flex min-w-0 flex-1 items-center justify-end">
           <ProfileTrigger
             user={user}
             username={username}
@@ -49,6 +51,7 @@ export default function ProfileHeader({
             currentXp={currentXp}
             xpToNext={xpToNext}
             avatarLetter={avatarLetter}
+            avatarUrl={avatarUrl}
             selectedSkinId={selectedSkinId}
             gender={gender}
           />

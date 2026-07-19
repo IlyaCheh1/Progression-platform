@@ -64,7 +64,7 @@ export function getRoleCabinetMenuItems(roles: UserRole[]): ProfileDropdownItem[
   if (isAdminPrincipal(roles)) {
     items.push({
       id: "studio",
-      label: "Studio",
+      label: "Студия",
       href: routes.studio,
     });
   }

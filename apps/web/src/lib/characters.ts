@@ -19,142 +19,60 @@ export const DEFAULT_SELECTED_SKIN: Record<"MALE" | "FEMALE", OgCharacterId> = {
   FEMALE: "8",
 };
 
+/** Стартовые образы онбординга: один мужской и один женский. */
 export const OG_CHARACTERS: OgCharacter[] = [
   {
-    id: "1",
-    slug: "black-assassin",
-    name: "Тень клинка",
-    description:
-      "Мастер короткой дистанции: тихий вход, точный укол, исчезновение. Учит чувствовать момент атаки раньше, чем противник поднимет оружие",
-    gender: "male",
-    bonus: "+5% К опыту",
-    avatarSrc: "/media/characters/male/black-assassin/avatar.webp",
-    fullSrc: "/media/characters/male/black-assassin/full.webp",
-    thumbnailSrc: "/media/characters/male/black-assassin/thumbnail.webp",
-  },
-  {
-    id: "2",
-    slug: "god-with-hammer",
-    name: "Страж зала",
-    description:
-      "Сила в стойке и надёжная защита. Любит тяжёлое оружие, крепкий хват и sparring, после которого звенит даже тренировочный меч",
-    gender: "male",
-    bonus: "+1% Скидка на экипировку",
-    avatarSrc: "/media/characters/male/god-with-hammer/avatar.webp",
-    fullSrc: "/media/characters/male/god-with-hammer/full.webp",
-    thumbnailSrc: "/media/characters/male/god-with-hammer/thumbnail.webp",
-  },
-  {
     id: "3",
-    slug: "orange-hot-dog",
-    name: "Искра",
+    slug: "sword-master",
+    name: "Мастер клинка",
     description:
-      "Новичок с огнём в глазах: ещё путает стойки, но уже рвётся в бой. Идеальный старт пути — от первой тренировки до первых побед в зале",
+      "Спокойная стойка и уверенный хват длинного меча. Учит держать дистанцию, читать противника и заканчивать обмен одним точным ударом",
     gender: "male",
     bonus: "+2% К наградам зала",
-    avatarSrc: "/media/characters/male/orange-hot-dog/avatar.webp",
-    fullSrc: "/media/characters/male/orange-hot-dog/full.webp",
-    thumbnailSrc: "/media/characters/male/orange-hot-dog/thumbnail.webp",
-  },
-  {
-    id: "4",
-    slug: "pink-superhero",
-    name: "Чемпион ринга",
-    description:
-      "Живёт турнирами и аплодисментами. Яркая техника, смелые атаки и привычка превращать каждый поединок в маленькое шоу",
-    gender: "male",
-    bonus: "+1 Бесплатная тренировка",
-    avatarSrc: "/media/characters/male/pink-superhero/avatar.webp",
-    fullSrc: "/media/characters/male/pink-superhero/full.webp",
-    thumbnailSrc: "/media/characters/male/pink-superhero/thumbnail.webp",
-  },
-  {
-    id: "5",
-    slug: "purple-courier",
-    name: "Гонцовый клинок",
-    description:
-      "Скорость ног важнее силы удара. Легкий шаг, резкая смена дистанции и умение оказаться там, куда противник ещё не успел посмотреть",
-    gender: "male",
-    bonus: "+1 Очко талантов",
-    avatarSrc: "/media/characters/male/purple-courier/avatar.webp",
-    fullSrc: "/media/characters/male/purple-courier/full.webp",
-    thumbnailSrc: "/media/characters/male/purple-courier/thumbnail.webp",
-  },
-  {
-    id: "6",
-    slug: "gray-business-girl",
-    name: "Маэстра",
-    description:
-      "Дисциплина, контроль и холодный расчёт. Ведёт бой как партитуру: каждый шаг, укол и защита — строго по замыслу",
-    gender: "female",
-    bonus: "+1 Месяц подписки",
-    avatarSrc: "/media/characters/female/gray-business-girl/avatar.webp",
-    fullSrc: "/media/characters/female/gray-business-girl/full.webp",
-    thumbnailSrc: "/media/characters/female/gray-business-girl/thumbnail.webp",
-  },
-  {
-    id: "7",
-    slug: "pink-costume-girl",
-    name: "Валькирия зала",
-    description:
-      "Смешивает школы и стили без страха ошибиться. Любит эксперименты, новые клинки и тренировки, где можно рискнуть ради красивого приёма",
-    gender: "female",
-    bonus: "+1% Скидка на экипировку",
-    avatarSrc: "/media/characters/female/pink-costume-girl/avatar.webp",
-    fullSrc: "/media/characters/female/pink-costume-girl/full.webp",
-    thumbnailSrc: "/media/characters/female/pink-costume-girl/thumbnail.webp",
+    avatarSrc: "/media/characters/male/sword-master/avatar.webp",
+    fullSrc: "/media/characters/male/sword-master/full.webp",
+    thumbnailSrc: "/media/characters/male/sword-master/thumbnail.webp",
   },
   {
     id: "8",
-    slug: "red-dress-girl",
-    name: "Алая рапира",
+    slug: "staff-adept",
+    name: "Хранительница шеста",
     description:
-      "Страсть испанской школы: дерзкий темп, опасная дистанция и улыбка, от которой противник забывает про защиту",
+      "Сидячая готовность и контроль шеста. Чувствует ритм боя, ловит момент входа и отвечает резкой сменой дистанции",
     gender: "female",
     bonus: "+1 Очко талантов",
-    avatarSrc: "/media/characters/female/red-dress-girl/avatar.webp",
-    fullSrc: "/media/characters/female/red-dress-girl/full.webp",
-    thumbnailSrc: "/media/characters/female/red-dress-girl/thumbnail.webp",
-  },
-  {
-    id: "9",
-    slug: "white-dress-elf",
-    name: "Белая гвардия",
-    description:
-      "Классическая точность и безупречная линия клинка. Побеждает не силой, а чистотой техники и спокойствием в решающий миг",
-    gender: "female",
-    bonus: "+5% К опыту",
-    avatarSrc: "/media/characters/female/white-dress-elf/avatar.webp",
-    fullSrc: "/media/characters/female/white-dress-elf/full.webp",
-    thumbnailSrc: "/media/characters/female/white-dress-elf/thumbnail.webp",
-  },
-  {
-    id: "10",
-    slug: "yellow-miner-girl",
-    name: "Стальная воля",
-    description:
-      "Закалена бесконечными кругами и тяжёлой работой в зале. Не сдаётся в конце спарринга — именно тогда её клинок становится опаснее всего",
-    gender: "female",
-    bonus: "+250 Крышек за уровень",
-    avatarSrc: "/media/characters/female/yellow-miner-girl/avatar.webp",
-    fullSrc: "/media/characters/female/yellow-miner-girl/full.webp",
-    thumbnailSrc: "/media/characters/female/yellow-miner-girl/thumbnail.webp",
+    avatarSrc: "/media/characters/female/staff-adept/avatar.webp",
+    fullSrc: "/media/characters/female/staff-adept/full.webp",
+    thumbnailSrc: "/media/characters/female/staff-adept/thumbnail.webp",
   },
 ];
 
 const BY_ID = new Map(OG_CHARACTERS.map((item) => [item.id, item]));
 
 const LEGACY_SKIN_TO_CHARACTER: Record<string, OgCharacterId> = {
-  novice: "1",
+  novice: "3",
   scholar: "3",
-  duelist: "4",
-  shield: "2",
-  polearm: "5",
+  duelist: "3",
+  shield: "3",
+  polearm: "3",
+};
+
+/** Старые id образов → актуальный стартовый образ того же пола. */
+const LEGACY_CHARACTER_ID_ALIAS: Record<string, OgCharacterId> = {
+  "1": "3",
+  "2": "3",
+  "4": "3",
+  "5": "3",
+  "6": "8",
+  "7": "8",
+  "9": "8",
+  "10": "8",
 };
 
 export function getCharacterById(id?: string | null): OgCharacter | null {
   if (!id) return null;
-  return BY_ID.get(id as OgCharacterId) ?? null;
+  const resolved = (LEGACY_CHARACTER_ID_ALIAS[id] ?? id) as OgCharacterId;
+  return BY_ID.get(resolved) ?? null;
 }
 
 export function charactersForGender(gender: "MALE" | "FEMALE"): OgCharacter[] {
@@ -164,28 +82,26 @@ export function charactersForGender(gender: "MALE" | "FEMALE"): OgCharacter[] {
 
 export function normalizeSelectedSkinId(value?: string | null, gender: "MALE" | "FEMALE" = "MALE"): OgCharacterId {
   const raw = (value ?? "").trim();
-  if (BY_ID.has(raw as OgCharacterId)) {
-    const character = BY_ID.get(raw as OgCharacterId)!;
+  const aliased = LEGACY_CHARACTER_ID_ALIAS[raw] ?? raw;
+  if (BY_ID.has(aliased as OgCharacterId)) {
+    const character = BY_ID.get(aliased as OgCharacterId)!;
     const ogGender = gender === "FEMALE" ? "female" : "male";
     if (character.gender === ogGender) return character.id;
   }
   if (LEGACY_SKIN_TO_CHARACTER[raw]) {
-    const mapped = LEGACY_SKIN_TO_CHARACTER[raw];
-    const character = BY_ID.get(mapped)!;
-    const ogGender = gender === "FEMALE" ? "female" : "male";
-    if (character.gender === ogGender) return mapped;
+    return LEGACY_SKIN_TO_CHARACTER[raw];
   }
   return DEFAULT_SELECTED_SKIN[gender];
 }
 
 export function characterAvatarPath(selectedSkinId?: string | null, gender: "MALE" | "FEMALE" = "MALE"): string {
   const id = normalizeSelectedSkinId(selectedSkinId, gender);
-  return getCharacterById(id)?.avatarSrc ?? "/media/characters/male/orange-hot-dog/avatar.webp";
+  return getCharacterById(id)?.avatarSrc ?? "/media/characters/male/sword-master/avatar.webp";
 }
 
 export function characterFullPath(selectedSkinId?: string | null, gender: "MALE" | "FEMALE" = "MALE"): string {
   const id = normalizeSelectedSkinId(selectedSkinId, gender);
-  return getCharacterById(id)?.fullSrc ?? "/media/characters/male/orange-hot-dog/full.webp";
+  return getCharacterById(id)?.fullSrc ?? "/media/characters/male/sword-master/full.webp";
 }
 
 export function characterInitial(selectedSkinId?: string | null, gender: "MALE" | "FEMALE" = "MALE"): string {

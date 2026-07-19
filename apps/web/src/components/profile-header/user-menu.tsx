@@ -3,9 +3,11 @@
 import { useRouter } from "next/navigation";
 import CharacterAvatar from "@/components/character-avatar";
 import {
+  IconProfileAdmin,
   IconProfileCabinet,
   IconProfileLogout,
   IconProfileSettings,
+  IconProfileStudio,
 } from "@/components/profile-header/profile-menu-icons";
 import { getRoleCabinetMenuItems } from "@/lib/profile-menu";
 import { routes } from "@/lib/routes";
@@ -13,14 +15,18 @@ import { clearSession, type SessionUser } from "@/lib/session";
 import type { GenderId } from "@/lib/avatars";
 import type { OgCharacterId } from "@/lib/characters";
 import { cn } from "@/lib/utils";
+import type { ComponentType, SVGProps } from "react";
 
 type UserMenuProps = {
   user: SessionUser;
   username: string;
   selectedSkinId: OgCharacterId;
   gender: GenderId;
+  avatarUrl?: string;
   onClose: () => void;
 };
+
+type MenuIcon = ComponentType<SVGProps<SVGSVGElement>>;
 
 const BASE_ITEMS = [
   {
@@ -31,11 +37,18 @@ const BASE_ITEMS = [
   },
 ] as const;
 
+function iconForRoleItem(id: string): MenuIcon {
+  if (id === "cabinet-administrator") return IconProfileAdmin;
+  if (id === "studio") return IconProfileStudio;
+  return IconProfileCabinet;
+}
+
 export default function UserMenu({
   user,
   username,
   selectedSkinId,
   gender,
+  avatarUrl,
   onClose,
 }: UserMenuProps) {
   const router = useRouter();
@@ -58,6 +71,8 @@ export default function UserMenu({
         <CharacterAvatar
           selectedSkinId={selectedSkinId}
           gender={gender}
+          imageSrc={avatarUrl}
+          fallbackLetter={username}
           variant="head"
           className="h-16 w-16 rounded-2xl md:h-20 md:w-20"
         />
@@ -86,26 +101,29 @@ export default function UserMenu({
         <>
           <div className="my-3 h-px bg-[var(--color-strokeBg)] md:my-4" />
           <div className="flex flex-col gap-2 md:gap-4">
-            {roleItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className="group flex w-full items-center gap-2 md:gap-3"
-                onClick={() => navigate(item.href)}
-              >
-                <IconProfileCabinet className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-mos-amber md:h-6 md:w-6" />
-                <span
-                  className={cn(
-                    "font-golos text-xs font-normal leading-4 transition-colors duration-100 md:text-sm md:leading-5",
-                    item.highlight
-                      ? "bg-gradient-premium bg-clip-text font-medium text-transparent"
-                      : "text-primaryText group-hover:text-mos-amber",
-                  )}
+            {roleItems.map((item) => {
+              const Icon = iconForRoleItem(item.id);
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="group flex w-full items-center gap-2 md:gap-3"
+                  onClick={() => navigate(item.href)}
                 >
-                  {item.label}
-                </span>
-              </button>
-            ))}
+                  <Icon className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-mos-amber md:h-6 md:w-6" />
+                  <span
+                    className={cn(
+                      "font-golos text-xs font-normal leading-4 transition-colors duration-100 md:text-sm md:leading-5",
+                      item.highlight
+                        ? "bg-gradient-premium bg-clip-text font-medium text-transparent"
+                        : "text-primaryText group-hover:text-mos-amber",
+                    )}
+                  >
+                    {item.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </>
       )}

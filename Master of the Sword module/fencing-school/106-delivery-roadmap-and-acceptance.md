@@ -119,7 +119,7 @@ This proves the Module boundary and the existing Engine protocols.
 
 - academic Season and Eight Paths campaign;
 - full monthly Quest catalog;
-- Discipline of the Hall Talent tree;
+- activity Talent forest (Путь клинка, Братство Волка, Кодекс) with active Skills and cooldowns;
 - manuscript collection;
 - seasonal cosmetic sets;
 - event participation content;
