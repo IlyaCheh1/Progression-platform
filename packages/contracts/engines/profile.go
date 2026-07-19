@@ -146,6 +146,8 @@ func (p *Platform) UpdateStudentProfile(studentID string, in ProfileInput) (*Pro
 		return nil, fmt.Errorf("student not found")
 	}
 
+	wasComplete := s.ProfileComplete
+
 	if in.Username != "" {
 		s.ProfileUsername = in.Username
 		s.DisplayName = in.Username
@@ -153,6 +155,19 @@ func (p *Platform) UpdateStudentProfile(studentID string, in ProfileInput) (*Pro
 	if in.Gender != "" {
 		s.Gender = in.Gender
 	}
+
+	// After onboarding, appearance changes require inventory ownership.
+	// Backfill starter cosmetics for profiles completed before inventory existed.
+	if wasComplete {
+		p.grantOnboardingCosmeticsLocked(s)
+		if in.SelectedSkinID != "" && !p.ownsHoldingLocked(studentID, InventoryKindCharacter, in.SelectedSkinID) {
+			return nil, fmt.Errorf("character_not_owned")
+		}
+		if in.BackgroundKey != "" && !p.ownsHoldingLocked(studentID, InventoryKindBackground, in.BackgroundKey) {
+			return nil, fmt.Errorf("background_not_owned")
+		}
+	}
+
 	if in.SelectedSkinID != "" {
 		s.SelectedSkinID = in.SelectedSkinID
 		s.Skin = ""
@@ -175,6 +190,11 @@ func (p *Platform) UpdateStudentProfile(studentID string, in ProfileInput) (*Pro
 	}
 	if in.ProfileComplete || profileReadyLocked(s) {
 		s.ProfileComplete = true
+	}
+
+	// On first profile completion, put starter cosmetics into inventory.
+	if s.ProfileComplete {
+		p.grantOnboardingCosmeticsLocked(s)
 	}
 
 	return profileViewLocked(p, s), nil

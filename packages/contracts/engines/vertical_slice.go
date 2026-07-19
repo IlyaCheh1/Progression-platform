@@ -85,7 +85,9 @@ type Platform struct {
 	students   map[string]*Student
 	users      map[string]*Student // login -> student
 	sessions   map[string]string   // opaque access token -> studentID
-	audit      []string
+	// holdings: studentID -> itemKey -> cosmetic holding (characters + backgrounds)
+	holdings map[string]map[string]InventoryHolding
+	audit    []string
 }
 
 func NewPlatform() *Platform {
@@ -97,6 +99,7 @@ func NewPlatform() *Platform {
 		students:   make(map[string]*Student),
 		users:      make(map[string]*Student),
 		sessions:   make(map[string]string),
+		holdings:   make(map[string]map[string]InventoryHolding),
 	}
 }
 

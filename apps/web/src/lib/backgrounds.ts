@@ -131,6 +131,18 @@ export const PROFILE_BACKGROUNDS: ProfileBackground[] = [
 
 const BACKGROUND_BY_ID = new Map(PROFILE_BACKGROUNDS.map((item) => [item.id, item]));
 
+export function getBackgroundById(id?: string | null): ProfileBackground | null {
+  const raw = (id ?? "").trim();
+  if (!raw) return null;
+  if (BACKGROUND_BY_ID.has(raw as BackgroundId)) {
+    return BACKGROUND_BY_ID.get(raw as BackgroundId) ?? null;
+  }
+  if (LEGACY_NUMERIC_MAP[raw]) {
+    return BACKGROUND_BY_ID.get(LEGACY_NUMERIC_MAP[raw]) ?? null;
+  }
+  return null;
+}
+
 export function normalizeBackgroundId(value?: string | null): BackgroundId {
   const raw = (value ?? "").trim();
   if (!raw) return DEFAULT_BACKGROUND_ID;
@@ -146,11 +158,6 @@ export function backgroundImagePath(value?: string | null): string {
 
 export function onboardingBackgroundPath(): string {
   return BACKGROUND_BY_ID.get(ONBOARDING_BACKGROUND_ID)?.src ?? "/media/backgrounds/onboarding_background.webp";
-}
-
-/** Фоны, доступные при onboarding (как default unlock в OG). */
-export function selectableOnboardingBackgrounds(): ProfileBackground[] {
-  return PROFILE_BACKGROUNDS.filter((item) => item.unlock === "default");
 }
 
 export function isKnownBackgroundId(value: string): boolean {

@@ -1,4 +1,4 @@
-/** Каталог персонажей OnlyGames Appearance Service (seed 002). */
+/** Каталог образов учеников школы «Мастер меча». */
 export type OgCharacterId = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10";
 export type OgCharacterGender = "male" | "female";
 
@@ -23,8 +23,9 @@ export const OG_CHARACTERS: OgCharacter[] = [
   {
     id: "1",
     slug: "black-assassin",
-    name: "Хакер-ассасин",
-    description: "Интроверт, любитель rogue-like игр. Возомнил себя ассасином и крадётся на кухню в костюме",
+    name: "Тень клинка",
+    description:
+      "Мастер короткой дистанции: тихий вход, точный укол, исчезновение. Учит чувствовать момент атаки раньше, чем противник поднимет оружие",
     gender: "male",
     bonus: "+5% К опыту",
     avatarSrc: "/media/characters/male/black-assassin/avatar.webp",
@@ -34,10 +35,11 @@ export const OG_CHARACTERS: OgCharacter[] = [
   {
     id: "2",
     slug: "god-with-hammer",
-    name: "Работяга с завода",
-    description: "Работает своим молотом так, что только искры летят. А в плаще удобно выносить ништяки с завода",
+    name: "Страж зала",
+    description:
+      "Сила в стойке и надёжная защита. Любит тяжёлое оружие, крепкий хват и sparring, после которого звенит даже тренировочный меч",
     gender: "male",
-    bonus: "+1% Скидка на маркете",
+    bonus: "+1% Скидка на экипировку",
     avatarSrc: "/media/characters/male/god-with-hammer/avatar.webp",
     fullSrc: "/media/characters/male/god-with-hammer/full.webp",
     thumbnailSrc: "/media/characters/male/god-with-hammer/thumbnail.webp",
@@ -45,10 +47,11 @@ export const OG_CHARACTERS: OgCharacter[] = [
   {
     id: "3",
     slug: "orange-hot-dog",
-    name: "Предприниматель",
-    description: "Начинающий стартапер в поисках инвестиций, а подработка в костюме хот-дога — для души",
+    name: "Искра",
+    description:
+      "Новичок с огнём в глазах: ещё путает стойки, но уже рвётся в бой. Идеальный старт пути — от первой тренировки до первых побед в зале",
     gender: "male",
-    bonus: "+2% Кэшбек крышками",
+    bonus: "+2% К наградам зала",
     avatarSrc: "/media/characters/male/orange-hot-dog/avatar.webp",
     fullSrc: "/media/characters/male/orange-hot-dog/full.webp",
     thumbnailSrc: "/media/characters/male/orange-hot-dog/thumbnail.webp",
@@ -56,10 +59,11 @@ export const OG_CHARACTERS: OgCharacter[] = [
   {
     id: "4",
     slug: "pink-superhero",
-    name: "СуперСтример",
-    description: "S — значит Sтример. Любит стримить инди-игры и создавать тренды, а не идти на поводу у толпы",
+    name: "Чемпион ринга",
+    description:
+      "Живёт турнирами и аплодисментами. Яркая техника, смелые атаки и привычка превращать каждый поединок в маленькое шоу",
     gender: "male",
-    bonus: "+1 Инди-игра в подарок",
+    bonus: "+1 Бесплатная тренировка",
     avatarSrc: "/media/characters/male/pink-superhero/avatar.webp",
     fullSrc: "/media/characters/male/pink-superhero/full.webp",
     thumbnailSrc: "/media/characters/male/pink-superhero/thumbnail.webp",
@@ -67,8 +71,9 @@ export const OG_CHARACTERS: OgCharacter[] = [
   {
     id: "5",
     slug: "purple-courier",
-    name: "Квадробер-курьер",
-    description: "Особо опасный элемент. Но попробовали бы вы поездить на электровелике зимой без шапки…",
+    name: "Гонцовый клинок",
+    description:
+      "Скорость ног важнее силы удара. Легкий шаг, резкая смена дистанции и умение оказаться там, куда противник ещё не успел посмотреть",
     gender: "male",
     bonus: "+1 Очко талантов",
     avatarSrc: "/media/characters/male/purple-courier/avatar.webp",
@@ -78,8 +83,9 @@ export const OG_CHARACTERS: OgCharacter[] = [
   {
     id: "6",
     slug: "gray-business-girl",
-    name: "Госпожа",
-    description: "Любит брать контроль в свои руки. Хранит в сумочке не только документы, но и… геймпад",
+    name: "Маэстра",
+    description:
+      "Дисциплина, контроль и холодный расчёт. Ведёт бой как партитуру: каждый шаг, укол и защита — строго по замыслу",
     gender: "female",
     bonus: "+1 Месяц подписки",
     avatarSrc: "/media/characters/female/gray-business-girl/avatar.webp",
@@ -89,10 +95,11 @@ export const OG_CHARACTERS: OgCharacter[] = [
   {
     id: "7",
     slug: "pink-costume-girl",
-    name: "Хипстерша",
-    description: "Любит латте на миндальном, скейты и неудачников. Всегда за разнообразие — в играх и не только",
+    name: "Валькирия зала",
+    description:
+      "Смешивает школы и стили без страха ошибиться. Любит эксперименты, новые клинки и тренировки, где можно рискнуть ради красивого приёма",
     gender: "female",
-    bonus: "+1% Скидка на маркете",
+    bonus: "+1% Скидка на экипировку",
     avatarSrc: "/media/characters/female/pink-costume-girl/avatar.webp",
     fullSrc: "/media/characters/female/pink-costume-girl/full.webp",
     thumbnailSrc: "/media/characters/female/pink-costume-girl/thumbnail.webp",
@@ -100,8 +107,9 @@ export const OG_CHARACTERS: OgCharacter[] = [
   {
     id: "8",
     slug: "red-dress-girl",
-    name: "Красная Шапочка",
-    description: "Никто так и не понял, она убегает от волка, или он от неё… Любит свою бабулю и пирожки",
+    name: "Алая рапира",
+    description:
+      "Страсть испанской школы: дерзкий темп, опасная дистанция и улыбка, от которой противник забывает про защиту",
     gender: "female",
     bonus: "+1 Очко талантов",
     avatarSrc: "/media/characters/female/red-dress-girl/avatar.webp",
@@ -111,8 +119,9 @@ export const OG_CHARACTERS: OgCharacter[] = [
   {
     id: "9",
     slug: "white-dress-elf",
-    name: "Эльфийская принцесса",
-    description: "Бессмертна, прекрасна и гораздо мудрее других. Она не стала отдавать кольцо, а воспользовалась им",
+    name: "Белая гвардия",
+    description:
+      "Классическая точность и безупречная линия клинка. Побеждает не силой, а чистотой техники и спокойствием в решающий миг",
     gender: "female",
     bonus: "+5% К опыту",
     avatarSrc: "/media/characters/female/white-dress-elf/avatar.webp",
@@ -122,8 +131,9 @@ export const OG_CHARACTERS: OgCharacter[] = [
   {
     id: "10",
     slug: "yellow-miner-girl",
-    name: "Криптовалютчица",
-    description: "Умеет майнить не только биток, но и может поработать киркой. Так что лучше не умничай",
+    name: "Стальная воля",
+    description:
+      "Закалена бесконечными кругами и тяжёлой работой в зале. Не сдаётся в конце спарринга — именно тогда её клинок становится опаснее всего",
     gender: "female",
     bonus: "+250 Крышек за уровень",
     avatarSrc: "/media/characters/female/yellow-miner-girl/avatar.webp",

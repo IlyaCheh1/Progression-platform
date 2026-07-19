@@ -75,6 +75,33 @@ func main() {
 		writeJSON(w, view)
 	}))
 
+	mux.HandleFunc("GET /v1/inventory/me", authz.RequireAuth(platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		view, err := platform.InventoryForStudent(actor.ID)
+		if err != nil {
+			http.Error(w, `{"error":"not_found"}`, http.StatusNotFound)
+			return
+		}
+		writeJSON(w, view)
+	}))
+
+	mux.HandleFunc("PUT /v1/inventory/equip", authz.RequireAuth(platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		var body engines.EquipInventoryInput
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		view, err := platform.EquipInventoryItem(actor.ID, body)
+		if err != nil {
+			status := http.StatusBadRequest
+			if err.Error() == "student not found" {
+				status = http.StatusNotFound
+			}
+			http.Error(w, `{"error":"`+err.Error()+`"}`, status)
+			return
+		}
+		writeJSON(w, view)
+	}))
+
 	mux.HandleFunc("POST /v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
 		var body struct {
 			Login    string `json:"login"`

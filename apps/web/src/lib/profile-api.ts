@@ -1,4 +1,4 @@
-import { SCHOOL_API } from "@/lib/utils";
+import { SCHOOL_API, schoolApiUnavailableMessage } from "@/lib/utils";
 import type { GenderId } from "@/lib/avatars";
 import { DEFAULT_BACKGROUND_ID, normalizeBackgroundId } from "@/lib/backgrounds";
 import { normalizeSelectedSkinId, type OgCharacterId } from "@/lib/characters";
@@ -27,6 +27,56 @@ export type SaveProfileInput = {
   backgroundKey?: string;
   profileComplete?: boolean;
 };
+
+export class ProfileApiError extends Error {
+  readonly status: number;
+  readonly code: string;
+
+  constructor(status: number, code: string, message: string) {
+    super(message);
+    this.name = "ProfileApiError";
+    this.status = status;
+    this.code = code;
+  }
+
+  get isUnauthorized(): boolean {
+    return this.status === 401;
+  }
+}
+
+const PROFILE_ERROR_MESSAGES: Record<string, string> = {
+  unauthorized: "Сессия истекла. Войдите снова.",
+  invalid_character: "Выбранный персонаж недоступен. Выберите другого.",
+  invalid_skin: "Выбранный персонаж недоступен. Выберите другого.",
+  invalid_gender: "Некорректный пол персонажа.",
+  invalid_background: "Выбранный фон недоступен.",
+  bad_request: "Некорректные данные профиля.",
+  "student not found": "Профиль не найден. Войдите снова.",
+};
+
+export function messageForProfileError(error: unknown): string {
+  if (error instanceof ProfileApiError) {
+    return PROFILE_ERROR_MESSAGES[error.code] ?? error.message;
+  }
+  if (error instanceof TypeError) {
+    return schoolApiUnavailableMessage();
+  }
+  return schoolApiUnavailableMessage();
+}
+
+async function readApiError(res: Response, fallbackCode: string): Promise<ProfileApiError> {
+  let code = fallbackCode;
+  try {
+    const data = (await res.json()) as { error?: unknown };
+    if (typeof data.error === "string" && data.error.trim()) {
+      code = data.error.trim();
+    }
+  } catch {
+    // non-JSON body
+  }
+  const message = PROFILE_ERROR_MESSAGES[code] ?? `Ошибка сохранения профиля (${res.status}).`;
+  return new ProfileApiError(res.status, code, message);
+}
 
 const CACHE_KEY = "mos.player-profile";
 
@@ -98,19 +148,27 @@ export async function fetchMyProfile(session: SessionUser): Promise<PlayerProfil
 }
 
 export async function saveMyProfile(session: SessionUser, input: SaveProfileInput): Promise<PlayerProfile> {
-  const res = await fetch(`${SCHOOL_API}/v1/profile/me`, {
-    method: "PUT",
-    headers: authHeaders(session),
-    body: JSON.stringify({
-      username: input.username,
-      selectedSkinId: input.selectedSkinId,
-      gender: input.gender,
-      backgroundKey: input.backgroundKey ?? DEFAULT_BACKGROUND_ID,
-      profileComplete: input.profileComplete ?? true,
-    }),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${SCHOOL_API}/v1/profile/me`, {
+      method: "PUT",
+      headers: authHeaders(session),
+      body: JSON.stringify({
+        username: input.username,
+        selectedSkinId: input.selectedSkinId,
+        gender: input.gender,
+        backgroundKey: input.backgroundKey ?? DEFAULT_BACKGROUND_ID,
+        profileComplete: input.profileComplete ?? true,
+      }),
+    });
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new ProfileApiError(0, "network", schoolApiUnavailableMessage());
+    }
+    throw error;
+  }
   if (!res.ok) {
-    throw new Error("profile_save_failed");
+    throw await readApiError(res, res.status === 401 ? "unauthorized" : "profile_save_failed");
   }
   const data = (await res.json()) as Record<string, unknown>;
   const profile = normalizeProfile(data);
