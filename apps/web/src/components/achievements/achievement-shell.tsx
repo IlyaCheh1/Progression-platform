@@ -74,16 +74,21 @@ export default function AchievementShell({
 
         <div className="relative flex w-full items-center gap-3 overflow-hidden p-3 md:gap-6 md:px-6 md:py-5">
           <div className="flex min-w-0 flex-1 items-start gap-3 md:gap-4">
-            <div
-              className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-mos-stone bg-cover bg-center md:h-28 md:w-28 md:rounded-[20px]"
-              style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
-            >
-              {!iconUrl ? (
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-mos-stone md:h-28 md:w-28 md:rounded-[20px]">
+              {iconUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- content icons from public/CDN
+                <img
+                  src={iconUrl}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
                 <div className="grid h-full w-full place-items-center font-display text-xl text-mos-amber">
                   {title.slice(0, 1)}
                 </div>
-              ) : null}
-              <div className="pointer-events-none absolute inset-0 shadow-[inset_10px_10px_10px_rgba(26,26,29,0.9),inset_-10px_-10px_10px_rgba(26,26,29,0.9)]" />
+              )}
             </div>
 
             <div className="flex min-w-0 flex-1 flex-col gap-5">

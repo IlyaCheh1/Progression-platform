@@ -14,7 +14,7 @@ Last updated: 2026-07-19
 ## Delivered (excluding real ЮKassa)
 
 - **Event catalog:** all 20 `produces` schemas from module manifest
-- **Guardian cabinet (E2E-12):** `/guardian`, API `/v1/guardian/dependants*`, demo link `demo-guardian` → `student-synthetic-adult`
+- **Guardian cabinet (E2E-12):** `/guardian`, API `/v1/guardian/dependants*`, service link `demo-guardian` → `student-synthetic-adult`
 - **Minor privacy (E2E-18):** `SetMinor`, leaderboard exclusion, public-share block, achievements hidden for minors
 - **Title → inventory (E2E-08):** rank unlock grants title item; equip via `/v1/inventory/equip` kind `title`
 - **Support chat stub (E2E-13):** `/support`, cases API, admin resolve + optional correction

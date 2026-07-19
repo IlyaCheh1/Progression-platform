@@ -69,6 +69,8 @@
 
 Start / Build Command оставь пустым — задаётся в Dockerfile.
 
+В образ копируются `infra/local/seed/students.json` (ростер школы) и `schemas/content/school.fencing.starter.json` (боевой каталог талантов/квестов). Без starter в логах будет `0 talents`, а изучение таланта вернёт «Талант не найден в каталоге». При непустой Postgres сид ростера пропускается (`skip seed`).
+
 ### Environment
 
 | Переменная | Значение |

@@ -625,7 +625,7 @@
         "Эффект": "Активирует одно опциональное задание на технический фокус на текущие локальные сутки"
       },
       "cooldownSeconds": 86400,
-      "icon": "talents/arsenal.daily_focus.png"
+      "icon": "talents/arsenal.daily_focus.webp"
     },
     {
       "key": "arsenal.stance",
@@ -645,7 +645,7 @@
       "effects": {
         "Эффект": "Открывает вводные подсказки учебной программы по каждому открытому оружейному пути"
       },
-      "icon": "talents/arsenal.stance.png"
+      "icon": "talents/arsenal.stance.webp"
     },
     {
       "key": "arsenal.guard",
@@ -665,7 +665,7 @@
       "effects": {
         "Эффект": "Открывает личные подсказки рефлексии о дистанции и тайминге после тренировки"
       },
-      "icon": "talents/arsenal.guard.png"
+      "icon": "talents/arsenal.guard.webp"
     },
     {
       "key": "arsenal.both_sides",
@@ -685,7 +685,7 @@
       "effects": {
         "Эффект": "Подсказка о доступности упражнений на обе стороны, если того требует программа"
       },
-      "icon": "talents/arsenal.both_sides.png"
+      "icon": "talents/arsenal.both_sides.webp"
     },
     {
       "key": "arsenal.weekly_review",
@@ -708,7 +708,7 @@
         "Эффект": "Открывает структурированный личный разбор техники за последнюю неделю"
       },
       "cooldownSeconds": 604800,
-      "icon": "talents/arsenal.weekly_review.png"
+      "icon": "talents/arsenal.weekly_review.webp"
     },
     {
       "key": "arsenal.partner_drill",
@@ -731,7 +731,7 @@
       "effects": {
         "Эффект": "Открывает опциональную цепочку заданий «работа в паре»"
       },
-      "icon": "talents/arsenal.partner_drill.png"
+      "icon": "talents/arsenal.partner_drill.webp"
     },
     {
       "key": "arsenal.weapon_focus",
@@ -754,7 +754,7 @@
       "effects": {
         "Эффект": "Открывает еженедельный путь заданий с акцентом на одно оружие"
       },
-      "icon": "talents/arsenal.weapon_focus.png"
+      "icon": "talents/arsenal.weapon_focus.webp"
     },
     {
       "key": "arsenal.cross_training",
@@ -779,7 +779,7 @@
       "effects": {
         "Эффект": "После открытия двух путей открывает опциональную цель «второй путь на этой неделе»"
       },
-      "icon": "talents/arsenal.cross_training.png"
+      "icon": "talents/arsenal.cross_training.webp"
     },
     {
       "key": "arsenal.form_reader",
@@ -804,7 +804,7 @@
       "effects": {
         "Эффект": "Открывает карточки наблюдения техники по пройденной программе"
       },
-      "icon": "talents/arsenal.form_reader.png"
+      "icon": "talents/arsenal.form_reader.webp"
     },
     {
       "key": "arsenal.seal_keeper",
@@ -831,7 +831,7 @@
       "effects": {
         "Эффект": "Открывает раскладку коллекции оружейных печатей в профиле"
       },
-      "icon": "talents/arsenal.seal_keeper.png"
+      "icon": "talents/arsenal.seal_keeper.webp"
     },
     {
       "key": "arsenal.master_path",
@@ -851,7 +851,7 @@
       "effects": {
         "Эффект": "Завершающий узел; косметический набор «Путь клинка», без модификатора опыта"
       },
-      "icon": "talents/arsenal.master_path.png"
+      "icon": "talents/arsenal.master_path.webp"
     },
     {
       "key": "arsenal.monthly_path",
@@ -873,7 +873,7 @@
         "Эффект": "Один раз меняет отображаемый акцент оружия и открывает превью главы «догоняющего» пути (без опыта)"
       },
       "cooldownSeconds": 2592000,
-      "icon": "talents/arsenal.monthly_path.png"
+      "icon": "talents/arsenal.monthly_path.webp"
     },
     {
       "key": "wolf.daily_call",
@@ -892,7 +892,7 @@
         "Эффект": "Одна безопасная карточка приглашения на пробное занятие или событие (с учётом согласия)"
       },
       "cooldownSeconds": 86400,
-      "icon": "talents/wolf.daily_call.png"
+      "icon": "talents/wolf.daily_call.webp"
     },
     {
       "key": "wolf.hearth",
@@ -912,7 +912,7 @@
       "effects": {
         "Эффект": "Даёт доступ к заданиям приветствия и парной работы, которые назначает тренер"
       },
-      "icon": "talents/wolf.hearth.png"
+      "icon": "talents/wolf.hearth.webp"
     },
     {
       "key": "wolf.contract_prep",
@@ -932,7 +932,7 @@
       "effects": {
         "Эффект": "Открывает задания-чеклисты подготовки к мероприятию"
       },
-      "icon": "talents/wolf.contract_prep.png"
+      "icon": "talents/wolf.contract_prep.webp"
     },
     {
       "key": "wolf.medallion",
@@ -952,7 +952,7 @@
       "effects": {
         "Эффект": "Открывает настройки напоминаний о школьных событиях"
       },
-      "icon": "talents/wolf.medallion.png"
+      "icon": "talents/wolf.medallion.webp"
     },
     {
       "key": "wolf.weekly_fire",
@@ -975,7 +975,7 @@
         "Эффект": "Открывает еженедельное сообщественное задание (пара / приветствие), если оно ещё не взято"
       },
       "cooldownSeconds": 604800,
-      "icon": "talents/wolf.weekly_fire.png"
+      "icon": "talents/wolf.weekly_fire.webp"
     },
     {
       "key": "wolf.brother",
@@ -998,7 +998,7 @@
       "effects": {
         "Эффект": "Даёт доступ к наставническим заданиям, которые назначает тренер"
       },
-      "icon": "talents/wolf.brother.png"
+      "icon": "talents/wolf.brother.webp"
     },
     {
       "key": "wolf.recruit",
@@ -1021,7 +1021,7 @@
       "effects": {
         "Эффект": "Открывает путь квалифицированного реферала (ваучер только после проверки, без авто-опыта)"
       },
-      "icon": "talents/wolf.recruit.png"
+      "icon": "talents/wolf.recruit.webp"
     },
     {
       "key": "wolf.keeper",
@@ -1046,7 +1046,7 @@
       "effects": {
         "Эффект": "Даёт доступ к волонтёрским заданиям на мероприятиях"
       },
-      "icon": "talents/wolf.keeper.png"
+      "icon": "talents/wolf.keeper.webp"
     },
     {
       "key": "wolf.tourney",
@@ -1071,7 +1071,7 @@
       "effects": {
         "Эффект": "Открывает контент подготовки к школьному турниру"
       },
-      "icon": "talents/wolf.tourney.png"
+      "icon": "talents/wolf.tourney.webp"
     },
     {
       "key": "wolf.master_lesson",
@@ -1098,7 +1098,7 @@
       "effects": {
         "Эффект": "Открывает подготовку к мастер-классу и шаблоны рефлексии"
       },
-      "icon": "talents/wolf.master_lesson.png"
+      "icon": "talents/wolf.master_lesson.webp"
     },
     {
       "key": "wolf.grandmaster",
@@ -1118,7 +1118,7 @@
       "effects": {
         "Эффект": "Завершающий узел; косметический набор «Братство Волка»"
       },
-      "icon": "talents/wolf.grandmaster.png"
+      "icon": "talents/wolf.grandmaster.webp"
     },
     {
       "key": "wolf.monthly_council",
@@ -1140,7 +1140,7 @@
         "Эффект": "Открывает доступ к главе сезонной кампании сообщества или к подсветке события"
       },
       "cooldownSeconds": 2592000,
-      "icon": "talents/wolf.monthly_council.png"
+      "icon": "talents/wolf.monthly_council.webp"
     },
     {
       "key": "codex.daily_card",
@@ -1159,7 +1159,7 @@
         "Эффект": "Выдаёт одну образовательную карточку или задание глоссария на сутки"
       },
       "cooldownSeconds": 86400,
-      "icon": "talents/codex.daily_card.png"
+      "icon": "talents/codex.daily_card.webp"
     },
     {
       "key": "codex.glossary",
@@ -1179,7 +1179,7 @@
       "effects": {
         "Эффект": "Открывает задание по глоссарию и терминологии"
       },
-      "icon": "talents/codex.glossary.png"
+      "icon": "talents/codex.glossary.webp"
     },
     {
       "key": "codex.marozzo",
@@ -1199,7 +1199,7 @@
       "effects": {
         "Эффект": "Открывает путь образовательной коллекции Мароццо"
       },
-      "icon": "talents/codex.marozzo.png"
+      "icon": "talents/codex.marozzo.webp"
     },
     {
       "key": "codex.scholar",
@@ -1219,7 +1219,7 @@
       "effects": {
         "Эффект": "Открывает расширенные исторические карточки"
       },
-      "icon": "talents/codex.scholar.png"
+      "icon": "talents/codex.scholar.webp"
     },
     {
       "key": "codex.weekly_study",
@@ -1242,7 +1242,7 @@
         "Эффект": "Открывает главу продвинутой учебной цепочки заданий на неделю"
       },
       "cooldownSeconds": 604800,
-      "icon": "talents/codex.weekly_study.png"
+      "icon": "talents/codex.weekly_study.webp"
     },
     {
       "key": "codex.chronicler",
@@ -1265,7 +1265,7 @@
       "effects": {
         "Эффект": "Открывает шаблоны структурированной личной рефлексии"
       },
-      "icon": "talents/codex.chronicler.png"
+      "icon": "talents/codex.chronicler.webp"
     },
     {
       "key": "codex.strategist",
@@ -1288,7 +1288,7 @@
       "effects": {
         "Эффект": "Открывает еженедельные подсказки плана обучения (только отображение)"
       },
-      "icon": "talents/codex.strategist.png"
+      "icon": "talents/codex.strategist.webp"
     },
     {
       "key": "codex.pathfinder",
@@ -1313,7 +1313,7 @@
       "effects": {
         "Эффект": "Открывает второй опциональный путь заданий в неделю"
       },
-      "icon": "talents/codex.pathfinder.png"
+      "icon": "talents/codex.pathfinder.webp"
     },
     {
       "key": "codex.archivist",
@@ -1338,7 +1338,7 @@
       "effects": {
         "Эффект": "Расширяет личную визуализацию истории мастерства"
       },
-      "icon": "talents/codex.archivist.png"
+      "icon": "talents/codex.archivist.webp"
     },
     {
       "key": "codex.curator",
@@ -1365,7 +1365,7 @@
       "effects": {
         "Эффект": "Открывает дополнительный слот косметического пресета"
       },
-      "icon": "talents/codex.curator.png"
+      "icon": "talents/codex.curator.webp"
     },
     {
       "key": "codex.master",
@@ -1385,7 +1385,7 @@
       "effects": {
         "Эффект": "Завершающий узел; косметический набор «манускрипт»"
       },
-      "icon": "talents/codex.master.png"
+      "icon": "talents/codex.master.webp"
     },
     {
       "key": "codex.monthly_campaign",
@@ -1407,7 +1407,7 @@
         "Эффект": "Открывает или продвигает доступ к образовательной главе «Восемь путей» (без требования ранга)"
       },
       "cooldownSeconds": 2592000,
-      "icon": "talents/codex.monthly_campaign.png"
+      "icon": "talents/codex.monthly_campaign.webp"
     }
   ],
   "items": [

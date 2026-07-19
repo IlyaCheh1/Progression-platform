@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import AppearancePickerModal from "@/components/appearance/appearance-picker-modal";
 import AvatarCropModal from "@/components/appearance/avatar-crop-modal";
 import SettingsProfileHeader from "@/components/settings/profile-header";
+import CustomizationTab, {
+  resolveSettingsBackgroundSrc,
+} from "@/components/settings/tabs/customization";
 import NotificationsTab from "@/components/settings/tabs/notifications";
 import PersonalInfoTab from "@/components/settings/tabs/personal-info";
 import PrivacyTab from "@/components/settings/tabs/privacy";
@@ -16,6 +18,8 @@ import { useAvatarPresentation } from "@/components/character-avatar";
 import { useAppearanceInventory } from "@/hooks/use-appearance-inventory";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
 import { AvatarUploadError, uploadAvatarToS3, validateAvatarFile } from "@/lib/avatar-upload";
+import { PROFILE_BACKGROUNDS, type BackgroundId } from "@/lib/backgrounds";
+import { getCharacterById, type OgCharacterId } from "@/lib/characters";
 import {
   messageForProfileError,
   saveMyProfile,
@@ -32,12 +36,15 @@ import {
   loadNotificationsLocal,
   loadPersonalLocal,
   loadPrivacyLocal,
+  loadSettingsAppearanceLocal,
   saveNotificationsLocal,
   savePersonalLocal,
   savePrivacyLocal,
+  saveSettingsAppearanceLocal,
   type NotificationsLocal,
   type PersonalLocal,
   type PrivacyLocal,
+  type SettingsAppearanceLocal,
 } from "@/lib/settings-local";
 import { hasRole, isAdminPrincipal } from "@/lib/rbac";
 import { clearSession, loadSession, patchSession, type SessionUser } from "@/lib/session";
@@ -49,7 +56,6 @@ export default function SettingsPage() {
   const { profile, setProfile } = usePlayerProfile(session);
   const presentation = useAvatarPresentation(profile ?? undefined);
   const appearance = useAppearanceInventory(session, { onProfileUpdated: setProfile });
-  const [backgroundPickerOpen, setBackgroundPickerOpen] = useState(false);
   const [avatarCropSrc, setAvatarCropSrc] = useState<string | null>(null);
   const [avatarCropName, setAvatarCropName] = useState("avatar.jpg");
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -63,6 +69,9 @@ export default function SettingsPage() {
   const [personal, setPersonal] = useState<PersonalLocal>(loadPersonalLocal);
   const [privacy, setPrivacy] = useState<PrivacyLocal>(loadPrivacyLocal);
   const [notifications, setNotifications] = useState<NotificationsLocal>(loadNotificationsLocal);
+  const [settingsAppearance, setSettingsAppearance] = useState<SettingsAppearanceLocal>(
+    loadSettingsAppearanceLocal,
+  );
   const [errors, setErrors] = useState<Partial<Record<"username" | "firstName" | "lastName" | "phone" | "about", string>>>({});
   const [notifyEmailError, setNotifyEmailError] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
@@ -79,6 +88,7 @@ export default function SettingsPage() {
     setPersonal(loadPersonalLocal());
     setPrivacy(loadPrivacyLocal());
     setNotifications(loadNotificationsLocal());
+    setSettingsAppearance(loadSettingsAppearanceLocal());
 
     const params = new URLSearchParams(window.location.search);
     const fromUrl = params.get("tab");
@@ -96,6 +106,36 @@ export default function SettingsPage() {
       setTab(tabs[0]?.id ?? "personal");
     }
   }, [tabs, tab]);
+
+  const customizationOwnership = useMemo(() => {
+    const ownedCharacterIds = new Set(appearance.characters.map((item) => item.characterId));
+    const ownedBackgroundIds = new Set(
+      PROFILE_BACKGROUNDS.filter((item) => item.unlock === "default").map((item) => item.id),
+    );
+    for (const item of appearance.backgrounds) {
+      ownedBackgroundIds.add(item.background.id);
+    }
+    if (profile?.selectedSkinId) ownedCharacterIds.add(profile.selectedSkinId);
+    if (profile?.backgroundKey) ownedBackgroundIds.add(profile.backgroundKey);
+
+    const equippedCharacter =
+      appearance.characters.find((item) => item.equipped)?.characterId ?? profile?.selectedSkinId;
+    const equippedProfileBackground =
+      appearance.backgrounds.find((item) => item.equipped)?.background.id ?? profile?.backgroundKey;
+    return {
+      ownedCharacterIds,
+      ownedBackgroundIds,
+      equippedCharacterId: equippedCharacter,
+      equippedProfileBackgroundId: equippedProfileBackground,
+    };
+  }, [appearance.backgrounds, appearance.characters, profile?.backgroundKey, profile?.selectedSkinId]);
+
+  const settingsPageBackgroundSrc = resolveSettingsBackgroundSrc(
+    settingsAppearance.settingsPageBackgroundId,
+  );
+  const settingsHeaderBackgroundSrc = resolveSettingsBackgroundSrc(
+    settingsAppearance.settingsHeaderBackgroundId,
+  );
 
   const persistPrivacy = useCallback((patch: Partial<PrivacyLocal>) => {
     setPrivacy((prev) => {
@@ -219,23 +259,56 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleSelectCharacter(characterId: OgCharacterId) {
+    const character = getCharacterById(characterId);
+    if (!character || !session || !profile) return;
+    const ok = await appearance.equipCharacter(characterId);
+    if (!ok) return;
+    const nextGender: GenderId = character.gender === "female" ? "FEMALE" : "MALE";
+    if (nextGender !== profile.gender) {
+      try {
+        const saved = await saveMyProfile(session, {
+          username: profile.username,
+          selectedSkinId: characterId,
+          gender: nextGender,
+          backgroundKey: profile.backgroundKey,
+          profileComplete: true,
+        });
+        writeCachedProfile(saved);
+        setProfile(saved);
+        setGender(nextGender);
+        patchSession({ name: saved.username, profileComplete: saved.profileComplete });
+      } catch {
+        // character already equipped; gender sync can retry later
+      }
+    }
+  }
+
+  async function handleSelectProfileBackground(backgroundId: BackgroundId) {
+    await appearance.equipBackground(backgroundId);
+  }
+
+  function patchSettingsAppearance(patch: Partial<SettingsAppearanceLocal>) {
+    setSettingsAppearance((prev) => {
+      const next = { ...prev, ...patch };
+      saveSettingsAppearanceLocal(next);
+      return next;
+    });
+  }
+
   if (!session) {
     return <main className="grid min-h-[50vh] place-items-center text-mos-muted">Загрузка…</main>;
   }
 
   const displayName = profileDisplayName(profile, session);
 
-  async function handleSelectBackground(backgroundId: string) {
-    const ok = await appearance.equipBackground(backgroundId);
-    if (ok) setBackgroundPickerOpen(false);
-  }
-
   return (
-    <div className="relative flex min-h-[calc(100vh-72px)] flex-1 flex-col">
+    <div className="relative flex min-h-full flex-1 flex-col">
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-mos-bg" />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url(/media/ui/settings-background.webp)" }}
+        style={{ backgroundImage: `url(${settingsPageBackgroundSrc})` }}
       />
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-black/55" />
 
@@ -257,10 +330,17 @@ export default function SettingsPage() {
           selectedSkinId={presentation.selectedSkinId}
           gender={presentation.gender}
           avatarUrl={profile?.avatarUrl}
-          backgroundSrc={presentation.backgroundSrc}
+          backgroundSrc={settingsHeaderBackgroundSrc}
           avatarBusy={avatarBusy}
           onEditAvatar={() => avatarInputRef.current?.click()}
-          onEditBackground={() => setBackgroundPickerOpen(true)}
+          onEditBackground={() => {
+            setTab("customization");
+            if (typeof window !== "undefined") {
+              const url = new URL(window.location.href);
+              url.searchParams.set("tab", "customization");
+              window.history.replaceState({}, "", url.toString());
+            }
+          }}
         />
         {avatarError ? <p className="w-full text-center text-sm text-red-400">{avatarError}</p> : null}
 
@@ -299,6 +379,27 @@ export default function SettingsPage() {
                 onSubmit={savePersonal}
                 isSubmitting={submitting}
                 errors={errors}
+              />
+            ) : null}
+
+            {tab === "customization" ? (
+              <CustomizationTab
+                ownership={customizationOwnership}
+                settingsPageBackgroundId={settingsAppearance.settingsPageBackgroundId}
+                settingsHeaderBackgroundId={settingsAppearance.settingsHeaderBackgroundId}
+                equippingId={appearance.equippingId}
+                loading={appearance.loading}
+                error={appearance.error}
+                onSelectCharacter={(characterId) => void handleSelectCharacter(characterId)}
+                onSelectProfileBackground={(backgroundId) =>
+                  void handleSelectProfileBackground(backgroundId)
+                }
+                onSelectSettingsPageBackground={(backgroundId) =>
+                  patchSettingsAppearance({ settingsPageBackgroundId: backgroundId })
+                }
+                onSelectSettingsHeaderBackground={(backgroundId) =>
+                  patchSettingsAppearance({ settingsHeaderBackgroundId: backgroundId })
+                }
               />
             ) : null}
 
@@ -360,20 +461,6 @@ export default function SettingsPage() {
             ) : null}
           </section>
         </div>
-
-        <AppearancePickerModal
-          open={backgroundPickerOpen}
-          mode="background"
-          title="Выберите фон профиля"
-          characters={appearance.characters}
-          backgrounds={appearance.backgrounds}
-          equippingId={appearance.equippingId}
-          loading={appearance.loading}
-          error={appearance.error}
-          onClose={() => setBackgroundPickerOpen(false)}
-          onSelectCharacter={() => undefined}
-          onSelectBackground={(backgroundId) => void handleSelectBackground(backgroundId)}
-        />
 
         <AvatarCropModal
           open={Boolean(avatarCropSrc)}

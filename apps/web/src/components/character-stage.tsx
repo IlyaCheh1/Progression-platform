@@ -33,7 +33,7 @@ export default function CharacterStage({
   return (
     <section
       className={cn(
-        "relative flex min-h-[calc(100vh-72px)] flex-1 flex-col overflow-hidden bg-cover md:min-h-[calc(100vh-72px)]",
+        "relative flex min-h-full flex-1 flex-col overflow-hidden bg-cover",
         className,
       )}
       style={{

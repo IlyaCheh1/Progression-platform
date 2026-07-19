@@ -6,14 +6,20 @@ import (
 	"time"
 
 	"github.com/masterofsword/contracts/engines"
+	"github.com/masterofsword/contracts/school"
 )
 
 func TestWaitlistJoinAndClaim(t *testing.T) {
 	p := engines.NewPlatform()
 	p.UpsertStudent(engines.Student{ID: "s1", Login: "w1@local", Password: "x", Mastery: map[string]int64{}, Ranks: map[string]int{}})
+	now := time.Now().UTC()
+	p.School.UpsertSession(school.Session{
+		ID: "sess-test-1", HallID: "hall-main", GroupKey: "test-group", Title: "Test session",
+		StartsAt: now.Add(24 * time.Hour), EndsAt: now.Add(26 * time.Hour), Capacity: 16, Enrolled: 0,
+	})
 	sess := p.School.ListSessions(time.Time{}, time.Time{})
 	if len(sess) == 0 {
-		t.Fatal("no demo session")
+		t.Fatal("expected test session")
 	}
 	id := sess[0].ID
 	var lastBookingID string

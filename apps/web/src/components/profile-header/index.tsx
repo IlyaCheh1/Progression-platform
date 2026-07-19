@@ -32,7 +32,7 @@ export default function ProfileHeader({
   gender,
 }: ProfileHeaderProps) {
   return (
-    <header className="witcher-header relative z-40">
+    <header className="witcher-header relative z-40 w-full shrink-0">
       <div className="flex h-14 w-full items-stretch gap-2 px-3 md:h-[72px] md:gap-4 md:px-5">
         <Link
           href="/"

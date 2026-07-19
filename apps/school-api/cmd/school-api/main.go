@@ -30,24 +30,26 @@ var contentStore *admincontent.Store
 
 func main() {
 	root := seed.FindRoot()
-	seed.MustLoad(platform)
 	contentStore = admincontent.MustLoad(root)
 
 	statePath := env("SCHOOL_STATE_PATH", "")
 	dbURL := env("DATABASE_URL", "")
 	if dbURL != "" {
 		if err := persist.LoadPlatformFromPostgres(platform, dbURL); err != nil {
-			log.Printf("postgres load: %v (continuing with seed)", err)
+			log.Printf("postgres load: %v (will bootstrap roster if empty)", err)
 		} else {
 			log.Printf("restored platform state from postgres row-level repos")
 		}
 	} else if statePath != "" {
 		if err := persist.LoadPlatform(platform, statePath); err != nil {
-			log.Printf("state load: %v (continuing with seed)", err)
+			log.Printf("state load: %v (will bootstrap roster if empty)", err)
 		} else {
 			log.Printf("restored platform state from %s", statePath)
 		}
 	}
+
+	// Production: seed only when DB/state has no students. Local without persistence still seeds.
+	seed.MustLoadIfEmpty(platform)
 
 	saveState := func() {
 		if dbURL != "" {

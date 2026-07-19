@@ -10,7 +10,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
 ROOT = Path(__file__).resolve().parents[1]
-SEED = ROOT / "infra" / "local" / "seed" / "demo-students.json"
+SEED = ROOT / "infra" / "local" / "seed" / "students.json"
 OUT = ROOT / "docs" / "accounts.xlsx"
 
 SERVICE_IDS = {
@@ -104,8 +104,13 @@ def main() -> None:
     ws2.freeze_panes = "A2"
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    wb.save(OUT)
-    print(f"wrote {OUT} ({len(accounts)} accounts)")
+    try:
+        wb.save(OUT)
+        print(f"wrote {OUT} ({len(accounts)} accounts)")
+    except PermissionError:
+        fallback = OUT.with_name("accounts-roster.xlsx")
+        wb.save(fallback)
+        print(f"wrote {fallback} ({len(accounts)} accounts); {OUT.name} is locked")
 
 
 if __name__ == "__main__":

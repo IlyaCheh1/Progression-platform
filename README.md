@@ -28,7 +28,7 @@ pnpm --filter @mos/web dev    # :3000
 
 Optional infra (when Docker available): `docker compose -f infra/local/docker-compose.yml up -d`
 
-Demo accounts: `docs/demo-accounts.md` (Excel seed, local/staging only).
+School accounts (Excel roster + service): `docs/accounts.md` / `docs/accounts.xlsx`.
 
 ## Docs
 

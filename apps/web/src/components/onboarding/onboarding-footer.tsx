@@ -37,12 +37,6 @@ export default function OnboardingFooter({
         </p>
       </GradientLabel>
 
-      {usernameError ? (
-        <p className="absolute top-16 rounded-lg bg-black/60 px-3 py-1.5 text-center text-xs font-medium leading-4 text-mos-danger shadow-lg backdrop-blur-sm xl:top-auto xl:bottom-8">
-          {usernameError}
-        </p>
-      ) : null}
-
       <div
         className={cn(
           "flex h-8 w-full items-center overflow-hidden rounded-xl border bg-[#131525]/90 transition-colors duration-200 xl:h-[52px] xl:rounded-2xl",
@@ -75,6 +69,15 @@ export default function OnboardingFooter({
             ? "Лок'тар огар!"
             : "В Каэр Морхен"}
       </Button>
+
+      {usernameError ? (
+        <p
+          role="alert"
+          className="w-full rounded-lg bg-black/60 px-3 py-1.5 text-center text-[11px] font-medium leading-4 text-mos-danger shadow-lg backdrop-blur-sm xl:text-xs"
+        >
+          {usernameError}
+        </p>
+      ) : null}
     </div>
   );
 }

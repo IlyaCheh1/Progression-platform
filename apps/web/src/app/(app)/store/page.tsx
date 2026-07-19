@@ -171,7 +171,7 @@ export default function StorePage() {
   }
 
   return (
-    <div className="relative flex min-h-[calc(100vh-72px)] flex-1 flex-row items-start justify-center gap-4 px-3 py-3 md:gap-8 md:px-6 md:py-12 md:pt-16">
+    <div className="relative flex min-h-full flex-1 flex-row items-start justify-center gap-4 px-3 py-3 md:gap-8 md:px-6 md:py-12 md:pt-16">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -189,8 +189,8 @@ export default function StorePage() {
             <h5 className="inline-flex items-center gap-2 font-unbounded text-xs font-medium leading-3.5 text-primaryText md:text-[17px] md:leading-6">
               {shell.username}
               <span className="inline-flex items-center gap-1 text-mos-amber" title="Золотые монеты">
-                {shell.balance.toLocaleString("ru-RU")}
                 <GoldCoin className="h-4 w-4" />
+                {shell.balance.toLocaleString("ru-RU")}
               </span>
             </h5>
           </GradientLabel>
@@ -304,9 +304,9 @@ function OfferGrid({
                 <img src={item.imageSrc} alt={item.title} />
               </span>
               {showPrice ? (
-                <span className="absolute bottom-1 left-1/2 z-[3] flex -translate-x-1/2 items-center gap-0.5 rounded bg-black/55 px-1 font-display text-[10px] text-mos-text">
+                <span className="absolute bottom-1 left-1/2 z-[3] flex -translate-x-1/2 items-center gap-0.5 rounded bg-black/55 px-1 py-px font-display text-[8px] leading-none text-mos-text md:text-[9px]">
                   {item.price}
-                  <GoldCoin className="h-3 w-3" />
+                  <GoldCoin className="h-2.5 w-2.5" />
                 </span>
               ) : null}
             </button>
@@ -342,7 +342,7 @@ function SelectedPanel({
         {item.title}
       </p>
       <div
-        className="relative mt-2 h-[180px] w-full bg-cover bg-center drop-shadow-[0_12px_28px_rgba(212,168,75,0.25)] md:mt-4 md:h-[320px] xl:h-[380px]"
+        className="relative mt-2 h-[180px] w-full rounded-2xl bg-cover bg-center drop-shadow-[0_12px_28px_rgba(212,168,75,0.25)] md:mt-4 md:h-[320px] md:rounded-[24px] xl:h-[380px]"
         style={{ backgroundImage: `url('${item.imageSrc}')` }}
       />
       {error ? <p className="mt-2 text-center text-xs text-mos-danger">{error}</p> : null}

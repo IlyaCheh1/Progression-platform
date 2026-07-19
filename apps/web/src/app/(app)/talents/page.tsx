@@ -21,7 +21,7 @@ export default function TalentsPage() {
   } = useTalents();
 
   return (
-    <div className="relative flex min-h-[calc(100vh-72px)] flex-1 flex-col overflow-x-hidden pb-8 md:pb-12">
+    <div className="relative flex min-h-full flex-1 flex-col overflow-x-hidden pb-8 md:pb-12">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"

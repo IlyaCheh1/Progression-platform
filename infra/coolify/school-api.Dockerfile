@@ -21,6 +21,8 @@ WORKDIR /app
 COPY --from=build /out/school-api ./school-api
 COPY 015-platform-development-agent-spec.md ./015-platform-development-agent-spec.md
 COPY infra/local/seed infra/local/seed
+# Production catalog (talents/quests/achievements) + students.json roster bootstrap.
+COPY schemas/content/school.fencing.starter.json schemas/content/school.fencing.starter.json
 
 ENV SCHOOL_API_ADDR=0.0.0.0:8082
 

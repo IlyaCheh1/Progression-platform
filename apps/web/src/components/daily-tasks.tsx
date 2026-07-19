@@ -69,10 +69,13 @@ function TaskRow({ task }: { task: Quest }) {
     <div className="flex w-full flex-col gap-1 transition-opacity duration-200 hover:opacity-80">
       <div className="flex w-full items-start justify-between gap-2 text-[8px] leading-3 md:text-xs md:leading-4">
         <div className="flex min-w-0 items-center gap-2">
-          <div
-            className="h-6 w-6 shrink-0 rounded-full bg-mos-stone bg-cover bg-center md:h-8 md:w-8"
-            style={{ backgroundImage: `url('${questIconUrl(task.key, task.icon)}')` }}
-            role="img"
+          {/* eslint-disable-next-line @next/next/no-img-element -- content icons from public/CDN */}
+          <img
+            src={questIconUrl(task.key, task.icon)}
+            alt=""
+            className="h-6 w-6 shrink-0 rounded-full bg-mos-stone object-cover md:h-8 md:w-8"
+            loading="lazy"
+            decoding="async"
             aria-hidden
           />
           <p className="truncate font-normal text-mos-text">{task.title}</p>

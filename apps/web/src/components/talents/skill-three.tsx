@@ -123,7 +123,7 @@ export default function SkillThree({
   return (
     <div
       className={cn(
-        "relative h-[250px] w-full max-w-[350px] max-xl:max-w-[200px] md:h-[650px] min-[2400px]:h-[975px] min-[2400px]:max-w-[560px]",
+        "relative h-[250px] w-full max-w-[350px] max-xl:max-w-[200px] md:h-[650px] min-[2400px]:h-[878px] min-[2400px]:max-w-[560px]",
         className,
       )}
     >

@@ -63,6 +63,9 @@ const DEFAULT_TREES: ContentTalentTree[] = [
 ];
 
 function talentIconUrl(key: string, icon?: string): string {
+  const base = (
+    process.env.NEXT_PUBLIC_CONTENT_ICONS_BASE_URL ?? "/media/content-icons"
+  ).replace(/\/$/, "");
   if (icon) {
     if (
       icon.startsWith("http://") ||
@@ -71,9 +74,9 @@ function talentIconUrl(key: string, icon?: string): string {
     ) {
       return icon;
     }
-    return `/media/content-icons/${icon}`;
+    return `${base}/${icon.replace(/^\//, "")}`;
   }
-  return `/media/content-icons/talents/${key}.png`;
+  return `${base}/talents/${key}.webp`;
 }
 
 function toMosTalent(t: ContentTalent): MosTalent {

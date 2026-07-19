@@ -47,9 +47,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <TalentsProvider>
-      <div className="min-h-screen bg-mos-bg">
-        <ProfileHeader user={user} {...shell} />
-        {children}
+      <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-mos-bg">
+        <div className="sticky top-0 z-40 shrink-0">
+          <ProfileHeader user={user} {...shell} />
+        </div>
+        <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">{children}</div>
         <SupportChatRoot />
       </div>
     </TalentsProvider>

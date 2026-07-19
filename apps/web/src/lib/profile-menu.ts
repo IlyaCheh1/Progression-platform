@@ -41,6 +41,7 @@ export type SettingsTabItem = {
 
 const BASE_SETTINGS_TABS: SettingsTabItem[] = [
   { id: "personal", label: "Личные данные" },
+  { id: "customization", label: "Кастомизация" },
   { id: "security", label: "Безопасность" },
   { id: "privacy", label: "Приватность" },
   { id: "notifications", label: "Уведомления" },

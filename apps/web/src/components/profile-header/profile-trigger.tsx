@@ -46,8 +46,8 @@ export default function ProfileTrigger({
             className="inline-flex shrink-0 items-center gap-1 font-unbounded text-[9px] font-medium text-mos-amber md:text-sm"
             title="Золотые монеты"
           >
-            {balance.toLocaleString("ru-RU")}
             <GoldCoin className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            {balance.toLocaleString("ru-RU")}
           </span>
           <h6 className="truncate font-unbounded text-[9px] font-medium text-primaryText md:text-sm">
             {username}
@@ -67,8 +67,8 @@ export default function ProfileTrigger({
         className="inline-flex items-center gap-0.5 font-unbounded text-[10px] font-medium text-mos-amber md:hidden"
         title="Золотые монеты"
       >
-        {balance.toLocaleString("ru-RU")}
         <GoldCoin className="h-3.5 w-3.5" />
+        {balance.toLocaleString("ru-RU")}
       </span>
       <CharacterAvatar
         selectedSkinId={selectedSkinId}

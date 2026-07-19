@@ -73,7 +73,7 @@ export default function AdminSchoolPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <h1 className="font-display text-3xl text-mos-text">Админка школы</h1>
-      <p className="mt-2 text-sm text-mos-muted">Ученики из локального seed. Пароли в ответе API скрыты.</p>
+      <p className="mt-2 text-sm text-mos-muted">Ученики школы (ростер / Postgres). Пароли в ответе API скрыты.</p>
       {error && <p className="mt-4 text-sm text-[#c45c2a]">{error}</p>}
       {message && <p className="mt-4 text-sm text-mos-amber">{message}</p>}
       <div className="mt-6 overflow-x-auto border border-mos-line/40">

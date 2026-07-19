@@ -21,15 +21,38 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
-type demoAccount struct {
-	StudentID   string             `json:"studentId"`
-	Name        string             `json:"name"`
-	Login       string             `json:"login"`
-	Password    string             `json:"password"`
-	CharacterID string             `json:"characterId"`
-	Mastery     map[string]float64 `json:"masteryPointsAsOf"`
-	MasteryUnits map[string]int64  `json:"masteryUnits"`
-	Ranks       map[string]int     `json:"ranks"`
+type rosterAccount struct {
+	StudentID    string             `json:"studentId"`
+	Name         string             `json:"name"`
+	Login        string             `json:"login"`
+	Password     string             `json:"password"`
+	Role         string             `json:"role"`
+	Roles        []string           `json:"roles"`
+	CharacterID  string             `json:"characterId"`
+	Mastery      map[string]float64 `json:"masteryPointsAsOf"`
+	MasteryUnits map[string]int64   `json:"masteryUnits"`
+	Ranks        map[string]int     `json:"ranks"`
+}
+
+// Staff roles for known Excel accounts (production).
+var staffRoleOverrides = map[string][]string{
+	"student-maks-kiselev":      {"administrator", "coach"},
+	"student-tatyana-gribanova": {"administrator", "coach"},
+	"student-nikolay-lobaev":    {"student", "coach"},
+}
+
+func applyRoles(acc *rosterAccount) {
+	if roles, ok := staffRoleOverrides[acc.StudentID]; ok {
+		acc.Roles = append([]string(nil), roles...)
+		acc.Role = roles[0]
+		return
+	}
+	if acc.Role == "" {
+		acc.Role = "student"
+	}
+	if len(acc.Roles) == 0 {
+		acc.Roles = []string{acc.Role}
+	}
 }
 
 func main() {
@@ -113,11 +136,11 @@ func main() {
 		weaponSet[strings.ToLower(k)] = true
 	}
 
-	var accounts []demoAccount
+	var accounts []rosterAccount
 	p := engines.NewPlatform()
 	seenHashFile := filepath.Join(root, "infra", "local", "import-state.json")
 	if sameHash(seenHashFile, hash) {
-		fmt.Println("idempotent: same source hash, regenerating deterministic demo docs only")
+		fmt.Println("idempotent: same source hash, regenerating roster docs only")
 	}
 
 	for ri := 0; ri < len(rows); ri++ {
@@ -175,7 +198,7 @@ func main() {
 		pass := first + "123"
 		sid := "student-" + slug
 		cid := "char-" + slug
-		acc := demoAccount{
+		acc := rosterAccount{
 			StudentID:    sid,
 			Name:         name,
 			Login:        login,
@@ -185,10 +208,12 @@ func main() {
 			MasteryUnits: map[string]int64{},
 			Ranks:        map[string]int{},
 		}
+		applyRoles(&acc)
 		_, _ = p.CreateCharacter(cid, "user-"+slug)
 		st := engines.Student{
 			ID: sid, DisplayName: name, UserID: "user-" + slug, CharacterID: cid,
-			Login: login, Password: pass, Mastery: map[string]int64{}, Ranks: map[string]int{},
+			Login: login, Password: pass, Role: acc.Role, Roles: append([]string(nil), acc.Roles...),
+			Mastery: map[string]int64{}, Ranks: map[string]int{},
 		}
 		p.UpsertStudent(st)
 		for alias, pts := range points {
@@ -203,16 +228,32 @@ func main() {
 		accounts = append(accounts, acc)
 	}
 
-	// synthetic roles
-	accounts = append(accounts, demoAccount{
-		StudentID: "student-synthetic-adult", Name: "Взрослый ученик", Login: "adult@mastersword.ru",
-		Password: "adult123", CharacterID: "char-synthetic-adult",
-		Mastery: map[string]float64{}, MasteryUnits: map[string]int64{}, Ranks: map[string]int{},
-	})
+	// Service accounts (stable IDs — do not rename; already in production DB).
+	service := []rosterAccount{
+		{StudentID: "student-synthetic-adult", Name: "Взрослый ученик", Login: "adult@mastersword.ru", Password: "adult123", Role: "student", Roles: []string{"student"}, CharacterID: "char-synthetic-adult"},
+		{StudentID: "student-temp-local", Name: "Локальный ученик", Login: "student@mastersword.ru", Password: "student123", Role: "student", Roles: []string{"student"}, CharacterID: "char-temp-local"},
+		{StudentID: "admin-platform", Name: "Администратор платформы", Login: "admin@mastersword.ru", Password: "admin123", Role: "administrator", Roles: []string{"administrator"}, CharacterID: "char-platform-admin"},
+		{StudentID: "demo-guardian", Name: "Опекун", Login: "guardian@mastersword.ru", Password: "guardian123", Role: "guardian", Roles: []string{"guardian"}, CharacterID: "char-demo-guardian"},
+		{StudentID: "demo-coach", Name: "Тренер", Login: "coach@mastersword.ru", Password: "coach123", Role: "coach", Roles: []string{"coach"}, CharacterID: "char-demo-coach"},
+		{StudentID: "demo-renter", Name: "Арендатор", Login: "renter@mastersword.ru", Password: "renter123", Role: "renter", Roles: []string{"renter"}, CharacterID: "char-demo-renter"},
+	}
+	for _, acc := range service {
+		if acc.Mastery == nil {
+			acc.Mastery = map[string]float64{}
+		}
+		if acc.MasteryUnits == nil {
+			acc.MasteryUnits = map[string]int64{}
+		}
+		if acc.Ranks == nil {
+			acc.Ranks = map[string]int{}
+		}
+		accounts = append(accounts, acc)
+	}
 
 	outDir := filepath.Join(root, "infra", "local", "seed")
 	_ = os.MkdirAll(outDir, 0o755)
 	raw, _ := json.MarshalIndent(map[string]any{
+		"kind":       "production-roster",
 		"source":     filepath.Base(xlsx),
 		"sourceHash": hash,
 		"asOf":       asOfDay.Format("2006-01-02"),
@@ -220,18 +261,23 @@ func main() {
 		"count":      len(accounts),
 		"accounts":   accounts,
 	}, "", "  ")
-	_ = os.WriteFile(filepath.Join(outDir, "demo-students.json"), raw, 0o644)
+	_ = os.WriteFile(filepath.Join(outDir, "students.json"), raw, 0o644)
 	_ = os.WriteFile(seenHashFile, []byte(`{"hash":"`+hash+`"}`), 0o644)
 
 	var md strings.Builder
-	md.WriteString("# Demo Accounts (local/staging only)\n\n")
+	md.WriteString("# School accounts (production roster)\n\n")
 	md.WriteString(fmt.Sprintf("Source: `%s` hash `%s` as-of `%s`\n\n", filepath.Base(xlsx), hash[:12], asOfDay.Format("2006-01-02")))
-	md.WriteString("| Name | Login | Password |\n|---|---|---|\n")
+	md.WriteString("Initial passwords — change after first login in production.\n\n")
+	md.WriteString("| Name | Role | Login | Password |\n|---|---|---|---|\n")
 	for _, a := range accounts {
-		md.WriteString(fmt.Sprintf("| %s | `%s` | `%s` |\n", a.Name, a.Login, a.Password))
+		role := a.Role
+		if len(a.Roles) > 0 {
+			role = strings.Join(a.Roles, ", ")
+		}
+		md.WriteString(fmt.Sprintf("| %s | %s | `%s` | `%s` |\n", a.Name, role, a.Login, a.Password))
 	}
-	_ = os.WriteFile(filepath.Join(root, "docs", "demo-accounts.md"), []byte(md.String()), 0o644)
-	fmt.Printf("seeded %d accounts -> infra/local/seed/demo-students.json and docs/demo-accounts.md\n", len(accounts))
+	_ = os.WriteFile(filepath.Join(root, "docs", "accounts.md"), []byte(md.String()), 0o644)
+	fmt.Printf("seeded %d accounts -> infra/local/seed/students.json and docs/accounts.md\n", len(accounts))
 }
 
 func pickMonthSheet(f *excelize.File, month int) string {

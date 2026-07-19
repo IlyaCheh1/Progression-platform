@@ -183,8 +183,10 @@ def main() -> None:
             {
                 "studentId": f"student-{slug}",
                 "name": name,
-                "login": f"demo.{slug}@masterofsword.local",
-                "password": f"MoS-Demo-{title_slug(slug)}-2026!",
+                "login": f"{slug}@mastersword.ru",
+                "password": f"{slug.split('-')[0]}123",
+                "role": "student",
+                "roles": ["student"],
                 "characterId": f"char-{slug}",
                 "masteryPointsAsOf": points,
                 "masteryUnits": units,
@@ -196,9 +198,11 @@ def main() -> None:
     accounts.append(
         {
             "studentId": "student-synthetic-adult",
-            "name": "Synthetic Adult",
-            "login": "demo.adult@masterofsword.local",
-            "password": "MoS-Demo-Adult-2026!",
+            "name": "Взрослый ученик",
+            "login": "adult@mastersword.ru",
+            "password": "adult123",
+            "role": "student",
+            "roles": ["student"],
             "characterId": "char-synthetic-adult",
             "masteryPointsAsOf": {},
             "masteryUnits": {},
@@ -207,6 +211,7 @@ def main() -> None:
     )
 
     out = {
+        "kind": "production-roster",
         "source": xlsx.name,
         "sourceHash": digest,
         "asOf": as_of.isoformat(),
@@ -216,17 +221,19 @@ def main() -> None:
     }
     seed_dir = ROOT / "infra" / "local" / "seed"
     seed_dir.mkdir(parents=True, exist_ok=True)
-    (seed_dir / "demo-students.json").write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+    (seed_dir / "students.json").write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
     (ROOT / "infra" / "local" / "import-state.json").write_text(json.dumps({"hash": digest}), encoding="utf-8")
 
     md = [
-        "# Demo Accounts (local/staging only)\n",
+        "# School accounts (production roster)\n",
         f"\nSource: `{xlsx.name}` hash `{digest[:12]}` as-of `{as_of.isoformat()}`\n",
-        "\n| Name | Login | Password |\n|---|---|---|\n",
+        "\nInitial passwords — change after first login in production.\n",
+        "\n| Name | Role | Login | Password |\n|---|---|---|---|\n",
     ]
     for a in accounts:
-        md.append(f"| {a['name']} | `{a['login']}` | `{a['password']}` |\n")
-    (ROOT / "docs" / "demo-accounts.md").write_text("".join(md), encoding="utf-8")
+        role = ", ".join(a.get("roles") or [a.get("role") or "student"])
+        md.append(f"| {a['name']} | {role} | `{a['login']}` | `{a['password']}` |\n")
+    (ROOT / "docs" / "accounts.md").write_text("".join(md), encoding="utf-8")
 
     nonempty = sum(1 for a in accounts if a["masteryUnits"])
     print(f"seeded {len(accounts)} accounts ({nonempty} with mastery) sheet={sheet_name} asOf={as_of}")

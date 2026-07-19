@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Upload quest/achievement PNG icons to S3.
+ * Upload quest/achievement/talent WebP (and PNG) icons to S3.
  *
  * Local:
  *   node --env-file=infra/local/.env scripts/upload-content-icons-to-s3.mjs

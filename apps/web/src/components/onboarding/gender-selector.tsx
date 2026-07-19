@@ -32,7 +32,7 @@ export default function GenderSelector({ value, onChange, className }: GenderSel
   return (
     <div
       className={cn(
-        "relative mx-auto inline-flex h-8 w-fit items-center justify-start overflow-hidden rounded-3xl bg-mos-bg/60 p-1 backdrop-blur-[6px] xl:h-[60px] xl:p-2",
+        "relative mx-auto inline-flex h-8 w-fit items-center justify-start gap-2 overflow-hidden rounded-3xl bg-mos-bg/60 p-1 backdrop-blur-[6px] xl:h-[60px] xl:p-2",
         className,
       )}
       role="radiogroup"
@@ -52,7 +52,7 @@ export default function GenderSelector({ value, onChange, className }: GenderSel
     >
       {activeIndex >= 0 && (
         <div
-          className="absolute top-1 z-0 h-6 rounded-2xl bg-gradient-controls-primary-active transition-transform duration-300 ease-out xl:top-2 xl:h-11"
+          className="pointer-events-none absolute top-1 z-0 h-6 rounded-2xl bg-gradient-controls-primary-active transition-transform duration-300 ease-out xl:top-2 xl:h-11"
           style={{
             width: optionWidth,
             transform: `translateX(${activeIndex * (optionWidth + gap)}px)`,
@@ -69,14 +69,14 @@ export default function GenderSelector({ value, onChange, className }: GenderSel
             role="radio"
             aria-checked={active}
             className={cn(
-              "relative z-10 flex h-6 items-center justify-center rounded-2xl px-2.5 font-unbounded text-xs uppercase tracking-wide transition-colors duration-200",
-              "xl:h-11",
+              "relative z-10 inline-flex h-6 items-center justify-center rounded-2xl px-0 text-center font-unbounded text-xs uppercase leading-none tracking-wide transition-colors duration-200",
+              "xl:h-11 xl:text-sm",
               active ? "text-black" : "text-mos-text hover:bg-white/10",
             )}
             style={{ width: optionWidth, minWidth: optionWidth, maxWidth: optionWidth }}
             onClick={() => onChange(option.value)}
           >
-            {option.label}
+            <span className="block w-full text-center leading-none">{option.label}</span>
           </button>
         );
       })}

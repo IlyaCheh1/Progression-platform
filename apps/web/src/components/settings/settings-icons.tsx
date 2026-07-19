@@ -62,8 +62,17 @@ export function IconKey(props: IconProps) {
   );
 }
 
+export function IconPalette(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 2a10 10 0 0 0-1 19.95V19a2 2 0 0 1 2-2h.5a2.5 2.5 0 0 0 0-5H13a1 1 0 0 1 0-2h3.5A3.5 3.5 0 0 0 20 6.5 8.5 8.5 0 0 0 12 2Zm-5 9.5A1.5 1.5 0 1 1 8.5 10 1.5 1.5 0 0 1 7 11.5Zm3-4A1.5 1.5 0 1 1 11.5 6 1.5 1.5 0 0 1 10 7.5Zm4 0A1.5 1.5 0 1 1 15.5 6 1.5 1.5 0 0 1 14 7.5Zm3 4A1.5 1.5 0 1 1 18.5 10 1.5 1.5 0 0 1 17 11.5Z" />
+    </svg>
+  );
+}
+
 export const SETTINGS_TAB_ICONS: Record<string, (props: IconProps) => ReactNode> = {
   personal: (p) => <IconUser {...p} />,
+  customization: (p) => <IconPalette {...p} />,
   security: (p) => <IconShield {...p} />,
   privacy: (p) => <IconEyeSlash {...p} />,
   notifications: (p) => <IconBell {...p} />,

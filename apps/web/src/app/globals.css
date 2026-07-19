@@ -221,7 +221,7 @@ body {
   @apply relative z-0 flex h-full w-full items-center justify-center overflow-hidden rounded-lg px-2 py-3 md:rounded-2xl;
 }
 
-.og-inventory-slot img {
+.og-inventory-slot-inner img {
   @apply relative z-0 h-full w-full object-contain object-center drop-shadow-[0_8px_16px_rgba(212,168,75,0.2)] transition-opacity duration-300;
 }
 

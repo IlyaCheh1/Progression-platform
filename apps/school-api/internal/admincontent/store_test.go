@@ -1,6 +1,39 @@
 package admincontent
 
-import "testing"
+import (
+	"os"
+	"path/filepath"
+	"testing"
+)
+
+func TestMustLoadLoadsStarterTalents(t *testing.T) {
+	root := t.TempDir()
+	schemaDir := filepath.Join(root, "schemas", "content")
+	if err := os.MkdirAll(schemaDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	starter := `{
+		"talentTrees":[{"id":"arsenal.paths","title":"Путь клинка","theme":"blade"}],
+		"talents":[{"key":"arsenal.stance","title":"Стойка","rank":1,"treeId":"arsenal.paths"}],
+		"quests":[{"key":"starter.q","title":"Starter quest","type":"DAILY","xp":10}],
+		"achievements":[]
+	}`
+	if err := os.WriteFile(filepath.Join(schemaDir, "school.fencing.starter.json"), []byte(starter), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	st := MustLoad(root)
+	if _, ok := st.GetTalent("arsenal.stance"); !ok {
+		t.Fatal("expected talent from starter catalog")
+	}
+	snap := st.Snapshot()
+	if len(snap.Talents) != 1 {
+		t.Fatalf("expected 1 talent, got %d", len(snap.Talents))
+	}
+	if len(snap.Quests) != 1 {
+		t.Fatalf("expected 1 quest, got %d", len(snap.Quests))
+	}
+}
 
 func TestUpsertQuestAndAchievement(t *testing.T) {
 	s := New()

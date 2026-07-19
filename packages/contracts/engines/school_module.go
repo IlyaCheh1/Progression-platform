@@ -108,11 +108,14 @@ func (sm *SchoolModule) seedDefaults() {
 		Code: "salute.basic", Name: "Базовый салют", AllowedWeapons: mastery.WeaponKeys, CurriculumVersionID: "v1",
 	}
 	sm.equipment["blade.800"] = training.EquipmentSpec{ID: "blade.800", Name: "Клинок 800г", MassGrams: 800}
-	now := time.Now().UTC()
-	sm.sessions["sess-demo-1"] = &school.Session{
-		ID: "sess-demo-1", HallID: "hall-main", GroupKey: "witcher-evening", Title: "Курс Ведьмака — вечер",
-		StartsAt: now.Add(24 * time.Hour), EndsAt: now.Add(26 * time.Hour), Capacity: 16, Enrolled: 0,
-	}
+}
+
+// UpsertSession inserts or replaces a training session (tests / admin scheduling).
+func (sm *SchoolModule) UpsertSession(s school.Session) {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	cp := s
+	sm.sessions[s.ID] = &cp
 }
 
 func (sm *SchoolModule) ListHalls() []school.Hall {

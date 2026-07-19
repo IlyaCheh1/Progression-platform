@@ -371,26 +371,25 @@ func (s *Store) UpsertSchool(school School) error {
 
 func MustLoad(root string) *Store {
 	st := New()
+	// Production catalog: starter.json (web) and/or schema copy. Merge all found.
 	candidates := []string{
 		filepath.Join(root, "apps", "web", "public", "content", "starter.json"),
 		filepath.Join(root, "schemas", "content", "school.fencing.starter.json"),
-		filepath.Join(root, "infra", "local", "seed", "demo-content.json"),
 	}
-	var loaded string
+	var loaded []string
 	for _, path := range candidates {
 		if err := st.LoadFile(path); err != nil {
 			continue
 		}
-		loaded = path
-		break
+		loaded = append(loaded, path)
 	}
-	if loaded == "" {
+	if len(loaded) == 0 {
 		fmt.Fprintf(os.Stderr, "content seed warning: no starter catalog found under %s\n", root)
 		return st
 	}
 	cat := st.Snapshot()
 	fmt.Printf(
-		"loaded admin content from %s: %d quests, %d achievements, %d talents, %d items, %d rewards, %d schools\n",
+		"loaded admin content from %v: %d quests, %d achievements, %d talents, %d items, %d rewards, %d schools\n",
 		loaded,
 		len(cat.Quests),
 		len(cat.Achievements),
