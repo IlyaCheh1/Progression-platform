@@ -198,7 +198,7 @@ const setupIntersectionObserver = () => {
   }
 };
 
-const { newMessages$, sendMessage, connected, disableReconnection, lastError } = useRxSocket({
+const { newMessages$, sendMessage, connected, disableReconnection } = useRxSocket({
   conversationId: computed(() => props.conversationId),
   onCreateNewConversation: props.onCreateNewConversation,
   onReconnected: () => {
@@ -212,9 +212,12 @@ const rateConversation = useRateConversation();
 
 // Логика показа оверлея состояния подключения
 const showConnectionOverlay = computed(() => {
-  // Показываем оверлей если есть ошибка инициализации чата или проблемы с WebSocket подключением
+  if (props.chatInitError) {
+    return chatState.value !== 'over' && chatState.value !== 'thankYou';
+  }
+
   return (
-    (!!props.chatInitError || !connected.value || !!lastError.value) &&
+    !connected.value &&
     chatState.value !== 'over' &&
     chatState.value !== 'thankYou'
   );
@@ -224,7 +227,7 @@ const connectionStatusText = computed(() => {
   if (props.chatInitError) {
     return 'Чат недоступен. Попробуйте позже';
   }
-  if (lastError.value || !connected.value) {
+  if (!connected.value) {
     return 'Устанавливаем связь';
   }
   return 'Подключено';

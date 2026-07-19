@@ -1,5 +1,5 @@
 <template>
-  <div id="chatContainer" ref="chatContainerRef" :class="containerClasses">
+  <div id="chatContainer" :class="containerClasses">
     <!-- Полноэкранная подложка с backdrop-blur (только в fullscreen режиме) -->
     <div
       v-if="shouldUseFullscreen && isOpen"
@@ -87,6 +87,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useAttribute, type OgChatAttributes } from '../composables/useAttribute';
 import { useDevice } from '../composables/useDevice';
 import { useChatSession } from '../composables/useChatSession';
+import { setChatEndpoints } from '../lib/chat-config';
 import Chat from '../assets/Chat.svg';
 import ChatBgGradients from './ChatBgGradients.vue';
 import ChatHeader from './ChatHeader.vue';
@@ -103,7 +104,17 @@ const props = withDefaults(defineProps<OgChatAttributes>(), {
   userId: undefined,
   userName: undefined,
   topic: undefined,
+  apiBaseUrl: undefined,
+  wsBaseUrl: undefined,
 });
+
+watch(
+  () => [props.apiBaseUrl, props.wsBaseUrl] as const,
+  ([apiBaseUrl, wsBaseUrl]) => {
+    setChatEndpoints(apiBaseUrl, wsBaseUrl);
+  },
+  { immediate: true }
+);
 
 const {
   conversationId,
@@ -117,9 +128,6 @@ const {
   topic: computed(() => props.topic || ''),
   needToInitializeChat: computed(() => isChatEverOpened.value), // Инициализируем только когда открыт чат
 });
-
-// ref для контейнера чата для отслеживания кликов снаружи
-const chatContainerRef = ref<HTMLElement | null>(null);
 
 const visibleMessageDate = ref<string | Date>(new Date());
 

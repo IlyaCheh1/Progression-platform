@@ -1,6 +1,6 @@
 /** Prompts for PNG content icons — Master of the Sword style (match hero set). */
 export const STYLE_SUFFIX =
-  "Square game icon badge, dark cracked stone texture background, ornate bronze and gold metallic square frame with corner spikes, medieval Italian fencing school aesthetic, Master of the Sword, detailed dark fantasy RPG illustration, cinematic lighting, centered composition, no text, no watermark, 1:1";
+  "Square game icon badge, dark cracked stone texture background, clean bronze and gold metallic circular frame without corner ornaments, medieval Italian fencing school aesthetic, Master of the Sword, detailed dark fantasy RPG illustration, cinematic lighting, centered composition, no text, no watermark, 1:1";
 
 export const questPrompts = {
   "path.profile":

@@ -6,6 +6,7 @@ import type { GenderId } from "@/lib/avatars";
 import { characterInitial } from "@/lib/characters";
 import type { OgCharacterId } from "@/lib/characters";
 import { readCapsBalance } from "@/lib/caps";
+import { profileDisplayName } from "@/lib/profile-menu";
 import type { SessionUser } from "@/lib/session";
 
 const XP_FALLBACK = 500;
@@ -46,7 +47,7 @@ export function useProfileShellData(user: SessionUser | null, profile?: PlayerPr
     const balance = typeof window !== "undefined" ? readCapsBalance() : 0;
 
     setData({
-      username: profile?.username || user.name || user.login,
+      username: profileDisplayName(profile, user),
       balance,
       level: profile?.level ?? 1,
       currentXp: profile?.xp ?? 0,

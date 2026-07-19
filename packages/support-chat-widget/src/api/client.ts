@@ -112,8 +112,8 @@ export interface ErrorResponse {
   message: string;
 }
 
-// API Configuration
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://chat.onlygames.ru';
+import { getApiBaseUrl } from '../lib/chat-config';
+
 const API_PREFIX = '/api/v1';
 
 export class ApiError extends Error {
@@ -125,7 +125,7 @@ export class ApiError extends Error {
 
 // Main API client function
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = `${API_BASE}${API_PREFIX}${path}`;
+  const url = `${getApiBaseUrl()}${API_PREFIX}${path}`;
 
   const res = await fetch(url, {
     credentials: 'include', // For SSO cookies

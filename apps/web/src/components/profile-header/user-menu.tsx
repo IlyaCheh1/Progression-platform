@@ -14,12 +14,6 @@ import type { GenderId } from "@/lib/avatars";
 import type { OgCharacterId } from "@/lib/characters";
 import { cn } from "@/lib/utils";
 
-function profileMenuDisplayName(username: string, user: SessionUser): string {
-  if (username && !username.includes("@")) return username;
-  if (user.name && !user.name.includes("@")) return user.name;
-  return "Ученик";
-}
-
 type UserMenuProps = {
   user: SessionUser;
   username: string;
@@ -46,7 +40,6 @@ export default function UserMenu({
 }: UserMenuProps) {
   const router = useRouter();
   const roleItems = getRoleCabinetMenuItems(user.roles);
-  const displayName = profileMenuDisplayName(username, user);
 
   function navigate(href: string) {
     onClose();
@@ -69,7 +62,7 @@ export default function UserMenu({
           className="h-16 w-16 rounded-2xl md:h-20 md:w-20"
         />
         <h3 className="font-unbounded text-sm font-medium leading-4 text-primaryText md:text-base md:leading-6">
-          {displayName}
+          {username}
         </h3>
       </div>
 

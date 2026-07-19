@@ -69,14 +69,14 @@ function mediaBaseUrl() {
   return `${endpoint.replace(/\/$/, "")}/${bucket}/${prefix}`;
 }
 
-function collectPngFiles(dir, acc = []) {
+function collectIconFiles(dir, acc = []) {
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
     if (statSync(full).isDirectory()) {
-      collectPngFiles(full, acc);
+      collectIconFiles(full, acc);
       continue;
     }
-    if (/\.png$/i.test(name)) acc.push(full);
+    if (/\.(webp|png)$/i.test(name)) acc.push(full);
   }
   return acc;
 }
@@ -88,13 +88,13 @@ const client = new S3Client({
   forcePathStyle: true,
 });
 
-const files = collectPngFiles(iconsRoot).sort();
+const files = collectIconFiles(iconsRoot).sort();
 if (files.length === 0) {
-  console.error(`No PNG files under ${iconsRoot}`);
+  console.error(`No icon files under ${iconsRoot}`);
   process.exit(1);
 }
 
-console.log(`Uploading ${files.length} PNG icons from ${iconsRoot}`);
+console.log(`Uploading ${files.length} icons from ${iconsRoot}`);
 console.log(`Bucket=${bucket} prefix=${prefix}/ endpoint=${endpoint}`);
 
 const uploaded = [];

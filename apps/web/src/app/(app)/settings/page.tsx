@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import AppearancePickerModal, {
+  type AppearancePickerMode,
+} from "@/components/appearance/appearance-picker-modal";
 import SettingsProfileHeader from "@/components/settings/profile-header";
 import NotificationsTab from "@/components/settings/tabs/notifications";
 import PersonalInfoTab from "@/components/settings/tabs/personal-info";
@@ -11,6 +14,7 @@ import RolePanel, { RoleLink } from "@/components/settings/tabs/role-panel";
 import SecurityTab from "@/components/settings/tabs/security";
 import SideBar from "@/components/side-bar";
 import { useAvatarPresentation } from "@/components/character-avatar";
+import { useAppearanceInventory } from "@/hooks/use-appearance-inventory";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
 import {
   messageForProfileError,
@@ -21,6 +25,7 @@ import {
   formatRoleBadges,
   getRoleCabinetMenuItems,
   getSettingsTabs,
+  profileDisplayName,
 } from "@/lib/profile-menu";
 import { routes } from "@/lib/routes";
 import {
@@ -43,6 +48,8 @@ export default function SettingsPage() {
   const [session, setSession] = useState<SessionUser | null>(null);
   const { profile, setProfile } = usePlayerProfile(session);
   const presentation = useAvatarPresentation(profile ?? undefined);
+  const appearance = useAppearanceInventory(session, { onProfileUpdated: setProfile });
+  const [pickerMode, setPickerMode] = useState<AppearancePickerMode | null>(null);
 
   const tabs = useMemo(() => getSettingsTabs(session?.roles ?? ["student"]), [session?.roles]);
   const roleLinks = useMemo(() => getRoleCabinetMenuItems(session?.roles ?? []), [session?.roles]);
@@ -159,7 +166,17 @@ export default function SettingsPage() {
     return <main className="grid min-h-[50vh] place-items-center text-mos-muted">Загрузка…</main>;
   }
 
-  const displayName = profile?.username || session.name || session.login;
+  const displayName = profileDisplayName(profile, session);
+
+  async function handleSelectCharacter(characterId: string) {
+    const ok = await appearance.equipCharacter(characterId);
+    if (ok) setPickerMode(null);
+  }
+
+  async function handleSelectBackground(backgroundId: string) {
+    const ok = await appearance.equipBackground(backgroundId);
+    if (ok) setPickerMode(null);
+  }
 
   return (
     <main className="mx-auto mb-20 mt-3 flex w-full max-w-[840px] flex-col items-center gap-3 px-3 md:mt-11 md:mb-40 md:gap-6 md:px-4">
@@ -171,6 +188,9 @@ export default function SettingsPage() {
         xpToNext={profile?.xpToNextLevel ?? 500}
         selectedSkinId={presentation.selectedSkinId}
         gender={presentation.gender}
+        backgroundSrc={presentation.backgroundSrc}
+        onEditAvatar={() => setPickerMode("character")}
+        onEditBackground={() => setPickerMode("background")}
       />
 
       <div className="flex w-full flex-col items-start gap-3 md:flex-row md:gap-6">
@@ -269,6 +289,20 @@ export default function SettingsPage() {
           ) : null}
         </section>
       </div>
+
+      <AppearancePickerModal
+        open={pickerMode !== null}
+        mode={pickerMode ?? "character"}
+        title={pickerMode === "background" ? "Выберите фон профиля" : "Выберите аватар"}
+        characters={appearance.characters}
+        backgrounds={appearance.backgrounds}
+        equippingId={appearance.equippingId}
+        loading={appearance.loading}
+        error={appearance.error}
+        onClose={() => setPickerMode(null)}
+        onSelectCharacter={(characterId) => void handleSelectCharacter(characterId)}
+        onSelectBackground={(backgroundId) => void handleSelectBackground(backgroundId)}
+      />
     </main>
   );
 }

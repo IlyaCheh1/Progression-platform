@@ -1,4 +1,4 @@
-/** Content icon URLs for quests and achievements (PNG on CDN/S3 or local public). */
+/** Content icon URLs for quests and achievements (WebP on CDN/S3 or local public). */
 const ICONS_BASE = (
   process.env.NEXT_PUBLIC_CONTENT_ICONS_BASE_URL ?? "/media/content-icons"
 ).replace(/\/$/, "");
@@ -10,7 +10,7 @@ function resolveIcon(icon: string | undefined, kind: "quests" | "achievements", 
     }
     return `${ICONS_BASE}/${icon.replace(/^\//, "")}`;
   }
-  return `${ICONS_BASE}/${kind}/${key}.png`;
+  return `${ICONS_BASE}/${kind}/${key}.webp`;
 }
 
 export function questIconUrl(key: string, icon?: string): string {

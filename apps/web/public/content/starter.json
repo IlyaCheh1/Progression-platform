@@ -8,196 +8,196 @@
       "title": "Лист персонажа",
       "type": "ONBOARDING",
       "xp": 300,
-      "icon": "quests/path.profile.png"
+      "icon": "quests/path.profile.webp"
     },
     {
       "key": "path.safety",
       "title": "Сначала безопасность",
       "type": "ONBOARDING",
       "xp": 300,
-      "icon": "quests/path.safety.png"
+      "icon": "quests/path.safety.webp"
     },
     {
       "key": "path.first_trial",
       "title": "Первый выход в зал",
       "type": "ONBOARDING",
       "xp": 300,
-      "icon": "quests/path.first_trial.png"
+      "icon": "quests/path.first_trial.webp"
     },
     {
       "key": "path.first_training",
       "title": "Первый салют",
       "type": "ONBOARDING",
       "xp": 500,
-      "icon": "quests/path.first_training.png"
+      "icon": "quests/path.first_training.webp"
     },
     {
       "key": "path.first_record",
       "title": "Запись в хронике",
       "type": "ONBOARDING",
       "xp": 300,
-      "icon": "quests/path.first_record.png"
+      "icon": "quests/path.first_record.webp"
     },
     {
       "key": "path.choose_weapon",
       "title": "Выбери путь",
       "type": "ONBOARDING",
       "xp": 250,
-      "icon": "quests/path.choose_weapon.png"
+      "icon": "quests/path.choose_weapon.webp"
     },
     {
       "key": "path.monthly_roll",
       "title": "Бросок судьбы",
       "type": "ONBOARDING",
       "xp": 150,
-      "icon": "quests/path.monthly_roll.png"
+      "icon": "quests/path.monthly_roll.webp"
     },
     {
       "key": "path.open_inventory",
       "title": "Арсенал героя",
       "type": "ONBOARDING",
       "xp": 100,
-      "icon": "quests/path.open_inventory.png"
+      "icon": "quests/path.open_inventory.webp"
     },
     {
       "key": "path.choose_cosmetic",
       "title": "Собственный герб",
       "type": "ONBOARDING",
       "xp": 100,
-      "icon": "quests/path.choose_cosmetic.png"
+      "icon": "quests/path.choose_cosmetic.webp"
     },
     {
       "key": "path.complete",
       "title": "Путь начат",
       "type": "ONBOARDING",
       "xp": 1000,
-      "icon": "quests/path.complete.png"
+      "icon": "quests/path.complete.webp"
     },
     {
       "key": "training.ready",
       "title": "Готовность",
       "type": "DAILY",
       "xp": 100,
-      "icon": "quests/training.ready.png"
+      "icon": "quests/training.ready.webp"
     },
     {
       "key": "training.focus",
       "title": "Технический фокус",
       "type": "DAILY",
       "xp": 150,
-      "icon": "quests/training.focus.png"
+      "icon": "quests/training.focus.webp"
     },
     {
       "key": "training.balance",
       "title": "Обе стороны",
       "type": "DAILY",
       "xp": 100,
-      "icon": "quests/training.balance.png"
+      "icon": "quests/training.balance.webp"
     },
     {
       "key": "training.partner",
       "title": "Работа в паре",
       "type": "DAILY",
       "xp": 150,
-      "icon": "quests/training.partner.png"
+      "icon": "quests/training.partner.webp"
     },
     {
       "key": "training.reflection",
       "title": "Страница хроники",
       "type": "WEEKLY",
       "xp": 100,
-      "icon": "quests/training.reflection.png"
+      "icon": "quests/training.reflection.webp"
     },
     {
       "key": "weekly.rhythm.2",
       "title": "Держать ритм",
       "type": "WEEKLY",
       "xp": 300,
-      "icon": "quests/weekly.rhythm.2.png"
+      "icon": "quests/weekly.rhythm.2.webp"
     },
     {
       "key": "weekly.rhythm.3",
       "title": "Три шага вперёд",
       "type": "WEEKLY",
       "xp": 500,
-      "icon": "quests/weekly.rhythm.3.png"
+      "icon": "quests/weekly.rhythm.3.webp"
     },
     {
       "key": "weekly.two_paths",
       "title": "Два пути",
       "type": "WEEKLY",
       "xp": 400,
-      "icon": "quests/weekly.two_paths.png"
+      "icon": "quests/weekly.two_paths.webp"
     },
     {
       "key": "weekly.curriculum",
       "title": "Урок мастера",
       "type": "WEEKLY",
       "xp": 400,
-      "icon": "quests/weekly.curriculum.png"
+      "icon": "quests/weekly.curriculum.webp"
     },
     {
       "key": "weekly.history",
       "title": "След Мароццо",
       "type": "WEEKLY",
       "xp": 250,
-      "icon": "quests/weekly.history.png"
+      "icon": "quests/weekly.history.webp"
     },
     {
       "key": "weekly.community",
       "title": "Товарищ по залу",
       "type": "WEEKLY",
       "xp": 300,
-      "icon": "quests/weekly.community.png"
+      "icon": "quests/weekly.community.webp"
     },
     {
       "key": "weekly.event_prep",
       "title": "Перед событием",
       "type": "WEEKLY",
       "xp": 300,
-      "icon": "quests/weekly.event_prep.png"
+      "icon": "quests/weekly.event_prep.webp"
     },
     {
       "key": "monthly.roll",
       "title": "Восемь граней",
       "type": "MONTHLY",
       "xp": 150,
-      "icon": "quests/monthly.roll.png"
+      "icon": "quests/monthly.roll.webp"
     },
     {
       "key": "monthly.sessions.8",
       "title": "Дисциплина месяца",
       "type": "MONTHLY",
       "xp": 1000,
-      "icon": "quests/monthly.sessions.8.png"
+      "icon": "quests/monthly.sessions.8.webp"
     },
     {
       "key": "monthly.new_path",
       "title": "Новый клинок",
       "type": "MONTHLY",
       "xp": 500,
-      "icon": "quests/monthly.new_path.png"
+      "icon": "quests/monthly.new_path.webp"
     },
     {
       "key": "monthly.consistency",
       "title": "Без спешки, без перерыва",
       "type": "MONTHLY",
       "xp": 750,
-      "icon": "quests/monthly.consistency.png"
+      "icon": "quests/monthly.consistency.webp"
     },
     {
       "key": "monthly.event",
       "title": "Жизнь школы",
       "type": "MONTHLY",
       "xp": 500,
-      "icon": "quests/monthly.event.png"
+      "icon": "quests/monthly.event.webp"
     },
     {
       "key": "season.eight_paths",
       "title": "Восемь путей",
       "type": "SEASONAL",
       "xp": 3000,
-      "icon": "quests/season.eight_paths.png"
+      "icon": "quests/season.eight_paths.webp"
     }
   ],
   "achievements": [
@@ -206,42 +206,42 @@
       "title": "Первый салют",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/start.first_salute.png"
+      "icon": "achievements/start.first_salute.webp"
     },
     {
       "key": "start.safety",
       "title": "Береги себя и партнёра",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/start.safety.png"
+      "icon": "achievements/start.safety.webp"
     },
     {
       "key": "start.character",
       "title": "Герой вступает в зал",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/start.character.png"
+      "icon": "achievements/start.character.webp"
     },
     {
       "key": "start.inventory",
       "title": "Первый трофей",
       "tiers": 1,
       "xp": 250,
-      "icon": "achievements/start.inventory.png"
+      "icon": "achievements/start.inventory.webp"
     },
     {
       "key": "start.quest",
       "title": "Задание выполнено",
       "tiers": 1,
       "xp": 250,
-      "icon": "achievements/start.quest.png"
+      "icon": "achievements/start.quest.webp"
     },
     {
       "key": "start.event",
       "title": "Часть школы",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/start.event.png"
+      "icon": "achievements/start.event.webp"
     },
     {
       "key": "practice.sessions",
@@ -256,7 +256,7 @@
         500
       ],
       "xp": 250,
-      "icon": "achievements/practice.sessions.png"
+      "icon": "achievements/practice.sessions.webp"
     },
     {
       "key": "practice.weeks",
@@ -268,7 +268,7 @@
         52
       ],
       "xp": 0,
-      "icon": "achievements/practice.weeks.png"
+      "icon": "achievements/practice.weeks.webp"
     },
     {
       "key": "practice.years",
@@ -280,56 +280,56 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/practice.years.png"
+      "icon": "achievements/practice.years.webp"
     },
     {
       "key": "practice.return",
       "title": "Возвращение в зал",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/practice.return.png"
+      "icon": "achievements/practice.return.webp"
     },
     {
       "key": "mastery.first_rank",
       "title": "Первый знак",
       "tiers": 1,
       "xp": 750,
-      "icon": "achievements/mastery.first_rank.png"
+      "icon": "achievements/mastery.first_rank.webp"
     },
     {
       "key": "mastery.four_paths",
       "title": "Четыре пути",
       "tiers": 1,
       "xp": 1500,
-      "icon": "achievements/mastery.four_paths.png"
+      "icon": "achievements/mastery.four_paths.webp"
     },
     {
       "key": "mastery.eight_paths",
       "title": "Универсальный воин",
       "tiers": 1,
       "xp": 3000,
-      "icon": "achievements/mastery.eight_paths.png"
+      "icon": "achievements/mastery.eight_paths.webp"
     },
     {
       "key": "mastery.two_rank_five",
       "title": "Две школы",
       "tiers": 1,
       "xp": 3000,
-      "icon": "achievements/mastery.two_rank_five.png"
+      "icon": "achievements/mastery.two_rank_five.webp"
     },
     {
       "key": "mastery.one_rank_ten",
       "title": "Мастер оружия",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/mastery.one_rank_ten.png"
+      "icon": "achievements/mastery.one_rank_ten.webp"
     },
     {
       "key": "mastery.all_rank_ten",
       "title": "Мастер Меча",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/mastery.all_rank_ten.png"
+      "icon": "achievements/mastery.all_rank_ten.webp"
     },
     {
       "key": "mastery.spada_a_una_mano.rank",
@@ -347,7 +347,7 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spada_a_una_mano.rank.png"
+      "icon": "achievements/mastery.spada_a_una_mano.rank.webp"
     },
     {
       "key": "mastery.due_spade.rank",
@@ -365,7 +365,7 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.due_spade.rank.png"
+      "icon": "achievements/mastery.due_spade.rank.webp"
     },
     {
       "key": "mastery.spada_e_scudo.rank",
@@ -383,7 +383,7 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spada_e_scudo.rank.png"
+      "icon": "achievements/mastery.spada_e_scudo.rank.webp"
     },
     {
       "key": "mastery.spada_a_due_mani.rank",
@@ -401,7 +401,7 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spada_a_due_mani.rank.png"
+      "icon": "achievements/mastery.spada_a_due_mani.rank.webp"
     },
     {
       "key": "mastery.spadone.rank",
@@ -419,7 +419,7 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spadone.rank.png"
+      "icon": "achievements/mastery.spadone.rank.webp"
     },
     {
       "key": "mastery.ascia_e_alabarda.rank",
@@ -437,7 +437,7 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.ascia_e_alabarda.rank.png"
+      "icon": "achievements/mastery.ascia_e_alabarda.rank.webp"
     },
     {
       "key": "mastery.spiedo_e_partesana.rank",
@@ -455,7 +455,7 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spiedo_e_partesana.rank.png"
+      "icon": "achievements/mastery.spiedo_e_partesana.rank.webp"
     },
     {
       "key": "mastery.spiedo_e_scudo.rank",
@@ -473,7 +473,7 @@
         10
       ],
       "xp": 0,
-      "icon": "achievements/mastery.spiedo_e_scudo.rank.png"
+      "icon": "achievements/mastery.spiedo_e_scudo.rank.webp"
     },
     {
       "key": "curriculum.objectives",
@@ -485,14 +485,14 @@
         100
       ],
       "xp": 0,
-      "icon": "achievements/curriculum.objectives.png"
+      "icon": "achievements/curriculum.objectives.webp"
     },
     {
       "key": "curriculum.marozzo",
       "title": "Ученик Мароццо",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/curriculum.marozzo.png"
+      "icon": "achievements/curriculum.marozzo.webp"
     },
     {
       "key": "community.events",
@@ -504,28 +504,28 @@
         25
       ],
       "xp": 0,
-      "icon": "achievements/community.events.png"
+      "icon": "achievements/community.events.webp"
     },
     {
       "key": "community.mentor",
       "title": "Товарищ",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/community.mentor.png"
+      "icon": "achievements/community.mentor.webp"
     },
     {
       "key": "community.tournament",
       "title": "Турнир школы",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/community.tournament.png"
+      "icon": "achievements/community.tournament.webp"
     },
     {
       "key": "community.masterclass",
       "title": "Мастер-класс",
       "tiers": 1,
       "xp": 0,
-      "icon": "achievements/community.masterclass.png"
+      "icon": "achievements/community.masterclass.webp"
     }
   ],
   "talents": [

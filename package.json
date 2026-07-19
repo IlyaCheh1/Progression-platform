@@ -15,6 +15,7 @@
     "upload:hero-s3": "node scripts/upload-hero-media-to-s3.mjs",
     "upload:hero-s3:local": "node --env-file=infra/local/.env scripts/upload-hero-media-to-s3.mjs",
     "upload:hero-s3:coolify": "sh scripts/coolify-upload-hero-s3.sh",
+    "convert:content-icons-webp": "python3 apps/web/scripts/convert-content-icons-webp.py",
     "upload:content-icons-s3": "node scripts/upload-content-icons-to-s3.mjs",
     "upload:content-icons-s3:local": "node --env-file=infra/local/.env scripts/upload-content-icons-to-s3.mjs"
   },

@@ -75,7 +75,7 @@ export default function AchievementShell({
         <div className="relative flex w-full items-center gap-3 overflow-hidden p-3 md:gap-6 md:px-6 md:py-5">
           <div className="flex min-w-0 flex-1 items-start gap-3 md:gap-4">
             <div
-              className="relative h-16 w-16 shrink-0 rounded-[42px] bg-mos-stone bg-cover bg-center md:h-28 md:w-28"
+              className="relative h-16 w-16 shrink-0 overflow-hidden bg-mos-stone bg-cover bg-center md:h-28 md:w-28"
               style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
             >
               {!iconUrl ? (

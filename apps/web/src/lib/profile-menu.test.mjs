@@ -1,6 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+function isUsableNickname(value) {
+  const trimmed = value?.trim();
+  return Boolean(trimmed && !trimmed.includes("@"));
+}
+
+function profileDisplayName(profile, user) {
+  if (isUsableNickname(profile?.username)) return profile.username.trim();
+  if (isUsableNickname(user?.login)) return user.login.trim();
+  return "Ученик";
+}
+
 function getRoleCabinetMenuItems(roles) {
   const order = ["administrator", "coach", "guardian", "renter", "student"];
   const normalized = roles.length ? roles : ["student"];
@@ -35,6 +46,23 @@ function getSettingsTabs(roles) {
   if (roles.includes("renter")) tabs.push({ id: "renter" });
   return tabs;
 }
+
+test("profileDisplayName prefers platform username over session display name", () => {
+  assert.equal(
+    profileDisplayName(
+      { username: "Admin" },
+      { name: "Platform Administrator", login: "admin@school.local" },
+    ),
+    "Admin",
+  );
+});
+
+test("profileDisplayName never uses session display name", () => {
+  assert.equal(
+    profileDisplayName(null, { name: "Platform Administrator", login: "admin" }),
+    "admin",
+  );
+});
 
 test("getRoleCabinetMenuItems exposes non-student cabinets", () => {
   const items = getRoleCabinetMenuItems(["student", "coach", "administrator"]);

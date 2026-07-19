@@ -1,8 +1,9 @@
-import { ref, shallowRef, onUnmounted, computed, type Ref } from 'vue';
+import { ref, shallowRef, onUnmounted, computed, watch, type Ref } from 'vue';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { Subject, merge, of } from 'rxjs';
+import { Subject, merge, of, EMPTY } from 'rxjs';
 import { retryWhen, scan, filter, tap, shareReplay, delayWhen, switchMap } from 'rxjs/operators';
 import { timer } from 'rxjs';
+import { getWsBaseUrl } from '../lib/chat-config';
 
 // Types based on OpenAPI spec
 export type WsMessageType =
@@ -80,7 +81,7 @@ export function useRxSocket(opts: UseRxSocketOptions) {
   const {
     conversationId,
     afterSeq = ref(0),
-    baseUrl = import.meta.env.VITE_WS_URL || 'wss://chat.onlygames.ru',
+    baseUrl = getWsBaseUrl(),
     maxBackoffMs = 15_000,
     shouldReconnect = ref(true), // По умолчанию переподключения включены
     onCreateNewConversation,
@@ -91,7 +92,8 @@ export function useRxSocket(opts: UseRxSocketOptions) {
   const lastError = shallowRef<unknown>(null);
   const outbox = ref<WsOutgoingMessage[]>([]);
   const destroy$ = new Subject<void>();
-  const forceReconnect$ = new Subject<void>(); // Для принудительного переподключения
+  const forceReconnect$ = new Subject<void>();
+  const conversationChanged$ = new Subject<void>();
   const socketRef = shallowRef<WebSocketSubject<WsIncomingMessage> | null>(null);
 
   // Отслеживание отправленных сообщений для проверки соединения
@@ -234,16 +236,22 @@ export function useRxSocket(opts: UseRxSocketOptions) {
     forceReconnect$.pipe(
       tap(() => {
         console.log('[WS] Force reconnection triggered');
-        // Закрываем текущее соединение если есть
-        if (socketRef.value) {
-          socketRef.value.complete();
-          socketRef.value = null;
-        }
-        connected.value = false;
+        cleanupCurrentSocket();
+      })
+    ),
+    conversationChanged$.pipe(
+      tap(() => {
+        console.log('[WS] Conversation changed, reconnecting');
+        cleanupCurrentSocket();
       })
     )
   ).pipe(
     switchMap(() => {
+      if (!conversationId.value) {
+        console.log('[WS] Waiting for conversation ID');
+        return EMPTY;
+      }
+
       console.log('[WS] Creating new socket connection');
       return createSocket().pipe(
         retryWhen((errors) =>
@@ -404,9 +412,23 @@ export function useRxSocket(opts: UseRxSocketOptions) {
 
   const hasQueuedMessages = computed(() => outbox.value.length > 0);
 
+  watch(conversationId, (nextId, prevId) => {
+    if (nextId && nextId !== prevId) {
+      conversationChanged$.next();
+    }
+  });
+
+  const socketSubscription = socket$.subscribe({
+    error: (err) => {
+      lastError.value = err;
+      console.error('[WS] Socket stream error:', err);
+    },
+  });
+
   // Очистка при размонтировании
   onUnmounted(() => {
     console.log('[WS] Cleaning up...');
+    socketSubscription.unsubscribe();
     // Очищаем все pending timeouts
     for (const [, pending] of pendingMessages) {
       clearTimeout(pending.timeout);
@@ -418,6 +440,7 @@ export function useRxSocket(opts: UseRxSocketOptions) {
     destroy$.next();
     destroy$.complete();
     forceReconnect$.complete();
+    conversationChanged$.complete();
     socketRef.value?.complete();
   });
 

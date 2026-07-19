@@ -16,11 +16,11 @@ for (const file of targets) {
   const data = JSON.parse(readFileSync(file, "utf8"));
   data.quests = data.quests.map((q) => ({
     ...q,
-    icon: q.icon ?? `quests/${q.key}.png`,
+    icon: q.icon ?? `quests/${q.key}.webp`,
   }));
   data.achievements = data.achievements.map((a) => ({
     ...a,
-    icon: a.icon ?? `achievements/${a.key}.png`,
+    icon: a.icon ?? `achievements/${a.key}.webp`,
   }));
   writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
   console.log(`Updated ${file}`);

@@ -8,6 +8,8 @@ export interface OgChatAttributes {
   userId?: string;
   userName?: string;
   topic?: string;
+  apiBaseUrl?: string;
+  wsBaseUrl?: string;
 }
 
 export interface OgChatTheme {
