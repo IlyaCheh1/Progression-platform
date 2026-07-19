@@ -242,16 +242,11 @@ function OfferGrid({
   while (cells.length < 12) cells.push(null);
 
   return (
-    <div className="rounded-2xl bg-[#2a2a2d] p-1.5">
+    <div className="og-inventory-grid-shell">
       <div className="grid grid-cols-3 gap-[5px] md:grid-cols-4">
         {cells.map((item, index) => {
           if (!item) {
-            return (
-              <div
-                key={`e-${index}`}
-                className="h-[112px] w-[80px] rounded-lg bg-mos-stone/50 md:h-[142px] md:w-[102px]"
-              />
-            );
+            return <div key={`e-${index}`} className="og-inventory-slot bg-mos-stone/30" />;
           }
           return (
             <button
@@ -259,9 +254,9 @@ function OfferGrid({
               type="button"
               onClick={() => onSelect(item)}
               className={cn(
-                "relative h-[112px] w-[80px] overflow-hidden rounded-lg bg-mos-stone/70 md:h-[142px] md:w-[102px]",
-                item.equipped && "ring-2 ring-[#7dba5a]",
-                selectedId === item.id && "ring-2 ring-mos-amber",
+                "og-inventory-slot",
+                item.equipped && "og-inventory-slot--equipped",
+                selectedId === item.id && "og-inventory-slot--selected",
               )}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -313,7 +308,7 @@ function SelectedPanel({
         {item.title}
       </p>
       <div
-        className="relative mt-2 h-[220px] w-full bg-cover bg-center drop-shadow-[0_12px_28px_rgba(212,168,75,0.25)] md:mt-4 md:h-[380px]"
+        className="relative mt-2 h-[180px] w-full bg-cover bg-center drop-shadow-[0_12px_28px_rgba(212,168,75,0.25)] md:mt-4 md:h-[320px] xl:h-[380px]"
         style={{ backgroundImage: `url('${item.imageSrc}')` }}
       />
       {error ? <p className="mt-2 text-center text-xs text-mos-danger">{error}</p> : null}
@@ -322,7 +317,7 @@ function SelectedPanel({
           type="button"
           disabled={busy}
           onClick={onBuy}
-          className="og-btn og-btn-secondary og-btn-md mt-3 flex w-[calc(100%-4px)] items-center justify-center gap-2 uppercase"
+          className="og-btn og-btn-secondary og-btn-md mt-3 flex w-[calc(100%-4px)] items-center justify-center gap-2"
         >
           Купить за {item.price}
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -334,14 +329,14 @@ function SelectedPanel({
             type="button"
             disabled={busy || item.equipped}
             onClick={onEquip}
-            className="og-btn og-btn-primary og-btn-md w-full uppercase disabled:opacity-50"
+            className="og-btn og-btn-primary og-btn-md w-full disabled:opacity-50"
           >
             {item.equipped ? "Экипирован" : "Надеть"}
           </button>
           <button
             type="button"
             onClick={onInventory}
-            className="og-btn og-btn-secondary og-btn-md w-full uppercase"
+            className="og-btn og-btn-secondary og-btn-md w-full"
           >
             смотреть в инвентаре
           </button>
@@ -353,7 +348,7 @@ function SelectedPanel({
 
 function Notification({ notify, onClick }: { notify: "buy" | "error"; onClick: () => void }) {
   return (
-    <div className="bg-secondaryBg mt-10 inline-flex w-[192px] flex-col items-center gap-3 rounded-[32px] p-3 backdrop-blur-2xl md:mt-48 md:w-[280px] md:gap-4 md:p-6">
+    <div className="og-panel mt-10 inline-flex w-[192px] flex-col items-center gap-3 p-3 md:mt-48 md:w-[280px] md:gap-4 md:p-6">
       <h5 className="text-center font-display text-[15px] font-medium text-mos-text">
         {notify === "buy" ? "Залутано" : "Нужно больше крышек"}
       </h5>
@@ -362,7 +357,7 @@ function Notification({ notify, onClick }: { notify: "buy" | "error"; onClick: (
           ? "Купленный предмет можно использовать в инвентаре"
           : "Проверьте баланс крышек в профиле"}
       </p>
-      <button type="button" onClick={onClick} className="og-btn og-btn-primary og-btn-md w-full uppercase">
+      <button type="button" onClick={onClick} className="og-btn og-btn-primary og-btn-md w-full">
         {notify === "buy" ? "Отлично!" : "Понятно"}
       </button>
     </div>

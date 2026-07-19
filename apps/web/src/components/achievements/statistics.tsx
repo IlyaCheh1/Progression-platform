@@ -17,7 +17,7 @@ export default function AchievementStatistics({
   categories,
 }: AchievementStatisticsProps) {
   return (
-    <div className="hidden flex-col gap-6 rounded-[24px] bg-mos-stone/80 px-6 py-5 backdrop-blur-md md:flex">
+    <div className="og-panel hidden flex-col gap-6 px-6 py-5 md:flex">
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
           <span className="font-display text-mos-text">Всего</span>

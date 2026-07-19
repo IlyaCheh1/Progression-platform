@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import TabSelector from "@/components/ui/tab-selector";
+import Selector from "@/components/ui/selector";
 import {
   equipInventoryItem,
   fetchMyInventory,
@@ -124,23 +124,18 @@ export default function InventoryPage() {
     <main className="mx-auto max-w-[840px] px-3 pb-16 pt-3 md:mt-8 md:px-4">
       <div className="flex flex-col items-center gap-3 md:items-start md:justify-start md:gap-6 md:flex-row">
         <div className="flex w-full flex-col gap-3 md:w-auto">
-          <TabSelector
-            items={FILTERS}
+          <Selector
+            options={FILTERS}
             activeId={filter}
             onChange={(id) => setFilter(id as FilterId)}
-            className="mx-auto w-fit md:mx-0 md:w-full"
+            className="mx-auto w-fit md:mx-0"
           />
 
-          <div className="mobile-game-scroll max-h-[calc(100lvh-140px)] overflow-y-auto rounded-2xl bg-[#1a1a1d]/90 p-1.5 pr-1">
+          <div className="mobile-game-scroll og-inventory-grid-shell max-h-[calc(100lvh-140px)] overflow-y-auto pr-1">
             <div className="grid grid-cols-4 gap-[5px] sm:grid-cols-5 md:grid-cols-5">
             {padded.map((item, index) => {
               if (!item) {
-                return (
-                  <div
-                    key={`empty-${index}`}
-                    className="h-[112px] w-[80px] rounded-lg bg-mos-stone/50 md:h-[142px] md:w-[102px]"
-                  />
-                );
+                return <div key={`empty-${index}`} className="og-inventory-slot bg-mos-stone/30" />;
               }
               const isSelected = item.key === selectedKey;
               return (
@@ -149,10 +144,9 @@ export default function InventoryPage() {
                   type="button"
                   onClick={() => setSelectedKey(item.key)}
                   className={cn(
-                    "relative h-[112px] w-[80px] overflow-hidden rounded-lg bg-mos-stone/70 transition-all duration-200 md:h-[142px] md:w-[102px]",
-                    "hover:bg-mos-stone",
-                    item.equipped && "ring-2 ring-[#7dba5a]",
-                    isSelected && "ring-2 ring-mos-amber",
+                    "og-inventory-slot",
+                    item.equipped && "og-inventory-slot--equipped",
+                    isSelected && "og-inventory-slot--selected",
                   )}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -173,7 +167,7 @@ export default function InventoryPage() {
 
         <aside
           className={cn(
-            "w-full rounded-[24px] border border-mos-line/30 bg-gradient-light-profile p-4 backdrop-blur-md md:sticky md:top-24 md:w-[274px] md:rounded-[32px] md:p-6",
+            "og-panel-soft w-full p-4 md:sticky md:top-24 md:w-[274px] md:p-6",
             !selected && "hidden md:block",
           )}
         >
@@ -201,7 +195,7 @@ export default function InventoryPage() {
                 type="button"
                 disabled={selected.equipped || busyKey === `${selected.kind}:${selected.refId}`}
                 onClick={() => void equip(selected.kind, selected.refId)}
-                className="og-btn og-btn-primary og-btn-md w-full uppercase disabled:opacity-60"
+                className="og-btn og-btn-primary og-btn-md w-full disabled:opacity-60"
               >
                 {selected.equipped
                   ? "Экипирован"

@@ -44,7 +44,7 @@ export default function CharacterStage({
           </p>
         </GradientLabel>
 
-        <div className="relative flex max-h-[65vh] min-h-[65vh] items-end justify-center md:min-h-[75vh] md:max-w-[75vh]">
+        <div className="character-stage-figure relative flex items-end justify-center">
           <CharacterAvatar
             selectedSkinId={selectedSkinId}
             gender={gender}

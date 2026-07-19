@@ -18,6 +18,7 @@ type TabSelectorProps = {
   isLoading?: boolean;
 };
 
+/** Icon tab row — OG secondary selector anatomy (matches Selector surfaces). */
 export default function TabSelector({
   items,
   activeId,
@@ -25,14 +26,28 @@ export default function TabSelector({
   className,
   isLoading,
 }: TabSelectorProps) {
+  const activeIndex = Math.max(
+    0,
+    items.findIndex((item) => item.id === activeId),
+  );
+
   return (
     <div
       className={cn(
-        "flex w-fit min-h-10 items-center gap-2 rounded-[24px] bg-mos-bg/90 px-1 py-1 backdrop-blur-md md:min-h-[60px] md:gap-4 md:px-3 md:py-2",
+        "relative flex w-fit min-h-10 items-center gap-1 rounded-2xl bg-secondaryBg p-1 backdrop-blur-[25px] md:min-h-[60px] md:gap-2 md:rounded-3xl md:p-1.5",
         className,
       )}
       role="tablist"
     >
+      <span
+        aria-hidden
+        className="absolute top-1 bottom-1 rounded-xl bg-white/10 transition-transform duration-300 ease-out md:rounded-2xl"
+        style={{
+          width: `calc((100% - ${items.length > 1 ? 8 : 4}px) / ${items.length})`,
+          transform: `translateX(calc(${activeIndex} * 100%))`,
+          left: 4,
+        }}
+      />
       {items.map((item) => {
         const active = item.id === activeId;
         return (
@@ -44,33 +59,14 @@ export default function TabSelector({
             disabled={item.disabled || isLoading}
             onClick={() => onChange(item.id)}
             className={cn(
-              "box-border flex h-8 items-center overflow-hidden rounded-2xl transition-all duration-300 md:h-11",
-              active
-                ? "bg-white/10 px-3 py-2 md:px-4 md:py-2.5"
-                : "w-11 justify-center px-3 hover:bg-white/5 md:w-auto md:px-4",
+              "relative z-10 box-border flex h-8 min-w-[88px] items-center justify-center gap-2 overflow-hidden rounded-xl px-3 transition-colors md:h-11 md:min-w-[120px] md:rounded-2xl md:px-4",
+              active ? "text-mos-amber" : "text-mos-muted hover:text-mos-text",
               (item.disabled || isLoading) && "cursor-not-allowed opacity-60",
             )}
           >
-            <span className="flex min-w-0 items-center gap-2 md:gap-3">
-              {item.icon ? (
-                <span
-                  className={cn(
-                    "shrink-0 text-sm transition-colors md:text-base",
-                    active ? "text-mos-text" : "text-mos-muted",
-                  )}
-                >
-                  {item.icon}
-                </span>
-              ) : null}
-              <span
-                className={cn(
-                  "whitespace-nowrap font-medium text-mos-text transition-all duration-300",
-                  "text-[10px] leading-[14px] md:text-sm md:leading-5",
-                  active ? "max-w-[200px] opacity-100" : "max-w-0 overflow-hidden opacity-0 md:max-w-[200px] md:opacity-100",
-                )}
-              >
-                {item.label}
-              </span>
+            {item.icon ? <span className="shrink-0 text-sm md:text-base">{item.icon}</span> : null}
+            <span className="whitespace-nowrap text-[10px] font-medium leading-[14px] md:text-sm md:leading-5">
+              {item.label}
             </span>
           </button>
         );

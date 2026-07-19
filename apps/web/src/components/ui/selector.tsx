@@ -24,7 +24,7 @@ export default function Selector({ options, activeId, onChange, className }: Sel
   return (
     <div
       className={cn(
-        "relative flex w-fit items-center rounded-2xl bg-mos-stone/80 p-1 backdrop-blur-md",
+        "relative flex w-fit items-center rounded-2xl bg-secondaryBg p-1 backdrop-blur-[25px] md:rounded-3xl",
         className,
       )}
       role="tablist"

@@ -58,7 +58,7 @@ body {
 }
 
 .og-btn {
-  @apply relative inline-flex items-center justify-center gap-2 font-unbounded font-medium;
+  @apply relative inline-flex items-center justify-center gap-2 font-unbounded font-medium uppercase tracking-[0.05em];
   transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 .og-btn:disabled {
@@ -91,12 +91,14 @@ body {
   box-shadow: 0 0 24px var(--mos-amber-glow);
 }
 .og-btn-secondary {
-  @apply border border-mos-line text-mos-text;
-  background: rgba(20, 20, 22, 0.85);
+  @apply border border-white/10 text-mos-text;
+  background: var(--color-secondaryBg);
+  backdrop-filter: blur(12px);
 }
 .og-btn-secondary:hover:not(:disabled) {
-  border-color: var(--mos-amber);
+  border-color: rgba(212, 168, 75, 0.45);
   color: var(--mos-amber-hot);
+  box-shadow: inset 0 0 0 1000px rgba(255, 255, 255, 0.04);
 }
 .og-btn-stroke {
   @apply border-2 border-mos-line bg-transparent text-mos-text;
@@ -115,11 +117,97 @@ body {
 }
 
 .mos-btn {
-  @apply og-btn og-btn-primary og-btn-md uppercase;
+  @apply og-btn og-btn-primary og-btn-md;
 }
 .mos-line {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--mos-line), transparent);
+}
+
+/* OG profile surfaces (OnlyGames anatomy, Witcher tokens) */
+.og-panel {
+  @apply rounded-[24px] bg-secondaryBg backdrop-blur-[25px] md:rounded-[32px];
+}
+
+.og-panel-soft {
+  @apply rounded-[24px] border border-white/10 bg-gradient-light-profile backdrop-blur-md md:rounded-[32px];
+}
+
+.og-menu-item {
+  @apply flex h-10 w-full items-center gap-3 rounded-2xl px-3 text-left text-sm transition-colors md:h-12;
+  @apply text-mos-text hover:bg-white/5;
+}
+
+.og-menu-item-icon {
+  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/5 text-mos-muted transition-colors md:h-9 md:w-9;
+}
+
+.og-menu-item:hover .og-menu-item-icon,
+.og-menu-item:focus-visible .og-menu-item-icon {
+  @apply text-mos-amber;
+}
+
+.og-menu-item:hover span:last-child,
+.og-menu-item:focus-visible span:last-child {
+  @apply text-mos-amber;
+}
+
+.og-menu-divider {
+  @apply my-3 h-px bg-white/10;
+}
+
+.og-inventory-grid-shell {
+  --og-slot-h: 112px;
+  --og-slot-w: 80px;
+  @apply rounded-[24px] bg-secondaryBg p-1.5 backdrop-blur-[20px] md:rounded-[28px];
+}
+
+@media (min-width: 768px) {
+  .og-inventory-grid-shell {
+    --og-slot-h: 142px;
+    --og-slot-w: 102px;
+  }
+}
+
+.og-inventory-slot {
+  @apply relative overflow-hidden rounded-xl bg-mos-bg/60 transition-all duration-200 md:rounded-2xl;
+  width: var(--og-slot-w);
+  height: var(--og-slot-h);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.og-inventory-slot:hover {
+  @apply bg-mos-stone/80;
+  box-shadow: inset 0 0 0 1px rgba(212, 168, 75, 0.22);
+}
+
+.og-inventory-slot--equipped {
+  box-shadow: inset 0 0 0 2px #7dba5a;
+}
+
+.og-inventory-slot--selected {
+  box-shadow: inset 0 0 0 2px var(--mos-amber);
+}
+
+.character-stage-figure {
+  height: clamp(220px, 38vh, 52vh);
+  max-height: min(52vh, 100%);
+  width: auto;
+}
+
+@media (min-width: 768px) {
+  .character-stage-figure {
+    height: clamp(320px, 58vh, 68vh);
+    max-height: min(68vh, 100%);
+  }
+}
+
+@media (min-width: 2400px) {
+  .character-stage-figure {
+    height: 75vh;
+    max-height: 75vh;
+    max-width: 75vh;
+  }
 }
 
 .og-doc-prose {
