@@ -25,8 +25,8 @@ function normalizeRole(raw: unknown): UserRole {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [login, setLogin] = useState(TEMP_ACCOUNTS[0].login);
-  const [password, setPassword] = useState(TEMP_ACCOUNTS[0].password);
+  const [login, setLogin] = useState<string>(TEMP_ACCOUNTS[0].login);
+  const [password, setPassword] = useState<string>(TEMP_ACCOUNTS[0].password);
   const [error, setError] = useState("");
 
   async function onSubmit(e: React.FormEvent) {
