@@ -18,6 +18,33 @@ var allowedGenders = map[string]struct{}{
 	"FEMALE": {},
 }
 
+var allowedBackgrounds = map[string]struct{}{
+	"onboarding_background":   {},
+	"northern_lights":         {},
+	"prison":                  {},
+	"building_castle":         {},
+	"volcano":                 {},
+	"grate_wall":              {},
+	"apocalips_hill_view":     {},
+	"apocalips_city":          {},
+	"beach":                   {},
+	"red_squere":              {},
+	"apocalips_atomic_blow":   {},
+	"heaven":                  {},
+	"moon":                    {},
+}
+
+var legacyBackgroundKeys = map[string]string{
+	"1": "northern_lights",
+	"2": "prison",
+	"3": "building_castle",
+	"4": "volcano",
+	"5": "northern_lights",
+	"6": "grate_wall",
+}
+
+const defaultBackgroundKey = "northern_lights"
+
 // ProfileInput updates RPG presentation / onboarding state for a student.
 type ProfileInput struct {
 	Username        string `json:"username"`
@@ -70,6 +97,13 @@ func (p *Platform) UpdateStudentProfile(studentID string, in ProfileInput) (*Pro
 			return nil, fmt.Errorf("invalid_gender")
 		}
 	}
+	if in.BackgroundKey != "" {
+		normalized, ok := normalizeBackgroundKey(in.BackgroundKey)
+		if !ok {
+			return nil, fmt.Errorf("invalid_background")
+		}
+		in.BackgroundKey = normalized
+	}
 
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -107,7 +141,7 @@ func profileViewLocked(p *Platform, s *Student) *ProfileView {
 		Username:        profileUsername(s),
 		Skin:            s.Skin,
 		Gender:          s.Gender,
-		BackgroundKey:   s.BackgroundKey,
+		BackgroundKey:   normalizedBackgroundKey(s.BackgroundKey),
 		Level:           1,
 		Mastery:         cloneMastery(s.Mastery),
 		Ranks:           cloneRanks(s.Ranks),
@@ -152,4 +186,26 @@ func cloneRanks(in map[string]int) map[string]int {
 		out[k] = v
 	}
 	return out
+}
+
+func normalizeBackgroundKey(raw string) (string, bool) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return defaultBackgroundKey, true
+	}
+	if slug, ok := legacyBackgroundKeys[raw]; ok {
+		return slug, true
+	}
+	if _, ok := allowedBackgrounds[raw]; ok {
+		return raw, true
+	}
+	return "", false
+}
+
+func normalizedBackgroundKey(raw string) string {
+	key, ok := normalizeBackgroundKey(raw)
+	if !ok || key == "" {
+		return defaultBackgroundKey
+	}
+	return key
 }

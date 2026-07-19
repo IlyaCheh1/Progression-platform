@@ -37,16 +37,21 @@ type Character struct {
 
 // Student links school identity to optional Character.
 type Student struct {
-	ID          string           `json:"id"`
-	DisplayName string           `json:"displayName"`
-	UserID      string           `json:"userId"`
-	CharacterID string           `json:"characterId"`
-	Login       string           `json:"login"`
-	Password    string           `json:"password,omitempty"`
-	Role        string           `json:"role"`
-	Roles       []string         `json:"roles,omitempty"`
-	Mastery     map[string]int64 `json:"mastery"` // weaponKey -> units
-	Ranks       map[string]int   `json:"ranks"`
+	ID              string           `json:"id"`
+	DisplayName     string           `json:"displayName"`
+	UserID          string           `json:"userId"`
+	CharacterID     string           `json:"characterId"`
+	Login           string           `json:"login"`
+	Password        string           `json:"password,omitempty"`
+	Role            string           `json:"role"`
+	Roles           []string         `json:"roles,omitempty"`
+	Mastery         map[string]int64 `json:"mastery"` // weaponKey -> units
+	Ranks           map[string]int   `json:"ranks"`
+	ProfileComplete bool             `json:"profileComplete"`
+	ProfileUsername string           `json:"profileUsername,omitempty"`
+	Skin            string           `json:"skin,omitempty"`
+	Gender          string           `json:"gender,omitempty"`
+	BackgroundKey   string           `json:"backgroundKey,omitempty"`
 }
 
 // NormalizedRole returns the primary role for routing/display.
