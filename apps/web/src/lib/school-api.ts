@@ -1,5 +1,8 @@
 import { SCHOOL_API } from "@/lib/utils";
 import { authHeaders, type SessionUser } from "@/lib/session";
+import type { TalentCatalogResponse } from "@/lib/talents-catalog";
+
+export type { TalentCatalogResponse };
 
 export type MasteryTrack = {
   weaponKey: string;
@@ -68,6 +71,27 @@ export async function fetchQuests(user: SessionUser): Promise<QuestProgress[]> {
 export async function fetchAchievements(user: SessionUser): Promise<AchievementState[]> {
   const res = await fetch(`${SCHOOL_API}/v1/achievements/me`, { headers: authHeaders(user) });
   return parseJson(res);
+}
+
+export async function fetchTalentCatalog(): Promise<TalentCatalogResponse> {
+  const res = await fetch(`${SCHOOL_API}/v1/talents/catalog`);
+  return parseJson(res);
+}
+
+export async function fetchUnlockedTalents(user: SessionUser): Promise<string[]> {
+  const res = await fetch(`${SCHOOL_API}/v1/talents/me/unlocked`, { headers: authHeaders(user) });
+  return parseJson(res);
+}
+
+export async function unlockTalent(user: SessionUser, talentKey: string): Promise<void> {
+  const res = await fetch(`${SCHOOL_API}/v1/talents/unlock`, {
+    method: "POST",
+    headers: { ...authHeaders(user), "Content-Type": "application/json" },
+    body: JSON.stringify({ talentKey }),
+  });
+  if (!res.ok) {
+    throw new Error(`API ${res.status}`);
+  }
 }
 
 export async function fetchPublicSchedule(): Promise<SessionRow[]> {

@@ -9,7 +9,6 @@ import type { SessionUser } from "@/lib/session";
 type ProfileHeaderProps = {
   user: SessionUser;
   username: string;
-  balance: number;
   level: number;
   currentXp: number;
   xpToNext: number;
@@ -21,7 +20,6 @@ type ProfileHeaderProps = {
 export default function ProfileHeader({
   user,
   username,
-  balance,
   level,
   currentXp,
   xpToNext,
@@ -47,7 +45,6 @@ export default function ProfileHeader({
           <ProfileTrigger
             user={user}
             username={username}
-            balance={balance}
             level={level}
             currentXp={currentXp}
             xpToNext={xpToNext}

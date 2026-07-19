@@ -1,0 +1,786 @@
+openapi: 3.0.3
+info:
+  title: Chat Service API (WS-first, text-only v1)
+  version: '1.1.1'
+  description: |
+    Realtime chat service with attachments support. WebSocket is the primary realtime channel for message delivery and (optionally) sending text.
+    REST remains for history, optional sending, integrations (Telegram webhook), and attachment management.
+    Attachments are uploaded via S3 presigned URLs.
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: https://chat.onlygames.ru
+    description: Production server (replace with your domain)
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Realtime
+    description: WebSocket handshake
+  - name: Conversations
+  - name: Messages
+  - name: Attachments
+  - name: Telegram
+
+paths:
+  /api/v1/conversations:
+    post:
+      tags: [Conversations]
+      summary: Create a new conversation
+      operationId: createConversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversationCreateRequest'
+      responses:
+        '200':
+          description: Conversation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+    get:
+      tags: [Conversations]
+      summary: List my conversations
+      operationId: getMyConversations
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /api/v1/conversations/{conversationId}:
+    patch:
+      tags: [Conversations]
+      summary: Update conversation status
+      operationId: updateConversationStatusById
+      parameters:
+        - $ref: '#/components/parameters/ConversationId'
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [open, pending, closed]
+      responses:
+        '200':
+          description: Updated conversation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '404':
+          description: Conversation not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /api/v1/conversations/{conversationId}/messages:
+    get:
+      tags: [Messages]
+      summary: Get message history (text-only)
+      operationId: getMessagesByConversationId
+      parameters:
+        - $ref: '#/components/parameters/ConversationId'
+        - $ref: '#/components/parameters/AfterSeq'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '403':
+          description: Forbidden (not a participant)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '404':
+          description: Conversation not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+    post:
+      tags: [Messages]
+      summary: Send a text message (REST, optional)
+      operationId: sendMessageByConversationId
+      description: |
+        Primary UX may send text via WebSocket (`message.send`), but this REST endpoint remains for idempotency and retries.
+      parameters:
+        - $ref: '#/components/parameters/ConversationId'
+        - $ref: '#/components/parameters/UserId'
+        - in: header
+          name: Idempotency-Key
+          schema: { type: string }
+          required: false
+          description: Optional idempotency key to deduplicate retries.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageCreateRequest'
+      responses:
+        '200':
+          description: Message accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: Bad request (e.g., empty text)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '403':
+          description: Forbidden (not a participant)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '404':
+          description: Conversation not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /api/v1/attachments/init:
+    post:
+      tags: [Attachments]
+      summary: Initialize attachment upload
+      operationId: initAttachment
+      parameters:
+        - in: query
+          name: conversationId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttachmentInitRequest'
+      responses:
+        '200':
+          description: Attachment initialized with upload URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentInitResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '403':
+          description: Forbidden (not a participant)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /api/v1/attachments/{attachmentId}/complete:
+    post:
+      tags: [Attachments]
+      summary: Complete attachment upload
+      operationId: completeAttachment
+      parameters:
+        - in: path
+          name: attachmentId
+          required: true
+          schema: { type: string, format: uuid }
+        - in: query
+          name: conversationId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Attachment completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '403':
+          description: Forbidden (not a participant)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '404':
+          description: Attachment not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /api/v1/attachments/{attachmentId}/download:
+    get:
+      tags: [Attachments]
+      summary: Get attachment download URL
+      operationId: getAttachmentDownloadUrl
+      parameters:
+        - in: path
+          name: attachmentId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Download URL generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentDownloadResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '403':
+          description: Forbidden (not a participant)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '404':
+          description: Attachment not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /integrations/telegram/webhook/{secret}:
+    post:
+      tags: [Telegram]
+      summary: Telegram webhook handler
+      operationId: webhookTelegram
+      security: []
+      parameters:
+        - in: path
+          name: secret
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelegramUpdate'
+      responses:
+        '200':
+          description: Accepted
+        '400':
+          description: Bad request (invalid update)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '403':
+          description: Forbidden (wrong secret)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ConversationId:
+      in: path
+      name: conversationId
+      required: true
+      schema: { type: string, format: uuid }
+    UserId:
+      in: query
+      name: userId
+      required: true
+      schema: { type: string, format: uuid }
+    Limit:
+      in: query
+      name: limit
+      schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+    Cursor:
+      in: query
+      name: cursor
+      schema: { type: string, nullable: true }
+    AfterSeq:
+      in: query
+      name: after_seq
+      schema: { type: integer, minimum: 0, default: 0 }
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code (e.g., "forbidden", "validation_failed")
+          example: validation_failed
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Field 'type' must be one of: support, direct, group, ai"
+
+    ConversationCreateRequest:
+      type: object
+      required: [type, user]
+      properties:
+        type:
+          type: string
+          enum: [support, direct, group, ai]
+        user:
+          type: object
+          required: [id, username]
+          properties:
+            id:
+              type: string
+              format: uuid
+            username:
+              type: string
+        participants:
+          type: array
+          items: { type: string, format: uuid }
+          description: Required for direct/group
+        topic:
+          type: string
+          description: Optional hint to classify topic (e.g., "vpn", "billing")
+        source:
+          type: string
+          enum: [web, ios, android]
+        page_url:
+          type: string
+          format: uri
+          nullable: true
+        locale:
+          type: string
+          example: en-US
+          nullable: true
+        timezone:
+          type: number
+          format: float
+          example: 3.0
+          description: Client timezone in hours (e.g., 3.0 for UTC+3)
+          nullable: true
+        app_version:
+          type: string
+          example: '1.12.3'
+          nullable: true
+
+    Conversation:
+      type: object
+      required: [id, type, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        type:
+          type: string
+          enum: [support, direct, group, ai]
+        status:
+          type: string
+          enum: [open, pending, closed]
+        topic: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    ConversationListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Conversation' }
+        next_cursor:
+          type: string
+          nullable: true
+          description: null (pagination not used yet)
+
+    MessageCreateRequest:
+      type: object
+      required: [content_type]
+      properties:
+        content_type:
+          type: string
+          enum: [text]
+        text:
+          type: string
+          nullable: true
+        attachments:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Array of attachment IDs to include with the message
+        client_id:
+          type: string
+          description: Optional client-generated id to correlate pending UI bubbles
+        reply_to_message_id:
+          type: string
+          format: uuid
+          description: ID сообщения, на которое отвечаем
+          nullable: true
+
+    Message:
+      type: object
+      required: [message_id, conversation_id, seq_no, sender, source, content_type, created_at]
+      properties:
+        message_id: { type: string, format: uuid }
+        conversation_id: { type: string, format: uuid }
+        seq_no: { type: integer }
+        sender:
+          type: string
+          enum: [user, support, assistant, system]
+        source:
+          type: string
+          enum: [web, telegram, system]
+        content_type:
+          type: string
+          enum: [text]
+        text:
+          type: string
+          nullable: true
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+          description: Array of attachments associated with this message
+        reply_to_message_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_at: { type: string, format: date-time }
+
+    MessageListResponse:
+      type: object
+      properties:
+        conversation_id: { type: string, format: uuid }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Message' }
+        next_after_seq:
+          type: integer
+
+    TelegramUpdate:
+      type: object
+      properties:
+        update_id:
+          type: integer
+          format: int64
+        message:
+          $ref: '#/components/schemas/TelegramMessage'
+      required:
+        - update_id
+
+    TelegramMessage:
+      type: object
+      properties:
+        message_id:
+          type: integer
+          format: int64
+        message_thread_id:
+          type: integer
+          format: int32
+          nullable: true
+        from:
+          $ref: '#/components/schemas/TelegramUser'
+        chat:
+          $ref: '#/components/schemas/TelegramChat'
+        date:
+          type: integer
+          format: int64
+        text:
+          type: string
+        reply_to_message:
+          $ref: '#/components/schemas/TelegramMessage'
+      required:
+        - message_id
+        - chat
+        - date
+        - text
+
+    TelegramUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        is_bot:
+          type: boolean
+        first_name:
+          type: string
+        last_name:
+          type: string
+          nullable: true
+        username:
+          type: string
+          nullable: true
+      required:
+        - id
+        - is_bot
+        - first_name
+
+    TelegramChat:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        type:
+          type: string
+        title:
+          type: string
+          nullable: true
+          description: Chat title (for groups and channels)
+      required:
+        - id
+        - type
+
+    AttachmentInitRequest:
+      type: object
+      required: [file_name, content_type, size_bytes]
+      properties:
+        file_name:
+          type: string
+          description: Original filename
+        content_type:
+          type: string
+          description: MIME type of the file
+        size_bytes:
+          type: integer
+          format: int64
+          minimum: 1
+          description: File size in bytes
+
+    AttachmentInitResponse:
+      type: object
+      required: [attachment_id, upload_url, storage_key, expires_in]
+      properties:
+        attachment_id:
+          type: string
+          format: uuid
+          description: UUID of the attachment record
+        upload_url:
+          type: string
+          format: uri
+          description: Presigned S3 PUT URL
+        storage_key:
+          type: string
+          description: S3 storage key for the file
+        expires_in:
+          type: integer
+          description: URL expiration time in seconds
+
+    AttachmentResponse:
+      type: object
+      required: [attachment_id, file_name, content_type, size_bytes, status, created_at]
+      properties:
+        attachment_id:
+          type: string
+          format: uuid
+        file_name:
+          type: string
+        content_type:
+          type: string
+        size_bytes:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum: [init, complete]
+        created_at:
+          type: string
+          format: date-time
+
+    AttachmentDownloadResponse:
+      type: object
+      required: [attachment_id, download_url, expires_in]
+      properties:
+        attachment_id:
+          type: string
+          format: uuid
+        download_url:
+          type: string
+          format: uri
+          description: Presigned S3 GET URL
+        expires_in:
+          type: integer
+          description: URL expiration time in seconds
+
+    Attachment:
+      type: object
+      required: [attachment_id, file_name, content_type, size_bytes]
+      properties:
+        attachment_id:
+          type: string
+          format: uuid
+        file_name:
+          type: string
+        content_type:
+          type: string
+        size_bytes:
+          type: integer
+          format: int64
+        download_url:
+          type: string
+          format: uri
+          nullable: true
+          description: Presigned download URL (if available)
+        expires_in:
+          type: integer
+          nullable: true
+          description: URL expiration time in seconds
+
+    # WebSocket frame schemas (documentation only)
+    WsClientMessageSend:
+      type: object
+      properties:
+        type: { type: string, enum: [message.send] }
+        data:
+          type: object
+          properties:
+            text: { type: string, nullable: true }
+            attachments:
+              type: array
+              items:
+                type: string
+                format: uuid
+              description: Array of attachment IDs to include with the message
+            client_id: { type: string }
+            reply_to_message_id: { type: string, format: uuid, nullable: true }
+    WsServerWelcome:
+      type: object
+      properties:
+        type: { type: string, enum: [welcome] }
+        data:
+          type: object
+          properties:
+            user_id: { type: string, format: uuid }
+            server_time: { type: string, format: date-time }
+    WsServerMessageCreated:
+      type: object
+      properties:
+        type: { type: string, enum: [message.created] }
+        data:
+          $ref: '#/components/schemas/Message'
+    WsError:
+      type: object
+      properties:
+        type: { type: string, enum: [error] }
+        data:
+          $ref: '#/components/schemas/ErrorResponse'

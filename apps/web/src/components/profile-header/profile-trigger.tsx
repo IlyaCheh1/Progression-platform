@@ -12,7 +12,6 @@ import type { SessionUser } from "@/lib/session";
 
 type ProfileTriggerProps = {
   username: string;
-  balance: number;
   level: number;
   currentXp: number;
   xpToNext: number;
@@ -24,7 +23,6 @@ type ProfileTriggerProps = {
 
 export default function ProfileTrigger({
   username,
-  balance,
   level,
   currentXp,
   xpToNext,
@@ -36,24 +34,20 @@ export default function ProfileTrigger({
   const [isOpen, setIsOpen] = useState(false);
 
   const trigger = (
-    <div className="flex h-full w-fit items-center gap-2 md:gap-4">
-      <div className="hidden min-w-[140px] flex-col gap-1 md:flex md:min-w-[180px]">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5">
-            <span className="font-display text-xs text-mos-text md:text-sm">
-              {balance.toLocaleString("ru-RU")}
-            </span>
-            <span className="text-[10px] text-mos-amber" aria-hidden>
-              ◆
-            </span>
-          </div>
-          <span className="truncate font-display text-xs text-mos-text md:text-sm">{username}</span>
+    <div className="flex h-full w-fit items-center gap-2 md:gap-6">
+      <div className="hidden min-w-[115px] flex-col gap-0 md:flex md:min-w-[180px]">
+        <div className="flex w-full items-center justify-end gap-2">
+          <h6 className="truncate font-unbounded text-[9px] font-medium text-primaryText md:text-sm">
+            {username}
+          </h6>
         </div>
-        <Progress value={currentXp} max={xpToNext} size="md" />
-        <div className="flex items-center justify-between text-[10px] text-mos-muted">
-          <span>{level} уровень</span>
-          <span>
-            {currentXp}/{xpToNext} XP
+        <div className="flex w-full items-center">
+          <Progress value={currentXp} max={xpToNext} size="md" className="w-full" />
+        </div>
+        <div className="flex w-full items-center justify-between text-[7px] font-light leading-2.5 text-secondaryText md:text-[10px] md:leading-4">
+          <span className="font-unbounded">{level} уровень</span>
+          <span className="font-unbounded">
+            {currentXp}/{xpToNext}
           </span>
         </div>
       </div>
@@ -79,7 +73,7 @@ export default function ProfileTrigger({
     >
       <UserMenu
         user={user}
-        avatarLetter={avatarLetter}
+        username={username}
         selectedSkinId={selectedSkinId}
         gender={gender}
         onClose={() => setIsOpen(false)}

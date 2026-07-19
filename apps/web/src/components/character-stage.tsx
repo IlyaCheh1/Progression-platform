@@ -40,8 +40,8 @@ export default function CharacterStage({
       >
         <div className="character-stage-gap flex-1" aria-hidden />
 
-        <GradientLabel color="amber" className="relative z-20 mx-auto max-w-[200px] shrink-0">
-          <p className="text-center font-display text-xs font-medium leading-3 text-mos-text md:text-lg md:leading-6">
+        <GradientLabel color="amber" className="relative z-20 mx-auto mb-5 max-w-[200px] shrink-0">
+          <p className="text-center font-unbounded text-xs font-medium leading-3 text-primaryText md:text-lg md:leading-6">
             {username}
           </p>
         </GradientLabel>

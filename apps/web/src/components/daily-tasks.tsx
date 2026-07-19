@@ -28,7 +28,7 @@ export default function DailyTasks({
   return (
     <div
       className={cn(
-        "bg-gradient-light-profile flex w-[200px] flex-col gap-3 rounded-2xl p-3 backdrop-blur-md md:w-[300px] md:gap-4 md:rounded-[32px] md:p-6",
+        "bg-witcher-panel flex w-[200px] flex-col gap-3 rounded-2xl p-3 md:w-[300px] md:gap-4 md:rounded-[32px] md:p-6",
         className,
       )}
     >

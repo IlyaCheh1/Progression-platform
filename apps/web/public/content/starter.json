@@ -532,62 +532,225 @@
     {
       "key": "discipline.observer",
       "title": "Наблюдатель техники",
-      "rank": 1
+      "rank": 1,
+      "description": "Открывает цепочку заданий «Наблюдатель техники».",
+      "treeId": "discipline.observation",
+      "kind": "PASSIVE",
+      "position": [
+        5,
+        1
+      ],
+      "requires": [],
+      "maxTier": 1,
+      "effects": {
+        "Задания": "цепочка «Наблюдатель техники»"
+      }
     },
     {
       "key": "discipline.chronicler",
       "title": "Хронист",
-      "rank": 1
-    },
-    {
-      "key": "discipline.scholar",
-      "title": "Учёный зала",
-      "rank": 1
-    },
-    {
-      "key": "discipline.pathfinder",
-      "title": "Следопыт",
-      "rank": 1
-    },
-    {
-      "key": "discipline.companion",
-      "title": "Товарищ",
-      "rank": 1
-    },
-    {
-      "key": "discipline.curator",
-      "title": "Хранитель облика",
-      "rank": 1
+      "rank": 1,
+      "description": "Открывает шаблоны структурированной личной рефлексии.",
+      "treeId": "discipline.observation",
+      "kind": "PASSIVE",
+      "position": [
+        3,
+        1
+      ],
+      "requires": [
+        "discipline.observer"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Рефлексия": "структурированные шаблоны"
+      }
     },
     {
       "key": "discipline.archivist",
       "title": "Архивариус",
-      "rank": 1
+      "rank": 1,
+      "description": "Расширяет визуализацию личной истории мастерства.",
+      "treeId": "discipline.observation",
+      "kind": "PASSIVE",
+      "position": [
+        1,
+        1
+      ],
+      "requires": [
+        "discipline.chronicler"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "История": "расширенная визуализация мастерства"
+      }
+    },
+    {
+      "key": "discipline.scholar",
+      "title": "Учёный зала",
+      "rank": 1,
+      "description": "Открывает расширенные исторические карточки.",
+      "treeId": "discipline.chronicle",
+      "kind": "PASSIVE",
+      "position": [
+        5,
+        3
+      ],
+      "requires": [],
+      "maxTier": 1,
+      "effects": {
+        "Карточки": "расширенные исторические материалы"
+      }
     },
     {
       "key": "discipline.herald",
       "title": "Глашатай",
-      "rank": 1
+      "rank": 1,
+      "description": "Открывает настройки напоминаний о событиях школы.",
+      "treeId": "discipline.chronicle",
+      "kind": "PASSIVE",
+      "position": [
+        3,
+        3
+      ],
+      "requires": [
+        "discipline.scholar"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "События": "напоминания о мероприятиях школы"
+      }
     },
     {
       "key": "discipline.collector",
       "title": "Коллекционер",
-      "rank": 1
+      "rank": 1,
+      "description": "Открывает второй публичный слот для трофеев.",
+      "treeId": "discipline.chronicle",
+      "kind": "PASSIVE",
+      "position": [
+        1,
+        3
+      ],
+      "requires": [
+        "discipline.herald"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Трофеи": "второй публичный слот"
+      }
     },
     {
-      "key": "discipline.universalist",
-      "title": "Универсалист",
-      "rank": 1
+      "key": "discipline.pathfinder",
+      "title": "Следопыт",
+      "rank": 1,
+      "description": "Открывает второй необязательный путь заданий на неделю.",
+      "treeId": "discipline.path",
+      "kind": "PASSIVE",
+      "position": [
+        5,
+        5
+      ],
+      "requires": [],
+      "maxTier": 1,
+      "effects": {
+        "Задания": "второй путь на неделю"
+      }
+    },
+    {
+      "key": "discipline.companion",
+      "title": "Товарищ",
+      "rank": 1,
+      "description": "Делает доступными наставнические задания от тренера.",
+      "treeId": "discipline.path",
+      "kind": "PASSIVE",
+      "position": [
+        3,
+        5
+      ],
+      "requires": [
+        "discipline.pathfinder"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Наставничество": "задания от тренера"
+      }
     },
     {
       "key": "discipline.steward",
       "title": "Стюард",
-      "rank": 1
+      "rank": 1,
+      "description": "Делает доступными волонтёрские задания на событиях.",
+      "treeId": "discipline.path",
+      "kind": "PASSIVE",
+      "position": [
+        1,
+        5
+      ],
+      "requires": [
+        "discipline.companion"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "События": "волонтёрские задания"
+      }
+    },
+    {
+      "key": "discipline.curator",
+      "title": "Хранитель облика",
+      "rank": 1,
+      "description": "Открывает дополнительный косметический пресет.",
+      "treeId": "discipline.hall",
+      "kind": "PASSIVE",
+      "position": [
+        5,
+        6
+      ],
+      "requires": [],
+      "maxTier": 1,
+      "effects": {
+        "Облик": "дополнительный косметический пресет"
+      }
+    },
+    {
+      "key": "discipline.universalist",
+      "title": "Универсалист",
+      "rank": 1,
+      "description": "Открывает кампанию «Восемь путей» после четырёх направлений.",
+      "treeId": "discipline.hall",
+      "kind": "PASSIVE",
+      "position": [
+        3,
+        6
+      ],
+      "requires": [
+        "discipline.curator"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Кампания": "«Восемь путей»"
+      }
     },
     {
       "key": "discipline.master",
       "title": "Мастер дисциплины",
-      "rank": 1
+      "rank": 1,
+      "description": "Итоговый узел: набор косметики без изменения опыта.",
+      "treeId": "discipline.hall",
+      "kind": "PASSIVE",
+      "position": [
+        0,
+        6
+      ],
+      "requires": [
+        "discipline.universalist",
+        "discipline.archivist",
+        "discipline.collector",
+        "discipline.steward"
+      ],
+      "maxTier": 1,
+      "effects": {
+        "Награда": "косметический набор"
+      }
     }
   ],
   "items": [
@@ -840,6 +1003,28 @@
       "key": "navaja",
       "title": "Наваха",
       "description": "Испанский складной нож: техника перемещения, атака, защита и работа на дистанции."
+    }
+  ],
+  "talentTrees": [
+    {
+      "id": "discipline.observation",
+      "title": "Наблюдение",
+      "theme": "blade"
+    },
+    {
+      "id": "discipline.chronicle",
+      "title": "Хроника",
+      "theme": "chronicle"
+    },
+    {
+      "id": "discipline.path",
+      "title": "Путь",
+      "theme": "path"
+    },
+    {
+      "id": "discipline.hall",
+      "title": "Зал",
+      "theme": "school"
     }
   ]
 }

@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes dotFade1 {
+  0%,
+  20% {
+    opacity: 1;
+  }
+  20%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes dotFade2 {
+  0%,
+  33% {
+    opacity: 0;
+  }
+  33%,
+  53% {
+    opacity: 1;
+  }
+  53%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes dotFade3 {
+  0%,
+  66% {
+    opacity: 0;
+  }
+  66%,
+  86% {
+    opacity: 1;
+  }
+  86%,
+  100% {
+    opacity: 0;
+  }
+}

@@ -2,7 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Selector from "@/components/ui/selector";
+import {
+  IconInventoryAll,
+  IconInventoryBackgrounds,
+  IconInventoryCharacters,
+} from "@/components/inventory/inventory-filter-icons";
+import TabSelector from "@/components/ui/tab-selector";
 import {
   equipInventoryItem,
   fetchMyInventory,
@@ -18,18 +23,49 @@ import { cn, schoolApiUnavailableMessage } from "@/lib/utils";
 
 type FilterId = "all" | "characters" | "backgrounds";
 
-const FILTERS = [
-  { id: "all" as const, label: "Все предметы" },
-  { id: "characters" as const, label: "Персонажи" },
-  { id: "backgrounds" as const, label: "Фоны" },
+const FILTER_ITEMS = [
+  {
+    id: "all" as const,
+    label: "Все предметы",
+    icon: <IconInventoryAll className="h-full w-full" />,
+  },
+  {
+    id: "characters" as const,
+    label: "Персонажи",
+    icon: <IconInventoryCharacters className="h-full w-full" />,
+  },
+  {
+    id: "backgrounds" as const,
+    label: "Фоны",
+    icon: <IconInventoryBackgrounds className="h-full w-full" />,
+  },
 ];
+
+const MOBILE_COLUMNS = 4;
+const DESKTOP_COLUMNS = 5;
+const MIN_ROWS = 4;
 
 type SlotItem =
   | { kind: "character"; key: string; title: string; imageSrc: string; equipped: boolean; refId: string }
   | { kind: "background"; key: string; title: string; imageSrc: string; equipped: boolean; refId: string };
 
+function useInventoryColumns() {
+  const [columns, setColumns] = useState(DESKTOP_COLUMNS);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 768px)");
+    const sync = () => setColumns(media.matches ? DESKTOP_COLUMNS : MOBILE_COLUMNS);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  return columns;
+}
+
 export default function InventoryPage() {
   const router = useRouter();
+  const columns = useInventoryColumns();
   const [inventory, setInventory] = useState<InventoryView | null>(null);
   const [error, setError] = useState("");
   const [busyKey, setBusyKey] = useState("");
@@ -114,60 +150,71 @@ export default function InventoryPage() {
     }
   }
 
-  const minSlots = 20;
+  const totalRows = Math.max(MIN_ROWS, Math.ceil(slots.length / columns));
+  const totalSlots = totalRows * columns;
   const padded: Array<SlotItem | null> = [...slots];
-  while (padded.length < minSlots) {
+  while (padded.length < totalSlots) {
     padded.push(null);
   }
 
+  const rows = Array.from({ length: totalRows }, (_, rowIndex) =>
+    padded.slice(rowIndex * columns, rowIndex * columns + columns),
+  );
+
   return (
-    <main className="mx-auto max-w-[840px] px-3 pb-16 pt-3 md:mt-8 md:px-4">
-      <div className="flex flex-col items-center gap-3 md:items-start md:justify-start md:gap-6 md:flex-row">
+    <main className="mx-auto mb-20 mt-3 max-w-[840px] px-3 md:mt-11 md:px-4">
+      <div className="flex flex-col items-center gap-3 md:flex-row md:items-start md:justify-start md:gap-6">
         <div className="flex w-full flex-col gap-3 md:w-auto">
-          <Selector
-            options={FILTERS}
+          <TabSelector
+            items={FILTER_ITEMS}
             activeId={filter}
             onChange={(id) => setFilter(id as FilterId)}
-            className="mx-auto w-fit md:mx-0"
+            className="mx-auto w-fit md:w-full"
           />
 
-          <div className="mobile-game-scroll og-inventory-grid-shell max-h-[calc(100lvh-140px)] overflow-y-auto pr-1">
-            <div className="grid grid-cols-4 gap-[5px] sm:grid-cols-5 md:grid-cols-5">
-            {padded.map((item, index) => {
-              if (!item) {
-                return <div key={`empty-${index}`} className="og-inventory-slot bg-mos-stone/30" />;
-              }
-              const isSelected = item.key === selectedKey;
-              return (
-                <button
-                  key={item.key}
-                  type="button"
-                  onClick={() => setSelectedKey(item.key)}
-                  className={cn(
-                    "og-inventory-slot",
-                    item.equipped && "og-inventory-slot--equipped",
-                    isSelected && "og-inventory-slot--selected",
-                  )}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={item.imageSrc}
-                    alt={item.title}
-                    className={cn(
-                      "h-full w-full object-cover",
-                      item.kind === "character" ? "object-top" : "object-center",
-                    )}
-                  />
-                </button>
-              );
-            })}
+          <div className="mobile-game-scroll og-inventory-grid-shell max-h-[calc(100lvh-140px)] pr-1">
+            <div className="og-inventory-list">
+              {rows.map((row, rowIndex) => (
+                <div key={`row-${rowIndex}`} className="og-inventory-row">
+                  {row.map((item, index) => {
+                    const slotIndex = rowIndex * columns + index;
+                    if (!item) {
+                      return (
+                        <div
+                          key={`empty-${slotIndex}`}
+                          className="og-inventory-slot bg-secondaryBg/60"
+                          aria-hidden
+                        />
+                      );
+                    }
+                    const isSelected = item.key === selectedKey;
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => setSelectedKey(item.key)}
+                        className={cn(
+                          "og-inventory-slot",
+                          item.equipped && "og-inventory-slot--equipped",
+                          isSelected && "og-inventory-slot--selected",
+                        )}
+                      >
+                        <span className="og-inventory-slot-inner">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={item.imageSrc} alt={item.title} />
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         <aside
           className={cn(
-            "og-panel-soft w-full p-4 md:sticky md:top-24 md:w-[274px] md:p-6",
+            "og-panel-soft w-full p-4 md:sticky md:top-24 md:mt-24 md:w-[274px] md:p-6",
             !selected && "hidden md:block",
           )}
         >
@@ -179,8 +226,8 @@ export default function InventoryPage() {
                   src={selected.imageSrc}
                   alt={selected.title}
                   className={cn(
-                    "mx-auto w-full",
-                    selected.kind === "character" ? "aspect-[3/4] object-cover object-top" : "aspect-video object-cover",
+                    "mx-auto w-full object-contain",
+                    selected.kind === "character" ? "aspect-[3/4] object-top" : "aspect-video",
                   )}
                 />
               </div>

@@ -25,10 +25,25 @@ type Achievement struct {
 	Icon  string `json:"icon,omitempty"`
 }
 
-type Talent struct {
-	Key   string `json:"key"`
+type TalentTreeDef struct {
+	ID    string `json:"id"`
 	Title string `json:"title"`
-	Rank  int    `json:"rank"`
+	Theme string `json:"theme"`
+}
+
+type Talent struct {
+	Key             string            `json:"key"`
+	Title           string            `json:"title"`
+	Rank            int               `json:"rank"`
+	Description     string            `json:"description,omitempty"`
+	TreeID          string            `json:"treeId,omitempty"`
+	Kind            string            `json:"kind,omitempty"`
+	Position        []int             `json:"position,omitempty"`
+	Requires        []string          `json:"requires,omitempty"`
+	MaxTier         int               `json:"maxTier,omitempty"`
+	CooldownSeconds int               `json:"cooldownSeconds,omitempty"`
+	Effects         map[string]string `json:"effects,omitempty"`
+	Icon            string            `json:"icon,omitempty"`
 }
 
 type Item struct {
@@ -51,12 +66,18 @@ type School struct {
 }
 
 type Catalog struct {
-	Quests       []Quest       `json:"quests"`
-	Achievements []Achievement `json:"achievements"`
-	Talents      []Talent      `json:"talents"`
-	Items        []Item        `json:"items"`
-	Rewards      []Reward      `json:"rewards"`
-	Schools      []School      `json:"schools"`
+	Quests       []Quest         `json:"quests"`
+	Achievements []Achievement   `json:"achievements"`
+	Talents      []Talent        `json:"talents"`
+	TalentTrees  []TalentTreeDef `json:"talentTrees"`
+	Items        []Item          `json:"items"`
+	Rewards      []Reward        `json:"rewards"`
+	Schools      []School        `json:"schools"`
+}
+
+type TalentUICatalog struct {
+	Trees   []TalentTreeDef `json:"trees"`
+	Talents []Talent        `json:"talents"`
 }
 
 type Store struct {
@@ -64,6 +85,7 @@ type Store struct {
 	quests       map[string]Quest
 	achievements map[string]Achievement
 	talents      map[string]Talent
+	talentTrees  []TalentTreeDef
 	items        map[string]Item
 	rewards      map[string]Reward
 	schools      map[string]School
@@ -103,8 +125,11 @@ func (s *Store) LoadFile(path string) error {
 	}
 	for _, t := range cat.Talents {
 		if t.Key != "" {
-			s.talents[t.Key] = t
+			s.talents[t.Key] = normalizeTalent(t)
 		}
+	}
+	if len(cat.TalentTrees) > 0 {
+		s.talentTrees = append([]TalentTreeDef(nil), cat.TalentTrees...)
 	}
 	for _, item := range cat.Items {
 		if item.Key != "" {
@@ -131,6 +156,7 @@ func (s *Store) Snapshot() Catalog {
 		Quests:       make([]Quest, 0, len(s.quests)),
 		Achievements: make([]Achievement, 0, len(s.achievements)),
 		Talents:      make([]Talent, 0, len(s.talents)),
+		TalentTrees:  append([]TalentTreeDef(nil), s.talentTrees...),
 		Items:        make([]Item, 0, len(s.items)),
 		Rewards:      make([]Reward, 0, len(s.rewards)),
 		Schools:      make([]School, 0, len(s.schools)),
@@ -156,6 +182,7 @@ func (s *Store) Snapshot() Catalog {
 	sort.Slice(out.Quests, func(i, j int) bool { return out.Quests[i].Key < out.Quests[j].Key })
 	sort.Slice(out.Achievements, func(i, j int) bool { return out.Achievements[i].Key < out.Achievements[j].Key })
 	sort.Slice(out.Talents, func(i, j int) bool { return out.Talents[i].Key < out.Talents[j].Key })
+	sort.Slice(out.TalentTrees, func(i, j int) bool { return out.TalentTrees[i].ID < out.TalentTrees[j].ID })
 	sort.Slice(out.Items, func(i, j int) bool { return out.Items[i].Key < out.Items[j].Key })
 	sort.Slice(out.Rewards, func(i, j int) bool { return out.Rewards[i].Key < out.Rewards[j].Key })
 	sort.Slice(out.Schools, func(i, j int) bool { return out.Schools[i].Key < out.Schools[j].Key })
@@ -188,16 +215,38 @@ func (s *Store) UpsertAchievement(a Achievement) error {
 	return nil
 }
 
+func normalizeTalent(t Talent) Talent {
+	if t.Rank <= 0 {
+		t.Rank = 1
+	}
+	if t.Kind == "" {
+		t.Kind = "PASSIVE"
+	}
+	if t.MaxTier <= 0 {
+		t.MaxTier = 1
+	}
+	return t
+}
+
+func (s *Store) GetTalent(key string) (Talent, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	t, ok := s.talents[key]
+	return t, ok
+}
+
+func (s *Store) TalentUICatalog() TalentUICatalog {
+	snap := s.Snapshot()
+	return TalentUICatalog{Trees: snap.TalentTrees, Talents: snap.Talents}
+}
+
 func (s *Store) UpsertTalent(t Talent) error {
 	if t.Key == "" || t.Title == "" {
 		return fmt.Errorf("key_and_title_required")
 	}
-	if t.Rank <= 0 {
-		t.Rank = 1
-	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.talents[t.Key] = t
+	s.talents[t.Key] = normalizeTalent(t)
 	return nil
 }
 

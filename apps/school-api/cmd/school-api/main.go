@@ -299,7 +299,7 @@ func main() {
 		GuardDelete: guardContent(rbac.PermContentDelete),
 	})
 
-	schoolroutes.Register(mux, schoolroutes.Deps{Platform: platform, WriteJSON: writeJSON})
+	schoolroutes.Register(mux, schoolroutes.Deps{Platform: platform, Content: contentStore, WriteJSON: writeJSON})
 
 	mux.HandleFunc("POST /v1/attendance/confirm", func(w http.ResponseWriter, r *http.Request) {
 		actor, ok := authz.PrincipalFromRequest(platform, r)

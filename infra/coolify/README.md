@@ -1,9 +1,10 @@
 # Coolify: что задать для сайта
 
-Минимум для работающего фронта с логином и админкой — **два сервиса**:
+Минимум для работающего фронта с логином и админкой — **три сервиса** (если нужен чат поддержки):
 
 1. **web** (Next.js)
 2. **school-api** (Go)
+3. **support-chat** (Go, og-chat + Telegram webhook)
 
 `auth-adapter` — только если нужна кнопка OnlyID.
 
@@ -40,9 +41,11 @@
 | `NEXT_PUBLIC_SCHOOL_API` | да | build + runtime |
 | `NEXT_PUBLIC_AUTH_URL` | да* | build + runtime |
 | `NEXT_PUBLIC_PLATFORM_API` | нет | можно сразу |
+| `NEXT_PUBLIC_SUPPORT_CHAT_API` | да** | build + runtime, если есть чат |
+| `NEXT_PUBLIC_SUPPORT_CHAT_WS` | да** | build + runtime, wss:// тот же хост |
 | `NEXT_PUBLIC_SITE_URL` | нет | рекомендуется |
 
-\*Если OnlyID не используешь — всё равно задай валидный URL или оставь заглушку; основная авторизация идёт через `school-api`.
+\*\* Для чата: `https://chat-api.mastersword.ru` (API и WS на одном хосте).
 
 После смены `NEXT_PUBLIC_*` сделай **Rebuild**.
 
@@ -89,6 +92,56 @@ NEXT_PUBLIC_SCHOOL_API=https://school-api.mastersword.ru
 ```
 
 **Buildtime + Runtime** в сервисе **web**, затем **Rebuild** web.
+
+## support-chat (отдельный сервис Go) — чат + Telegram webhook
+
+Виджет на сайте ходит в этот API. Telegram webhook **постоянный**, если задан публичный URL.
+
+### Configuration → General / Build
+
+| Поле | Значение |
+|---|---|
+| Build Pack | **Dockerfile** |
+| Dockerfile Location | `infra/coolify/support-chat.Dockerfile` |
+| Port | `8084` |
+| Domains | `https://chat-api.mastersword.ru` |
+
+Healthcheck: `GET https://chat-api.mastersword.ru/health`
+
+### Environment (Runtime)
+
+| Переменная | Значение |
+|---|---|
+| `OGC_TELEGRAM__PUBLIC_BASE_URL` | `https://chat-api.mastersword.ru` |
+| `OGC_TELEGRAM_BOT_TOKEN` | token от @BotFather |
+| `OGC_TELEGRAM_SUPPORT_CHAT_ID` | `-100...` (супергруппа) |
+| `OGC_TELEGRAM_WEBHOOK_SECRET` | случайная строка (openssl rand -hex 32) |
+| `OGC_POSTGRESQL__USERNAME` | пользователь Postgres |
+| `OGC_POSTGRESQL__PASSWORD` | пароль |
+| `OGC_POSTGRESQL__DB_HOST` | хост БД |
+| `OGC_POSTGRESQL__DB_PORT` | `5432` |
+| `OGC_POSTGRESQL__DBNAME` | имя БД (можно отдельная `mos_chat`) |
+| `OGC_STORAGE__ACCESS_KEY` | S3 (Selectel) |
+| `OGC_STORAGE__SECRET_KEY` | S3 |
+| `OGC_STORAGE__BUCKET` | `mos-chat` |
+
+При старте сервис **сам вызывает `setWebhook`** на  
+`{OGC_TELEGRAM__PUBLIC_BASE_URL}/integrations/telegram/webhook/{SECRET}`.
+
+Вручную (если нужно):
+
+```sh
+sh scripts/set-telegram-webhook.sh
+```
+
+### Web (Buildtime + Runtime)
+
+```env
+NEXT_PUBLIC_SUPPORT_CHAT_API=https://chat-api.mastersword.ru
+NEXT_PUBLIC_SUPPORT_CHAT_WS=wss://chat-api.mastersword.ru
+```
+
+После деплоя support-chat — **Rebuild web** и пересобери виджет (`npm run chat:build` с prod URL) при смене API.
 
 ## S3 (из GFF / Selectel)
 

@@ -1,0 +1,230 @@
+replicas:
+  _default: 1
+maxSurge:
+  _default: 1
+maxUnavailable:
+  _default: 0
+
+nodeSelector:
+  enable:
+    _default: "false"
+  value:
+    _default: worker
+
+tolerations:
+  enable:
+    _default: "false"
+  value:
+    _default: worker
+
+affinity:
+  enable:
+    _default: "true"
+
+nodeAffinity:
+  enable:
+    _default: "true"
+  type:
+    _default: preferredDuringSchedulingIgnoredDuringExecution
+  key:
+    _default: "node-role.kubernetes.io/frontnode"
+  operator:
+    _default: "NotIn"  
+  value:
+    _default: "true"
+  weight:
+    _default: 100
+
+podAntiAffinity:
+  enable:
+    _default: "true"
+  type:
+    _default: preferredDuringSchedulingIgnoredDuringExecution
+  key:
+    _default: app
+  value:
+    _default: sso-backend
+  topologyKey:
+    _default: "kubernetes.io/hostname"
+  weight:
+    _default: 100
+
+vpa:
+  enable:
+    _default: "true"
+
+pdb:
+  enable:
+    _default: "true"
+  minAvailable:
+    _default: 1
+
+app:
+  resources:
+    cpu:
+      _default: 50m
+    memory:
+      _default: 256Mi
+
+ingress:
+  proxy_body_size:
+    _default: 128m
+  ingressClassName:
+    _default: nginx-dev
+    production: traefik
+  nginx:
+    force_ssl_redirect: 
+      _default: "true"
+    proxy_body_size:
+      _default: "128m"
+    cors:
+      enable: 
+        _default: "true"
+      max_age:
+        _default: "86400"
+      allow_credentials: 
+        _default: "true"
+      allow_methods: 
+        _default:
+          - "GET"
+          - "POST"
+          - "PUT"
+          - "PATCH"
+          - "DELETE"
+          - "OPTIONS"
+      allow_headers:
+        _default:
+          - "Origin"
+          - "Content-Type"
+          - "Accept"
+          - "Authorization"
+          - "X-Requested-With"
+          - "X-CSRF-Token"
+          - "X-API-Key"
+      allow_origin:
+        _default:
+          - "https://dev.onlyid.ru"
+          - "https://dev.onlygames.ru"  
+          - "https://dev.api.onlygames.ru"
+          - "https://dev.market.onlygames.ru"
+          - "https://dev.api.market.onlygames.ru"
+          - "https://dev.news.onlygames.ru"
+          - "https://dev.api.news.onlygames.ru"
+          - "https://dev.onlymarket.gg"
+          - "https://dev.api.onlymarket.gg"
+          - "https://dev.onlynews.gg"
+          - "https://dev.api.onlynews.gg"
+          - "https://dev.profile.onlygames.ru"
+          - "https://dev.api.profile.onlygames.ru"
+          - "https://onlystream.ru"
+          - "https://cdn.onlygames.ru"
+          - "http://localhost:5173"
+          - "http://localhost:8080"
+        production:
+          - "https://onlyid.ru"
+          - "https://onlygames.ru"  
+          - "https://api.onlygames.ru"
+          - "https://market.onlygames.ru"
+          - "https://api.market.onlygames.ru"
+          - "https://news.onlygames.ru"
+          - "https://api.news.onlygames.ru"
+          - "https://onlymarket.gg"
+          - "https://api.onlymarket.gg"
+          - "https://onlynews.gg"
+          - "https://api.onlynews.gg"
+          - "https://profile.onlygames.ru"
+          - "https://api.profile.onlygames.ru"
+          - "https://onlystream.ru"
+          - "https://cdn.onlygames.ru"
+          - "http://localhost:5173"
+          - "http://localhost:8080"
+    whitelist:
+      enable:
+        _default: "true"
+        production: "false"
+      source_range:
+        _default:
+          - "10.8.0.0/24"
+          - "10.130.0.0/24"
+          - "192.168.1.0/24"
+          - "84.201.146.51"   # bastion-host (openvpn)
+
+  main:
+    domain:
+      _default: dev.chat.onlygames.ru
+      production: chat.onlygames.ru
+    secretName:
+      _default: tls-wildcard-chat
+    middlewares:
+      _default: "kube-system-chat-prefix@kubernetescrd,kube-system-redirect-to-https@kubernetescrd,kube-system-cors-headers@kubernetescrd"
+
+  issuer:
+    enable:
+      _default: 'true'
+    clusterIssuerName:
+      _default: regru-dns
+
+  paths:
+    main:
+      hook:
+        path:
+          _default: /
+        serviceName:
+          _default: chat-backend
+        servicePort:
+          _default: 8080
+        pathType:
+          _default: ImplementationSpecific
+
+env:
+  db: 
+    OGC_POSTGRESQL__DB_NAME:
+      _default: "og-chat"
+    OGC_POSTGRESQL__DB_HOST:
+      _default: "onlygames-db-rw.infra-dev-psql.svc.cluster.local"
+      production: "postgres.infra-postgresql.svc.cluster.local"
+    OGC_POSTGRESQL__DB_PORT:
+      _default: "5432"
+    OGC_POSTGRESQL__USERNAME:
+      _default: "chat" 
+
+  app_config:
+    OGC_LOGGER__LEVEL:
+      _default: "info"
+    OGC_SERVER__INTERNAL__HOST:
+      _default: "0.0.0.0"
+    OGC_SERVER__INTERNAL__PORT:
+      _default: "8080"
+    OGC_SERVER__OPENAPI__HOST:
+      _default: "0.0.0.0"
+    OGC_SERVER__OPENAPI__PORT:
+      _default: "8081"
+
+  telegram:
+    OGC_TELEGRAM__API_BASE_URL:
+      _default: "https://api.telegram.org"
+      
+  s3:
+    OGC_STORAGE__BUCKET:
+      _default: "og-chat-media"
+    OGC_STORAGE__ENDPOINT:
+      _default: "https://storage.yandexcloud.net"
+    OGC_STORAGE__REGION:
+      _default: "ru-central1"
+
+  storage:
+    OGC_STORAGE__MAX_FILE_SIZE:
+      _default: "52428800"        # 50MB
+    OGC_STORAGE__PRESIGNED_TTL:
+      _default: "300"             # 5 minutes
+    OGC_STORAGE__ALLOWED_TYPES:
+      _default:
+        - image/jpeg
+        - image/png
+        - image/gif
+        - image/webp
+        - application/pdf
+        - application/msword
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+        - text/plain
+        - application/zip

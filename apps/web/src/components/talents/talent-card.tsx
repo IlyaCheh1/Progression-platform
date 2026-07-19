@@ -63,7 +63,7 @@ type TalentCardProps = {
 export default function TalentCard({
   talent,
   variant = "secondary",
-  treeType = "gamer",
+  treeType = "blade",
   canBeLearned = false,
   onActivate,
   onLearn,

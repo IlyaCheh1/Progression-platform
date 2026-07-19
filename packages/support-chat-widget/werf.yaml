@@ -1,0 +1,68 @@
+---
+project: chat-frontend-cdn
+configVersion: 1
+
+---
+{{ $NODE := "node:24-alpine@sha256:49e45bf002728e35c3a466737d8bcfe12c29731c7c2f3e223f9a7c794fff19a4" }}
+{{ $CLI := "amazon/aws-cli:2.29.0@sha256:47b01cd7c915d7acdf95fb3e80282e045257291d4bdc3e9dd28f4d7ded9b0935" }}
+
+
+---
+image: builder
+from: {{ $NODE }}
+final: false
+git:
+- add: /
+  to: /app
+  excludePaths:
+    - .helm
+    - werf*
+    - .git*
+    - DEPLOYMENT.md
+  stageDependencies:
+    install:
+      - package*.json
+      - yarn.lock
+    beforeSetup:
+      - '**/*'
+    setup:
+      - '**/*'
+shell:
+  install:
+    - echo "install"
+  beforeSetup:
+    - echo "beforeSetup"
+    - cd /app
+    - yarn install --frozen-lockfile
+  setup:
+    - echo "setup"
+    - export VITE_API_BASE_URL="https://chat.onlygames.ru"
+    - export VITE_WS_URL="wss://chat.onlygames.ru"
+    - export NODE_ENV="production false"
+    - cd /app
+    - yarn build
+
+---
+image: publisher
+from: {{ $CLI }}
+cacheVersion: 1
+fromCacheVersion: 0
+import:
+- image: builder
+  add: /app/dist
+  to: /to_publish
+  before: install
+shell:
+  install:
+    - echo "aws-cli version"
+    - /usr/local/bin/aws --version
+  setup:
+    - echo "set variables"
+    - export PATH="/usr/local/bin:$PATH"
+    - export ENDPOINT_URL="https://storage.yandexcloud.net"
+    - export AWS_DEFAULT_REGION="ru-central1"
+    - export BUCKET_NAME="og-cdn-storage"
+    - export AWS_ACCESS_KEY_ID="{{ env "AWS_ACCESS_KEY_ID" }}"
+    - export AWS_SECRET_ACCESS_KEY="{{ env "AWS_SECRET_ACCESS_KEY" }}"
+    - echo "Push to CDN S3"
+    - aws --endpoint-url=${ENDPOINT_URL} s3 cp --recursive /to_publish s3://${BUCKET_NAME}

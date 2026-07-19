@@ -1,8 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SCHOOL_API } from "@/lib/utils";
-import { ASSIGNABLE_ROLES, ROLE_LABELS, formatRoles, normalizeRole, normalizeRoles, type UserRole } from "@/lib/rbac";
+import {
+  ASSIGNABLE_ROLES,
+  ROLE_LABELS,
+  formatRoles,
+  normalizeRole,
+  normalizeRoles,
+  type UserRole,
+} from "@/lib/rbac";
 import { authHeaders, loadSession, type SessionUser } from "@/lib/session";
 
 type UserRow = {
@@ -29,6 +36,7 @@ export default function AdminUsersPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const formSectionRef = useRef<HTMLElement | null>(null);
 
   const reload = useCallback(async (user: SessionUser) => {
     setError("");
@@ -113,12 +121,20 @@ export default function AdminUsersPage() {
   }
 
   function startEdit(user: UserRow) {
+    const roles = normalizeRoles(user.roles ?? user.role);
+    const primaryRole =
+      roles.find((role) => ASSIGNABLE_ROLES.includes(role)) ?? normalizeRole(user.role);
     setEditId(user.id);
     setForm({
       displayName: user.displayName,
       login: user.login,
       password: "",
-      role: (user.role as UserRole) || "student",
+      role: primaryRole,
+    });
+    setError("");
+    setMessage("");
+    window.requestAnimationFrame(() => {
+      formSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }
 
@@ -131,7 +147,7 @@ export default function AdminUsersPage() {
       {error && <p className="mt-4 text-sm text-[#c45c2a]">{error}</p>}
       {message && <p className="mt-4 text-sm text-mos-amber">{message}</p>}
 
-      <section className="mt-8 border border-mos-line/40 bg-mos-stone/20 p-5">
+      <section ref={formSectionRef} className="mt-8 border border-mos-line/40 bg-mos-stone/20 p-5">
         <h2 className="font-display text-xl text-mos-amber">{editId ? "Редактирование" : "Новый пользователь"}</h2>
         <form onSubmit={submitUser} className="mt-4 grid gap-3 md:grid-cols-2">
           <Field label="Имя" value={form.displayName} onChange={(v) => setForm((f) => ({ ...f, displayName: v }))} required />

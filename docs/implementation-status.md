@@ -18,6 +18,7 @@ Last updated: 2026-07-19
 - **Minor privacy (E2E-18):** `SetMinor`, leaderboard exclusion, public-share block, achievements hidden for minors
 - **Title → inventory (E2E-08):** rank unlock grants title item; equip via `/v1/inventory/equip` kind `title`
 - **Support chat stub (E2E-13):** `/support`, cases API, admin resolve + optional correction
+- **Support chat widget (E2E-13):** `apps/support-chat` (og-chat backend), embed `public/chat/og-chat.js`, theme `mos`, Telegram bridge
 - **Asset pipeline stub (E2E-17):** `/v1/admin/assets` review workflow
 - **Analytics:** cohorts, churn, hall heatmap APIs
 - **Postgres:** row-level repos (`004_row_level.sql`) + outbox sync; legacy blob auto-migrated once

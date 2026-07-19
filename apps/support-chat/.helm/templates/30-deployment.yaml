@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+  annotations:
+    werf.io/replicas-on-creation: {{ pluck .Values.werf.env .Values.replicas | first | default .Values.replicas._default | quote }}
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ pluck .Values.werf.env .Values.maxSurge | first | default .Values.maxSurge._default }}
+      maxUnavailable: {{ pluck .Values.werf.env .Values.maxUnavailable | first | default .Values.maxUnavailable._default }}
+  template:
+    metadata:
+      name: {{ .Chart.Name }}
+      labels:
+        app: {{ .Chart.Name }}
+      annotations:
+        checksum/cm-pg-probe-cm: {{ include (print $.Template.BasePath "/10-pg-probe-cm.yaml") . | sha256sum }}
+    spec:  
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 45
+      imagePullSecrets:
+        - name: registry-secret
+      initContainers:
+        - name: wait-postgres
+          image: {{ .Values.werf.image.pg_client }}
+          command: [ "/bin/sh", "-c", "while ! psql -U ${PG_USER} -d ${PG_DB} -h ${PG_HOST} -p ${PG_PORT} -c \"select 1\"; do sleep 1; done" ]
+          envFrom:
+          - secretRef:
+              name: {{ .Chart.Name }}-pg-init-check
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.werf.image.app }}
+          imagePullPolicy: IfNotPresent
+          workingDir: /app
+          command: ["/bin/sh"]
+          args: ["-c", "./main"]
+          securityContext:
+            runAsUser: 1001
+            allowPrivilegeEscalation: false
+          ports:
+            - name: http
+              containerPort: {{ pluck .Values.werf.env .Values.env.app_config.OGC_SERVER__INTERNAL__PORT | first | default .Values.env.app_config.OGC_SERVER__INTERNAL__PORT._default }}
+              protocol: TCP
+            - name: grpc
+              containerPort: {{ pluck .Values.werf.env .Values.env.app_config.OGC_SERVER__OPENAPI__PORT | first | default .Values.env.app_config.OGC_SERVER__OPENAPI__PORT._default }}
+              protocol: TCP
+          env:
+{{- include "app_env" . | indent 12 }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 10"]
+          resources:
+{{- include "resources" . | indent 12 }}
+          livenessProbe:
+{{- include "livenessProbe" . | indent 12 }}
+          readinessProbe:
+{{- include "readinessProbe" . | indent 12 }}
+          volumeMounts:
+{{- include "volume_mounts" . | indent 12 }}
+      volumes:
+{{- include "volumes" . | indent 8 }}
+
+{{- include "nodeSelector" . | indent 6 }}
+{{- include "tolerations" . | indent 6 }}
+
+{{- if eq (pluck .Values.werf.env .Values.affinity.enable | first | default .Values.affinity.enable._default) "true" }}
+      affinity:
+{{- include "nodeAffinity" . | indent 8 }}
+{{- include "podAntiAffinity" . | indent 8 }}
+{{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Chart.Name }}
+  ports:
+    - name: http
+      port: {{ pluck .Values.werf.env .Values.env.app_config.OGC_SERVER__INTERNAL__PORT | first | default .Values.env.app_config.OGC_SERVER__INTERNAL__PORT._default }}
+    - name: grpc
+      port: {{ pluck .Values.werf.env .Values.env.app_config.OGC_SERVER__OPENAPI__PORT | first | default .Values.env.app_config.OGC_SERVER__OPENAPI__PORT._default }}

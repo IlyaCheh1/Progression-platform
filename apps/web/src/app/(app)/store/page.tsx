@@ -6,7 +6,6 @@ import GradientLabel from "@/components/onboarding/gradient-label";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
 import { useProfileShellData } from "@/hooks/use-profile-shell";
 import { PROFILE_BACKGROUNDS } from "@/lib/backgrounds";
-import { readCapsBalance, spendCaps } from "@/lib/caps";
 import { OG_CHARACTERS } from "@/lib/characters";
 import {
   equipInventoryItem,
@@ -38,7 +37,6 @@ export default function StorePage() {
   const { profile } = usePlayerProfile(session);
   const shell = useProfileShellData(session, profile);
   const [inventory, setInventory] = useState<InventoryView | null>(null);
-  const [balance, setBalance] = useState(() => (typeof window !== "undefined" ? readCapsBalance() : 2500));
   const [selected, setSelected] = useState<{ item: Offer; source: SelectedSource } | null>(null);
   const [notify, setNotify] = useState<"buy" | "error" | null>(null);
   const [busy, setBusy] = useState(false);
@@ -60,10 +58,6 @@ export default function StorePage() {
 
   useEffect(() => {
     void reload();
-    setBalance(readCapsBalance());
-    const onCaps = () => setBalance(readCapsBalance());
-    window.addEventListener("mos.caps", onCaps);
-    return () => window.removeEventListener("mos.caps", onCaps);
   }, [reload]);
 
   const ownedKeys = useMemo(
@@ -96,7 +90,7 @@ export default function StorePage() {
   }, [ownedKeys, inventory]);
 
   const userOffers = allOffers.filter((o) => o.owned);
-  const storeOffers = allOffers.filter((o) => !o.owned);
+  const storeOffers: Offer[] = [];
 
   useEffect(() => {
     setSelected((prev) => {
@@ -118,13 +112,6 @@ export default function StorePage() {
     setNotify(null);
     setError("");
     try {
-      const spent = spendCaps(selected.item.price);
-      if (!spent.ok) {
-        setBalance(spent.balance);
-        setNotify("error");
-        return;
-      }
-      setBalance(spent.balance);
       const view = await purchaseInventoryItem(session, selected.item.kind, selected.item.refId);
       setInventory(view);
       const nextProfile = await fetchMyProfile(session);
@@ -166,13 +153,8 @@ export default function StorePage() {
     >
       <div className="flex flex-col gap-3">
         <GradientLabel color="amber">
-          <h5 className="font-display text-xs font-medium text-mos-text md:text-[17px]">
+          <h5 className="font-unbounded text-xs font-medium leading-3.5 text-primaryText md:text-[17px] md:leading-6">
             {shell.username}
-            <span className="ml-2 inline-flex items-center gap-1 text-mos-amber">
-              {balance.toLocaleString("ru-RU")}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/media/ui/coin.png" alt="" className="h-4 w-4" />
-            </span>
           </h5>
         </GradientLabel>
         <OfferGrid

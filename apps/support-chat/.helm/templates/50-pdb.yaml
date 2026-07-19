@@ -1,0 +1,12 @@
+{{- if eq (pluck .Values.werf.env .Values.pdb.enable | first | default .Values.pdb.enable._default) "true" }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  minAvailable: {{ pluck .Values.werf.env .Values.pdb.minAvailable | first | default .Values.pdb.minAvailable._default }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+{{- end }}

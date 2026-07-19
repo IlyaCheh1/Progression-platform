@@ -1,12 +1,11 @@
 import {
   MAX_FAVORITE_SKILLS,
   STARTING_SKILL_POINTS,
-  buildTalentTrees,
   type MosTalent,
   type MosTalentTree,
 } from "@/lib/talents-catalog";
 
-const STORAGE_KEY = "mos.talents.v1";
+const STORAGE_KEY = "mos.talents.v2";
 
 export type TalentsPersisted = {
   points: number;
@@ -49,9 +48,18 @@ export function saveTalentsState(state: TalentsPersisted) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-export function applyStateToTrees(state: TalentsPersisted): MosTalentTree[] {
+export function mergeUnlockedKeys(state: TalentsPersisted, unlocked: string[]): TalentsPersisted {
+  if (unlocked.length === 0) return state;
+  const learned = { ...state.learned };
+  for (const key of unlocked) {
+    if (!learned[key]) learned[key] = 1;
+  }
+  return { ...state, learned };
+}
+
+export function applyStateToTrees(trees: MosTalentTree[], state: TalentsPersisted): MosTalentTree[] {
   const now = Date.now();
-  return buildTalentTrees().map((tree) => ({
+  return trees.map((tree) => ({
     ...tree,
     skills: tree.skills.map((skill) => {
       const tier = state.learned[skill.id] ?? 0;

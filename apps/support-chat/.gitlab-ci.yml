@@ -1,0 +1,112 @@
+---
+variables:
+  WERF_VERSION: "2 stable"
+
+stages:
+  - build
+  - plan
+  - deploy
+  - cleanup
+
+# # # # # # # #
+# .templates  #
+# # # # # # # #
+
+
+.base_werf: &base_werf
+  - type werf && source $(werf ci-env gitlab --as-file)
+  - werf version
+  - set -x
+.base: &base
+  dependencies:
+    - Build
+  except:
+    - schedules
+  tags:
+    - werf
+
+.base_build: &base_build
+  <<: *base
+  stage: build
+  script:
+    - *base_werf
+    - werf build
+  when: always
+
+.base_plan: &base_plan
+  <<: *base
+  stage: plan
+  script:
+    - *base_werf
+    - werf plan --namespace ${NAMESPACE} --env ${CI_ENVIRONMENT_SLUG} --ignore-secret-key
+  when: always
+
+.base_deploy: &base_deploy
+  <<: *base
+  stage: deploy
+  script:
+    - *base_werf
+    - werf converge
+      --namespace ${NAMESPACE}
+      --env ${CI_ENVIRONMENT_SLUG}
+      --require-built-images ${WERF_REQUIRE_BUILT_IMAGES}
+  when: manual
+
+# # # # # # # #
+#    Build    #
+# # # # # # # #
+
+Build:
+  <<: *base_build
+
+# # # # # # # #
+#    Plan     #
+# # # # # # # #
+
+Plan Dev:
+  <<: *base_plan
+  environment:
+    name: dev
+  variables:
+    NAMESPACE: dev
+
+Plan Production:
+  <<: *base_plan
+  environment:
+    name: production
+  variables:
+    NAMESPACE: production
+
+# # # # # # # #
+#    Deploy   #
+# # # # # # # #
+
+Deploy to Dev:
+  <<: *base_deploy
+  environment:
+    name: dev
+  variables:
+    NAMESPACE: dev
+
+Deploy to Production:
+  <<: *base_deploy
+  environment:
+    name: production
+  variables:
+    NAMESPACE: production
+  only:
+    - main
+
+# # # # # # # #
+#   Cleanup   #
+# # # # # # # #
+
+Cleanup:
+  stage: cleanup
+  script:
+    - *base_werf
+    - werf cleanup
+  only:
+    - schedules
+  tags:
+    - werf

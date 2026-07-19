@@ -1,0 +1,75 @@
+---
+variables:
+  WERF_VERSION: "2 stable"
+
+stages:
+  - build
+  - cleanup
+
+# # # # # # # #
+# .templates  #
+# # # # # # # #
+
+
+.base_werf: &base_werf
+  - type trdl && . $(trdl use werf ${WERF_VERSION_GLOBAL:-$WERF_VERSION})
+  - type werf && source $(werf ci-env gitlab --as-file)
+  - werf version
+  - set -x
+
+.base: &base
+  dependencies:
+    - Build and Push to CDN
+  except:
+    - schedules
+  tags:
+    - werf
+
+.base_build: &base_build
+  <<: *base
+  stage: build
+  script:
+    - *base_werf
+    - werf build
+  when: always
+
+.base_plan: &base_plan
+  <<: *base
+  stage: plan
+  script:
+    - *base_werf
+    - werf plan --namespace ${NAMESPACE} --env ${CI_ENVIRONMENT_SLUG} --ignore-secret-key
+  when: always
+
+.base_deploy: &base_deploy
+  <<: *base
+  stage: deploy
+  script:
+    - *base_werf
+    - werf converge
+      --namespace ${NAMESPACE}
+      --env ${CI_ENVIRONMENT_SLUG}
+      --require-built-images ${WERF_REQUIRE_BUILT_IMAGES}
+  when: manual
+
+# # # # # # # #
+#    Build    #
+# # # # # # # #
+
+Build and Push to CDN:
+  <<: *base_build
+  when: manual
+
+# # # # # # # #
+#   Cleanup   #
+# # # # # # # #
+
+Cleanup:
+  stage: cleanup
+  script:
+    - *base_werf
+    - werf cleanup
+  only:
+    - schedules
+  tags:
+    - werf

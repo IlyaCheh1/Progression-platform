@@ -159,6 +159,11 @@ test("starter bundle imports all content-pack achievement keys", () => {
 test("starter bundle imports all content-pack talent keys", () => {
   assertKeys("talents", starter.talents, EXPECTED_TALENTS);
   assertRussianTitles("talent", starter.talents);
+  assert.equal(starter.talentTrees?.length, 4, "talentTrees: expected 4 branches");
+  for (const talent of starter.talents) {
+    assert.ok(talent.treeId, `talent ${talent.key}: treeId required`);
+    assert.ok(Array.isArray(talent.position) && talent.position.length === 2, `talent ${talent.key}: position required`);
+  }
 });
 
 test("starter bundle imports starter items and reward bundles in Russian", () => {

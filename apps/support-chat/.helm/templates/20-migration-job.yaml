@@ -1,0 +1,52 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Chart.Name }}-migration
+  labels:
+    app: {{ .Chart.Name }}
+    component: migration
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 300
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      name: {{ .Chart.Name }}-migration
+      labels:
+        app: {{ .Chart.Name }}
+        component: migration
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: registry-secret
+      initContainers:
+        - name: wait-postgres
+          image: {{ .Values.werf.image.pg_client }}
+          command: [ "/bin/sh", "-c", "while ! psql -U ${PG_USER} -d ${PG_DB} -h ${PG_HOST} -p ${PG_PORT} -c \"select 1\"; do sleep 2; done" ]
+          envFrom:
+          - secretRef:
+              name: {{ .Chart.Name }}-pg-init-check
+      containers:
+        - name: migration
+          image: {{ .Values.werf.image.migration }}
+          imagePullPolicy: IfNotPresent
+          workingDir: /app
+          command: ["/bin/sh"]
+          args: ["-c", "./migrate"]
+          securityContext:
+            runAsUser: 1001
+            allowPrivilegeEscalation: false
+          env:
+{{- include "app_env" . | indent 12 }}
+          resources:
+{{- include "resources" . | indent 12 }}
+          volumeMounts:
+{{- include "volume_mounts" . | indent 12 }}
+      volumes:
+{{- include "volumes" . | indent 8 }}

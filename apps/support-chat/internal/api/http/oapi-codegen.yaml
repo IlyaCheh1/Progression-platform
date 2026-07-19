@@ -1,0 +1,10 @@
+package: generated
+generate:
+  embedded-spec: true
+  models: true
+  std-http-server: true
+  strict-server: true
+compatibility:
+  always-prefix-enum-values: true
+  preserve-original-operation-id-casing-in-embedded-spec: true
+output: internal/api/http/generated/generated.go

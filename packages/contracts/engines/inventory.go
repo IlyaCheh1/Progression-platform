@@ -138,8 +138,8 @@ func (p *Platform) InventoryForStudent(studentID string) (*InventoryView, error)
 	if !ok {
 		return nil, fmt.Errorf("student not found")
 	}
-	// Backfill starter cosmetics for already-completed profiles (idempotent).
-	if s.ProfileComplete {
+	// Backfill starter cosmetics for completed profiles (idempotent).
+	if s.ProfileComplete || profileReadyLocked(s) {
 		p.grantOnboardingCosmeticsLocked(s)
 	}
 	return inventoryViewLocked(p, s), nil

@@ -1,0 +1,14 @@
+{{- if eq (pluck .Values.werf.env .Values.vpa.enable | first | default .Values.vpa.enable._default) "true" }}
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Chart.Name }}
+  updatePolicy:
+    updateMode: "Off"
+{{- end }}

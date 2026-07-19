@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Documentation
+*.md
+
+# API specs
+api/
+
+# IDE
+.vscode/
+.idea/
+.cursor/
+*.swp
+*.swo
+.editorconfig
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build artifacts
+bin/
+dist/
+
+# Test files
+*_test.go
+test/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Environment files
+.env
+.env.*
+
+# Config files
+config.toml
+config.*.toml
+
+# Makefile
+Makefile

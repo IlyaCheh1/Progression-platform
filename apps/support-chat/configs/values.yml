@@ -1,0 +1,46 @@
+logger:
+  level: info
+
+server:
+  internal:
+    host: 127.0.0.1
+    port: "8083"
+  openapi:
+    host: 127.0.0.1
+    port: "8084"
+
+postgresql:
+  username: mos
+  password: mos
+  db_host: localhost
+  db_port: "5432"
+  db_name: mos
+
+telegram:
+  bot_token: ""
+  support_chat_id: 0
+  webhook_secret: ""
+  api_base_url: "https://api.telegram.org"
+
+storage:
+  access_key: "mosminio"
+  secret_key: "mosminio123"
+  bucket: "mos-chat"
+  endpoint: "http://localhost:9000"
+  region: "ru-7"
+  max_file_size: 52428800
+  presigned_ttl: 300
+  allowed_types:
+    - "image/jpeg"
+    - "image/png"
+    - "image/gif"
+    - "image/webp"
+    - "application/pdf"
+    - "text/plain"
+
+websocket:
+  ping_interval: 30
+  pong_timeout: 60
+  read_buffer_size: 1024
+  write_buffer_size: 1024
+  message_buffer: 256

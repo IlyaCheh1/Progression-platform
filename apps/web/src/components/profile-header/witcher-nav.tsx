@@ -6,6 +6,7 @@ import PopupMenu from "@/components/ui/popup-menu";
 import SchoolsMenu from "@/components/profile-header/schools-menu";
 import {
   IconAchievements,
+  IconDirectionDown,
   IconInventory,
   IconProfile,
   IconSchools,
@@ -72,13 +73,23 @@ function WitcherTab({
 
       <span
         className={cn(
-          "relative z-10 font-display text-[7px] font-medium uppercase tracking-[0.14em] transition-[filter,opacity,color] duration-300 md:text-[10px] md:tracking-[0.18em]",
+          "relative z-10 inline-flex flex-col items-center font-display text-[7px] font-medium uppercase tracking-[0.14em] transition-[filter,opacity,color] duration-300 md:text-[10px] md:tracking-[0.18em]",
           active
             ? "opacity-100 drop-shadow-[0_0_6px_rgba(229,176,66,0.45)]"
             : "opacity-70 group-hover:opacity-90",
         )}
       >
-        {item.label}
+        <span className="inline-flex items-center gap-0.5">
+          {item.label}
+          {item.dropdown ? (
+            <IconDirectionDown
+              className={cn(
+                "h-3 w-3 transition-transform duration-200 md:h-4 md:w-4",
+                isMenuOpen && "rotate-180",
+              )}
+            />
+          ) : null}
+        </span>
         {item.inDevelopment ? (
           <span className="mt-0.5 block text-[6px] font-normal normal-case tracking-normal text-mos-muted md:text-[8px]">
             В разработке

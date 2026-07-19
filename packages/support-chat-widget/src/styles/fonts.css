@@ -1,0 +1,37 @@
+/* Базовые стили для веб-компонента */
+:host {
+  font-family: 'Golos Text', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+}
+
+/* Fallback шрифты для надежности */
+.font-golos {
+  font-family: 'Golos Text', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+}
+
+.font-outfit {
+  font-family: 'Outfit', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+}
+
+.font-unbounded {
+  font-family: 'Unbounded', 'Outfit', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial',
+    sans-serif;
+}
+
+/* Базовый шрифт для всего чата */
+#chatContainer,
+og-chat {
+  font-family: 'Golos Text', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+}
+
+/* Конкретные стили для элементов чата */
+.chat-content,
+.chat-message,
+.chat-input,
+.chat-button {
+  font-family: 'Golos Text', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+}
+
+/* Убеждаемся что все текстовые элементы используют правильный шрифт */
+* {
+  font-family: inherit;
+}

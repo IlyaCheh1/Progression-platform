@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-config
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-10"
+data:
+  config.yaml: |
+    logger:
+      level: {{ pluck .Values.werf.env .Values.env.app_config.OGC_LOGGER__LEVEL | first | default .Values.env.app_config.OGC_LOGGER__LEVEL._default }}
+    server:
+      internal:
+        host: {{ pluck .Values.werf.env .Values.env.app_config.OGC_SERVER__INTERNAL__HOST | first | default .Values.env.app_config.OGC_SERVER__INTERNAL__HOST._default }}
+        port: {{ pluck .Values.werf.env .Values.env.app_config.OGC_SERVER__INTERNAL__PORT | first | default .Values.env.app_config.OGC_SERVER__INTERNAL__PORT._default }}
+      openapi:
+        host: {{ pluck .Values.werf.env .Values.env.app_config.OGC_SERVER__OPENAPI__HOST | first | default .Values.env.app_config.OGC_SERVER__OPENAPI__HOST._default }}
+        port: {{ pluck .Values.werf.env .Values.env.app_config.OGC_SERVER__OPENAPI__PORT | first | default .Values.env.app_config.OGC_SERVER__OPENAPI__PORT._default }}
+    storage:
+      max_file_size: {{ pluck .Values.werf.env .Values.env.storage.OGC_STORAGE__MAX_FILE_SIZE | first | default .Values.env.storage.OGC_STORAGE__MAX_FILE_SIZE._default }}
+      presigned_ttl: {{ pluck .Values.werf.env .Values.env.storage.OGC_STORAGE__PRESIGNED_TTL | first | default .Values.env.storage.OGC_STORAGE__PRESIGNED_TTL._default }}
+      allowed_types:
+      {{- $allowedTypes := pluck .Values.werf.env .Values.env.storage.OGC_STORAGE__ALLOWED_TYPES | first | default .Values.env.storage.OGC_STORAGE__ALLOWED_TYPES._default }}
+      {{- range $allowedTypes }}
+        - {{ . | quote }}
+      {{- end }}

@@ -9,11 +9,13 @@ import (
 	"github.com/masterofsword/contracts/rbac"
 	"github.com/masterofsword/contracts/school"
 	"github.com/masterofsword/contracts/training"
+	"github.com/masterofsword/school-api/internal/admincontent"
 	"github.com/masterofsword/school-api/internal/authz"
 )
 
 type Deps struct {
 	Platform  *engines.Platform
+	Content   *admincontent.Store
 	WriteJSON func(http.ResponseWriter, any)
 }
 
@@ -409,8 +411,55 @@ func Register(mux *http.ServeMux, d Deps) {
 		d.WriteJSON(w, d.Platform.School.BattlePassForStudent(actor.ID))
 	}))
 
+	mux.HandleFunc("GET /v1/talents/catalog", func(w http.ResponseWriter, r *http.Request) {
+		if d.Content == nil {
+			d.WriteJSON(w, admincontent.TalentUICatalog{})
+			return
+		}
+		d.WriteJSON(w, d.Content.TalentUICatalog())
+	})
+
 	mux.HandleFunc("GET /v1/talents/me/unlocked", authz.RequireAuth(d.Platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
 		d.WriteJSON(w, d.Platform.School.TalentsForStudent(actor.ID))
+	}))
+
+	mux.HandleFunc("POST /v1/talents/unlock", authz.RequireAuth(d.Platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		if d.Content == nil {
+			http.Error(w, `{"error":"catalog_unavailable"}`, http.StatusServiceUnavailable)
+			return
+		}
+		var body struct {
+			TalentKey string `json:"talentKey"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.TalentKey == "" {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		talent, ok := d.Content.GetTalent(body.TalentKey)
+		if !ok {
+			http.Error(w, `{"error":"unknown_talent"}`, http.StatusNotFound)
+			return
+		}
+		unlocked := d.Platform.School.TalentsForStudent(actor.ID)
+		unlockedSet := map[string]bool{}
+		for _, key := range unlocked {
+			unlockedSet[key] = true
+		}
+		if unlockedSet[body.TalentKey] {
+			http.Error(w, `{"error":"already_unlocked"}`, http.StatusConflict)
+			return
+		}
+		for _, req := range talent.Requires {
+			if !unlockedSet[req] {
+				http.Error(w, `{"error":"prerequisites_not_met"}`, http.StatusBadRequest)
+				return
+			}
+		}
+		if err := d.Platform.School.UnlockTalent(actor.ID, body.TalentKey); err != nil {
+			http.Error(w, `{"error":"unlock_failed"}`, http.StatusInternalServerError)
+			return
+		}
+		d.WriteJSON(w, map[string]any{"ok": true, "talentKey": body.TalentKey})
 	}))
 
 	mux.HandleFunc("POST /v1/bookings/rental", authz.RequirePermission(d.Platform, rbac.PermBookingCreate, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {

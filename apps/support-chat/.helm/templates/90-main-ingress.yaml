@@ -1,0 +1,59 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Chart.Name }}-main
+  annotations:
+{{- if eq (pluck .Values.werf.env .Values.ingress.ingressClassName | first | default .Values.ingress.ingressClassName._default) "traefik" }}
+    traefik.ingress.kubernetes.io/ssl-redirect: "true"
+    traefik.ingress.kubernetes.io/force-ssl-redirect: "true"
+    traefik.ingress.kubernetes.io/proxy-body-size: {{ pluck .Values.werf.env .Values.ingress.proxy_body_size | first | default .Values.ingress.proxy_body_size._default }}
+    traefik.ingress.kubernetes.io/router.middlewares: {{ pluck .Values.werf.env .Values.ingress.main.middlewares | first | default .Values.ingress.main.middlewares._default }}
+{{- else }}
+    nginx.ingress.kubernetes.io/force-ssl-redirect: {{ pluck .Values.werf.env .Values.ingress.nginx.force_ssl_redirect | first | default .Values.ingress.nginx.force_ssl_redirect._default }}
+    nginx.ingress.kubernetes.io/proxy-body-size: {{ pluck .Values.werf.env .Values.ingress.nginx.proxy_body_size | first | default .Values.ingress.nginx.proxy_body_size._default }}
+    nginx.ingress.kubernetes.io/enable-cors: {{ pluck .Values.werf.env .Values.ingress.nginx.cors.enable | first | default .Values.ingress.nginx.cors.enable._default }}
+    nginx.ingress.kubernetes.io/cors-max-age: {{ pluck .Values.werf.env .Values.ingress.nginx.cors.max_age | first | default .Values.ingress.nginx.cors.max_age._default }}
+    nginx.ingress.kubernetes.io/cors-allow-credentials: {{ pluck .Values.werf.env .Values.ingress.nginx.cors.allow_credentials | first | default .Values.ingress.nginx.cors.allow_credentials._default }}
+    nginx.ingress.kubernetes.io/cors-allow-methods: {{ pluck .Values.werf.env .Values.ingress.nginx.cors.allow_methods | first | default .Values.ingress.nginx.cors.allow_methods._default | join ", " }}
+    nginx.ingress.kubernetes.io/cors-allow-headers: {{ pluck .Values.werf.env .Values.ingress.nginx.cors.allow_headers | first | default .Values.ingress.nginx.cors.allow_headers._default | join ", " }}
+    nginx.ingress.kubernetes.io/cors-allow-origin: {{ pluck .Values.werf.env .Values.ingress.nginx.cors.allow_origin | first | default .Values.ingress.nginx.cors.allow_origin._default | join ", " }}
+{{- if eq (pluck .Values.werf.env .Values.ingress.nginx.whitelist.enable | first | default .Values.ingress.nginx.whitelist.enable._default) "true" }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ pluck .Values.werf.env .Values.ingress.nginx.whitelist.source_range | first | default .Values.ingress.nginx.whitelist.source_range._default | join ", " }}
+{{- end }}
+{{- end }}
+spec:
+  ingressClassName: {{ pluck .Values.werf.env .Values.ingress.ingressClassName | first | default .Values.ingress.ingressClassName._default }}
+  rules:
+  - host: {{ pluck .Values.werf.env .Values.ingress.main.domain | first | default .Values.ingress.main.domain._default }}
+    http:
+      paths:
+{{- range $paths := .Values.ingress.paths.main }}
+      - path: {{ pluck $.Values.werf.env $paths.path | first | default $paths.path._default}}
+        backend:
+          service:
+            name: {{ pluck $.Values.werf.env $paths.serviceName | first | default $paths.serviceName._default}}
+            port:
+              number: {{ pluck $.Values.werf.env $paths.servicePort | first | default $paths.servicePort._default}}
+        pathType: {{ pluck $.Values.werf.env $paths.pathType | first | default $paths.pathType._default}}
+{{- end }}
+  tls:
+  - hosts:
+    - {{ pluck .Values.werf.env .Values.ingress.main.domain | first | default .Values.ingress.main.domain._default }}
+    secretName: {{ pluck .Values.werf.env .Values.ingress.main.secretName | first | default .Values.ingress.main.secretName._default }}
+
+{{- if eq (pluck .Values.werf.env .Values.ingress.issuer.enable | first | default .Values.ingress.issuer.enable._default) "true" }}
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ pluck .Values.werf.env .Values.ingress.main.secretName | first | default .Values.ingress.main.secretName._default }}
+spec:
+  dnsNames:
+  - {{ pluck .Values.werf.env .Values.ingress.main.domain | first | default .Values.ingress.main.domain._default }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ pluck .Values.werf.env .Values.ingress.issuer.clusterIssuerName | first | default .Values.ingress.issuer.clusterIssuerName._default }}
+  secretName: {{ pluck .Values.werf.env .Values.ingress.main.secretName | first | default .Values.ingress.main.secretName._default }}
+{{- end }}

@@ -1,0 +1,67 @@
+version: "2"
+sql:
+  - engine: postgresql
+    schema:
+      - db/schema/current.sql
+    queries:
+      - db/queries
+    gen:
+      go:
+        package: store
+        out: internal/store
+        sql_package: "pgx/v5"
+
+        # your flags
+        emit_interface: true
+        emit_pointers_for_null_types: true
+        emit_result_struct_pointers: true
+        emit_params_struct_pointers: true
+        omit_unused_structs: true
+
+        # type overrides (v1.29-compatible)
+        overrides:
+          # UUID (handle both pg_catalog.uuid and uuid depending on your dump)
+          - db_type: "pg_catalog.uuid"
+            go_type:
+              import: "github.com/google/uuid"
+              package: "uuid"
+              type: "UUID"
+          - db_type: "uuid"
+            go_type:
+              import: "github.com/google/uuid"
+              package: "uuid"
+              type: "UUID"
+          - db_type: "pg_catalog.uuid"
+            nullable: true
+            go_type:
+              import: "github.com/google/uuid"
+              package: "uuid"
+              type: "UUID"
+          - db_type: "uuid"
+            nullable: true
+            go_type:
+              import: "github.com/google/uuid"
+              package: "uuid"
+              type: "UUID"
+
+          - db_type: "pg_catalog.timestamptz"
+            go_type: "time.Time"
+          - db_type: "pg_catalog.timestamptz"
+            nullable: true
+            go_type: "time.Time"
+          - db_type: "timestamptz"
+            go_type: "time.Time"
+          - db_type: "timestamptz"
+            nullable: true
+            go_type: "time.Time"
+
+          - column: "message.seq_no"
+            go_type: "int64"
+
+          - column: "public.message.reply_to_message_id"
+            nullable: true
+            go_type:
+              import: "github.com/google/uuid"
+              package: "uuid"
+              type: "UUID"
+              pointer: true

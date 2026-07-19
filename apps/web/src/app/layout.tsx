@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Golos_Text, Unbounded } from "next/font/google";
+import SupportChatRoot from "@/components/support-chat-root";
 import "./globals.css";
 
 const golosText = Golos_Text({
@@ -26,7 +27,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru" className={`${golosText.variable} ${unbounded.variable}`}>
-      <body className="min-h-screen bg-mos-bg font-golos text-mos-text antialiased">{children}</body>
+      <body className="min-h-screen bg-mos-bg font-golos text-mos-text antialiased">
+        {children}
+        <SupportChatRoot />
+      </body>
     </html>
   );
 }
