@@ -16,6 +16,8 @@ docs/demo-accounts.local.md
 *.exe
 vendor/
 .turbo/
+*.tsbuildinfo
+~$*
 *.rar
 Master of the Sword module/**/Old.rar
 # Duplicate source hero videos (site uses apps/web/public/media)
