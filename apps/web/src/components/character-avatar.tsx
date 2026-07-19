@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import {
   characterAvatarPath,
   characterFullPath,
@@ -25,6 +26,7 @@ type CharacterAvatarProps = {
   fallbackLetter?: string;
   className?: string;
   imageClassName?: string;
+  style?: CSSProperties;
 };
 
 export default function CharacterAvatar({
@@ -36,6 +38,7 @@ export default function CharacterAvatar({
   fallbackLetter,
   className,
   imageClassName,
+  style,
 }: CharacterAvatarProps) {
   const customSrc = imageSrc?.trim() ? imageSrc.trim() : "";
   const useLetterOnly = variant === "head" && preferUploadedAvatar && !customSrc;
@@ -57,6 +60,7 @@ export default function CharacterAvatar({
         variant === "head" ? "rounded-2xl" : "rounded-none",
         className,
       )}
+      style={style}
     >
       {src ? (
         <>

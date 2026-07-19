@@ -231,6 +231,36 @@ func (p *Platform) GrantQuestXP(characterID, questKey string, xp int64) (level i
 	return p.recordAttendanceUnlocked(characterID, "quest:"+questKey, xp)
 }
 
+// ClaimRewardXP grants one-shot claim XP for achievements/quests (idempotent by claimID).
+// Returns already=true when this claim was already granted.
+func (p *Platform) ClaimRewardXP(studentID, claimID string, xp int64) (level int, grantedXP int64, already bool, err error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	s, ok := p.students[studentID]
+	if !ok {
+		return 0, 0, false, fmt.Errorf("student not found")
+	}
+	if s.CharacterID == "" {
+		s.CharacterID = "char-" + s.ID
+	}
+	if _, exists := p.characters[s.CharacterID]; !exists {
+		p.characters[s.CharacterID] = &Character{
+			ID: s.CharacterID, UserID: s.UserID, TenantID: TenantDemo, XP: 0, Level: 1, Version: 1,
+		}
+	}
+	if xp < 0 {
+		xp = 0
+	}
+	level, granted, err := p.recordAttendanceUnlocked(s.CharacterID, "claim:"+claimID, xp)
+	if err != nil {
+		return 0, 0, false, err
+	}
+	if !granted {
+		return level, 0, true, nil
+	}
+	return level, xp, false, nil
+}
+
 func (p *Platform) recordAttendanceUnlocked(characterID, attendanceID string, xp int64) (level int, granted bool, err error) {
 	c, ok := p.characters[characterID]
 	if !ok {

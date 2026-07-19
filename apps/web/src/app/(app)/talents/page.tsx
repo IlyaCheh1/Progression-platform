@@ -29,7 +29,10 @@ export default function TalentsPage() {
           backgroundImage: "url(/media/ui/talent-background.webp)",
         }}
       />
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-black/65" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-black/65 min-[2400px]:bg-black/85"
+      />
       <div className="absolute left-0 top-3 z-10 flex w-full items-start justify-start gap-3 px-3 md:top-6 md:px-6">
         <ActiveSkills
           skillPoints={points}
@@ -50,12 +53,12 @@ export default function TalentsPage() {
         </div>
       ) : null}
 
-      <div className="relative z-0 flex flex-1 items-center justify-center overflow-x-auto px-2 md:px-4">
-        <div className="mx-auto flex w-full max-w-[1600px] flex-row items-end justify-center gap-2 md:gap-8">
+      <div className="relative z-0 flex flex-1 items-center justify-center overflow-x-auto px-2 md:px-4 min-[2400px]:px-10">
+        <div className="mx-auto flex w-full max-w-[1600px] flex-row items-end justify-center gap-2 md:gap-8 min-[2400px]:max-w-[2400px] min-[2400px]:gap-20">
           {trees.map((tree) => (
             <div
               key={tree.name}
-              className="relative flex min-w-[180px] flex-col items-center justify-end gap-2 md:min-w-0 md:gap-5"
+              className="relative flex min-w-[180px] flex-col items-center justify-end gap-2 md:min-w-0 md:gap-5 min-[2400px]:gap-8"
             >
               <SkillThree
                 {...tree}
@@ -65,10 +68,13 @@ export default function TalentsPage() {
                 onFavourite={handleFavourite}
                 loading={loading}
               />
-              <GradientLabel color={TREE_GRADIENT[tree.type]} className="max-w-[172px]">
+              <GradientLabel
+                color={TREE_GRADIENT[tree.type]}
+                className="max-w-[172px] min-[2400px]:max-w-[258px]"
+              >
                 <h5
                   className={cn(
-                    "font-display text-[10px] font-medium leading-3 md:text-[17px] md:leading-6",
+                    "font-display text-[10px] font-medium leading-3 md:text-[17px] md:leading-6 min-[2400px]:text-[25px] min-[2400px]:leading-9",
                     TREE_LABEL_CLASS[tree.type],
                   )}
                 >

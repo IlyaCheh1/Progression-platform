@@ -5,7 +5,10 @@ import (
 	"strings"
 )
 
-const maxAvatarURLLen = 450_000
+const (
+	maxAvatarDataURLLen = 450_000
+	maxAvatarHTTPSURLLen = 2_048
+)
 
 var allowedSkins = map[string]struct{}{
 	"novice":  {},
@@ -284,8 +287,8 @@ func normalizeAvatarURL(raw string) (string, error) {
 	if raw == "" {
 		return "", nil
 	}
-	if len(raw) > maxAvatarURLLen {
-		return "", fmt.Errorf("avatar_too_large")
+	if strings.ContainsAny(raw, " \t\n\r") {
+		return "", fmt.Errorf("invalid_avatar")
 	}
 	lower := strings.ToLower(raw)
 	switch {
@@ -293,6 +296,14 @@ func normalizeAvatarURL(raw string) (string, error) {
 		strings.HasPrefix(lower, "data:image/jpg;base64,"),
 		strings.HasPrefix(lower, "data:image/png;base64,"),
 		strings.HasPrefix(lower, "data:image/webp;base64,"):
+		if len(raw) > maxAvatarDataURLLen {
+			return "", fmt.Errorf("avatar_too_large")
+		}
+		return raw, nil
+	case strings.HasPrefix(lower, "https://"):
+		if len(raw) > maxAvatarHTTPSURLLen {
+			return "", fmt.Errorf("avatar_too_large")
+		}
 		return raw, nil
 	default:
 		return "", fmt.Errorf("invalid_avatar")

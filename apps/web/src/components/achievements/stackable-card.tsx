@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 export type AchievementStage = {
   id: string;
   reward: number;
+  rewardKind?: "xp" | "coins";
   completed: boolean;
   claimed: boolean;
   current: number;
@@ -22,6 +23,7 @@ type StackableCardProps = {
   description: string;
   iconUrl?: string;
   stages: AchievementStage[];
+  rewardKind?: "xp" | "coins";
   pinned: boolean;
   onClaim: () => void;
   onPin: () => void;
@@ -32,6 +34,7 @@ export default function StackableCard({
   description,
   iconUrl,
   stages,
+  rewardKind = "xp",
   pinned,
   onClaim,
   onPin,
@@ -77,7 +80,9 @@ export default function StackableCard({
                   <span className="font-display text-[10px] font-bold uppercase tracking-[0.6px] text-mos-text md:text-xs">
                     {stage.reward}
                   </span>
-                  <span className="text-[9px] text-mos-amber md:text-[10px]">XP</span>
+                  <span className="text-[9px] text-mos-amber md:text-[10px]">
+                    {rewardKind === "coins" ? "монеты" : "XP"}
+                  </span>
                 </div>
               ))}
             </div>
@@ -100,6 +105,7 @@ export default function StackableCard({
       badge={
         <RewardBadge
           value={badgeValue}
+          kind={rewardKind}
           claimable={state === "claimable"}
           onClick={onClaim}
         />

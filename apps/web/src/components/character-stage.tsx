@@ -5,7 +5,7 @@ import CharacterAvatar from "@/components/character-avatar";
 import GradientLabel from "@/components/onboarding/gradient-label";
 import type { GenderId } from "@/lib/avatars";
 import { stageLayoutForBackground } from "@/lib/backgrounds";
-import type { OgCharacterId } from "@/lib/characters";
+import { characterDisplayScale, type OgCharacterId } from "@/lib/characters";
 import { cn } from "@/lib/utils";
 
 type CharacterStageProps = {
@@ -28,6 +28,7 @@ export default function CharacterStage({
   children,
 }: CharacterStageProps) {
   const layout = stageLayoutForBackground(backgroundKey);
+  const displayScale = characterDisplayScale(selectedSkinId, gender);
 
   return (
     <section
@@ -68,8 +69,13 @@ export default function CharacterStage({
             selectedSkinId={selectedSkinId}
             gender={gender}
             variant="full"
-            className="relative mx-auto h-full w-auto max-w-full"
-            imageClassName="mx-auto h-full w-auto max-h-full object-contain object-bottom"
+            className="relative mx-auto h-full w-auto max-w-full origin-bottom"
+            imageClassName="mx-auto h-full w-auto max-h-full object-contain object-bottom origin-bottom"
+            style={
+              displayScale === 1
+                ? undefined
+                : { transform: `scale(${displayScale})` }
+            }
           />
         </div>
       </div>

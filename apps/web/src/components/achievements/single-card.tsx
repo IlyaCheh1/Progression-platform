@@ -14,6 +14,7 @@ type SingleCardProps = {
   current: number;
   target: number;
   reward: number;
+  rewardKind?: "xp" | "coins";
   claimed?: boolean;
   pinned: boolean;
   onClaim: () => void;
@@ -27,6 +28,7 @@ export default function SingleCard({
   current,
   target,
   reward,
+  rewardKind = "xp",
   claimed = false,
   pinned,
   onClaim,
@@ -53,7 +55,14 @@ export default function SingleCard({
           <CompletedBar />
         ) : null
       }
-      badge={<RewardBadge value={reward} claimable={state === "claimable"} onClick={onClaim} />}
+      badge={
+        <RewardBadge
+          value={reward}
+          kind={rewardKind}
+          claimable={state === "claimable"}
+          onClick={onClaim}
+        />
+      }
     />
   );
 }

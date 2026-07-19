@@ -9,9 +9,11 @@ import {
   type TalentCatalogResponse,
 } from "@/lib/talents-catalog";
 import { content } from "@/lib/content";
+import { characterTalentPointBonus } from "@/lib/characters";
 import {
   activateTalentInState,
   applyStateToTrees,
+  computeAvailablePoints,
   favoriteTalentsFromTrees,
   learnTalentInState,
   loadTalentsState,
@@ -20,7 +22,14 @@ import {
   toggleFavoriteInState,
   type TalentsPersisted,
 } from "@/lib/talents-state";
-import { fetchTalentCatalog, fetchUnlockedTalents, unlockTalent } from "@/lib/school-api";
+import { usePlayerProfile } from "@/hooks/use-player-profile";
+import {
+  fetchTalentCatalog,
+  fetchUnlockedTalents,
+  messageForTalentUnlockError,
+  syncLearnedTalents,
+  unlockTalent,
+} from "@/lib/school-api";
 import { loadSession } from "@/lib/session";
 
 function fallbackCatalog(): TalentCatalogResponse {
@@ -33,14 +42,24 @@ function fallbackCatalog(): TalentCatalogResponse {
 export type TalentsController = ReturnType<typeof useTalentsState>;
 
 export function useTalentsState() {
+  const [session] = useState(() => (typeof window !== "undefined" ? loadSession() : null));
+  const { profile } = usePlayerProfile(session);
+
   const [catalogTrees, setCatalogTrees] = useState<MosTalentTree[]>(() =>
     buildTalentTreesFromCatalog(fallbackCatalog()),
   );
   const [state, setState] = useState<TalentsPersisted>(() =>
-    typeof window !== "undefined" ? loadTalentsState() : { points: 8, learned: {}, activated: [], favorites: [], cooldowns: {} },
+    typeof window !== "undefined" ? loadTalentsState() : { learned: {}, activated: [], favorites: [], cooldowns: {} },
   );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState({ favorite: false, activate: false, learn: false, catalog: true });
+
+  const level = profile?.level ?? 1;
+  const characterBonus = characterTalentPointBonus(profile?.selectedSkinId, profile?.gender ?? "MALE");
+  const points = useMemo(
+    () => computeAvailablePoints(level, characterBonus, state.learned),
+    [level, characterBonus, state.learned],
+  );
 
   useEffect(() => {
     setState(loadTalentsState());
@@ -91,6 +110,7 @@ export function useTalentsState() {
     () => favoriteTalentsFromTrees(trees, state.favorites),
     [trees, state.favorites],
   );
+  const allSkills = useMemo(() => trees.flatMap((t) => t.skills), [trees]);
 
   const commit = useCallback((next: TalentsPersisted) => {
     setState(next);
@@ -101,7 +121,7 @@ export function useTalentsState() {
     async (talent: MosTalent) => {
       setLoading((l) => ({ ...l, learn: true }));
       setError(null);
-      const result = learnTalentInState(state, talent);
+      const result = learnTalentInState(state, talent, points, allSkills);
       if ("error" in result) {
         setError(result.error);
         setLoading((l) => ({ ...l, learn: false }));
@@ -110,9 +130,11 @@ export function useTalentsState() {
       const user = loadSession();
       if (user) {
         try {
+          // Подтянуть уже изученные на сервер (порядок prereq через multi-pass).
+          await syncLearnedTalents(user, Object.keys(state.learned));
           await unlockTalent(user, talent.id);
-        } catch {
-          setError("Не удалось сохранить талант на сервере");
+        } catch (err) {
+          setError(messageForTalentUnlockError(err));
           setLoading((l) => ({ ...l, learn: false }));
           return;
         }
@@ -120,7 +142,7 @@ export function useTalentsState() {
       commit(result);
       setLoading((l) => ({ ...l, learn: false }));
     },
-    [state, commit],
+    [state, points, allSkills, commit],
   );
 
   const handleActivate = useCallback(
@@ -157,7 +179,7 @@ export function useTalentsState() {
 
   return {
     trees: trees as MosTalentTree[],
-    points: state.points,
+    points,
     favoriteSkills,
     loading,
     error,

@@ -74,8 +74,15 @@ Start / Build Command оставь пустым — задаётся в Dockerfi
 | Переменная | Значение |
 |---|---|
 | `SCHOOL_API_ADDR` | `0.0.0.0:8082` |
+| `S3_ENDPOINT` | `https://s3.ru-7.storage.selcloud.ru` |
+| `S3_REGION` | `ru-7` |
+| `S3_ACCESS_KEY` | Selectel S3 key |
+| `S3_SECRET_KEY` | Selectel S3 secret |
+| `S3_BUCKET` | bucket name |
+| `S3_PUBLIC_BASE_URL` | `https://…selstorage.ru` (публичный URL бакета) |
 
-Без `0.0.0.0` API слушает только loopback внутри контейнера и снаружи недоступен.
+Без `0.0.0.0` API слушает только loopback внутри контейнера и снаружи недоступен.  
+Без `S3_*` эндпоинты аватара отвечают `503 storage_unavailable`.
 
 ### Проверка после деплоя
 
@@ -159,7 +166,9 @@ S3_BUCKET=...
 Ключи: панель Selectel → Объектное хранилище → S3-ключи.  
 Документация SDK: https://developers.selectel.com/docs/cloud-services/cloud-storage/s3/aws_sdk/
 
-> В текущем коде MoS эти переменные ещё не подключены к runtime. Задай их в Coolify заранее — когда появятся аплоады, переиспользовать те же имена, что в GFF.
+> Эти переменные нужны сервису **school-api** для загрузки аватаров (`POST /v1/profile/avatar/presign` → PUT в S3 → `POST /v1/profile/avatar/confirm`).  
+> Обязательно задай `S3_PUBLIC_BASE_URL` (публичный HTTPS бакета Selectel), иначе в профиле сохранится path-style URL.  
+> В бакете включи CORS: метод `PUT`, origin веб-приложения (и `GET`/`HEAD` при необходимости).
 
 ## Чеклист
 

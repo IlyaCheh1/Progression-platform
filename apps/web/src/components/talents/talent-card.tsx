@@ -79,7 +79,7 @@ export default function TalentCard({
     variant === "secondary" ? (
       <div className={cn("relative", className)}>
         <div
-          className="relative z-20 h-8 w-8 overflow-hidden rounded-full border-2 bg-mos-stone shadow-lg md:h-[60px] md:w-[60px]"
+          className="relative z-20 h-8 w-8 overflow-hidden rounded-full border-2 bg-mos-stone shadow-lg md:h-[60px] md:w-[60px] min-[2400px]:h-[90px] min-[2400px]:w-[90px]"
           style={{ borderColor }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -100,8 +100,8 @@ export default function TalentCard({
             />
           ) : null}
         </div>
-        <div className="absolute left-0 top-[26px] z-20 flex h-3 w-8 items-center justify-center gap-px rounded border-2 border-white/10 bg-mos-stone px-1 shadow-md backdrop-blur-md md:top-[46px] md:h-5 md:w-[60px] md:rounded-lg">
-          <span className="font-display text-[8px] font-bold uppercase text-mos-text md:text-sm">
+        <div className="absolute left-0 top-[26px] z-20 flex h-3 w-8 items-center justify-center gap-px rounded border-2 border-white/10 bg-mos-stone px-1 shadow-md backdrop-blur-md md:top-[46px] md:h-5 md:w-[60px] md:rounded-lg min-[2400px]:top-[69px] min-[2400px]:h-[30px] min-[2400px]:w-[90px]">
+          <span className="font-display text-[8px] font-bold uppercase text-mos-text md:text-sm min-[2400px]:text-[21px]">
             {talent.tier}/{talent.maxTier}
           </span>
         </div>
@@ -113,7 +113,7 @@ export default function TalentCard({
         <img
           src={talent.imageUrl}
           alt={talent.name}
-          className="h-8 w-8 rounded-full object-cover md:h-[60px] md:w-[60px]"
+          className="h-8 w-8 rounded-full object-cover md:h-[60px] md:w-[60px] min-[2400px]:h-[90px] min-[2400px]:w-[90px]"
           onError={(e) => {
             e.currentTarget.src = "/media/ui/coin.png";
           }}

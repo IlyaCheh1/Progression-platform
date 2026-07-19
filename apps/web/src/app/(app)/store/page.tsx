@@ -3,10 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import GradientLabel from "@/components/onboarding/gradient-label";
+import GoldCoin from "@/components/ui/gold-coin";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
 import { useProfileShellData } from "@/hooks/use-profile-shell";
-import { PROFILE_BACKGROUNDS } from "@/lib/backgrounds";
+import { PROFILE_BACKGROUNDS, STORE_BACKGROUNDS } from "@/lib/backgrounds";
 import { OG_CHARACTERS } from "@/lib/characters";
+import { spendCoins, writeCoinsBalance } from "@/lib/coins";
 import {
   equipInventoryItem,
   fetchMyInventory,
@@ -65,32 +67,46 @@ export default function StorePage() {
     [inventory],
   );
 
-  const allOffers: Offer[] = useMemo(() => {
-    const characters = OG_CHARACTERS.map((c) => ({
+  const userOffers: Offer[] = useMemo(() => {
+    const characters = OG_CHARACTERS.filter((c) => ownedKeys.has(`character:${c.id}`)).map((c) => ({
       id: `character:${c.id}`,
       kind: "character" as const,
       refId: c.id,
       title: c.name,
       imageSrc: c.fullSrc || c.thumbnailSrc || c.avatarSrc,
-      price: 500,
-      owned: ownedKeys.has(`character:${c.id}`),
+      price: 0,
+      owned: true,
       equipped: inventory?.equippedCharacterId === c.id,
     }));
-    const backgrounds = PROFILE_BACKGROUNDS.filter((b) => b.id !== "onboarding_background").map((b) => ({
-      id: `background:${b.id}`,
-      kind: "background" as const,
-      refId: b.id,
-      title: b.label,
-      imageSrc: b.src,
-      price: b.unlock === "default" ? 150 : 350,
-      owned: ownedKeys.has(`background:${b.id}`),
-      equipped: inventory?.equippedBackgroundKey === b.id,
-    }));
+    const backgrounds = PROFILE_BACKGROUNDS.filter((b) => ownedKeys.has(`background:${b.id}`)).map(
+      (b) => ({
+        id: `background:${b.id}`,
+        kind: "background" as const,
+        refId: b.id,
+        title: b.label,
+        imageSrc: b.src,
+        price: b.price ?? 0,
+        owned: true,
+        equipped: inventory?.equippedBackgroundKey === b.id,
+      }),
+    );
     return [...characters, ...backgrounds];
   }, [ownedKeys, inventory]);
 
-  const userOffers = allOffers.filter((o) => o.owned);
-  const storeOffers: Offer[] = [];
+  const storeOffers: Offer[] = useMemo(
+    () =>
+      STORE_BACKGROUNDS.filter((b) => !ownedKeys.has(`background:${b.id}`)).map((b) => ({
+        id: `background:${b.id}`,
+        kind: "background" as const,
+        refId: b.id,
+        title: b.label,
+        imageSrc: b.src,
+        price: b.price ?? 350,
+        owned: false,
+        equipped: false,
+      })),
+    [ownedKeys],
+  );
 
   useEffect(() => {
     setSelected((prev) => {
@@ -98,19 +114,30 @@ export default function StorePage() {
         const first = storeOffers[0] ?? userOffers[0];
         return first ? { item: first, source: first.owned ? "user" : "store" } : null;
       }
-      const fresh = allOffers.find((o) => o.id === prev.item.id);
-      if (!fresh) return prev;
-      return { item: fresh, source: fresh.owned ? "user" : "store" };
+      const pool = prev.source === "store" ? storeOffers : userOffers;
+      const fresh = pool.find((o) => o.id === prev.item.id);
+      if (!fresh) {
+        const fallback = storeOffers[0] ?? userOffers[0];
+        return fallback ? { item: fallback, source: fallback.owned ? "user" : "store" } : null;
+      }
+      return { item: fresh, source: prev.source };
     });
-    // Refresh selection when inventory ownership changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional inventory sync
-  }, [inventory]);
+  }, [inventory, storeOffers, userOffers]);
 
   async function onBuy() {
     if (!session || !selected || selected.source !== "store") return;
     setBusy(true);
     setNotify(null);
     setError("");
+
+    const price = selected.item.price;
+    const spent = spendCoins(price);
+    if (!spent.ok) {
+      setNotify("error");
+      setBusy(false);
+      return;
+    }
+
     try {
       const view = await purchaseInventoryItem(session, selected.item.kind, selected.item.refId);
       setInventory(view);
@@ -119,6 +146,7 @@ export default function StorePage() {
       setNotify("buy");
       setSelected(null);
     } catch {
+      writeCoinsBalance(spent.balance + price);
       setError("Не удалось купить предмет");
       setNotify("error");
     } finally {
@@ -151,12 +179,19 @@ export default function StorePage() {
           backgroundImage: "url(/media/ui/store-background.webp)",
         }}
       />
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-black/50" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-black/50 min-[2400px]:bg-black/85"
+      />
       <div className="relative z-10 flex w-full flex-row items-start justify-center gap-4 md:gap-8">
         <div className="flex flex-col gap-3">
           <GradientLabel color="amber">
-            <h5 className="font-unbounded text-xs font-medium leading-3.5 text-primaryText md:text-[17px] md:leading-6">
+            <h5 className="inline-flex items-center gap-2 font-unbounded text-xs font-medium leading-3.5 text-primaryText md:text-[17px] md:leading-6">
               {shell.username}
+              <span className="inline-flex items-center gap-1 text-mos-amber" title="Золотые монеты">
+                {shell.balance.toLocaleString("ru-RU")}
+                <GoldCoin className="h-4 w-4" />
+              </span>
             </h5>
           </GradientLabel>
           <OfferGrid
@@ -183,8 +218,7 @@ export default function StorePage() {
           <Notification
             notify={notify}
             onClick={() => {
-              if (notify === "buy") setNotify(null);
-              else setNotify(null);
+              setNotify(null);
             }}
           />
         )}
@@ -210,6 +244,28 @@ export default function StorePage() {
   );
 }
 
+const STORE_GRID_COLS_DESKTOP = 4;
+const STORE_GRID_MIN_ROWS = 3;
+const STORE_GRID_MIN_ROWS_WIDE = 5;
+
+function useStoreGridMinCells() {
+  const [minCells, setMinCells] = useState(STORE_GRID_COLS_DESKTOP * STORE_GRID_MIN_ROWS);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 2400px)");
+    const sync = () =>
+      setMinCells(
+        STORE_GRID_COLS_DESKTOP *
+          (media.matches ? STORE_GRID_MIN_ROWS_WIDE : STORE_GRID_MIN_ROWS),
+      );
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  return minCells;
+}
+
 function OfferGrid({
   items,
   selectedId,
@@ -221,11 +277,12 @@ function OfferGrid({
   onSelect: (item: Offer) => void;
   showPrice?: boolean;
 }) {
+  const minCells = useStoreGridMinCells();
   const cells: Array<Offer | null> = [...items];
-  while (cells.length < 12) cells.push(null);
+  while (cells.length < minCells) cells.push(null);
 
   return (
-    <div className="og-inventory-grid-shell">
+    <div className="og-inventory-grid-shell min-[2400px]:max-h-[760px]">
       <div className="grid grid-cols-3 gap-[5px] md:grid-cols-4">
         {cells.map((item, index) => {
           if (!item) {
@@ -249,8 +306,7 @@ function OfferGrid({
               {showPrice ? (
                 <span className="absolute bottom-1 left-1/2 z-[3] flex -translate-x-1/2 items-center gap-0.5 rounded bg-black/55 px-1 font-display text-[10px] text-mos-text">
                   {item.price}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/media/ui/coin.png" alt="" className="h-3 w-3" />
+                  <GoldCoin className="h-3 w-3" />
                 </span>
               ) : null}
             </button>
@@ -298,8 +354,7 @@ function SelectedPanel({
           className="og-btn og-btn-secondary og-btn-md mt-3 flex w-[calc(100%-4px)] items-center justify-center gap-2"
         >
           Купить за {item.price}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/media/ui/coin.png" alt="" className="h-6 w-6" />
+          <GoldCoin className="h-6 w-6" />
         </button>
       ) : (
         <div className="mt-3 flex w-full flex-col gap-2">
@@ -328,12 +383,12 @@ function Notification({ notify, onClick }: { notify: "buy" | "error"; onClick: (
   return (
     <div className="og-panel mt-10 inline-flex w-[192px] flex-col items-center gap-3 p-3 md:mt-48 md:w-[280px] md:gap-4 md:p-6">
       <h5 className="text-center font-display text-[15px] font-medium text-mos-text">
-        {notify === "buy" ? "Залутано" : "Нужно больше крышек"}
+        {notify === "buy" ? "Залутано" : "Нужно больше монет"}
       </h5>
       <p className="text-center font-golos text-xs text-mos-muted md:text-sm">
         {notify === "buy"
           ? "Купленный предмет можно использовать в инвентаре"
-          : "Проверьте баланс крышек в профиле"}
+          : "Проверьте баланс золотых монет в профиле"}
       </p>
       <button type="button" onClick={onClick} className="og-btn og-btn-primary og-btn-md w-full">
         {notify === "buy" ? "Отлично!" : "Понятно"}

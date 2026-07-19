@@ -139,6 +139,8 @@ function CarouselItem({
     };
   }, [character.fullSrc]);
 
+  const displayScale = character.displayScale ?? 1;
+
   return (
     <div
       className="absolute transition-all duration-500 max-xl:!scale-100"
@@ -174,9 +176,14 @@ function CarouselItem({
           alt={character.name}
           draggable={false}
           className={cn(
-            "h-full w-full object-contain transition-opacity duration-300",
+            "h-full w-full object-contain object-bottom transition-opacity duration-300",
             loaded ? "opacity-100" : "opacity-0",
           )}
+          style={
+            displayScale === 1
+              ? undefined
+              : { transform: `scale(${displayScale})`, transformOrigin: "bottom center" }
+          }
         />
       </div>
     </div>

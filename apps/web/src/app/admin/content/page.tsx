@@ -79,8 +79,8 @@ export default function AdminContentPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  const [questForm, setQuestForm] = useState({ key: "", title: "", type: "CUSTOM", xp: 100 });
-  const [achForm, setAchForm] = useState({ key: "", title: "", tiers: "1", xp: 250 });
+  const [questForm, setQuestForm] = useState({ key: "", title: "", type: "CUSTOM", xp: 100, coins: 0 });
+  const [achForm, setAchForm] = useState({ key: "", title: "", tiers: "1", xp: 250, coins: 0 });
   const [talentForm, setTalentForm] = useState({ key: "", title: "", rank: 1 });
   const [itemForm, setItemForm] = useState({
     key: "",
@@ -127,7 +127,12 @@ export default function AdminContentPage() {
             title: q.title,
             meta: q.key,
             badge: q.type,
-            value: `+${q.xp} XP`,
+            value:
+              (q.coins ?? 0) > 0 && q.xp <= 0
+                ? `+${q.coins} монет`
+                : (q.coins ?? 0) > 0
+                  ? `+${q.xp} XP · +${q.coins} монет`
+                  : `+${q.xp} XP`,
           }))
         : tab === "achievements"
           ? catalog.achievements.map((a) => ({
@@ -135,7 +140,14 @@ export default function AdminContentPage() {
               title: a.title,
               meta: a.key,
               badge: formatTiers(a.tiers),
-              value: a.xp > 0 ? `+${a.xp} XP` : "—",
+              value:
+                (a.coins ?? 0) > 0 && a.xp <= 0
+                  ? `+${a.coins} монет`
+                  : a.xp > 0 && (a.coins ?? 0) > 0
+                    ? `+${a.xp} XP · +${a.coins} монет`
+                    : a.xp > 0
+                      ? `+${a.xp} XP`
+                      : "—",
             }))
           : tab === "talents"
             ? catalog.talents.map((t) => ({
@@ -187,8 +199,8 @@ export default function AdminContentPage() {
 
   function resetForms() {
     setEditingKey(null);
-    setQuestForm({ key: "", title: "", type: "CUSTOM", xp: 100 });
-    setAchForm({ key: "", title: "", tiers: "1", xp: 250 });
+    setQuestForm({ key: "", title: "", type: "CUSTOM", xp: 100, coins: 0 });
+    setAchForm({ key: "", title: "", tiers: "1", xp: 250, coins: 0 });
     setTalentForm({ key: "", title: "", rank: 1 });
     setItemForm({
       key: "",
@@ -220,7 +232,15 @@ export default function AdminContentPage() {
     setError("");
     if (tab === "quests") {
       const quest = catalog.quests.find((q) => q.key === key);
-      if (quest) setQuestForm({ key: quest.key, title: quest.title, type: quest.type, xp: quest.xp });
+      if (quest) {
+        setQuestForm({
+          key: quest.key,
+          title: quest.title,
+          type: quest.type,
+          xp: quest.xp,
+          coins: quest.coins ?? 0,
+        });
+      }
     } else if (tab === "achievements") {
       const ach = catalog.achievements.find((a) => a.key === key);
       if (ach) {
@@ -229,6 +249,7 @@ export default function AdminContentPage() {
           title: ach.title,
           tiers: Array.isArray(ach.tiers) ? ach.tiers.join(",") : String(ach.tiers ?? 1),
           xp: ach.xp,
+          coins: ach.coins ?? 0,
         });
       }
     } else if (tab === "talents") {
@@ -276,6 +297,7 @@ export default function AdminContentPage() {
           title: questForm.title.trim(),
           type: questForm.type,
           xp: Number(questForm.xp) || 0,
+          coins: Number(questForm.coins) || 0,
         };
       } else if (tab === "achievements") {
         const tiersRaw = achForm.tiers.trim();
@@ -287,6 +309,7 @@ export default function AdminContentPage() {
           title: achForm.title.trim(),
           tiers,
           xp: Number(achForm.xp) || 0,
+          coins: Number(achForm.coins) || 0,
         };
       } else if (tab === "talents") {
         payload = {
@@ -410,6 +433,14 @@ export default function AdminContentPage() {
                       onValueChange={(value) => setQuestForm((f) => ({ ...f, xp: Number(value) || 0 }))}
                     />
                   </FormField>
+                  <FormField label="Золото" htmlFor="quest_coins">
+                    <Input
+                      id="quest_coins"
+                      type="number"
+                      value={String(questForm.coins)}
+                      onValueChange={(value) => setQuestForm((f) => ({ ...f, coins: Number(value) || 0 }))}
+                    />
+                  </FormField>
                 </>
               ) : null}
 
@@ -437,6 +468,14 @@ export default function AdminContentPage() {
                       type="number"
                       value={String(achForm.xp)}
                       onValueChange={(value) => setAchForm((f) => ({ ...f, xp: Number(value) || 0 }))}
+                    />
+                  </FormField>
+                  <FormField label="Золото" htmlFor="ach_coins">
+                    <Input
+                      id="ach_coins"
+                      type="number"
+                      value={String(achForm.coins)}
+                      onValueChange={(value) => setAchForm((f) => ({ ...f, coins: Number(value) || 0 }))}
                     />
                   </FormField>
                 </>

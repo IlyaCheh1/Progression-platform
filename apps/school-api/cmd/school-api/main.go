@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"sync"
 	"syscall"
 	"time"
@@ -15,8 +17,10 @@ import (
 	"github.com/masterofsword/contracts/rbac"
 	"github.com/masterofsword/school-api/internal/admincontent"
 	"github.com/masterofsword/school-api/internal/authz"
+	"github.com/masterofsword/school-api/internal/avatarupload"
 	"github.com/masterofsword/school-api/internal/seed"
 	"github.com/masterofsword/school-api/internal/schoolroutes"
+	"github.com/masterofsword/school-api/internal/storage"
 )
 
 // Shared in-process platform for local modular monolith slice.
@@ -86,6 +90,20 @@ func main() {
 	mux := http.NewServeMux()
 	var mu sync.Mutex
 
+	var s3Client *storage.Client
+	if s3Cfg, ok := storage.ConfigFromEnv(); ok {
+		client, err := storage.NewClient(context.Background(), s3Cfg)
+		if err != nil {
+			log.Printf("s3 client: %v (avatar upload disabled)", err)
+		} else {
+			s3Client = client
+			log.Printf("s3 avatar storage ready (bucket=%s)", s3Cfg.Bucket)
+		}
+	} else {
+		log.Printf("s3 env incomplete — avatar upload disabled")
+	}
+	avatarPending := avatarupload.NewRegistry()
+
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]any{"ok": true, "service": "school-api"})
 	})
@@ -141,6 +159,88 @@ func main() {
 				status = http.StatusNotFound
 			}
 			http.Error(w, `{"error":"`+err.Error()+`"}`, status)
+			return
+		}
+		writeJSON(w, view)
+	}))
+
+	mux.HandleFunc("POST /v1/profile/avatar/presign", authz.RequireAuth(platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		if s3Client == nil {
+			http.Error(w, `{"error":"storage_unavailable"}`, http.StatusServiceUnavailable)
+			return
+		}
+		var body struct {
+			Filename string `json:"filename"`
+			MimeType string `json:"mimeType"`
+			FileSize string `json:"fileSize"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		mime, ext, ok := avatarupload.NormalizeMIME(body.MimeType)
+		if !ok {
+			http.Error(w, `{"error":"invalid_avatar"}`, http.StatusBadRequest)
+			return
+		}
+		if fileExt := avatarupload.ExtFromFilename(body.Filename); fileExt != "" {
+			ext = fileExt
+		}
+		size, err := strconv.ParseInt(body.FileSize, 10, 64)
+		if err != nil || size <= 0 {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		if size > avatarupload.MaxFileSizeBytes {
+			http.Error(w, `{"error":"avatar_too_large"}`, http.StatusBadRequest)
+			return
+		}
+		key := avatarupload.ObjectKey(actor.ID, ext)
+		uploadURL, err := s3Client.PresignPut(r.Context(), key, mime)
+		if err != nil {
+			log.Printf("avatar presign: %v", err)
+			http.Error(w, `{"error":"avatar_presign_failed"}`, http.StatusBadGateway)
+			return
+		}
+		fileID := avatarPending.Put(actor.ID, key, mime)
+		writeJSON(w, map[string]any{
+			"uploadUrl": uploadURL,
+			"fileId":    fileID,
+			"key":       key,
+		})
+	}))
+
+	mux.HandleFunc("POST /v1/profile/avatar/confirm", authz.RequireAuth(platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		if s3Client == nil {
+			http.Error(w, `{"error":"storage_unavailable"}`, http.StatusServiceUnavailable)
+			return
+		}
+		var body struct {
+			FileID string `json:"fileId"`
+			Key    string `json:"key"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.FileID == "" {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		pending, ok := avatarPending.Take(body.FileID, actor.ID)
+		if !ok {
+			http.Error(w, `{"error":"avatar_upload_expired"}`, http.StatusBadRequest)
+			return
+		}
+		if body.Key != "" && body.Key != pending.Key {
+			http.Error(w, `{"error":"avatar_key_mismatch"}`, http.StatusBadRequest)
+			return
+		}
+		if err := s3Client.HeadObject(r.Context(), pending.Key); err != nil {
+			log.Printf("avatar head: %v", err)
+			http.Error(w, `{"error":"avatar_upload_failed"}`, http.StatusBadRequest)
+			return
+		}
+		publicURL := s3Client.PublicURL(pending.Key)
+		view, err := platform.UpdateStudentProfile(actor.ID, engines.ProfileInput{AvatarURL: &publicURL})
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
 			return
 		}
 		writeJSON(w, view)

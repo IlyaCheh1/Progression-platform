@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import LandscapeLock from "@/components/landscape-lock";
 import CharacterCarousel from "@/components/onboarding/character-carousel";
 import GenderSelector from "@/components/onboarding/gender-selector";
 import OnboardingFooter from "@/components/onboarding/onboarding-footer";
@@ -114,6 +115,7 @@ export default function OnboardingPage() {
         backgroundPosition: stageLayout.backgroundPosition,
       }}
     >
+      <LandscapeLock />
       <GenderSelector
         className="z-10 mt-4 xl:mt-[42px]"
         value={selectedGender}

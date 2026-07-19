@@ -19,8 +19,10 @@ export type ProfileBackground = {
   id: BackgroundId;
   label: string;
   category: string;
-  unlock: "default" | "subscription" | "purchase" | "onboarding";
+  unlock: "default" | "purchase";
   src: string;
+  /** Цена в золотых монетах (только для unlock: purchase). */
+  price?: number;
 };
 
 /** Раскладка сцены профиля: куда смотрит фон и где стоят ноги персонажа. */
@@ -48,12 +50,14 @@ const LEGACY_NUMERIC_MAP: Record<string, BackgroundId> = {
   "6": "grate_wall",
 };
 
+const BUY = "/media/backgrounds/buy";
+
 export const PROFILE_BACKGROUNDS: ProfileBackground[] = [
   {
     id: "onboarding_background",
-    label: "Onboarding",
+    label: "Зал посвящения",
     category: "onboarding",
-    unlock: "onboarding",
+    unlock: "default",
     src: "/media/backgrounds/onboarding_background.webp",
   },
   {
@@ -74,82 +78,96 @@ export const PROFILE_BACKGROUNDS: ProfileBackground[] = [
     id: "prison",
     label: "Тюремная камера",
     category: "fantasy",
-    unlock: "default",
-    src: "/media/backgrounds/prison.webp",
+    unlock: "purchase",
+    price: 250,
+    src: `${BUY}/prison.webp`,
   },
   {
     id: "building_castle",
     label: "Холм и замок",
     category: "fantasy",
-    unlock: "default",
-    src: "/media/backgrounds/building_castle.webp",
+    unlock: "purchase",
+    price: 300,
+    src: `${BUY}/building_castle.webp`,
   },
   {
     id: "volcano",
     label: "Вулкан",
     category: "fantasy",
-    unlock: "default",
-    src: "/media/backgrounds/volcano.webp",
+    unlock: "purchase",
+    price: 350,
+    src: `${BUY}/volcano.webp`,
   },
   {
     id: "grate_wall",
     label: "Великая стена",
     category: "fantasy",
-    unlock: "subscription",
-    src: "/media/backgrounds/grate_wall.webp",
+    unlock: "purchase",
+    price: 400,
+    src: `${BUY}/grate_wall.webp`,
   },
   {
     id: "apocalips_hill_view",
     label: "Пустошь",
     category: "apocalypse",
-    unlock: "subscription",
-    src: "/media/backgrounds/apocalips_hill_view.webp",
+    unlock: "purchase",
+    price: 450,
+    src: `${BUY}/apocalips_hill_view.webp`,
   },
   {
     id: "apocalips_city",
     label: "Разрушенный город",
     category: "apocalypse",
-    unlock: "subscription",
-    src: "/media/backgrounds/apocalips_city.webp",
+    unlock: "purchase",
+    price: 450,
+    src: `${BUY}/apocalips_city.webp`,
   },
   {
     id: "beach",
     label: "Пляж",
     category: "apocalypse",
-    unlock: "subscription",
-    src: "/media/backgrounds/beach.webp",
+    unlock: "purchase",
+    price: 500,
+    src: `${BUY}/beach.webp`,
   },
   {
     id: "red_squere",
     label: "Красная площадь",
     category: "city",
     unlock: "purchase",
-    src: "/media/backgrounds/red_squere.webp",
+    price: 550,
+    src: `${BUY}/red_squere.webp`,
   },
   {
     id: "apocalips_atomic_blow",
     label: "Атомный взрыв",
     category: "apocalypse",
     unlock: "purchase",
-    src: "/media/backgrounds/apocalips_atomic_blow.webp",
+    price: 600,
+    src: `${BUY}/apocalips_atomic_blow.webp`,
   },
   {
     id: "heaven",
     label: "Рай",
     category: "heaven",
     unlock: "purchase",
-    src: "/media/backgrounds/heaven.webp",
+    price: 650,
+    src: `${BUY}/heaven.webp`,
   },
   {
     id: "moon",
     label: "Лунная панорама",
     category: "cosmic",
     unlock: "purchase",
-    src: "/media/backgrounds/moon.webp",
+    price: 700,
+    src: `${BUY}/moon.webp`,
   },
 ];
 
 const BACKGROUND_BY_ID = new Map(PROFILE_BACKGROUNDS.map((item) => [item.id, item]));
+
+/** Фоны из папки buy — доступны в лавке за золотые монеты. */
+export const STORE_BACKGROUNDS = PROFILE_BACKGROUNDS.filter((item) => item.unlock === "purchase");
 
 /** Подгонка ног персонажа под горизонт/площадку конкретного фона. */
 export const STAGE_LAYOUT_BY_BACKGROUND: Partial<Record<BackgroundId, StageBackgroundLayout>> = {
@@ -201,4 +219,8 @@ export function onboardingBackgroundPath(): string {
 
 export function isKnownBackgroundId(value: string): boolean {
   return BACKGROUND_BY_ID.has(value as BackgroundId) || Boolean(LEGACY_NUMERIC_MAP[value]);
+}
+
+export function backgroundStorePrice(id: BackgroundId): number {
+  return BACKGROUND_BY_ID.get(id)?.price ?? 0;
 }

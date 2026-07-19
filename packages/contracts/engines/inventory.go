@@ -12,13 +12,12 @@ const (
 	InventoryKindTitle      = "title"
 )
 
-// Starter backgrounds granted on onboarding (default unlock catalog).
+// Starter backgrounds granted on onboarding (free defaults).
+// Paid cosmetics live under /media/backgrounds/buy and are sold in the store.
 var starterBackgroundKeys = []string{
+	"onboarding_background",
 	"northern_lights",
 	"mountain_terrace",
-	"prison",
-	"building_castle",
-	"volcano",
 }
 
 var maleCharacterIDs = []string{"3"}

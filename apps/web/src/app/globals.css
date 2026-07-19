@@ -445,3 +445,27 @@ og-chat {
   z-index: 9999;
   pointer-events: none;
 }
+
+/* Mobile landscape fallback when Screen Orientation API is unavailable (e.g. iOS Safari). */
+@media (max-width: 1023px) and (orientation: portrait) {
+  html.mos-force-landscape,
+  html.mos-force-landscape body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  html.mos-force-landscape body {
+    position: fixed;
+    top: 0;
+    left: 100vw;
+    width: 100vh;
+    height: 100vw;
+    max-width: 100vh;
+    max-height: 100vw;
+    transform: rotate(90deg);
+    transform-origin: top left;
+    overflow: auto;
+    overscroll-behavior: none;
+  }
+}

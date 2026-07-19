@@ -52,3 +52,18 @@ export function IconInventoryBackgrounds(props: IconProps) {
     </svg>
   );
 }
+
+/** Sword / equipment filter */
+export function IconInventoryEquipment(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path
+        d="M14.7 3.3 20.7 9.3l-1.4 1.4-1.8-1.8-3.2 3.2 1.1 4.4-1.5 1.5-3.3-3.3-4.1 4.1c-.5.5-1.3.5-1.8 0l-.7-.7c-.5-.5-.5-1.3 0-1.8l4.1-4.1-3.3-3.3 1.5-1.5 4.4 1.1 3.2-3.2-1.8-1.8 1.4-1.4Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M5 19.5 8.5 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}

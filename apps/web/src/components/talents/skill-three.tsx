@@ -48,7 +48,7 @@ function Line({ className, type }: { className?: string; type: TalentTreeType })
   return (
     <div
       className={cn(
-        "h-10 w-2 rounded-[10px] opacity-40 md:h-28 md:w-3",
+        "h-10 w-2 rounded-[10px] opacity-40 md:h-28 md:w-3 min-[2400px]:h-[168px] min-[2400px]:w-[18px]",
         TREE_LINE_CLASS[type],
         className,
       )}
@@ -81,13 +81,13 @@ function renderTalentLines(
       {lineFirst !== "horizontal" && lineSecond === "horizontal" ? (
         <Line
           type={type}
-          className="absolute bottom-1/2 left-1/2 h-16 origin-bottom -translate-x-1/2 rotate-90"
+          className="absolute bottom-1/2 left-1/2 h-16 origin-bottom -translate-x-1/2 rotate-90 min-[2400px]:h-24"
         />
       ) : null}
       {lineFirst === "horizontal" && lineSecond === "horizontal" ? (
         <Line
           type={type}
-          className="absolute bottom-1/2 left-1/2 h-16 origin-bottom -translate-x-1/2 rotate-90"
+          className="absolute bottom-1/2 left-1/2 h-16 origin-bottom -translate-x-1/2 rotate-90 min-[2400px]:h-24"
         />
       ) : null}
     </>
@@ -118,7 +118,7 @@ export default function SkillThree({
     <div
       className={cn(
         // OG skill-three contract: fixed 6×7 board, items-end, grid-cols-7
-        "relative -ml-3 grid h-full max-h-[250px] w-full max-w-[350px] grid-cols-7 items-end justify-center gap-x-[18px] gap-y-0 max-xl:max-w-[200px] max-xl:gap-x-2 max-xl:gap-y-0 md:-ml-8 md:max-h-[650px]",
+        "relative -ml-3 grid h-full max-h-[250px] w-full max-w-[350px] grid-cols-7 items-end justify-center gap-x-[18px] gap-y-0 max-xl:max-w-[200px] max-xl:gap-x-2 max-xl:gap-y-0 md:-ml-8 md:max-h-[650px] min-[2400px]:-ml-12 min-[2400px]:max-h-[975px] min-[2400px]:max-w-[560px] min-[2400px]:gap-x-8",
         className,
       )}
     >

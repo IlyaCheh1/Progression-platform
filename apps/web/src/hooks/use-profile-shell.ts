@@ -5,7 +5,7 @@ import type { PlayerProfile } from "@/lib/profile-api";
 import type { GenderId } from "@/lib/avatars";
 import { characterInitial } from "@/lib/characters";
 import type { OgCharacterId } from "@/lib/characters";
-import { readCapsBalance } from "@/lib/caps";
+import { COINS_CHANGED_EVENT, readCoinsBalance } from "@/lib/coins";
 import { profileDisplayName } from "@/lib/profile-menu";
 import type { SessionUser } from "@/lib/session";
 
@@ -44,21 +44,27 @@ export function useProfileShellData(user: SessionUser | null, profile?: PlayerPr
       return;
     }
 
-    const gender: GenderId = profile?.gender ?? "MALE";
-    const selectedSkinId = profile?.selectedSkinId ?? "3";
-    const balance = typeof window !== "undefined" ? readCapsBalance() : 0;
+    const sync = () => {
+      const gender: GenderId = profile?.gender ?? "MALE";
+      const selectedSkinId = profile?.selectedSkinId ?? "3";
+      const balance = typeof window !== "undefined" ? readCoinsBalance() : 0;
 
-    setData({
-      username: profileDisplayName(profile, user),
-      balance,
-      level: profile?.level ?? 1,
-      currentXp: profile?.xp ?? 0,
-      xpToNext: profile?.xpToNextLevel ?? XP_FALLBACK,
-      avatarLetter: (profileDisplayName(profile, user)[0] || characterInitial(selectedSkinId, gender)).toUpperCase(),
-      avatarUrl: profile?.avatarUrl ?? "",
-      selectedSkinId,
-      gender,
-    });
+      setData({
+        username: profileDisplayName(profile, user),
+        balance,
+        level: profile?.level ?? 1,
+        currentXp: profile?.xp ?? 0,
+        xpToNext: profile?.xpToNextLevel ?? XP_FALLBACK,
+        avatarLetter: (profileDisplayName(profile, user)[0] || characterInitial(selectedSkinId, gender)).toUpperCase(),
+        avatarUrl: profile?.avatarUrl ?? "",
+        selectedSkinId,
+        gender,
+      });
+    };
+
+    sync();
+    window.addEventListener(COINS_CHANGED_EVENT, sync);
+    return () => window.removeEventListener(COINS_CHANGED_EVENT, sync);
   }, [profile, user]);
 
   return data;

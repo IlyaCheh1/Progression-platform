@@ -47,33 +47,37 @@
       "key": "path.choose_weapon",
       "title": "Выбери путь",
       "type": "ONBOARDING",
-      "xp": 250,
+      "xp": 0,
       "icon": "quests/path.choose_weapon.webp",
-      "description": "Получите первое положительное начисление мастерства по любому оружию."
+      "description": "Получите первое положительное начисление мастерства по любому оружию.",
+      "coins": 250
     },
     {
       "key": "path.monthly_roll",
       "title": "Бросок судьбы",
       "type": "ONBOARDING",
-      "xp": 150,
+      "xp": 0,
       "icon": "quests/path.monthly_roll.webp",
-      "description": "Совершите первый действительный месячный бросок d8."
+      "description": "Совершите первый действительный месячный бросок d8.",
+      "coins": 150
     },
     {
       "key": "path.open_inventory",
       "title": "Арсенал героя",
       "type": "ONBOARDING",
-      "xp": 100,
+      "xp": 0,
       "icon": "quests/path.open_inventory.webp",
-      "description": "Откройте инвентарь и осмотрите полученный предмет."
+      "description": "Откройте инвентарь и осмотрите полученный предмет.",
+      "coins": 100
     },
     {
       "key": "path.choose_cosmetic",
       "title": "Собственный герб",
       "type": "ONBOARDING",
-      "xp": 100,
+      "xp": 0,
       "icon": "quests/path.choose_cosmetic.webp",
-      "description": "Активируйте один доступный косметический элемент профиля."
+      "description": "Активируйте один доступный косметический элемент профиля.",
+      "coins": 100
     },
     {
       "key": "path.complete",
@@ -103,9 +107,10 @@
       "key": "training.balance",
       "title": "Обе стороны",
       "type": "DAILY",
-      "xp": 100,
+      "xp": 0,
       "icon": "quests/training.balance.webp",
-      "description": "Выполните упражнение с обеими сторонами, если этого требует программа."
+      "description": "Выполните упражнение с обеими сторонами, если этого требует программа.",
+      "coins": 100
     },
     {
       "key": "training.partner",
@@ -119,9 +124,10 @@
       "key": "training.reflection",
       "title": "Страница хроники",
       "type": "WEEKLY",
-      "xp": 100,
+      "xp": 0,
       "icon": "quests/training.reflection.webp",
-      "description": "Заполните короткую рефлексию после занятия."
+      "description": "Заполните короткую рефлексию после занятия.",
+      "coins": 120
     },
     {
       "key": "weekly.rhythm.2",
@@ -159,33 +165,37 @@
       "key": "weekly.history",
       "title": "След Мароццо",
       "type": "WEEKLY",
-      "xp": 250,
+      "xp": 0,
       "icon": "quests/weekly.history.webp",
-      "description": "Пройдите одну образовательную карточку или глоссарийное задание."
+      "description": "Пройдите одну образовательную карточку или глоссарийное задание.",
+      "coins": 250
     },
     {
       "key": "weekly.community",
       "title": "Товарищ по залу",
       "type": "WEEKLY",
-      "xp": 300,
+      "xp": 0,
       "icon": "quests/weekly.community.webp",
-      "description": "Выполните безопасное парное или приветственное задание от тренера."
+      "description": "Выполните безопасное парное или приветственное задание от тренера.",
+      "coins": 300
     },
     {
       "key": "weekly.event_prep",
       "title": "Перед событием",
       "type": "WEEKLY",
-      "xp": 300,
+      "xp": 0,
       "icon": "quests/weekly.event_prep.webp",
-      "description": "Пройдите чеклист подготовки к событию школы."
+      "description": "Пройдите чеклист подготовки к событию школы.",
+      "coins": 300
     },
     {
       "key": "monthly.roll",
       "title": "Восемь граней",
       "type": "MONTHLY",
-      "xp": 150,
+      "xp": 0,
       "icon": "quests/monthly.roll.webp",
-      "description": "Совершите действительный месячный бросок d8."
+      "description": "Совершите действительный месячный бросок d8.",
+      "coins": 150
     },
     {
       "key": "monthly.sessions.8",
@@ -215,9 +225,10 @@
       "key": "monthly.event",
       "title": "Жизнь школы",
       "type": "MONTHLY",
-      "xp": 500,
+      "xp": 0,
       "icon": "quests/monthly.event.webp",
-      "description": "Примите участие в одном зарегистрированном событии школы."
+      "description": "Примите участие в одном зарегистрированном событии школы.",
+      "coins": 500
     },
     {
       "key": "season.eight_paths",
@@ -235,7 +246,8 @@
       "tiers": 1,
       "xp": 0,
       "icon": "achievements/start.first_salute.webp",
-      "description": "Посетите первое регулярное занятие."
+      "description": "Посетите первое регулярное занятие.",
+      "coins": 50
     },
     {
       "key": "start.safety",
@@ -243,7 +255,8 @@
       "tiers": 1,
       "xp": 0,
       "icon": "achievements/start.safety.webp",
-      "description": "Пройдите подтверждённый инструктаж по безопасности."
+      "description": "Пройдите подтверждённый инструктаж по безопасности.",
+      "coins": 50
     },
     {
       "key": "start.character",
@@ -251,23 +264,26 @@
       "tiers": 1,
       "xp": 0,
       "icon": "achievements/start.character.webp",
-      "description": "Активируйте привязку персонажа к профилю."
+      "description": "Активируйте привязку персонажа к профилю.",
+      "coins": 75
     },
     {
       "key": "start.inventory",
       "title": "Первый трофей",
       "tiers": 1,
-      "xp": 250,
+      "xp": 0,
       "icon": "achievements/start.inventory.webp",
-      "description": "Получите первый предмет в инвентарь."
+      "description": "Получите первый предмет в инвентарь.",
+      "coins": 250
     },
     {
       "key": "start.quest",
       "title": "Задание выполнено",
       "tiers": 1,
-      "xp": 250,
+      "xp": 0,
       "icon": "achievements/start.quest.webp",
-      "description": "Завершите первое задание."
+      "description": "Завершите первое задание.",
+      "coins": 250
     },
     {
       "key": "start.event",
@@ -275,7 +291,8 @@
       "tiers": 1,
       "xp": 0,
       "icon": "achievements/start.event.webp",
-      "description": "Примите участие в первом зарегистрированном событии школы."
+      "description": "Примите участие в первом зарегистрированном событии школы.",
+      "coins": 100
     },
     {
       "key": "practice.sessions",
@@ -559,7 +576,8 @@
       ],
       "xp": 0,
       "icon": "achievements/community.events.webp",
-      "description": "Участвуйте в событиях школы: 1, 5, 10, 25."
+      "description": "Участвуйте в событиях школы: 1, 5, 10, 25.",
+      "coins": 150
     },
     {
       "key": "community.mentor",
@@ -567,7 +585,8 @@
       "tiers": 1,
       "xp": 0,
       "icon": "achievements/community.mentor.webp",
-      "description": "Выполните 5 подтверждённых заданий поддержки новичков."
+      "description": "Выполните 5 подтверждённых заданий поддержки новичков.",
+      "coins": 200
     },
     {
       "key": "community.tournament",
@@ -575,7 +594,8 @@
       "tiers": 1,
       "xp": 0,
       "icon": "achievements/community.tournament.webp",
-      "description": "Примите участие в первом зарегистрированном турнире школы."
+      "description": "Примите участие в первом зарегистрированном турнире школы.",
+      "coins": 400
     },
     {
       "key": "community.masterclass",
@@ -583,7 +603,8 @@
       "tiers": 1,
       "xp": 0,
       "icon": "achievements/community.masterclass.webp",
-      "description": "Посетите первый мастер-класс."
+      "description": "Посетите первый мастер-класс.",
+      "coins": 300
     }
   ],
   "talents": [

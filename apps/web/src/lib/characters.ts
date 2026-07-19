@@ -9,9 +9,16 @@ export type OgCharacter = {
   description: string;
   gender: OgCharacterGender;
   bonus?: string;
+  /** Бонусные очки талантов от образа (поверх +1 за уровень). */
+  talentPointBonus?: number;
   avatarSrc: string;
   fullSrc: string;
   thumbnailSrc: string;
+  /**
+   * Визуальный масштаб full-арта (origin — низ по центру).
+   * Нужен, когда персонаж плотнее заполняет кадр, чем остальные.
+   */
+  displayScale?: number;
 };
 
 export const DEFAULT_SELECTED_SKIN: Record<"MALE" | "FEMALE", OgCharacterId> = {
@@ -41,9 +48,12 @@ export const OG_CHARACTERS: OgCharacter[] = [
       "Стоячая готовность и контроль шеста. Чувствует ритм боя, ловит момент входа и отвечает резкой сменой дистанции",
     gender: "female",
     bonus: "+1 Очко талантов",
+    talentPointBonus: 1,
     avatarSrc: "/media/characters/female/staff-adept/avatar.webp",
     fullSrc: "/media/characters/female/staff-adept/full.webp",
     thumbnailSrc: "/media/characters/female/staff-adept/thumbnail.webp",
+    // Арт заполняет кадр почти целиком (~97% высоты), мужской — ~87%.
+    displayScale: 0.9,
   },
 ];
 
@@ -102,6 +112,19 @@ export function characterAvatarPath(selectedSkinId?: string | null, gender: "MAL
 export function characterFullPath(selectedSkinId?: string | null, gender: "MALE" | "FEMALE" = "MALE"): string {
   const id = normalizeSelectedSkinId(selectedSkinId, gender);
   return getCharacterById(id)?.fullSrc ?? "/media/characters/male/sword-master/full.webp";
+}
+
+export function characterDisplayScale(selectedSkinId?: string | null, gender: "MALE" | "FEMALE" = "MALE"): number {
+  const scale = getCharacterById(normalizeSelectedSkinId(selectedSkinId, gender))?.displayScale;
+  return typeof scale === "number" && scale > 0 ? scale : 1;
+}
+
+export function characterTalentPointBonus(
+  selectedSkinId?: string | null,
+  gender: "MALE" | "FEMALE" = "MALE",
+): number {
+  const bonus = getCharacterById(normalizeSelectedSkinId(selectedSkinId, gender))?.talentPointBonus;
+  return typeof bonus === "number" && bonus > 0 ? Math.floor(bonus) : 0;
 }
 
 export function characterInitial(selectedSkinId?: string | null, gender: "MALE" | "FEMALE" = "MALE"): string {

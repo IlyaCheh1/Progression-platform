@@ -7,8 +7,9 @@ import {
   type BackgroundId,
   type ProfileBackground,
 } from "@/lib/backgrounds";
+import { content } from "@/lib/content";
 
-export type InventoryKind = "character" | "background";
+export type InventoryKind = "character" | "background" | "title";
 
 export type InventoryHolding = {
   key: string;
@@ -20,6 +21,7 @@ export type InventoryView = {
   items: InventoryHolding[];
   equippedCharacterId: OgCharacterId;
   equippedBackgroundKey: BackgroundId;
+  equippedTitleKey: string;
 };
 
 export type InventoryCharacterItem = {
@@ -37,24 +39,38 @@ export type InventoryBackgroundItem = {
   equipped: boolean;
 };
 
+export type InventoryTitleItem = {
+  holding: InventoryHolding;
+  titleKey: string;
+  name: string;
+  equipped: boolean;
+};
+
+function parseInventoryKind(raw: unknown): InventoryKind | null {
+  if (raw === "character" || raw === "background" || raw === "title") return raw;
+  return null;
+}
+
 function normalizeInventory(data: Record<string, unknown>): InventoryView {
   const rawItems = Array.isArray(data.items) ? data.items : [];
   const items: InventoryHolding[] = rawItems
     .map((raw) => {
       const row = raw as Record<string, unknown>;
-      const kind = row.kind === "background" ? "background" : "character";
+      const kind = parseInventoryKind(row.kind);
+      if (!kind) return null;
       return {
         key: String(row.key ?? ""),
-        kind: kind as InventoryKind,
+        kind,
         refId: String(row.refId ?? ""),
       };
     })
-    .filter((item) => item.key && item.refId);
+    .filter((item): item is InventoryHolding => Boolean(item?.key && item.refId));
 
   return {
     items,
     equippedCharacterId: String(data.equippedCharacterId ?? "3") as OgCharacterId,
     equippedBackgroundKey: normalizeBackgroundId(String(data.equippedBackgroundKey ?? "")),
+    equippedTitleKey: String(data.equippedTitleKey ?? ""),
   };
 }
 
@@ -131,4 +147,22 @@ export function inventoryBackgrounds(view: InventoryView): InventoryBackgroundIt
       };
     })
     .filter((item): item is InventoryBackgroundItem => item != null);
+}
+
+export function getTitleByKey(key: string) {
+  return content.items.find((item) => item.category === "title" && item.key === key) ?? null;
+}
+
+export function inventoryTitles(view: InventoryView): InventoryTitleItem[] {
+  return view.items
+    .filter((item) => item.kind === "title")
+    .map((holding) => {
+      const title = getTitleByKey(holding.refId);
+      return {
+        holding,
+        titleKey: holding.refId,
+        name: title?.title ?? holding.refId.split(".").pop()?.replaceAll("_", " ") ?? "Титул",
+        equipped: view.equippedTitleKey === holding.refId,
+      };
+    });
 }

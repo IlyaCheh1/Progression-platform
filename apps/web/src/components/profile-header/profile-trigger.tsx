@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import CharacterAvatar from "@/components/character-avatar";
-import ActiveSkillsList from "@/components/talents/active-skills-list";
-import { useTalents } from "@/components/talents/talents-provider";
 import Progress from "@/components/ui/progress";
+import GoldCoin from "@/components/ui/gold-coin";
 import PopupMenu from "@/components/ui/popup-menu";
 import UserMenu from "@/components/profile-header/user-menu";
 import type { GenderId } from "@/lib/avatars";
@@ -14,6 +13,7 @@ import type { SessionUser } from "@/lib/session";
 
 type ProfileTriggerProps = {
   username: string;
+  balance: number;
   level: number;
   currentXp: number;
   xpToNext: number;
@@ -26,6 +26,7 @@ type ProfileTriggerProps = {
 
 export default function ProfileTrigger({
   username,
+  balance,
   level,
   currentXp,
   xpToNext,
@@ -36,12 +37,18 @@ export default function ProfileTrigger({
   user,
 }: ProfileTriggerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { favoriteSkills, handleActivate, handleFavourite, loading } = useTalents();
 
   const trigger = (
     <div className="flex h-full w-fit items-center gap-2 md:gap-6">
       <div className="hidden min-w-[115px] flex-col gap-0.5 md:flex md:min-w-[180px]">
-        <div className="flex w-full items-center justify-end gap-2">
+        <div className="flex w-full items-center justify-between gap-2">
+          <span
+            className="inline-flex shrink-0 items-center gap-1 font-unbounded text-[9px] font-medium text-mos-amber md:text-sm"
+            title="Золотые монеты"
+          >
+            {balance.toLocaleString("ru-RU")}
+            <GoldCoin className="h-3.5 w-3.5 md:h-4 md:w-4" />
+          </span>
           <h6 className="truncate font-unbounded text-[9px] font-medium text-primaryText md:text-sm">
             {username}
           </h6>
@@ -55,15 +62,14 @@ export default function ProfileTrigger({
         <div className="flex w-full items-center">
           <Progress value={currentXp} max={xpToNext} size="md" className="w-full" />
         </div>
-        <ActiveSkillsList
-          skills={favoriteSkills}
-          onActivate={handleActivate}
-          onFavourite={handleFavourite}
-          loading={loading}
-          compact
-          className="hidden md:block"
-        />
       </div>
+      <span
+        className="inline-flex items-center gap-0.5 font-unbounded text-[10px] font-medium text-mos-amber md:hidden"
+        title="Золотые монеты"
+      >
+        {balance.toLocaleString("ru-RU")}
+        <GoldCoin className="h-3.5 w-3.5" />
+      </span>
       <CharacterAvatar
         selectedSkinId={selectedSkinId}
         gender={gender}

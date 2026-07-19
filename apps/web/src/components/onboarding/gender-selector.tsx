@@ -69,9 +69,9 @@ export default function GenderSelector({ value, onChange, className }: GenderSel
             role="radio"
             aria-checked={active}
             className={cn(
-              "relative z-10 flex h-6 items-center justify-center rounded-2xl px-2.5 font-unbounded text-xs uppercase tracking-wide text-mos-text transition-colors duration-200",
+              "relative z-10 flex h-6 items-center justify-center rounded-2xl px-2.5 font-unbounded text-xs uppercase tracking-wide transition-colors duration-200",
               "xl:h-11",
-              !active && "hover:bg-white/10",
+              active ? "text-black" : "text-mos-text hover:bg-white/10",
             )}
             style={{ width: optionWidth, minWidth: optionWidth, maxWidth: optionWidth }}
             onClick={() => onChange(option.value)}

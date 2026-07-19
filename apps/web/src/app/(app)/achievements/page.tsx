@@ -1,22 +1,68 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AchievementStatistics from "@/components/achievements/statistics";
 import SingleCard from "@/components/achievements/single-card";
 import StackableCard, { type AchievementStage } from "@/components/achievements/stackable-card";
 import TaskCard from "@/components/achievements/task-card";
 import SideBar from "@/components/side-bar";
 import Selector from "@/components/ui/selector";
-import { content } from "@/lib/content";
+import { content, rewardKindOf, rewardValueOf } from "@/lib/content";
 import { achievementIconUrl, questIconUrl } from "@/lib/content-icons";
+import { earnCoins } from "@/lib/coins";
+import { claimAchievement as claimAchievementApi, claimQuest as claimQuestApi } from "@/lib/school-api";
+import { fetchMyProfile, writeCachedProfile } from "@/lib/profile-api";
+import { loadSession } from "@/lib/session";
 
 type Mode = "achievements" | "tasks";
 
-function tiersToStages(key: string, tiers: number | number[], xp: number): AchievementStage[] {
+const CLAIMED_STORAGE_KEY = "mos.rewards.claimed.v1";
+
+type ClaimedStore = {
+  achievements: Record<string, boolean>;
+  stages: Record<string, boolean>;
+  quests: Record<string, boolean>;
+};
+
+function loadClaimedStore(): ClaimedStore {
+  if (typeof window === "undefined") {
+    return { achievements: {}, stages: {}, quests: {} };
+  }
+  try {
+    const raw = window.localStorage.getItem(CLAIMED_STORAGE_KEY);
+    if (!raw) return { achievements: {}, stages: {}, quests: {} };
+    const parsed = JSON.parse(raw) as Partial<ClaimedStore>;
+    return {
+      achievements: parsed.achievements ?? {},
+      stages: parsed.stages ?? {},
+      quests: parsed.quests ?? {},
+    };
+  } catch {
+    return { achievements: {}, stages: {}, quests: {} };
+  }
+}
+
+function saveClaimedStore(store: ClaimedStore) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(CLAIMED_STORAGE_KEY, JSON.stringify(store));
+}
+
+function tiersToStages(
+  key: string,
+  tiers: number | number[],
+  item: { xp?: number; coins?: number },
+): AchievementStage[] {
   const list = Array.isArray(tiers) ? tiers : [tiers];
+  const kind = rewardKindOf(item);
   return list.map((target, index) => ({
     id: `${key}:${index}`,
-    reward: xp || 50 * (index + 1),
+    reward:
+      kind === "coins"
+        ? rewardValueOf(item, index)
+        : item.xp && item.xp > 0
+          ? item.xp
+          : 50 * (index + 1),
+    rewardKind: kind,
     completed: false,
     claimed: false,
     current: 0,
@@ -30,6 +76,23 @@ export default function AchievementsPage() {
   const [pinned, setPinned] = useState<Record<string, boolean>>({});
   const [claimed, setClaimed] = useState<Record<string, boolean>>({});
   const [stageClaimed, setStageClaimed] = useState<Record<string, boolean>>({});
+  const [questClaimed, setQuestClaimed] = useState<Record<string, boolean>>({});
+  const [busyKey, setBusyKey] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const store = loadClaimedStore();
+    setClaimed(store.achievements);
+    setStageClaimed(store.stages);
+    setQuestClaimed(store.quests);
+  }, []);
+
+  const persistClaimed = useCallback((next: ClaimedStore) => {
+    setClaimed(next.achievements);
+    setStageClaimed(next.stages);
+    setQuestClaimed(next.quests);
+    saveClaimedStore(next);
+  }, []);
 
   const achievementFilters = [
     { id: "ALL", label: "Все" },
@@ -53,7 +116,7 @@ export default function AchievementsPage() {
     return content.achievements
       .filter((a) => filter === "ALL" || a.key.startsWith(filter))
       .map((a) => {
-        const stages = tiersToStages(a.key, a.tiers, a.xp).map((stage, index, all) => {
+        const stages = tiersToStages(a.key, a.tiers, a).map((stage, index, all) => {
           const isClaimed = !!stageClaimed[stage.id] || (!!claimed[a.key] && all.length === 1);
           const prevClaimed = index === 0 || !!stageClaimed[all[index - 1]?.id];
           return {
@@ -63,7 +126,7 @@ export default function AchievementsPage() {
             completed: isClaimed || (prevClaimed && !isClaimed),
           };
         });
-        return { ...a, stages };
+        return { ...a, stages, rewardKind: rewardKindOf(a) };
       });
   }, [filter, claimed, stageClaimed]);
 
@@ -93,24 +156,89 @@ export default function AchievementsPage() {
     setPinned((p) => ({ ...p, [id]: !p[id] }));
   }
 
-  function claimAchievement(key: string, stages: AchievementStage[]) {
+  async function refreshProfile() {
+    const session = loadSession();
+    if (!session) return;
+    const profile = await fetchMyProfile(session);
+    if (profile) writeCachedProfile(profile);
+  }
+
+  async function claimAchievement(key: string, stages: AchievementStage[]) {
+    const session = loadSession();
+    if (!session) {
+      setError("Войдите, чтобы получить награду");
+      return;
+    }
+
     const multi = Array.isArray(content.achievements.find((a) => a.key === key)?.tiers);
+    let stageIndex = 0;
+    let stageId = `${key}:0`;
+
     if (multi) {
       const next = stages.find((s) => s.completed && !s.claimed) ?? stages.find((s) => !s.claimed);
       if (!next) return;
-      setStageClaimed((prev) => {
-        const updated = { ...prev, [next.id]: true };
-        const allDone = stages.every((s) => updated[s.id] || s.claimed);
-        if (allDone) setClaimed((c) => ({ ...c, [key]: true }));
-        return updated;
-      });
+      stageId = next.id;
+      stageIndex = Math.max(0, stages.findIndex((s) => s.id === next.id));
+    } else if (claimed[key]) {
       return;
     }
-    setClaimed((c) => ({ ...c, [key]: true }));
+
+    setBusyKey(stageId);
+    setError("");
+    try {
+      const result = await claimAchievementApi(session, key, stageIndex);
+      if (!result.alreadyClaimed && (result.coinsGranted ?? 0) > 0) {
+        earnCoins(result.coinsGranted ?? 0);
+      }
+      if (multi) {
+        const updatedStages = { ...stageClaimed, [stageId]: true };
+        const allDone = stages.every((s) => updatedStages[s.id] || s.claimed || s.id === stageId);
+        persistClaimed({
+          achievements: allDone ? { ...claimed, [key]: true } : claimed,
+          stages: updatedStages,
+          quests: questClaimed,
+        });
+      } else {
+        persistClaimed({
+          achievements: { ...claimed, [key]: true },
+          stages: stageClaimed,
+          quests: questClaimed,
+        });
+      }
+      await refreshProfile();
+    } catch {
+      setError("Не удалось получить награду");
+    } finally {
+      setBusyKey("");
+    }
   }
 
-  function claimQuest(key: string) {
-    setClaimed((c) => ({ ...c, [key]: true }));
+  async function claimQuest(key: string) {
+    if (questClaimed[key]) return;
+    const session = loadSession();
+    if (!session) {
+      setError("Войдите, чтобы получить награду");
+      return;
+    }
+
+    setBusyKey(`quest:${key}`);
+    setError("");
+    try {
+      const result = await claimQuestApi(session, key);
+      if (!result.alreadyClaimed && (result.coinsGranted ?? 0) > 0) {
+        earnCoins(result.coinsGranted ?? 0);
+      }
+      persistClaimed({
+        achievements: claimed,
+        stages: stageClaimed,
+        quests: { ...questClaimed, [key]: true },
+      });
+      await refreshProfile();
+    } catch {
+      setError("Не удалось получить награду за задание");
+    } finally {
+      setBusyKey("");
+    }
   }
 
   const sortedAchievements = [...achievements].sort((a, b) => {
@@ -140,6 +268,8 @@ export default function AchievementsPage() {
         className="mx-auto"
       />
 
+      {error ? <p className="mt-2 text-center text-sm text-mos-danger">{error}</p> : null}
+
       <div className="mt-4 flex w-full max-w-[1100px] flex-1 flex-col md:mt-6">
         <div className="flex flex-col gap-3 md:flex-row md:gap-6">
           <div className="flex w-full flex-col gap-3 md:w-[250px] md:shrink-0">
@@ -163,9 +293,10 @@ export default function AchievementsPage() {
                         description={a.description || a.key}
                         iconUrl={achievementIconUrl(a.key, a.icon)}
                         stages={a.stages}
+                        rewardKind={a.rewardKind}
                         pinned={!!pinned[a.key]}
                         onPin={() => togglePin(a.key)}
-                        onClaim={() => claimAchievement(a.key, a.stages)}
+                        onClaim={() => void claimAchievement(a.key, a.stages)}
                       />
                     );
                   }
@@ -177,11 +308,12 @@ export default function AchievementsPage() {
                       iconUrl={achievementIconUrl(a.key, a.icon)}
                       current={1}
                       target={1}
-                      reward={a.xp || 100}
+                      reward={rewardValueOf(a)}
+                      rewardKind={a.rewardKind}
                       claimed={!!claimed[a.key]}
                       pinned={!!pinned[a.key]}
                       onPin={() => togglePin(a.key)}
-                      onClaim={() => claimAchievement(a.key, a.stages)}
+                      onClaim={() => void claimAchievement(a.key, a.stages)}
                     />
                   );
                 })
@@ -193,16 +325,18 @@ export default function AchievementsPage() {
                     iconUrl={questIconUrl(q.key, q.icon)}
                     current={1}
                     target={1}
-                    reward={q.xp}
-                    claimed={!!claimed[q.key]}
+                    reward={rewardValueOf(q)}
+                    rewardKind={rewardKindOf(q)}
+                    claimed={!!questClaimed[q.key]}
                     pinned={!!pinned[q.key]}
                     onPin={() => togglePin(q.key)}
-                    onClaim={() => claimQuest(q.key)}
+                    onClaim={() => void claimQuest(q.key)}
                   />
                 ))}
           </div>
         </div>
       </div>
+      {busyKey ? <span className="sr-only">Получаем награду…</span> : null}
     </main>
   );
 }

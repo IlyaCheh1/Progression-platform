@@ -1,5 +1,13 @@
-const MAX_EDGE_PX = 512;
-const MAX_OUTPUT_BYTES = 320_000;
+import {
+  confirmAvatarUpload,
+  messageForProfileError,
+  PresignAvatarError,
+  presignAvatarUpload,
+  type PlayerProfile,
+} from "@/lib/profile-api";
+import type { SessionUser } from "@/lib/session";
+
+const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
 const ACCEPTED_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp"]);
 
 export class AvatarUploadError extends Error {
@@ -9,51 +17,48 @@ export class AvatarUploadError extends Error {
   }
 }
 
-function loadImage(file: File): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const image = new Image();
-    image.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve(image);
-    };
-    image.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new AvatarUploadError("Не удалось прочитать изображение."));
-    };
-    image.src = url;
-  });
-}
-
-/** Compresses a user image into a JPEG data URL suitable for profile avatar storage. */
-export async function fileToAvatarDataUrl(file: File): Promise<string> {
+/** Validates an avatar source file before crop / upload. */
+export function validateAvatarFile(file: File): void {
   if (!ACCEPTED_TYPES.has(file.type)) {
     throw new AvatarUploadError("Допустимы только JPEG, PNG или WebP.");
   }
-  if (file.size > 8 * 1024 * 1024) {
-    throw new AvatarUploadError("Файл слишком большой (макс. 8 МБ).");
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    throw new AvatarUploadError("Файл слишком большой (макс. 2 МБ).");
   }
+}
 
-  const image = await loadImage(file);
-  const scale = Math.min(1, MAX_EDGE_PX / Math.max(image.width, image.height, 1));
-  const width = Math.max(1, Math.round(image.width * scale));
-  const height = Math.max(1, Math.round(image.height * scale));
+/** Uploads avatar via school-api presigned S3 URL and confirms it on the profile. */
+export async function uploadAvatarToS3(session: SessionUser, file: File): Promise<PlayerProfile> {
+  validateAvatarFile(file);
 
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) {
-    throw new AvatarUploadError("Не удалось обработать изображение.");
-  }
-  ctx.drawImage(image, 0, 0, width, height);
+  try {
+    const { uploadUrl, fileId, key } = await presignAvatarUpload(session, {
+      filename: file.name || "avatar.jpg",
+      mimeType: file.type || "application/octet-stream",
+      fileSize: file.size,
+    });
 
-  for (const quality of [0.85, 0.7, 0.55, 0.4]) {
-    const dataUrl = canvas.toDataURL("image/jpeg", quality);
-    if (dataUrl.length <= MAX_OUTPUT_BYTES) {
-      return dataUrl;
+    const putRes = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type || "application/octet-stream",
+      },
+      body: file,
+    });
+    if (!putRes.ok) {
+      throw new AvatarUploadError("Не удалось загрузить файл в хранилище.");
     }
-  }
 
-  throw new AvatarUploadError("Не удалось сжать изображение. Выберите другой файл.");
+    return await confirmAvatarUpload(session, { fileId, key });
+  } catch (error) {
+    if (error instanceof AvatarUploadError || error instanceof PresignAvatarError) {
+      throw error instanceof PresignAvatarError
+        ? new AvatarUploadError(error.message)
+        : error;
+    }
+    if (error instanceof TypeError) {
+      throw new AvatarUploadError(messageForProfileError(error));
+    }
+    throw new AvatarUploadError(messageForProfileError(error));
+  }
 }

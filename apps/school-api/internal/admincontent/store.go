@@ -14,6 +14,7 @@ type Quest struct {
 	Title       string `json:"title"`
 	Type        string `json:"type"`
 	XP          int    `json:"xp"`
+	Coins       int    `json:"coins,omitempty"`
 	Description string `json:"description,omitempty"`
 	Icon        string `json:"icon,omitempty"`
 }
@@ -23,6 +24,7 @@ type Achievement struct {
 	Title       string `json:"title"`
 	Tiers       any    `json:"tiers"`
 	XP          int    `json:"xp"`
+	Coins       int    `json:"coins,omitempty"`
 	Description string `json:"description,omitempty"`
 	Icon        string `json:"icon,omitempty"`
 }
@@ -235,6 +237,82 @@ func (s *Store) GetTalent(key string) (Talent, bool) {
 	defer s.mu.Unlock()
 	t, ok := s.talents[key]
 	return t, ok
+}
+
+func (s *Store) GetAchievement(key string) (Achievement, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	a, ok := s.achievements[key]
+	return a, ok
+}
+
+func (s *Store) GetQuest(key string) (Quest, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	q, ok := s.quests[key]
+	return q, ok
+}
+
+// AchievementStageXP returns XP for a claimable stage (0-based index).
+// Coin-only achievements (coins > 0 and xp == 0) grant no XP.
+func AchievementStageXP(a Achievement, stageIndex int) int {
+	if stageIndex < 0 {
+		stageIndex = 0
+	}
+	if a.Coins > 0 && a.XP == 0 {
+		return 0
+	}
+	tiers := tierCount(a.Tiers)
+	if a.XP > 0 {
+		return a.XP
+	}
+	if tiers > 1 {
+		return 50 * (stageIndex + 1)
+	}
+	return 100
+}
+
+// AchievementStageCoins returns gold coins for a claimable stage.
+func AchievementStageCoins(a Achievement, stageIndex int) int {
+	if a.Coins <= 0 {
+		return 0
+	}
+	if stageIndex < 0 {
+		stageIndex = 0
+	}
+	tiers := tierCount(a.Tiers)
+	if tiers > 1 {
+		// Scale later stages slightly so multi-tier coin rewards stay meaningful.
+		return a.Coins * (stageIndex + 1)
+	}
+	return a.Coins
+}
+
+// QuestClaimXP returns XP granted on manual quest claim.
+// Coin-only quests (coins > 0 and xp == 0) grant no XP.
+func QuestClaimXP(q Quest) int {
+	if q.Coins > 0 && q.XP == 0 {
+		return 0
+	}
+	if q.XP > 0 {
+		return q.XP
+	}
+	return 100
+}
+
+func tierCount(tiers any) int {
+	switch v := tiers.(type) {
+	case []any:
+		return len(v)
+	case []float64:
+		return len(v)
+	case []int:
+		return len(v)
+	case float64, int:
+		return 1
+	default:
+		return 1
+	}
 }
 
 func (s *Store) TalentUICatalog() TalentUICatalog {

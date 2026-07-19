@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import AppearancePickerModal from "@/components/appearance/appearance-picker-modal";
+import AvatarCropModal from "@/components/appearance/avatar-crop-modal";
 import SettingsProfileHeader from "@/components/settings/profile-header";
 import NotificationsTab from "@/components/settings/tabs/notifications";
 import PersonalInfoTab from "@/components/settings/tabs/personal-info";
@@ -14,7 +15,7 @@ import SideBar from "@/components/side-bar";
 import { useAvatarPresentation } from "@/components/character-avatar";
 import { useAppearanceInventory } from "@/hooks/use-appearance-inventory";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
-import { AvatarUploadError, fileToAvatarDataUrl } from "@/lib/avatar-upload";
+import { AvatarUploadError, uploadAvatarToS3, validateAvatarFile } from "@/lib/avatar-upload";
 import {
   messageForProfileError,
   saveMyProfile,
@@ -49,6 +50,8 @@ export default function SettingsPage() {
   const presentation = useAvatarPresentation(profile ?? undefined);
   const appearance = useAppearanceInventory(session, { onProfileUpdated: setProfile });
   const [backgroundPickerOpen, setBackgroundPickerOpen] = useState(false);
+  const [avatarCropSrc, setAvatarCropSrc] = useState<string | null>(null);
+  const [avatarCropName, setAvatarCropName] = useState("avatar.jpg");
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const tabs = useMemo(() => getSettingsTabs(session?.roles ?? ["student"]), [session?.roles]);
@@ -167,31 +170,52 @@ export default function SettingsPage() {
     }
   }
 
-  async function handleAvatarFile(file: File | undefined) {
+  const clearAvatarCrop = useCallback(() => {
+    setAvatarCropSrc((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setAvatarCropName("avatar.jpg");
+    if (avatarInputRef.current) avatarInputRef.current.value = "";
+  }, []);
+
+  useEffect(() => () => {
+    if (avatarCropSrc) URL.revokeObjectURL(avatarCropSrc);
+  }, [avatarCropSrc]);
+
+  function handleAvatarFile(file: File | undefined) {
     if (!file || !session || !profile) return;
+    setAvatarError(undefined);
+    try {
+      validateAvatarFile(file);
+    } catch (error) {
+      setAvatarError(error instanceof AvatarUploadError ? error.message : messageForProfileError(error));
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
+      return;
+    }
+    setAvatarCropSrc((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+    setAvatarCropName(file.name || "avatar.jpg");
+    if (avatarInputRef.current) avatarInputRef.current.value = "";
+  }
+
+  async function handleAvatarCropConfirm(file: File) {
+    if (!session || !profile) return;
     setAvatarBusy(true);
     setAvatarError(undefined);
     try {
-      const dataUrl = await fileToAvatarDataUrl(file);
-      const saved = await saveMyProfile(session, {
-        username: profile.username,
-        selectedSkinId: profile.selectedSkinId,
-        gender: profile.gender,
-        backgroundKey: profile.backgroundKey,
-        avatarUrl: dataUrl,
-        profileComplete: true,
-      });
-      writeCachedProfile(saved);
+      const saved = await uploadAvatarToS3(session, file);
       setProfile(saved);
+      clearAvatarCrop();
     } catch (error) {
-      if (error instanceof AvatarUploadError) {
-        setAvatarError(error.message);
-      } else {
-        setAvatarError(messageForProfileError(error));
-      }
+      const message =
+        error instanceof AvatarUploadError ? error.message : messageForProfileError(error);
+      setAvatarError(message);
+      throw new AvatarUploadError(message);
     } finally {
       setAvatarBusy(false);
-      if (avatarInputRef.current) avatarInputRef.current.value = "";
     }
   }
 
@@ -207,141 +231,159 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className="mx-auto mb-20 mt-3 flex w-full max-w-[840px] flex-col items-center gap-3 px-3 md:mt-11 md:mb-40 md:gap-6 md:px-4">
-      <input
-        ref={avatarInputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        className="hidden"
-        onChange={(event) => void handleAvatarFile(event.target.files?.[0])}
+    <div className="relative flex min-h-[calc(100vh-72px)] flex-1 flex-col">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url(/media/ui/settings-background.webp)" }}
       />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-black/55" />
 
-      <SettingsProfileHeader
-        username={displayName}
-        rolesLabel={formatRoleBadges(session.roles)}
-        level={profile?.level ?? 1}
-        currentXp={profile?.xp ?? 0}
-        xpToNext={profile?.xpToNextLevel ?? 500}
-        selectedSkinId={presentation.selectedSkinId}
-        gender={presentation.gender}
-        avatarUrl={profile?.avatarUrl}
-        backgroundSrc={presentation.backgroundSrc}
-        avatarBusy={avatarBusy}
-        onEditAvatar={() => avatarInputRef.current?.click()}
-        onEditBackground={() => setBackgroundPickerOpen(true)}
-      />
-      {avatarError ? <p className="w-full text-center text-sm text-red-400">{avatarError}</p> : null}
+      <main className="relative z-10 mx-auto mb-20 mt-3 flex w-full max-w-[840px] flex-col items-center gap-3 px-3 md:mt-11 md:mb-40 md:gap-6 md:px-4">
+        <input
+          ref={avatarInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={(event) => void handleAvatarFile(event.target.files?.[0])}
+        />
 
-      <div className="flex w-full flex-col items-start gap-3 md:flex-row md:gap-6">
-        <div className="flex w-full flex-col gap-6 md:w-auto md:gap-12">
-          <SideBar
-            items={tabs}
-            activeId={tab}
-            onChange={setTab}
-            syncUrlParam="tab"
-            footer={
-              <button
-                type="button"
-                className="og-btn og-btn-secondary og-btn-sm w-full uppercase"
-                onClick={() => {
-                  clearSession();
-                  router.push("/");
-                }}
-              >
-                Выйти
-              </button>
-            }
-          />
+        <SettingsProfileHeader
+          username={displayName}
+          rolesLabel={formatRoleBadges(session.roles)}
+          level={profile?.level ?? 1}
+          currentXp={profile?.xp ?? 0}
+          xpToNext={profile?.xpToNextLevel ?? 500}
+          selectedSkinId={presentation.selectedSkinId}
+          gender={presentation.gender}
+          avatarUrl={profile?.avatarUrl}
+          backgroundSrc={presentation.backgroundSrc}
+          avatarBusy={avatarBusy}
+          onEditAvatar={() => avatarInputRef.current?.click()}
+          onEditBackground={() => setBackgroundPickerOpen(true)}
+        />
+        {avatarError ? <p className="w-full text-center text-sm text-red-400">{avatarError}</p> : null}
+
+        <div className="flex w-full flex-col items-start gap-3 md:flex-row md:gap-6">
+          <div className="flex w-full flex-col gap-6 md:w-auto md:gap-12">
+            <SideBar
+              items={tabs}
+              activeId={tab}
+              onChange={setTab}
+              syncUrlParam="tab"
+              footer={
+                <button
+                  type="button"
+                  className="og-btn og-btn-secondary og-btn-sm w-full uppercase"
+                  onClick={() => {
+                    clearSession();
+                    router.push("/");
+                  }}
+                >
+                  Выйти
+                </button>
+              }
+            />
+          </div>
+
+          <section className="bg-secondaryBg flex min-h-[320px] w-full flex-col gap-3 rounded-2xl p-4 backdrop-blur-[20px] md:gap-6 md:rounded-[32px] md:p-8">
+            {tab === "personal" ? (
+              <PersonalInfoTab
+                username={username}
+                email={session.login.includes("@") ? session.login : `${session.login}@demo.local`}
+                gender={gender}
+                local={personal}
+                onUsernameChange={setUsername}
+                onGenderChange={setGender}
+                onLocalChange={(patch) => setPersonal((prev) => ({ ...prev, ...patch }))}
+                onSubmit={savePersonal}
+                isSubmitting={submitting}
+                errors={errors}
+              />
+            ) : null}
+
+            {tab === "security" ? (
+              <SecurityTab
+                email={session.login.includes("@") ? session.login : `${session.login}@demo.local`}
+              />
+            ) : null}
+
+            {tab === "privacy" ? <PrivacyTab value={privacy} onChange={persistPrivacy} /> : null}
+
+            {tab === "notifications" ? (
+              <NotificationsTab
+                value={notifications}
+                onChange={persistNotifications}
+                emailError={notifyEmailError}
+              />
+            ) : null}
+
+            {tab === "admin" && isAdminPrincipal(session.roles) ? (
+              <RolePanel title="Администрирование">
+                <p>Управление платформой, пользователями и контентом школы.</p>
+                <RoleLink href={routes.admin}>Войти в админ-панель</RoleLink>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {roleLinks
+                    .filter((item) => item.href !== routes.admin)
+                    .map((item) => (
+                      <Link
+                        key={item.id}
+                        href={item.href}
+                        className="inline-flex rounded-xl border border-mos-line/40 px-3 py-2 text-mos-text hover:border-mos-amber"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                </div>
+              </RolePanel>
+            ) : null}
+
+            {tab === "coach" && hasRole(session.roles, "coach") ? (
+              <RolePanel title="Кабинет тренера">
+                <p>Расписание, группы и подтверждение посещаемости.</p>
+                <RoleLink href={routes.coach}>Открыть кабинет тренера</RoleLink>
+              </RolePanel>
+            ) : null}
+
+            {tab === "guardian" && hasRole(session.roles, "guardian") ? (
+              <RolePanel title="Кабинет опекуна">
+                <p>Прогресс подопечных и уведомления школы.</p>
+                <RoleLink href={routes.guardian}>Открыть кабинет опекуна</RoleLink>
+              </RolePanel>
+            ) : null}
+
+            {tab === "renter" && hasRole(session.roles, "renter") ? (
+              <RolePanel title="Кабинет арендатора">
+                <p>Бронирование залов и управление арендой.</p>
+                <RoleLink href={routes.renter}>Открыть кабинет арендатора</RoleLink>
+              </RolePanel>
+            ) : null}
+          </section>
         </div>
 
-        <section className="bg-secondaryBg flex min-h-[320px] w-full flex-col gap-3 rounded-2xl p-4 backdrop-blur-[20px] md:gap-6 md:rounded-[32px] md:p-8">
-          {tab === "personal" ? (
-            <PersonalInfoTab
-              username={username}
-              email={session.login.includes("@") ? session.login : `${session.login}@demo.local`}
-              gender={gender}
-              local={personal}
-              onUsernameChange={setUsername}
-              onGenderChange={setGender}
-              onLocalChange={(patch) => setPersonal((prev) => ({ ...prev, ...patch }))}
-              onSubmit={savePersonal}
-              isSubmitting={submitting}
-              errors={errors}
-            />
-          ) : null}
+        <AppearancePickerModal
+          open={backgroundPickerOpen}
+          mode="background"
+          title="Выберите фон профиля"
+          characters={appearance.characters}
+          backgrounds={appearance.backgrounds}
+          equippingId={appearance.equippingId}
+          loading={appearance.loading}
+          error={appearance.error}
+          onClose={() => setBackgroundPickerOpen(false)}
+          onSelectCharacter={() => undefined}
+          onSelectBackground={(backgroundId) => void handleSelectBackground(backgroundId)}
+        />
 
-          {tab === "security" ? (
-            <SecurityTab
-              email={session.login.includes("@") ? session.login : `${session.login}@demo.local`}
-            />
-          ) : null}
-
-          {tab === "privacy" ? <PrivacyTab value={privacy} onChange={persistPrivacy} /> : null}
-
-          {tab === "notifications" ? (
-            <NotificationsTab
-              value={notifications}
-              onChange={persistNotifications}
-              emailError={notifyEmailError}
-            />
-          ) : null}
-
-          {tab === "admin" && isAdminPrincipal(session.roles) ? (
-            <RolePanel title="Администрирование">
-              <p>Управление платформой, пользователями и контентом школы.</p>
-              <RoleLink href={routes.admin}>Войти в админ-панель</RoleLink>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {roleLinks
-                  .filter((item) => item.href !== routes.admin)
-                  .map((item) => (
-                    <Link
-                      key={item.id}
-                      href={item.href}
-                      className="inline-flex rounded-xl border border-mos-line/40 px-3 py-2 text-mos-text hover:border-mos-amber"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-              </div>
-            </RolePanel>
-          ) : null}
-
-          {tab === "coach" && hasRole(session.roles, "coach") ? (
-            <RolePanel title="Кабинет тренера">
-              <p>Расписание, группы и подтверждение посещаемости.</p>
-              <RoleLink href={routes.coach}>Открыть кабинет тренера</RoleLink>
-            </RolePanel>
-          ) : null}
-
-          {tab === "guardian" && hasRole(session.roles, "guardian") ? (
-            <RolePanel title="Кабинет опекуна">
-              <p>Прогресс подопечных и уведомления школы.</p>
-              <RoleLink href={routes.guardian}>Открыть кабинет опекуна</RoleLink>
-            </RolePanel>
-          ) : null}
-
-          {tab === "renter" && hasRole(session.roles, "renter") ? (
-            <RolePanel title="Кабинет арендатора">
-              <p>Бронирование залов и управление арендой.</p>
-              <RoleLink href={routes.renter}>Открыть кабинет арендатора</RoleLink>
-            </RolePanel>
-          ) : null}
-        </section>
-      </div>
-
-      <AppearancePickerModal
-        open={backgroundPickerOpen}
-        mode="background"
-        title="Выберите фон профиля"
-        characters={appearance.characters}
-        backgrounds={appearance.backgrounds}
-        equippingId={appearance.equippingId}
-        loading={appearance.loading}
-        error={appearance.error}
-        onClose={() => setBackgroundPickerOpen(false)}
-        onSelectCharacter={() => undefined}
-        onSelectBackground={(backgroundId) => void handleSelectBackground(backgroundId)}
-      />
-    </main>
+        <AvatarCropModal
+          open={Boolean(avatarCropSrc)}
+          imageSrc={avatarCropSrc}
+          filename={avatarCropName}
+          busy={avatarBusy}
+          onCancel={clearAvatarCrop}
+          onConfirm={handleAvatarCropConfirm}
+        />
+      </main>
+    </div>
   );
 }

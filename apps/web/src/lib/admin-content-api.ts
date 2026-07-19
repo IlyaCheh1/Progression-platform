@@ -1,12 +1,20 @@
 import { SCHOOL_API } from "@/lib/utils";
 import { authHeaders, type SessionUser } from "@/lib/session";
 
-export type Quest = { key: string; title: string; type: string; xp: number; description?: string };
+export type Quest = {
+  key: string;
+  title: string;
+  type: string;
+  xp: number;
+  coins?: number;
+  description?: string;
+};
 export type Achievement = {
   key: string;
   title: string;
   tiers: number | number[];
   xp: number;
+  coins?: number;
   description?: string;
 };
 export type Talent = { key: string; title: string; rank: number };

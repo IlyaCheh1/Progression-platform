@@ -5,6 +5,8 @@ export type Quest = {
   title: string;
   type: string;
   xp: number;
+  /** Золотые монеты вместо/вместе с XP. */
+  coins?: number;
   description?: string;
   icon?: string;
 };
@@ -13,9 +15,26 @@ export type Achievement = {
   title: string;
   tiers: number | number[];
   xp: number;
+  /** Золотые монеты вместо/вместе с XP. */
+  coins?: number;
   description?: string;
   icon?: string;
 };
+
+export type RewardKind = "xp" | "coins";
+
+export function rewardKindOf(item: { xp?: number; coins?: number }): RewardKind {
+  return (item.coins ?? 0) > 0 && (item.xp ?? 0) <= 0 ? "coins" : "xp";
+}
+
+export function rewardValueOf(item: { xp?: number; coins?: number }, stageIndex = 0): number {
+  const coins = item.coins ?? 0;
+  if (coins > 0 && (item.xp ?? 0) <= 0) {
+    return coins * (stageIndex + 1);
+  }
+  if ((item.xp ?? 0) > 0) return item.xp ?? 0;
+  return 100;
+}
 export type Talent = {
   key: string;
   title: string;

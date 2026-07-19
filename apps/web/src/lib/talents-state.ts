@@ -1,6 +1,6 @@
 import {
   MAX_FAVORITE_SKILLS,
-  STARTING_SKILL_POINTS,
+  availableTalentPoints,
   type MosTalent,
   type MosTalentTree,
 } from "@/lib/talents-catalog";
@@ -8,7 +8,8 @@ import {
 const STORAGE_KEY = "mos.talents.v2";
 
 export type TalentsPersisted = {
-  points: number;
+  /** @deprecated computed from level + bonus − spent; kept for migration only */
+  points?: number;
   learned: Record<string, number>; // id -> tier
   activated: string[];
   favorites: string[];
@@ -17,7 +18,6 @@ export type TalentsPersisted = {
 
 function emptyState(): TalentsPersisted {
   return {
-    points: STARTING_SKILL_POINTS,
     learned: {},
     activated: [],
     favorites: [],
@@ -32,7 +32,6 @@ export function loadTalentsState(): TalentsPersisted {
     if (!raw) return emptyState();
     const parsed = JSON.parse(raw) as TalentsPersisted;
     return {
-      points: typeof parsed.points === "number" ? parsed.points : STARTING_SKILL_POINTS,
       learned: parsed.learned ?? {},
       activated: parsed.activated ?? [],
       favorites: parsed.favorites ?? [],
@@ -45,7 +44,20 @@ export function loadTalentsState(): TalentsPersisted {
 
 export function saveTalentsState(state: TalentsPersisted) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const { points: _drop, ...rest } = state;
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+}
+
+export function spentTalentPoints(learned: Record<string, number>, costPerTalent = 1): number {
+  return Object.values(learned).reduce((sum, tier) => sum + (tier > 0 ? costPerTalent : 0), 0);
+}
+
+export function computeAvailablePoints(
+  level: number,
+  characterBonus: number,
+  learned: Record<string, number>,
+): number {
+  return availableTalentPoints(level, characterBonus, spentTalentPoints(learned));
 }
 
 export function mergeUnlockedKeys(state: TalentsPersisted, unlocked: string[]): TalentsPersisted {
@@ -90,13 +102,20 @@ export function canLearnTalent(talent: MosTalent, skills: MosTalent[], points: n
   return required.every((t) => t.isLearned);
 }
 
-export function learnTalentInState(state: TalentsPersisted, talent: MosTalent): TalentsPersisted | { error: string } {
+export function learnTalentInState(
+  state: TalentsPersisted,
+  talent: MosTalent,
+  availablePoints: number,
+  skills: MosTalent[],
+): TalentsPersisted | { error: string } {
   if (talent.maxTier <= 0) return { error: "Умение пока недоступно" };
   if ((state.learned[talent.id] ?? 0) > 0) return { error: "Уже изучено" };
-  if (state.points < talent.skillPointsCost) return { error: "Недостаточно очков умений" };
+  if (!canLearnTalent({ ...talent, isLearned: false }, skills, availablePoints)) {
+    if (availablePoints < talent.skillPointsCost) return { error: "Недостаточно очков умений" };
+    return { error: "Сначала изучите предыдущие умения" };
+  }
   return {
     ...state,
-    points: state.points - talent.skillPointsCost,
     learned: { ...state.learned, [talent.id]: 1 },
   };
 }

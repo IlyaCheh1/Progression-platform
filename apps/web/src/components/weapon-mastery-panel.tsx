@@ -36,7 +36,7 @@ export default function WeaponMasteryPanel({ mastery, ranks, className }: Weapon
         </div>
       </div>
 
-      <div className="mobile-game-scroll -mr-3 flex max-h-[min(52vh,420px)] flex-col gap-1.5 overflow-y-auto md:-mr-6 md:max-h-[min(58vh,520px)] md:gap-3">
+      <div className="mobile-game-scroll flex max-h-[min(52vh,420px)] flex-col gap-1.5 overflow-y-auto pr-1 md:max-h-[min(58vh,520px)] md:gap-3">
         {WEAPONS.map((weapon) => {
           const units = mastery?.[weapon.key] ?? 0;
           const rank = clampMasteryRank(ranks?.[weapon.key] ?? 0);
@@ -75,7 +75,7 @@ function WeaponRow({
 
   return (
     <div className="flex w-full flex-col gap-1 transition-opacity duration-200 hover:opacity-80">
-      <div className="flex w-full items-start justify-between gap-2 text-[8px] leading-3 md:text-xs md:leading-4">
+      <div className="flex w-full items-center justify-between gap-2 text-[8px] leading-3 md:text-xs md:leading-4">
         <div className="flex min-w-0 items-center gap-2">
           <div
             className="h-6 w-6 shrink-0 rounded-full bg-mos-stone bg-cover bg-center md:h-8 md:w-8"
@@ -85,14 +85,12 @@ function WeaponRow({
           />
           <p className="truncate font-normal text-mos-text">{label}</p>
         </div>
-        <p className="whitespace-nowrap font-medium text-mos-amber">Ранг {rank}</p>
+        <p className="shrink-0 whitespace-nowrap font-medium text-mos-amber">Ранг {rank}</p>
       </div>
-      <div className="flex w-full items-center justify-between">
-        <Progress value={fill} max={MASTERY_MAX_RANK} size="md" className="max-w-[85%]" />
-        <div className="ml-2 flex items-center gap-1 text-[8px] font-medium leading-3 text-mos-text md:text-xs md:leading-4">
-          <span>{rank}</span>
-          <span>/</span>
-          <span>{MASTERY_MAX_RANK}</span>
+      <div className="flex w-full items-center gap-2">
+        <Progress value={fill} max={MASTERY_MAX_RANK} size="md" className="min-w-0 flex-1" />
+        <div className="shrink-0 tabular-nums text-[8px] font-medium leading-3 text-mos-text md:text-xs md:leading-4">
+          {rank} / {MASTERY_MAX_RANK}
         </div>
       </div>
     </div>

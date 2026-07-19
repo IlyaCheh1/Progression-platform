@@ -58,25 +58,14 @@ export default function SettingsProfileHeader({
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={backgroundSrc} alt="" className="h-full w-full object-cover object-center" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-[#1a1a1d]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/25 to-black/70" />
         {onEditBackground ? <AppearanceEditBadge label="Сменить фон" className="right-3 top-3 md:right-4 md:top-4" /> : null}
       </button>
 
       <div className="relative flex flex-col gap-4 px-4 pb-4 md:gap-5 md:px-8 md:pb-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex items-end gap-4 md:gap-6">
-            <button
-              type="button"
-              onClick={onEditAvatar}
-              disabled={!onEditAvatar || avatarBusy}
-              className={cn(
-                "group relative -mt-10 shrink-0 md:-mt-12",
-                onEditAvatar && "cursor-pointer rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mos-amber",
-                (!onEditAvatar || avatarBusy) && "cursor-default",
-                avatarBusy && "opacity-70",
-              )}
-              aria-label={onEditAvatar ? "Загрузить аватар" : undefined}
-            >
+            <div className="relative -mt-10 shrink-0 md:-mt-12">
               <ProgressCircle
                 progress={progressPercent}
                 selectedSkinId={selectedSkinId}
@@ -86,14 +75,10 @@ export default function SettingsProfileHeader({
                 size="lg"
                 width={6}
                 showPercentage
+                onAvatarClick={onEditAvatar}
+                isUploading={avatarBusy}
               />
-              {onEditAvatar ? (
-                <AppearanceEditBadge
-                  label={avatarBusy ? "Загрузка…" : "Аватар"}
-                  className="bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap"
-                />
-              ) : null}
-            </button>
+            </div>
 
             <div className="flex min-w-0 flex-col gap-2 pb-1 md:gap-2.5">
               <div className="flex flex-wrap items-start gap-2">

@@ -73,6 +73,43 @@ export async function fetchAchievements(user: SessionUser): Promise<AchievementS
   return parseJson(res);
 }
 
+export type ClaimRewardResult = {
+  ok: boolean;
+  key: string;
+  stageIndex?: number;
+  xpGranted: number;
+  coinsGranted?: number;
+  alreadyClaimed: boolean;
+  level: number;
+  profile?: {
+    level: number;
+    xp: number;
+    xpToNextLevel: number;
+  };
+};
+
+export async function claimAchievement(
+  user: SessionUser,
+  key: string,
+  stageIndex = 0,
+): Promise<ClaimRewardResult> {
+  const res = await fetch(`${SCHOOL_API}/v1/achievements/claim`, {
+    method: "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify({ key, stageIndex }),
+  });
+  return parseJson(res);
+}
+
+export async function claimQuest(user: SessionUser, key: string): Promise<ClaimRewardResult> {
+  const res = await fetch(`${SCHOOL_API}/v1/quests/claim`, {
+    method: "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify({ key }),
+  });
+  return parseJson(res);
+}
+
 export async function fetchTalentCatalog(): Promise<TalentCatalogResponse> {
   const res = await fetch(`${SCHOOL_API}/v1/talents/catalog`);
   return parseJson(res);
@@ -83,14 +120,74 @@ export async function fetchUnlockedTalents(user: SessionUser): Promise<string[]>
   return parseJson(res);
 }
 
-export async function unlockTalent(user: SessionUser, talentKey: string): Promise<void> {
+export class TalentUnlockError extends Error {
+  readonly code: string;
+  readonly status: number;
+
+  constructor(status: number, code: string) {
+    super(code);
+    this.name = "TalentUnlockError";
+    this.status = status;
+    this.code = code;
+  }
+}
+
+const TALENT_UNLOCK_MESSAGES: Record<string, string> = {
+  unauthorized: "Сессия истекла. Войдите снова.",
+  catalog_unavailable: "Каталог талантов недоступен",
+  bad_request: "Некорректный запрос таланта",
+  unknown_talent: "Талант не найден в каталоге",
+  prerequisites_not_met: "Сначала изучите предыдущие умения",
+  unlock_failed: "Не удалось сохранить талант на сервере",
+};
+
+export function messageForTalentUnlockError(error: unknown): string {
+  if (error instanceof TalentUnlockError) {
+    return TALENT_UNLOCK_MESSAGES[error.code] ?? `Ошибка изучения таланта (${error.status})`;
+  }
+  return "Не удалось сохранить талант на сервере";
+}
+
+export async function unlockTalent(user: SessionUser, talentKey: string): Promise<{ already?: boolean }> {
   const res = await fetch(`${SCHOOL_API}/v1/talents/unlock`, {
     method: "POST",
-    headers: { ...authHeaders(user), "Content-Type": "application/json" },
+    headers: authHeaders(user),
     body: JSON.stringify({ talentKey }),
   });
-  if (!res.ok) {
-    throw new Error(`API ${res.status}`);
+  if (res.ok) {
+    return (await res.json().catch(() => ({}))) as { already?: boolean };
+  }
+  let code = `API_${res.status}`;
+  try {
+    const body = (await res.json()) as { error?: string };
+    if (body.error) code = body.error;
+  } catch {
+    /* ignore */
+  }
+  throw new TalentUnlockError(res.status, code);
+}
+
+/** Sync local learned talents to server (roots first via multi-pass). */
+export async function syncLearnedTalents(user: SessionUser, learnedKeys: string[]): Promise<void> {
+  let pending = [...learnedKeys];
+  for (let pass = 0; pass < 6 && pending.length > 0; pass++) {
+    const next: string[] = [];
+    for (const key of pending) {
+      try {
+        await unlockTalent(user, key);
+      } catch (error) {
+        if (error instanceof TalentUnlockError && error.code === "prerequisites_not_met") {
+          next.push(key);
+          continue;
+        }
+        if (error instanceof TalentUnlockError && error.code === "unknown_talent") {
+          continue;
+        }
+        throw error;
+      }
+    }
+    if (next.length === pending.length) break;
+    pending = next;
   }
 }
 

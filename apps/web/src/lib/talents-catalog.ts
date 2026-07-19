@@ -163,4 +163,9 @@ export const TREE_BORDER_COLOR: Record<TalentTreeType, string> = {
 };
 
 export const MAX_FAVORITE_SKILLS = 3;
-export const STARTING_SKILL_POINTS = 8;
+
+/** Доступные очки: уровень (+1 за каждый) + бонус образа − потраченные на изучение. */
+export function availableTalentPoints(level: number, characterBonus: number, spent: number): number {
+  const earned = Math.max(1, Math.floor(level)) + Math.max(0, Math.floor(characterBonus));
+  return Math.max(0, earned - Math.max(0, Math.floor(spent)));
+}

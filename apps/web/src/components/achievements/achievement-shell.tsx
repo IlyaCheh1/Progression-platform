@@ -8,7 +8,7 @@ export type AchievementState = "ongoing" | "claimable" | "completed";
 function PinIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
-      <path d="M14.5 3.5 20.5 9.5l-1.4 1.4-1.6-1.6-3.6 8.2-1.8-.8 2.4-5.4-2.8-2.8-5.4 2.4-.8-1.8 8.2-3.6-1.6-1.6L14.5 3.5Z" />
+      <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2Z" />
     </svg>
   );
 }
@@ -16,7 +16,7 @@ function PinIcon({ className }: { className?: string }) {
 function CheckBadge({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
-      <path d="M12 2 14.5 4.2l3.2-.6.9 3.1 3 1.2-1.5 2.9.8 3.1-3.1.8-1.2 3-2.9-1.5-2.9 1.5-1.2-3-3.1-.8.8-3.1L4.4 7.9l3-1.2.9-3.1 3.2.6L12 2Zm-1.2 12.4 5.3-5.3-1.4-1.4-3.9 3.9-1.8-1.8-1.4 1.4 3.2 3.2Z" />
+      <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.1 14.2-3.6-3.6 1.4-1.4 2.2 2.2 5-5 1.4 1.4-6.4 6.4Z" />
     </svg>
   );
 }
@@ -75,7 +75,7 @@ export default function AchievementShell({
         <div className="relative flex w-full items-center gap-3 overflow-hidden p-3 md:gap-6 md:px-6 md:py-5">
           <div className="flex min-w-0 flex-1 items-start gap-3 md:gap-4">
             <div
-              className="relative h-16 w-16 shrink-0 overflow-hidden bg-mos-stone bg-cover bg-center md:h-28 md:w-28"
+              className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-mos-stone bg-cover bg-center md:h-28 md:w-28 md:rounded-[20px]"
               style={iconUrl ? { backgroundImage: `url('${iconUrl}')` } : undefined}
             >
               {!iconUrl ? (
@@ -131,14 +131,18 @@ export function CompletedBar() {
 export function RewardBadge({
   value,
   label = "XP",
+  kind = "xp",
   claimable,
   onClick,
 }: {
   value: number | string;
   label?: string;
+  kind?: "xp" | "coins";
   claimable?: boolean;
   onClick?: () => void;
 }) {
+  const resolvedLabel = kind === "coins" ? "золото" : label;
+
   return (
     <button
       type="button"
@@ -149,13 +153,22 @@ export function RewardBadge({
         claimable && "bg-mos-amber text-mos-bg",
       )}
     >
-      <span className={cn("font-display text-[8px] font-bold uppercase md:text-[10px]", claimable ? "text-mos-bg" : "text-mos-muted")}>
-        {label}
+      <span
+        className={cn(
+          "inline-flex items-center gap-0.5 font-display text-[8px] font-bold uppercase md:text-[10px]",
+          claimable ? "text-mos-bg" : "text-mos-muted",
+        )}
+      >
+        {kind === "coins" ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src="/media/ui/coin.png" alt="" className="h-3 w-3 object-contain md:h-3.5 md:w-3.5" />
+        ) : null}
+        {resolvedLabel}
       </span>
       <span
         className={cn(
           "text-center font-display text-[10px] font-medium leading-3.5 md:text-[15px] md:leading-6",
-          claimable ? "text-mos-bg" : "text-mos-text",
+          claimable ? "text-mos-bg" : kind === "coins" ? "text-mos-amber" : "text-mos-text",
         )}
       >
         {typeof value === "number" ? `+${value}` : value}

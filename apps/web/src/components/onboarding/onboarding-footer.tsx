@@ -73,7 +73,7 @@ export default function OnboardingFooter({
           ? "Сохраняем…"
           : selectedGender === "MALE"
             ? "Лок'тар огар!"
-            : "За Даларан!"}
+            : "В Каэр Морхен"}
       </Button>
     </div>
   );

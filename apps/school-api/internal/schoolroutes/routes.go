@@ -2,6 +2,7 @@ package schoolroutes
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -287,6 +288,96 @@ func Register(mux *http.ServeMux, d Deps) {
 		d.WriteJSON(w, d.Platform.School.AchievementsForStudent(actor.ID))
 	}))
 
+	mux.HandleFunc("POST /v1/achievements/claim", authz.RequireAuth(d.Platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		if d.Content == nil {
+			http.Error(w, `{"error":"catalog_unavailable"}`, http.StatusServiceUnavailable)
+			return
+		}
+		var body struct {
+			Key        string `json:"key"`
+			StageIndex int    `json:"stageIndex"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.Key == "" {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		ach, ok := d.Content.GetAchievement(body.Key)
+		if !ok {
+			http.Error(w, `{"error":"unknown_achievement"}`, http.StatusNotFound)
+			return
+		}
+		if body.StageIndex < 0 {
+			body.StageIndex = 0
+		}
+		xp := int64(admincontent.AchievementStageXP(ach, body.StageIndex))
+		coins := admincontent.AchievementStageCoins(ach, body.StageIndex)
+		claimID := fmt.Sprintf("achievement:%s:%d", body.Key, body.StageIndex)
+		level, grantedXP, already, err := d.Platform.ClaimRewardXP(actor.ID, claimID, xp)
+		if err != nil {
+			http.Error(w, `{"error":"claim_failed"}`, http.StatusInternalServerError)
+			return
+		}
+		coinsGranted := 0
+		if !already {
+			coinsGranted = coins
+		}
+		profile, _ := d.Platform.ProfileForStudent(actor.ID)
+		d.WriteJSON(w, map[string]any{
+			"ok":             true,
+			"key":            body.Key,
+			"stageIndex":     body.StageIndex,
+			"xpGranted":      grantedXP,
+			"coinsGranted":   coinsGranted,
+			"alreadyClaimed": already,
+			"level":          level,
+			"profile":        profile,
+		})
+	}))
+
+	mux.HandleFunc("POST /v1/quests/claim", authz.RequireAuth(d.Platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		if d.Content == nil {
+			http.Error(w, `{"error":"catalog_unavailable"}`, http.StatusServiceUnavailable)
+			return
+		}
+		var body struct {
+			Key string `json:"key"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.Key == "" {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		quest, ok := d.Content.GetQuest(body.Key)
+		if !ok {
+			http.Error(w, `{"error":"unknown_quest"}`, http.StatusNotFound)
+			return
+		}
+		xp := int64(admincontent.QuestClaimXP(quest))
+		coins := quest.Coins
+		if coins < 0 {
+			coins = 0
+		}
+		claimID := "quest:" + body.Key
+		level, grantedXP, already, err := d.Platform.ClaimRewardXP(actor.ID, claimID, xp)
+		if err != nil {
+			http.Error(w, `{"error":"claim_failed"}`, http.StatusInternalServerError)
+			return
+		}
+		coinsGranted := 0
+		if !already {
+			coinsGranted = coins
+		}
+		profile, _ := d.Platform.ProfileForStudent(actor.ID)
+		d.WriteJSON(w, map[string]any{
+			"ok":             true,
+			"key":            body.Key,
+			"xpGranted":      grantedXP,
+			"coinsGranted":   coinsGranted,
+			"alreadyClaimed": already,
+			"level":          level,
+			"profile":        profile,
+		})
+	}))
+
 	mux.HandleFunc("POST /v1/admin/content/kill-switch", authz.RequirePermission(d.Platform, rbac.PermContentWrite, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
 		var body struct {
 			Key     string `json:"key"`
@@ -446,7 +537,8 @@ func Register(mux *http.ServeMux, d Deps) {
 			unlockedSet[key] = true
 		}
 		if unlockedSet[body.TalentKey] {
-			http.Error(w, `{"error":"already_unlocked"}`, http.StatusConflict)
+			// Idempotent: already learned is success for the client.
+			d.WriteJSON(w, map[string]any{"ok": true, "talentKey": body.TalentKey, "already": true})
 			return
 		}
 		for _, req := range talent.Requires {
