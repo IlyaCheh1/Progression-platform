@@ -46,13 +46,49 @@
 
 После смены `NEXT_PUBLIC_*` сделай **Rebuild**.
 
-## school-api
+## school-api (отдельный сервис в Coolify)
+
+Логин с прод-сайта ходит в браузере на `NEXT_PUBLIC_SCHOOL_API`. Без **второго** сервиса school-api вход не работает.
+
+> **Не используй Nixpacks** для school-api: в корне репо `package.json`, Nixpacks выбирает Node и в образе нет `go` (`go: command not found`).
+
+### Configuration → General / Build
+
+| Поле | Значение |
+|---|---|
+| Repository | `IlyaCheh1/Progression-platform` |
+| Branch | `main` |
+| Base Directory | `/` |
+| **Build Pack** | **Dockerfile** |
+| **Dockerfile Location** | `infra/coolify/school-api.Dockerfile` |
+| Port | `8082` |
+| Domains | `https://school-api.mastersword.ru` |
+
+Start / Build Command оставь пустым — задаётся в Dockerfile.
+
+### Environment
 
 | Переменная | Значение |
 |---|---|
 | `SCHOOL_API_ADDR` | `0.0.0.0:8082` |
 
-Без этого контейнер останется на loopback и снаружи не откроется.
+Без `0.0.0.0` API слушает только loopback внутри контейнера и снаружи недоступен.
+
+### Проверка после деплоя
+
+Открой в браузере:
+
+```text
+https://school-api.mastersword.ru/health
+```
+
+Должен вернуть JSON с `"ok": true`. Этот URL (без `/health`) пропиши в web:
+
+```env
+NEXT_PUBLIC_SCHOOL_API=https://school-api.mastersword.ru
+```
+
+**Buildtime + Runtime** в сервисе **web**, затем **Rebuild** web.
 
 ## S3 (из GFF / Selectel)
 
@@ -97,15 +133,43 @@ NEXT_PUBLIC_MEDIA_BASE_URL=https://.../media/hero
 
 ## Автодеплой не стартует
 
-Git-пуши уже в **`main`** (и синхронизированы с `master`). Локально `pnpm --filter @mos/web build` проходит.
+Git-пуши в **`main`**. Локально `pnpm --filter @mos/web build` проходит.
 
-Если после push в GitHub деплой в Coolify **не появляется**:
+Если **Redeploy вручную работает**, а после push в GitHub деплой не появляется — проблема в **webhook**.
 
-1. **Source → Branch** — должна быть **`main`** (не `master`, не `7a9938b`).
-2. **Auto Deploy** — включён (Deploy on push).
-3. **GitHub → Settings → Webhooks** — webhook Coolify есть, последняя доставка **200** (не 4xx/5xx).
-4. Если webhook красный — в Coolify: **Source → Reconnect** / заново привязать репозиторий.
-5. **Deployments** — нет ли зависшего «In Progress» (отмени и **Redeploy**).
-6. Ручной **Redeploy** с веткой `main` и коммитом `4d7c0a3` или новее — если работает, проблема только в webhook.
+### Починить webhook (Coolify + GitHub)
 
-Репозиторий: `IlyaCheh1/Progression-platform`, актуальный коммит на `main`: см. GitHub → Commits.
+1. **Coolify → Configuration → Git Source**
+   - Repository: `IlyaCheh1/Progression-platform`
+   - Branch: **`main`**
+   - Нажми **Reconnect** / **Refresh** (перепривязать GitHub).
+
+2. **Coolify → Configuration → Webhooks**
+   - Скопируй **Deploy Webhook URL** (или UUID deploy hook).
+   - Это URL, который должен быть в GitHub.
+
+3. **GitHub → репозиторий → Settings → Webhooks**
+   - Найди webhook на Coolify (или **Add webhook**).
+   - **Payload URL** = URL из шага 2 (точное совпадение, без лишнего `/`).
+   - **Content type**: `application/json`.
+   - **Events**: «Just the push event» (или push + ping).
+   - Сохрани. Coolify должен ответить на **Ping** кодом **200**.
+
+4. **GitHub → Settings → Applications → Installed GitHub Apps → Coolify → Configure**
+   - У приложения есть доступ к **`Progression-platform`** (All repositories или этот repo в списке).
+
+5. **Проверка**
+   - В GitHub Webhooks → выбери webhook → **Recent Deliveries**.
+   - Push в `main` → delivery **200**. Если **4xx/5xx** — скопируй Response и поправь URL/секрет.
+   - Можно **Redeliver** последний push и смотреть, появился ли деплой в Coolify → Deployments.
+
+6. **Coolify server**
+   - Инстанс Coolify доступен с интернета по HTTPS (GitHub шлёт webhook снаружи).
+   - После смены домена/IP старый webhook в GitHub перестаёт работать — нужен новый URL из п. 2.
+
+### Остальное
+
+- **Advanced → Auto Deploy** — включён.
+- **Deployments** — нет зависшего «In Progress».
+
+Репозиторий: `IlyaCheh1/Progression-platform`, пушить только в **`main`**.

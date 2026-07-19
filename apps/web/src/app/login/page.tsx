@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { SCHOOL_API } from "@/lib/utils";
+import { SCHOOL_API, schoolApiUnavailableMessage } from "@/lib/utils";
 import { resolveActiveCabinetRole, userRoleToCabinetRole, writeStoredActiveRole } from "@/lib/cabinets";
 import { hasProfile, homePathForRoles, normalizeRole, normalizeRoles, primaryRole, saveSession } from "@/lib/session";
 import AppLogo from "@/components/app-logo";
@@ -71,7 +71,7 @@ export default function LoginPage() {
       if (cabinetRole) writeStoredActiveRole(cabinetRole);
       router.push(homePathForRoles(roles, hasProfile()));
     } catch {
-      setError("API недоступен. Поднимите school-api на :8082");
+      setError(schoolApiUnavailableMessage());
     }
   }
 
