@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"sync"
 
 	"github.com/masterofsword/contracts/engines"
@@ -48,6 +47,33 @@ func main() {
 		cp.Password = ""
 		writeJSON(w, cp)
 	})
+
+	mux.HandleFunc("GET /v1/profile/me", authz.RequireAuth(platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		view, err := platform.ProfileForStudent(actor.ID)
+		if err != nil {
+			http.Error(w, `{"error":"not_found"}`, http.StatusNotFound)
+			return
+		}
+		writeJSON(w, view)
+	}))
+
+	mux.HandleFunc("PUT /v1/profile/me", authz.RequireAuth(platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		var body engines.ProfileInput
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		view, err := platform.UpdateStudentProfile(actor.ID, body)
+		if err != nil {
+			status := http.StatusBadRequest
+			if err.Error() == "student not found" {
+				status = http.StatusNotFound
+			}
+			http.Error(w, `{"error":"`+err.Error()+`"}`, status)
+			return
+		}
+		writeJSON(w, view)
+	}))
 
 	mux.HandleFunc("POST /v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
 		var body struct {
