@@ -1,0 +1,8 @@
+---
+alwaysApply: true
+---
+# Git workflow
+
+- Default branch is `main`; push to `origin/main`, never to `origin/master`.
+- After commits, use `git push origin main` (or `git push` when upstream is `origin/main`).
+- If the local branch is not `main`, push with `git push origin HEAD:main` and prefer renaming the branch to `main`.
