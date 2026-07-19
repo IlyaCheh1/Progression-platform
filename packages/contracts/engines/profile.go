@@ -13,13 +13,34 @@ var allowedSkins = map[string]struct{}{
 	"polearm": {},
 }
 
+var allowedCharacterIDs = map[string]struct{}{
+	"1":  {},
+	"2":  {},
+	"3":  {},
+	"4":  {},
+	"5":  {},
+	"6":  {},
+	"7":  {},
+	"8":  {},
+	"9":  {},
+	"10": {},
+}
+
+var legacySkinToCharacter = map[string]string{
+	"novice":  "1",
+	"scholar": "3",
+	"duelist": "4",
+	"shield":  "2",
+	"polearm": "5",
+}
+
 var allowedGenders = map[string]struct{}{
 	"MALE":   {},
 	"FEMALE": {},
 }
 
 var allowedBackgrounds = map[string]struct{}{
-	"onboarding_background":   {},
+	"onboarding_background": {},
 	"northern_lights":         {},
 	"prison":                  {},
 	"building_castle":         {},
@@ -43,12 +64,17 @@ var legacyBackgroundKeys = map[string]string{
 	"6": "grate_wall",
 }
 
-const defaultBackgroundKey = "northern_lights"
+const (
+	defaultBackgroundKey  = "northern_lights"
+	defaultMaleCharacterID   = "3"
+	defaultFemaleCharacterID = "8"
+)
 
 // ProfileInput updates RPG presentation / onboarding state for a student.
 type ProfileInput struct {
 	Username        string `json:"username"`
-	Skin            string `json:"skin"`
+	SelectedSkinID  string `json:"selectedSkinId"`
+	Skin            string `json:"skin"` // legacy
 	Gender          string `json:"gender"`
 	BackgroundKey   string `json:"backgroundKey"`
 	ProfileComplete bool   `json:"profileComplete"`
@@ -61,7 +87,8 @@ type ProfileView struct {
 	DisplayName     string           `json:"displayName"`
 	ProfileComplete bool             `json:"profileComplete"`
 	Username        string           `json:"username"`
-	Skin            string           `json:"skin"`
+	SelectedSkinID  string           `json:"selectedSkinId"`
+	Skin            string           `json:"skin,omitempty"`
 	Gender          string           `json:"gender"`
 	BackgroundKey   string           `json:"backgroundKey"`
 	Level           int              `json:"level"`
@@ -83,11 +110,18 @@ func (p *Platform) ProfileForStudent(studentID string) (*ProfileView, error) {
 
 func (p *Platform) UpdateStudentProfile(studentID string, in ProfileInput) (*ProfileView, error) {
 	in.Username = strings.TrimSpace(in.Username)
+	in.SelectedSkinID = strings.TrimSpace(in.SelectedSkinID)
 	in.Skin = strings.TrimSpace(in.Skin)
 	in.Gender = strings.ToUpper(strings.TrimSpace(in.Gender))
 	in.BackgroundKey = strings.TrimSpace(in.BackgroundKey)
 
-	if in.Skin != "" {
+	if in.SelectedSkinID != "" {
+		normalized, ok := normalizeCharacterID(in.SelectedSkinID, in.Gender)
+		if !ok {
+			return nil, fmt.Errorf("invalid_character")
+		}
+		in.SelectedSkinID = normalized
+	} else if in.Skin != "" {
 		if _, ok := allowedSkins[in.Skin]; !ok {
 			return nil, fmt.Errorf("invalid_skin")
 		}
@@ -116,31 +150,61 @@ func (p *Platform) UpdateStudentProfile(studentID string, in ProfileInput) (*Pro
 		s.ProfileUsername = in.Username
 		s.DisplayName = in.Username
 	}
-	if in.Skin != "" {
-		s.Skin = in.Skin
-	}
 	if in.Gender != "" {
 		s.Gender = in.Gender
+	}
+	if in.SelectedSkinID != "" {
+		s.SelectedSkinID = in.SelectedSkinID
+		s.Skin = ""
+	} else if in.Skin != "" {
+		s.Skin = in.Skin
+		if mapped, ok := legacySkinToCharacter[in.Skin]; ok {
+			s.SelectedSkinID = mapped
+		}
 	}
 	if in.BackgroundKey != "" {
 		s.BackgroundKey = in.BackgroundKey
 	}
-	if in.ProfileComplete || (s.ProfileUsername != "" && s.Skin != "" && s.Gender != "") {
+	if s.SelectedSkinID == "" && s.Skin != "" {
+		if mapped, ok := legacySkinToCharacter[s.Skin]; ok {
+			s.SelectedSkinID = mapped
+		}
+	}
+	if s.SelectedSkinID == "" && s.Gender != "" {
+		s.SelectedSkinID = defaultCharacterForGender(s.Gender)
+	}
+	if in.ProfileComplete || profileReadyLocked(s) {
 		s.ProfileComplete = true
 	}
 
 	return profileViewLocked(p, s), nil
 }
 
+func profileReadyLocked(s *Student) bool {
+	return s.ProfileUsername != "" && s.Gender != "" && (s.SelectedSkinID != "" || s.Skin != "")
+}
+
 func profileViewLocked(p *Platform, s *Student) *ProfileView {
+	gender := s.Gender
+	if gender == "" {
+		gender = "MALE"
+	}
+	selectedSkinID := normalizedCharacterID(s.SelectedSkinID, gender)
+	if selectedSkinID == "" && s.Skin != "" {
+		if mapped, ok := legacySkinToCharacter[s.Skin]; ok {
+			selectedSkinID = mapped
+		}
+	}
+
 	view := &ProfileView{
 		StudentID:       s.ID,
 		CharacterID:     s.CharacterID,
 		DisplayName:     s.DisplayName,
 		ProfileComplete: s.ProfileComplete,
 		Username:        profileUsername(s),
+		SelectedSkinID:  selectedSkinID,
 		Skin:            s.Skin,
-		Gender:          s.Gender,
+		Gender:          gender,
 		BackgroundKey:   normalizedBackgroundKey(s.BackgroundKey),
 		Level:           1,
 		Mastery:         cloneMastery(s.Mastery),
@@ -208,4 +272,33 @@ func normalizedBackgroundKey(raw string) string {
 		return defaultBackgroundKey
 	}
 	return key
+}
+
+func normalizeCharacterID(raw, gender string) (string, bool) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return defaultCharacterForGender(gender), true
+	}
+	if _, ok := allowedCharacterIDs[raw]; ok {
+		return raw, true
+	}
+	if mapped, ok := legacySkinToCharacter[raw]; ok {
+		return mapped, true
+	}
+	return "", false
+}
+
+func normalizedCharacterID(raw, gender string) string {
+	key, ok := normalizeCharacterID(raw, gender)
+	if !ok || key == "" {
+		return defaultCharacterForGender(gender)
+	}
+	return key
+}
+
+func defaultCharacterForGender(gender string) string {
+	if strings.ToUpper(gender) == "FEMALE" {
+		return defaultFemaleCharacterID
+	}
+	return defaultMaleCharacterID
 }

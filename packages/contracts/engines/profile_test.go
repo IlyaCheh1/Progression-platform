@@ -1,4 +1,4 @@
-package engines_test
+package profile_test
 
 import (
 	"testing"
@@ -18,9 +18,9 @@ func TestUpdateStudentProfileCompletesOnboarding(t *testing.T) {
 
 	view, err := p.UpdateStudentProfile("s1", engines.ProfileInput{
 		Username:        "Алиса",
-		Skin:            "scholar",
+		SelectedSkinID:    "8",
 		Gender:          "FEMALE",
-		BackgroundKey:   "5",
+		BackgroundKey:   "northern_lights",
 		ProfileComplete: true,
 	})
 	if err != nil {
@@ -29,7 +29,7 @@ func TestUpdateStudentProfileCompletesOnboarding(t *testing.T) {
 	if !view.ProfileComplete {
 		t.Fatal("expected profileComplete=true")
 	}
-	if view.Username != "Алиса" || view.Skin != "scholar" || view.Gender != "FEMALE" {
+	if view.Username != "Алиса" || view.SelectedSkinID != "8" || view.Gender != "FEMALE" {
 		t.Fatalf("unexpected profile: %+v", view)
 	}
 
@@ -39,11 +39,28 @@ func TestUpdateStudentProfileCompletesOnboarding(t *testing.T) {
 	}
 }
 
-func TestUpdateStudentProfileRejectsInvalidSkin(t *testing.T) {
+func TestUpdateStudentProfileRejectsInvalidCharacter(t *testing.T) {
 	p := engines.NewPlatform()
 	p.UpsertStudent(engines.Student{ID: "s1", Login: "x@local", Password: "p"})
-	if _, err := p.UpdateStudentProfile("s1", engines.ProfileInput{Skin: "invalid"}); err == nil {
-		t.Fatal("expected invalid_skin error")
+	if _, err := p.UpdateStudentProfile("s1", engines.ProfileInput{SelectedSkinID: "99"}); err == nil {
+		t.Fatal("expected invalid_character error")
+	}
+}
+
+func TestUpdateStudentProfileMigratesLegacySkin(t *testing.T) {
+	p := engines.NewPlatform()
+	p.UpsertStudent(engines.Student{ID: "s1", Login: "x@local", Password: "p"})
+
+	view, err := p.UpdateStudentProfile("s1", engines.ProfileInput{
+		Username: "Hero",
+		Skin:     "scholar",
+		Gender:   "MALE",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if view.SelectedSkinID != "3" {
+		t.Fatalf("selectedSkinId=%q want 3", view.SelectedSkinID)
 	}
 }
 
@@ -54,14 +71,14 @@ func TestProfileForStudentIncludesCharacterProgress(t *testing.T) {
 	}
 	p.UpsertStudent(engines.Student{
 		ID: "s1", Login: "x@local", Password: "p", CharacterID: "char-1",
-		ProfileComplete: true, ProfileUsername: "Hero", Skin: "duelist", Gender: "MALE",
+		ProfileComplete: true, ProfileUsername: "Hero", SelectedSkinID: "4", Gender: "MALE",
 	})
 
 	view, err := p.ProfileForStudent("s1")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !view.ProfileComplete || view.Username != "Hero" {
+	if !view.ProfileComplete || view.Username != "Hero" || view.SelectedSkinID != "4" {
 		t.Fatalf("profile view: %+v", view)
 	}
 	if view.Level < 1 {

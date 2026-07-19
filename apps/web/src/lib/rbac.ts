@@ -112,12 +112,8 @@ export function canManageUsers(roles: UserRole[] | UserRole): boolean {
   return hasPermissionForRoles(list, "users.create") && hasPermissionForRoles(list, "users.update") && hasPermissionForRoles(list, "users.delete");
 }
 
-export function homePathForRoles(roles: UserRole[], profileReady: boolean): string {
-  const list = normalizeRoles(roles);
-  if (isAdminPrincipal(list)) return "/admin";
-  if (hasRole(list, "coach")) return "/coach";
-  if (hasRole(list, "guardian")) return "/guardian";
-  if (hasRole(list, "renter")) return "/renter";
+/** После авторизации все роли проходят onboarding и попадают в профиль. */
+export function homePathForRoles(_roles: UserRole[], profileReady: boolean): string {
   return profileReady ? "/profile" : "/onboarding";
 }
 

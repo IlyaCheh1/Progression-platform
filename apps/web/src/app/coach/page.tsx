@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { RoleSwitch } from "@/components/role-switch";
 import { SCHOOL_API } from "@/lib/utils";
 import { authHeaders, hasRole, loadSession, type SessionUser } from "@/lib/session";
+import { routes } from "@/lib/routes";
 
 type StudentRow = {
   id: string;
@@ -83,7 +83,9 @@ export default function CoachCabinetPage() {
       <p className="font-display tracking-[0.18em] text-mos-amber">COACH</p>
       <h1 className="mt-2 font-display text-3xl text-mos-text">Кабинет тренера</h1>
       <p className="mt-4 text-sm text-mos-muted">Подтверждение посещаемости и работа с группой.</p>
-      <RoleSwitch user={session} className="mt-6" />
+      <Link href={routes.home} className="mt-4 inline-flex text-xs uppercase tracking-widest text-mos-muted hover:text-mos-amber">
+        ← Профиль
+      </Link>
       {error && <p className="mt-4 text-sm text-[#c45c2a]">{error}</p>}
       {message && <p className="mt-4 text-sm text-mos-amber">{message}</p>}
 

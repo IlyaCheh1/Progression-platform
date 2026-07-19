@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { loadSession, type SessionUser } from "@/lib/session";
+import { hasRole, loadSession, type SessionUser } from "@/lib/session";
 
 export default function GuardianCabinetPage() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function GuardianCabinetPage() {
       router.replace("/login");
       return;
     }
-    if (s.role !== "guardian") {
+    if (!hasRole(s.roles, "guardian")) {
       router.replace("/profile");
       return;
     }

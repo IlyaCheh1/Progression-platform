@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { loadSession, type SessionUser } from "@/lib/session";
+import { hasRole, loadSession, type SessionUser } from "@/lib/session";
 
 export default function RenterCabinetPage() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function RenterCabinetPage() {
       router.replace("/login");
       return;
     }
-    if (s.role !== "renter") {
+    if (!hasRole(s.roles, "renter")) {
       router.replace("/profile");
       return;
     }

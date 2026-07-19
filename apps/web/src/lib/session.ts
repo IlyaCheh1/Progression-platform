@@ -21,9 +21,11 @@ export type SessionUser = {
   accessToken: string;
   role: UserRole;
   roles: UserRole[];
+  profileComplete?: boolean;
 };
 
 const KEY = "mos.session";
+const PROFILE_CACHE_KEY = "mos.player-profile";
 
 export { canManageUsers, homePathForRoles, isAdminPrincipal, normalizeRole, normalizeRoles, primaryRole };
 
@@ -60,6 +62,7 @@ export function loadSession(): SessionUser | null {
       accessToken: parsed.accessToken,
       roles,
       role: normalizeRole(parsed.role ?? roles[0]),
+      profileComplete: Boolean(parsed.profileComplete),
     };
   } catch {
     return null;
@@ -69,13 +72,30 @@ export function loadSession(): SessionUser | null {
 export function clearSession() {
   if (typeof window === "undefined") return;
   localStorage.removeItem(KEY);
+  localStorage.removeItem("mos.profile");
+  localStorage.removeItem("mos.player-profile");
+  localStorage.removeItem("mos.username");
+  localStorage.removeItem("mos.selectedSkinId");
+  localStorage.removeItem("mos.skin");
+  localStorage.removeItem("mos.gender");
+  localStorage.removeItem("mos.background");
 }
 
-export function hasProfile(): boolean {
+export function hasProfile(session?: SessionUser | null): boolean {
+  if (session?.profileComplete) return true;
   if (typeof window === "undefined") return false;
-  return localStorage.getItem("mos.profile") === "1";
+  if (localStorage.getItem("mos.profile") === "1") return true;
+  const raw = localStorage.getItem(PROFILE_CACHE_KEY);
+  if (!raw) return false;
+  try {
+    const parsed = JSON.parse(raw) as { profileComplete?: boolean };
+    return Boolean(parsed.profileComplete);
+  } catch {
+    return false;
+  }
 }
 
+/** @deprecated backend is source of truth; kept for legacy callers */
 export function markProfileCreated() {
   localStorage.setItem("mos.profile", "1");
 }
@@ -89,4 +109,10 @@ export function authHeaders(user: SessionUser): HeadersInit {
 
 export function homePathForRole(role: UserRole, profileReady: boolean): string {
   return homePathForRoles([role], profileReady);
+}
+
+export function patchSession(partial: Partial<SessionUser>) {
+  const current = loadSession();
+  if (!current) return;
+  saveSession({ ...current, ...partial });
 }

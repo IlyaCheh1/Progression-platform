@@ -1,66 +1,162 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { markProfileCreated } from "@/lib/session";
-
-const SKINS = [
-  { id: "novice", label: "Новобранец" },
-  { id: "scholar", label: "Ученик трактата" },
-  { id: "duelist", label: "Дуэлянт" },
-  { id: "shield", label: "Щитоносец" },
-  { id: "polearm", label: "Древковое" },
-];
+import CharacterCarousel from "@/components/onboarding/character-carousel";
+import { useOnboardingCharacters } from "@/hooks/use-onboarding-characters";
+import { fetchMyProfile, saveMyProfile } from "@/lib/profile-api";
+import { loadSession, patchSession } from "@/lib/session";
+import {
+  DEFAULT_BACKGROUND_ID,
+  onboardingBackgroundPath,
+  selectableOnboardingBackgrounds,
+  type BackgroundId,
+} from "@/lib/backgrounds";
+import { schoolApiUnavailableMessage } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const [gender, setGender] = useState<"MALE" | "FEMALE">("MALE");
-  const [skin, setSkin] = useState(SKINS[1].id);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [username, setUsername] = useState("");
+  const [backgroundKey, setBackgroundKey] = useState<BackgroundId>(DEFAULT_BACKGROUND_ID);
+  const backgrounds = selectableOnboardingBackgrounds();
 
-  function submit(e: React.FormEvent) {
+  const {
+    selectedGender,
+    setSelectedGender,
+    filteredCharacters,
+    characterPositions,
+    getCenterCharacterId,
+    handleCharacterClick,
+    centerCharacter,
+  } = useOnboardingCharacters("MALE");
+
+  useEffect(() => {
+    const session = loadSession();
+    if (!session) {
+      router.replace("/login");
+      return;
+    }
+
+    void fetchMyProfile(session).then((profile) => {
+      if (profile?.profileComplete) {
+        patchSession({ profileComplete: true });
+        router.replace("/profile");
+      }
+    });
+  }, [router]);
+
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!username.trim()) return;
-    localStorage.setItem("mos.skin", skin);
-    localStorage.setItem("mos.gender", gender);
-    localStorage.setItem("mos.username", username.trim());
-    markProfileCreated();
-    router.push("/profile");
+    setError("");
+    const session = loadSession();
+    if (!session) {
+      router.replace("/login");
+      return;
+    }
+
+    const trimmed = username.trim();
+    if (!trimmed) {
+      setError("Имя персонажа не может быть пустым");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const profile = await saveMyProfile(session, {
+        username: trimmed,
+        selectedSkinId: getCenterCharacterId(),
+        gender: selectedGender,
+        backgroundKey,
+        profileComplete: true,
+      });
+      patchSession({ profileComplete: profile.profileComplete, name: profile.username });
+      router.push("/profile");
+    } catch {
+      setError(schoolApiUnavailableMessage());
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-4 py-10">
-      <h1 className="font-display text-3xl text-mos-amber">Выбор персонажа</h1>
-      <p className="mt-2 text-mos-muted">Обязательный шаг после регистрации. Временно — образы в духе OnlyGames / starter avatars школы.</p>
-      <div className="mt-6 flex gap-2">
-        {(["MALE", "FEMALE"] as const).map((g) => (
-          <button key={g} type="button" onClick={() => setGender(g)} className={`mos-btn ${gender === g ? "" : "border-mos-line text-mos-text"}`}>
-            {g === "MALE" ? "Мужской" : "Женский"}
+    <main
+      className="relative flex min-h-screen flex-col bg-cover bg-bottom md:bg-center"
+      style={{ backgroundImage: `url(${onboardingBackgroundPath()})` }}
+    >
+      <div className="absolute inset-0 bg-black/50" />
+
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <div className="mx-auto mt-4 flex gap-2 md:mt-8">
+          {(["MALE", "FEMALE"] as const).map((gender) => (
+            <button
+              key={gender}
+              type="button"
+              className={cn(
+                "border px-4 py-2 text-xs uppercase tracking-widest transition-colors",
+                selectedGender === gender
+                  ? "border-mos-amber bg-mos-amber/15 text-mos-amber"
+                  : "border-mos-line/50 bg-mos-bg/60 text-mos-muted hover:text-mos-text",
+              )}
+              onClick={() => setSelectedGender(gender)}
+            >
+              {gender === "MALE" ? "Мужской" : "Женский"}
+            </button>
+          ))}
+        </div>
+
+        <CharacterCarousel
+          className="flex-1 px-2 pt-4 md:px-6"
+          characters={filteredCharacters}
+          characterPositions={characterPositions}
+          onCharacterClick={handleCharacterClick}
+          centerCharacter={centerCharacter}
+        />
+
+        <form
+          onSubmit={submit}
+          className="relative z-20 mx-auto mb-6 w-full max-w-3xl space-y-4 px-4 md:mb-12"
+        >
+          <label className="block text-xs uppercase tracking-widest text-mos-muted">
+            Имя персонажа
+            <input
+              className="mt-1 w-full border border-mos-line bg-mos-stone/90 px-3 py-2 text-mos-text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </label>
+
+          <fieldset className="space-y-2">
+            <legend className="text-xs uppercase tracking-widest text-mos-muted">Фон профиля</legend>
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+              {backgrounds.map((bg) => (
+                <button
+                  key={bg.id}
+                  type="button"
+                  className={cn(
+                    "overflow-hidden border bg-mos-bg/80 text-left",
+                    backgroundKey === bg.id ? "border-mos-amber" : "border-mos-line/50",
+                  )}
+                  onClick={() => setBackgroundKey(bg.id)}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={bg.src} alt={bg.label} className="h-16 w-full object-cover md:h-20" />
+                  <p className="px-2 py-1 text-[10px] text-mos-text">{bg.label}</p>
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          {error && <p className="text-sm text-[#c45c2a]">{error}</p>}
+
+          <button type="submit" className="mos-btn w-full" disabled={submitting}>
+            {submitting ? "Сохраняем…" : "Создать профиль"}
           </button>
-        ))}
+        </form>
       </div>
-      <div className="mt-8 flex gap-3 overflow-x-auto pb-2">
-        {SKINS.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => setSkin(s.id)}
-            className={`min-w-[120px] border p-4 ${skin === s.id ? "border-mos-amber text-mos-amber" : "border-mos-line text-mos-muted"}`}
-          >
-            <div className="mb-3 grid h-28 place-items-center bg-mos-stone font-display text-2xl">{s.label[0]}</div>
-            {s.label}
-          </button>
-        ))}
-      </div>
-      <form onSubmit={submit} className="mt-8 space-y-4">
-        <label className="block text-xs uppercase tracking-widest text-mos-muted">
-          Имя персонажа
-          <input className="mt-1 w-full border border-mos-line bg-mos-stone px-3 py-2" value={username} onChange={(e) => setUsername(e.target.value)} required />
-        </label>
-        <button type="submit" className="mos-btn">
-          Создать профиль
-        </button>
-      </form>
     </main>
   );
 }

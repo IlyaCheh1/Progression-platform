@@ -3,8 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SCHOOL_API, schoolApiUnavailableMessage } from "@/lib/utils";
-import { resolveActiveCabinetRole, userRoleToCabinetRole, writeStoredActiveRole } from "@/lib/cabinets";
 import { hasProfile, homePathForRoles, normalizeRole, normalizeRoles, primaryRole, saveSession } from "@/lib/session";
+import { writeCachedProfile } from "@/lib/profile-api";
+import { normalizeGender } from "@/lib/avatars";
+import { DEFAULT_BACKGROUND_ID, normalizeBackgroundId } from "@/lib/backgrounds";
+import { normalizeSelectedSkinId } from "@/lib/characters";
 import AppLogo from "@/components/app-logo";
 import Link from "next/link";
 
@@ -55,21 +58,43 @@ export default function LoginPage() {
         return;
       }
       const data = await res.json();
+      const student = (data.student ?? {}) as Record<string, unknown>;
       const roles = readLoginRoles(data as Record<string, unknown>);
       const role = primaryRole(roles);
+      const profileComplete = Boolean(student.profileComplete);
       const session = {
-        studentId: data.student.id,
-        name: data.student.displayName ?? data.student.DisplayName,
+        studentId: String(student.id ?? ""),
+        name: String(student.displayName ?? student.DisplayName ?? ""),
         login,
-        characterId: data.student.characterId ?? data.student.CharacterID,
-        accessToken: data.accessToken,
+        characterId: String(student.characterId ?? student.CharacterID ?? ""),
+        accessToken: String(data.accessToken ?? ""),
         role,
         roles,
+        profileComplete,
       };
       saveSession(session);
-      const cabinetRole = resolveActiveCabinetRole(roles, userRoleToCabinetRole(role));
-      if (cabinetRole) writeStoredActiveRole(cabinetRole);
-      router.push(homePathForRoles(roles, hasProfile()));
+      const gender = normalizeGender(String(student.gender ?? "MALE"));
+      if (profileComplete) {
+        writeCachedProfile({
+          studentId: session.studentId,
+          characterId: session.characterId,
+          displayName: session.name,
+          profileComplete: true,
+          username: String(student.profileUsername ?? student.displayName ?? session.name),
+          selectedSkinId: normalizeSelectedSkinId(
+            String(student.selectedSkinId ?? student.skin ?? ""),
+            gender,
+          ),
+          gender,
+          backgroundKey: normalizeBackgroundId(String(student.backgroundKey ?? DEFAULT_BACKGROUND_ID)),
+          level: 1,
+          xp: 0,
+          xpToNextLevel: 500,
+          mastery: (student.mastery as Record<string, number>) ?? {},
+          ranks: (student.ranks as Record<string, number>) ?? {},
+        });
+      }
+      router.push(homePathForRoles(roles, hasProfile(session)));
     } catch {
       setError(schoolApiUnavailableMessage());
     }

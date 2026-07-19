@@ -49,7 +49,8 @@ type Student struct {
 	Ranks           map[string]int   `json:"ranks"`
 	ProfileComplete bool             `json:"profileComplete"`
 	ProfileUsername string           `json:"profileUsername,omitempty"`
-	Skin            string           `json:"skin,omitempty"`
+	SelectedSkinID  string           `json:"selectedSkinId,omitempty"`
+	Skin            string           `json:"skin,omitempty"` // legacy MoS skins, migrated to selectedSkinId
 	Gender          string           `json:"gender,omitempty"`
 	BackgroundKey   string           `json:"backgroundKey,omitempty"`
 }

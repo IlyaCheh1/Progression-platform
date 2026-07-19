@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { RoleSwitch } from "@/components/role-switch";
 import { clearSession, hasRole, isAdminPrincipal, loadSession, type SessionUser } from "@/lib/session";
+import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -64,8 +64,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </Link>
               );
             })}
-            <Link href="/studio" className="border border-mos-line/40 px-3 py-1 text-xs uppercase tracking-widest text-mos-muted hover:text-mos-text">
+            <Link href={routes.studio} className="border border-mos-line/40 px-3 py-1 text-xs uppercase tracking-widest text-mos-muted hover:text-mos-text">
               Studio
+            </Link>
+            <Link href={routes.home} className="border border-mos-line/40 px-3 py-1 text-xs uppercase tracking-widest text-mos-muted hover:text-mos-text">
+              Профиль
             </Link>
             <button
               type="button"
@@ -80,9 +83,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
         </div>
       </header>
-      <div className="mx-auto max-w-6xl px-4 pt-4">
-        <RoleSwitch user={user} />
-      </div>
       {children}
     </div>
   );
