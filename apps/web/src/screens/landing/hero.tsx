@@ -241,10 +241,10 @@ export default function Hero() {
         />
       ))}
 
-      <div className="relative z-10 flex h-full flex-col items-center px-6 pb-28 text-center">
-        <div className="flex w-full flex-1 flex-col items-center justify-end">
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pb-28 text-center">
+        <div className="flex w-full flex-col items-center gap-8 md:gap-10">
           <h1
-            className="mobile-fluid-hero-title flex max-w-4xl flex-col items-center gap-4 font-unbounded font-medium tracking-tight md:gap-6 md:text-6xl lg:gap-7 lg:text-7xl"
+            className="mobile-fluid-hero-title flex max-w-4xl flex-col items-center gap-4 font-unbounded font-medium tracking-tight md:gap-6 lg:gap-7"
             style={{ textShadow: "0 0 60px rgba(212,168,75,0.28)" }}
           >
             <span className="block text-white leading-tight">Играй. Тренируйся.</span>
@@ -252,9 +252,7 @@ export default function Hero() {
               Прокачивай персонажа.
             </span>
           </h1>
-        </div>
 
-        <div className="flex w-full flex-1 items-center justify-center">
           <div className="grid w-full max-w-[14rem] grid-cols-1 gap-4 sm:max-w-md sm:grid-cols-2">
             <Button href="/login" variant="primary" size="lg" className="w-full px-6 uppercase">
               Начать путь
