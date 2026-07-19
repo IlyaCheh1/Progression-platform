@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, MouseEventHandler } from "react";
 
 const variantClasses = {
   primary: "og-btn-primary",
@@ -21,10 +21,11 @@ const sizeClasses = {
 export type ButtonVariant = keyof typeof variantClasses;
 export type ButtonSize = keyof typeof sizeClasses;
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   href?: string;
+  onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
 }
 
 export default function Button({
