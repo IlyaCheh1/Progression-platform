@@ -162,6 +162,51 @@ func inventoryViewLocked(p *Platform, s *Student) *InventoryView {
 	}
 }
 
+// PurchaseInventoryInput buys a cosmetic into the student's holdings (demo shop).
+type PurchaseInventoryInput struct {
+	Kind  string `json:"kind"`
+	RefID string `json:"refId"`
+}
+
+// PurchaseInventoryItem grants a catalog cosmetic. Idempotent if already owned.
+func (p *Platform) PurchaseInventoryItem(studentID string, in PurchaseInventoryInput) (*InventoryView, error) {
+	in.Kind = strings.TrimSpace(strings.ToLower(in.Kind))
+	in.RefID = strings.TrimSpace(in.RefID)
+	if in.Kind != InventoryKindCharacter && in.Kind != InventoryKindBackground {
+		return nil, fmt.Errorf("invalid_kind")
+	}
+	if in.RefID == "" {
+		return nil, fmt.Errorf("invalid_ref")
+	}
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	s, ok := p.students[studentID]
+	if !ok {
+		return nil, fmt.Errorf("student not found")
+	}
+	if !s.ProfileComplete {
+		return nil, fmt.Errorf("profile_incomplete")
+	}
+
+	switch in.Kind {
+	case InventoryKindCharacter:
+		normalized, ok := normalizeCharacterID(in.RefID, s.Gender)
+		if !ok {
+			return nil, fmt.Errorf("invalid_character")
+		}
+		p.grantHoldingLocked(studentID, InventoryKindCharacter, normalized)
+	case InventoryKindBackground:
+		normalized, ok := normalizeBackgroundKey(in.RefID)
+		if !ok {
+			return nil, fmt.Errorf("invalid_background")
+		}
+		p.grantHoldingLocked(studentID, InventoryKindBackground, normalized)
+	}
+
+	return inventoryViewLocked(p, s), nil
+}
+
 // EquipInventoryItem sets profile presentation from an owned inventory cosmetic.
 func (p *Platform) EquipInventoryItem(studentID string, in EquipInventoryInput) (*InventoryView, error) {
 	in.Kind = strings.TrimSpace(strings.ToLower(in.Kind))

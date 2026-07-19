@@ -1,6 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import CharacterAvatar from "@/components/character-avatar";
+import GradientLabel from "@/components/onboarding/gradient-label";
 import type { GenderId } from "@/lib/avatars";
 import type { OgCharacterId } from "@/lib/characters";
 import { cn } from "@/lib/utils";
@@ -11,6 +13,7 @@ type CharacterStageProps = {
   gender: GenderId;
   backgroundSrc: string;
   className?: string;
+  children?: ReactNode;
 };
 
 export default function CharacterStage({
@@ -19,32 +22,36 @@ export default function CharacterStage({
   gender,
   backgroundSrc,
   className,
+  children,
 }: CharacterStageProps) {
   return (
     <section
       className={cn(
-        "relative flex min-h-[calc(100vh-60px)] flex-1 items-end justify-center overflow-hidden bg-cover bg-center",
+        "relative flex min-h-[calc(100vh-72px)] flex-1 items-end justify-center overflow-hidden bg-cover bg-center md:min-h-[calc(100vh-72px)]",
         className,
       )}
       style={{ backgroundImage: `url(${backgroundSrc})` }}
     >
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/40" />
+      {children}
 
-      <div className="relative z-10 flex w-full max-w-6xl flex-col items-center px-4 pb-6 pt-24">
-        <div className="mb-4 rounded-full border border-mos-amber/30 bg-gradient-to-r from-mos-amber/20 via-purple-500/10 to-mos-amber/20 px-6 py-2 shadow-[0_0_24px_rgba(201,162,39,0.15)]">
-          <p className="font-display text-center text-lg text-mos-text md:text-2xl">{username}</p>
-        </div>
+      <div
+        className="absolute bottom-0 left-1/2 z-10 flex -translate-x-1/2 flex-col select-none"
+        onDragStart={(event) => event.preventDefault()}
+      >
+        <GradientLabel color="amber" className="mx-auto mb-5 max-w-[200px]">
+          <p className="text-center font-display text-xs font-medium leading-3 text-mos-text md:text-lg md:leading-6">
+            {username}
+          </p>
+        </GradientLabel>
 
-        <div className="relative flex h-[min(65vh,620px)] w-full max-w-md items-end justify-center">
+        <div className="relative flex max-h-[65vh] min-h-[65vh] items-end justify-center md:min-h-[75vh] md:max-w-[75vh]">
           <CharacterAvatar
             selectedSkinId={selectedSkinId}
             gender={gender}
             variant="full"
-            className="h-full w-auto max-w-[min(75vw,360px)]"
-            imageClassName="h-full w-auto max-h-full object-contain object-bottom drop-shadow-[0_20px_40px_rgba(0,0,0,0.55)]"
+            className="relative h-full w-auto"
+            imageClassName="h-full w-auto max-h-full object-contain object-bottom"
           />
-          <div className="pointer-events-none absolute inset-x-8 bottom-0 h-24 rounded-full bg-black/40 blur-2xl" />
         </div>
       </div>
     </section>

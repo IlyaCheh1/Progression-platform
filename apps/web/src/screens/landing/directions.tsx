@@ -53,7 +53,7 @@ export default function Directions() {
       key: direction.key,
       title: direction.title,
       description: direction.description,
-      image: `/media/directions/${index + 1}.jpg`,
+      image: `/media/directions/${index + 1}.webp`,
       tag: "Направление",
       stat: "8 путей мастерства",
       ...theme,
@@ -172,6 +172,7 @@ function DirectionPanel({
                 style={{ filter: "saturate(1.15) brightness(0.9)" }}
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchPriority={index === 0 ? "high" : "low"}
+                decoding="async"
               />
             </div>
           ) : (
@@ -183,6 +184,7 @@ function DirectionPanel({
               style={{ filter: "saturate(1.6) brightness(0.5)" }}
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "low"}
+              decoding="async"
             />
           )
         ) : (

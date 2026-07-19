@@ -1,23 +1,40 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import TabSelector from "@/components/ui/tab-selector";
 import {
   equipInventoryItem,
   fetchMyInventory,
   inventoryBackgrounds,
   inventoryCharacters,
+  type InventoryBackgroundItem,
+  type InventoryCharacterItem,
   type InventoryView,
 } from "@/lib/inventory-api";
 import { fetchMyProfile, writeCachedProfile } from "@/lib/profile-api";
 import { loadSession } from "@/lib/session";
 import { cn, schoolApiUnavailableMessage } from "@/lib/utils";
 
+type FilterId = "all" | "characters" | "backgrounds";
+
+const FILTERS = [
+  { id: "all" as const, label: "Все предметы" },
+  { id: "characters" as const, label: "Персонажи" },
+  { id: "backgrounds" as const, label: "Фоны" },
+];
+
+type SlotItem =
+  | { kind: "character"; key: string; title: string; imageSrc: string; equipped: boolean; refId: string }
+  | { kind: "background"; key: string; title: string; imageSrc: string; equipped: boolean; refId: string };
+
 export default function InventoryPage() {
   const router = useRouter();
   const [inventory, setInventory] = useState<InventoryView | null>(null);
   const [error, setError] = useState("");
   const [busyKey, setBusyKey] = useState("");
+  const [filter, setFilter] = useState<FilterId>("all");
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
     const session = loadSession();
@@ -37,6 +54,45 @@ export default function InventoryPage() {
   useEffect(() => {
     void reload();
   }, [reload]);
+
+  const slots: SlotItem[] = useMemo(() => {
+    if (!inventory) return [];
+    const characters = inventoryCharacters(inventory).map(
+      (item: InventoryCharacterItem): SlotItem => ({
+        kind: "character",
+        key: item.holding.key,
+        title: item.name,
+        imageSrc: item.imageSrc,
+        equipped: item.equipped,
+        refId: item.characterId,
+      }),
+    );
+    const backgrounds = inventoryBackgrounds(inventory).map(
+      (item: InventoryBackgroundItem): SlotItem => ({
+        kind: "background",
+        key: item.holding.key,
+        title: item.background.label,
+        imageSrc: item.background.src,
+        equipped: item.equipped,
+        refId: item.background.id,
+      }),
+    );
+    if (filter === "characters") return characters;
+    if (filter === "backgrounds") return backgrounds;
+    return [...characters, ...backgrounds];
+  }, [inventory, filter]);
+
+  useEffect(() => {
+    if (!slots.length) {
+      setSelectedKey(null);
+      return;
+    }
+    if (!selectedKey || !slots.some((s) => s.key === selectedKey)) {
+      setSelectedKey(slots.find((s) => s.equipped)?.key ?? slots[0].key);
+    }
+  }, [slots, selectedKey]);
+
+  const selected = slots.find((s) => s.key === selectedKey) ?? null;
 
   async function equip(kind: "character" | "background", refId: string) {
     const session = loadSession();
@@ -58,81 +114,110 @@ export default function InventoryPage() {
     }
   }
 
-  const characters = inventory ? inventoryCharacters(inventory) : [];
-  const backgrounds = inventory ? inventoryBackgrounds(inventory) : [];
+  const minSlots = 20;
+  const padded: Array<SlotItem | null> = [...slots];
+  while (padded.length < minSlots) {
+    padded.push(null);
+  }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="font-display text-3xl text-mos-amber">Инвентарь</h1>
-      <p className="mt-2 text-mos-muted">
-        Персонажи и фоны из онбординга. Экипируйте другой предмет, чтобы заменить текущий облик.
-      </p>
+    <main className="mx-auto max-w-[840px] px-3 pb-16 pt-3 md:mt-8 md:px-4">
+      <div className="flex flex-col items-center gap-3 md:items-start md:justify-start md:gap-6 md:flex-row">
+        <div className="flex w-full flex-col gap-3 md:w-auto">
+          <TabSelector
+            items={FILTERS}
+            activeId={filter}
+            onChange={(id) => setFilter(id as FilterId)}
+            className="mx-auto w-fit md:mx-0 md:w-full"
+          />
 
-      {error ? <p className="mt-4 text-sm text-mos-danger">{error}</p> : null}
-
-      <section className="mt-8">
-        <h2 className="font-display text-xl text-mos-text">Персонажи</h2>
-        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-5">
-          {characters.map((item) => (
-            <button
-              key={item.holding.key}
-              type="button"
-              disabled={item.equipped || busyKey === `character:${item.characterId}`}
-              onClick={() => void equip("character", item.characterId)}
-              className={cn(
-                "overflow-hidden border bg-mos-stone/40 text-left transition-colors",
-                item.equipped ? "border-mos-amber" : "border-mos-line/40 hover:border-mos-amber/60",
-              )}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={item.imageSrc} alt={item.name} className="aspect-[3/4] w-full object-cover object-top" />
-              <div className="space-y-1 p-2">
-                <p className="font-display text-xs text-mos-text">{item.name}</p>
-                <p className="text-[10px] text-mos-muted">
-                  {item.equipped ? "Экипирован" : busyKey === `character:${item.characterId}` ? "…" : "Надеть"}
-                </p>
-              </div>
-            </button>
-          ))}
-          {characters.length === 0 ? (
-            <p className="col-span-full text-sm text-mos-muted">Пока нет персонажей. Завершите онбординг.</p>
-          ) : null}
+          <div className="mobile-game-scroll max-h-[calc(100lvh-140px)] overflow-y-auto rounded-2xl bg-[#1a1a1d]/90 p-1.5 pr-1">
+            <div className="grid grid-cols-4 gap-[5px] sm:grid-cols-5 md:grid-cols-5">
+            {padded.map((item, index) => {
+              if (!item) {
+                return (
+                  <div
+                    key={`empty-${index}`}
+                    className="h-[112px] w-[80px] rounded-lg bg-mos-stone/50 md:h-[142px] md:w-[102px]"
+                  />
+                );
+              }
+              const isSelected = item.key === selectedKey;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => setSelectedKey(item.key)}
+                  className={cn(
+                    "relative h-[112px] w-[80px] overflow-hidden rounded-lg bg-mos-stone/70 transition-all duration-200 md:h-[142px] md:w-[102px]",
+                    "hover:bg-mos-stone",
+                    item.equipped && "ring-2 ring-[#7dba5a]",
+                    isSelected && "ring-2 ring-mos-amber",
+                  )}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.imageSrc}
+                    alt={item.title}
+                    className={cn(
+                      "h-full w-full object-cover",
+                      item.kind === "character" ? "object-top" : "object-center",
+                    )}
+                  />
+                </button>
+              );
+            })}
+            </div>
+          </div>
         </div>
-      </section>
 
-      <section className="mt-10">
-        <h2 className="font-display text-xl text-mos-text">Фоны профиля</h2>
-        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
-          {backgrounds.map((item) => (
-            <button
-              key={item.holding.key}
-              type="button"
-              disabled={item.equipped || busyKey === `background:${item.background.id}`}
-              onClick={() => void equip("background", item.background.id)}
-              className={cn(
-                "overflow-hidden border bg-mos-stone/40 text-left transition-colors",
-                item.equipped ? "border-mos-amber" : "border-mos-line/40 hover:border-mos-amber/60",
-              )}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={item.background.src} alt={item.background.label} className="h-24 w-full object-cover" />
-              <div className="space-y-1 p-2">
-                <p className="font-display text-xs text-mos-text">{item.background.label}</p>
-                <p className="text-[10px] text-mos-muted">
-                  {item.equipped
-                    ? "Экипирован"
-                    : busyKey === `background:${item.background.id}`
-                      ? "…"
-                      : "Надеть"}
-                </p>
+        <aside
+          className={cn(
+            "w-full rounded-[24px] border border-mos-line/30 bg-gradient-light-profile p-4 backdrop-blur-md md:sticky md:top-24 md:w-[274px] md:rounded-[32px] md:p-6",
+            !selected && "hidden md:block",
+          )}
+        >
+          {selected ? (
+            <div className="flex flex-col gap-4">
+              <div className="overflow-hidden rounded-2xl bg-mos-bg/40">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={selected.imageSrc}
+                  alt={selected.title}
+                  className={cn(
+                    "mx-auto w-full",
+                    selected.kind === "character" ? "aspect-[3/4] object-cover object-top" : "aspect-video object-cover",
+                  )}
+                />
               </div>
-            </button>
-          ))}
-          {backgrounds.length === 0 ? (
-            <p className="col-span-full text-sm text-mos-muted">Пока нет фонов. Завершите онбординг.</p>
-          ) : null}
-        </div>
-      </section>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.16em] text-mos-muted">
+                  {selected.kind === "character" ? "Персонаж" : "Фон профиля"}
+                </p>
+                <h2 className="mt-1 font-display text-lg text-mos-text">{selected.title}</h2>
+              </div>
+              {error ? <p className="text-sm text-mos-danger">{error}</p> : null}
+              <button
+                type="button"
+                disabled={selected.equipped || busyKey === `${selected.kind}:${selected.refId}`}
+                onClick={() => void equip(selected.kind, selected.refId)}
+                className="og-btn og-btn-primary og-btn-md w-full uppercase disabled:opacity-60"
+              >
+                {selected.equipped
+                  ? "Экипирован"
+                  : busyKey === `${selected.kind}:${selected.refId}`
+                    ? "…"
+                    : "Надеть"}
+              </button>
+            </div>
+          ) : (
+            <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 text-center">
+              <p className="font-display text-sm text-mos-text">Пусто</p>
+              <p className="text-xs text-mos-muted">Завершите онбординг, чтобы получить стартовые предметы.</p>
+            </div>
+          )}
+        </aside>
+      </div>
     </main>
   );
 }

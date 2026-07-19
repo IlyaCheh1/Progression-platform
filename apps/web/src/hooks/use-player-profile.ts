@@ -48,5 +48,21 @@ export function usePlayerProfile(user: SessionUser | null) {
     };
   }, [user]);
 
-  return { profile, loading, profileReady: Boolean(profile?.profileComplete) };
+  async function refresh() {
+    if (!user) return null;
+    const remote = await fetchMyProfile(user);
+    if (remote) {
+      setProfile(remote);
+      patchSession({ profileComplete: remote.profileComplete });
+    }
+    return remote;
+  }
+
+  return {
+    profile,
+    loading,
+    profileReady: Boolean(profile?.profileComplete),
+    refresh,
+    setProfile,
+  };
 }

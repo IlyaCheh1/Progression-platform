@@ -1,0 +1,69 @@
+import { SCHOOL_API } from "@/lib/utils";
+import { authHeaders, type SessionUser } from "@/lib/session";
+
+export type Quest = { key: string; title: string; type: string; xp: number };
+export type Achievement = { key: string; title: string; tiers: number | number[]; xp: number };
+export type Talent = { key: string; title: string; rank: number };
+export type ContentItem = { key: string; title: string; type: string; category: string };
+export type RewardBundle = { key: string; title: string; components: string };
+export type School = { key: string; title: string; description: string };
+
+export type ContentCatalog = {
+  quests: Quest[];
+  achievements: Achievement[];
+  talents: Talent[];
+  items: ContentItem[];
+  rewards: RewardBundle[];
+  schools: School[];
+};
+
+export type ContentEntity =
+  | "quests"
+  | "achievements"
+  | "talents"
+  | "items"
+  | "rewards"
+  | "schools";
+
+export async function fetchContentCatalog(user: SessionUser): Promise<ContentCatalog> {
+  const res = await fetch(`${SCHOOL_API}/v1/admin/content`, { headers: authHeaders(user) });
+  if (!res.ok) throw new Error("load_failed");
+  const data = (await res.json()) as Partial<ContentCatalog>;
+  return {
+    quests: data.quests ?? [],
+    achievements: data.achievements ?? [],
+    talents: data.talents ?? [],
+    items: data.items ?? [],
+    rewards: data.rewards ?? [],
+    schools: data.schools ?? [],
+  };
+}
+
+export async function upsertContentEntity(
+  user: SessionUser,
+  entity: ContentEntity,
+  payload: Record<string, unknown>,
+  editingKey?: string | null,
+): Promise<void> {
+  const url = editingKey
+    ? `${SCHOOL_API}/v1/admin/content/${entity}/${encodeURIComponent(editingKey)}`
+    : `${SCHOOL_API}/v1/admin/content/${entity}`;
+  const res = await fetch(url, {
+    method: editingKey ? "PUT" : "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("save_failed");
+}
+
+export async function deleteContentEntity(
+  user: SessionUser,
+  entity: ContentEntity,
+  key: string,
+): Promise<void> {
+  const res = await fetch(`${SCHOOL_API}/v1/admin/content/${entity}/${encodeURIComponent(key)}`, {
+    method: "DELETE",
+    headers: authHeaders(user),
+  });
+  if (!res.ok) throw new Error("delete_failed");
+}

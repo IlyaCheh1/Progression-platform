@@ -203,6 +203,7 @@ export default function Services() {
                       <span
                         className="exp-number w-10 shrink-0 font-unbounded text-[calc(1.5rem-2pt)] font-medium tabular-nums leading-none transition-colors duration-300 md:text-2xl"
                         style={{ color: isActive ? exp.color : "rgba(255,255,255,0.15)" }}
+                        aria-hidden
                       >
                         {exp.number}
                       </span>

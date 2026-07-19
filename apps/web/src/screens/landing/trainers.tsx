@@ -21,7 +21,7 @@ const TRAINERS: Trainer[] = [
       "Автор методик обучения, исследователь, переводчик, лектор и, конечно, тренер по фехтованию.",
       "Опыт в фехтовании больше 15 лет, опыт в преподавании — больше 10 лет.",
     ],
-    photo: "/media/trainers/max-kiselev.jpg",
+    photo: "/media/trainers/max-kiselev.webp",
     accent: "#d4a84b",
   },
   {
@@ -32,7 +32,7 @@ const TRAINERS: Trainer[] = [
       "Тренер курсов «Ведьмак» и «Итальянская рапира». Курс по итальянской рапире полностью построен на его исследованиях трактатов мастеров XVII века.",
       "Двукратный чемпион Москвы и чемпион России по арт-фехтованию, кандидат в мастера спорта. Один из первых выпускников нашей школы, тренерский опыт с 2021 года. Также ведёт курсы по длинному и одноручному мечу XV–XVI века.",
     ],
-    photo: "/media/trainers/nikolay-lobanov.jpg",
+    photo: "/media/trainers/nikolay-lobanov.webp",
     accent: "#c45c2a",
   },
   {
@@ -43,7 +43,7 @@ const TRAINERS: Trainer[] = [
       "Мастер ушу и тренер направления «Клинки Востока».",
       "Многократный призёр и чемпион различных соревнований по ушу. Опыт в преподавании — больше 10 лет.",
     ],
-    photo: "/media/trainers/tatyana-gribanova.jpg",
+    photo: "/media/trainers/tatyana-gribanova.webp",
     accent: "#5a8f7b",
   },
   {
@@ -51,7 +51,7 @@ const TRAINERS: Trainer[] = [
     name: "Иван Бобровский",
     role: "Иберийский двуручный меч, испанская рапира, наваха",
     bio: ["Тренер по иберийскому двуручному мечу, испанской рапире и навахе."],
-    photo: "/media/trainers/ivan-bobrovsky.jpg",
+    photo: "/media/trainers/ivan-bobrovsky.webp",
     accent: "#5c7d99",
   },
 ];
@@ -95,6 +95,7 @@ export default function Trainers() {
                   alt={trainer.name}
                   className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
                   loading="lazy"
+                  decoding="async"
                   draggable={false}
                 />
                 <div

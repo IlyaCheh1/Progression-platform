@@ -793,7 +793,7 @@ a.experience-item {
 
 .exp-item-grid {
   display: grid;
-  grid-template-columns: auto minmax(3.25rem, 3.75rem) minmax(0, 1fr);
+  grid-template-columns: minmax(3.25rem, 3.75rem) minmax(0, 1fr);
   grid-template-rows: auto auto;
   column-gap: 0.75rem;
   row-gap: 0.25rem;
@@ -809,13 +809,20 @@ a.experience-item {
 }
 
 .exp-number {
+  display: none;
   grid-column: 1;
   grid-row: 1;
   align-self: center;
 }
 
+@media (min-width: 768px) {
+  .exp-number {
+    display: block;
+  }
+}
+
 .exp-icon-wrap {
-  grid-column: 2;
+  grid-column: 1;
   grid-row: 1 / -1;
   align-self: stretch;
   display: flex;
@@ -836,22 +843,35 @@ a.experience-item {
 
 @media (min-width: 768px) {
   .exp-icon-wrap {
+    grid-column: 2;
     min-height: 4.5rem;
     max-height: 6.5rem;
   }
 }
 
 .exp-header-wrap {
-  grid-column: 3;
+  grid-column: 2;
   grid-row: 1;
   align-self: center;
 }
 
+@media (min-width: 768px) {
+  .exp-header-wrap {
+    grid-column: 3;
+  }
+}
+
 .exp-description-panel {
   display: grid;
-  grid-column: 3;
+  grid-column: 2;
   grid-row: 2;
   grid-template-rows: 1fr;
+}
+
+@media (min-width: 768px) {
+  .exp-description-panel {
+    grid-column: 3;
+  }
 }
 
 .exp-description {
@@ -1021,6 +1041,13 @@ a.experience-item {
 
 .landing-end-zone .landing-footer > div:first-child {
   padding-top: var(--join-block-gap);
+}
+
+.pricing-carousel-track {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
 }
 
 .pricing-card {

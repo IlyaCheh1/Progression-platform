@@ -106,10 +106,10 @@ export default function RpgBlock() {
                   </span>
                 </div>
 
-                <h4 className="mb-2 font-unbounded text-[calc(0.875rem-2pt)] font-semibold text-white md:text-base">
+                <h4 className="mb-2 font-unbounded text-[calc(0.875rem)] font-semibold text-white md:text-base">
                   {benefit.title}
                 </h4>
-                <p className="text-[calc(0.75rem-2pt)] leading-relaxed text-white/50 md:text-sm">
+                <p className="text-[calc(0.75rem)] leading-relaxed text-white/50 md:text-sm">
                   {benefit.description}
                 </p>
               </div>

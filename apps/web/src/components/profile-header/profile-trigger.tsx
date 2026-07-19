@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CharacterAvatar from "@/components/character-avatar";
+import Progress from "@/components/ui/progress";
 import PopupMenu from "@/components/ui/popup-menu";
 import UserMenu from "@/components/profile-header/user-menu";
 import type { GenderId } from "@/lib/avatars";
@@ -33,7 +34,6 @@ export default function ProfileTrigger({
   user,
 }: ProfileTriggerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const progress = xpToNext > 0 ? Math.min(100, Math.round((currentXp / xpToNext) * 100)) : 0;
 
   const trigger = (
     <div className="flex h-full w-fit items-center gap-2 md:gap-4">
@@ -43,16 +43,13 @@ export default function ProfileTrigger({
             <span className="font-display text-xs text-mos-text md:text-sm">
               {balance.toLocaleString("ru-RU")}
             </span>
-            <span className="text-[10px] text-mos-amber">◆</span>
+            <span className="text-[10px] text-mos-amber" aria-hidden>
+              ◆
+            </span>
           </div>
           <span className="truncate font-display text-xs text-mos-text md:text-sm">{username}</span>
         </div>
-        <div className="h-1.5 w-full overflow-hidden bg-mos-bg/80">
-          <div
-            className="h-full bg-mos-amber shadow-[0_0_8px_var(--mos-amber-glow)]"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
+        <Progress value={currentXp} max={xpToNext} size="md" />
         <div className="flex items-center justify-between text-[10px] text-mos-muted">
           <span>{level} уровень</span>
           <span>
@@ -65,7 +62,7 @@ export default function ProfileTrigger({
         gender={gender}
         variant="head"
         className={cn(
-          "h-9 w-9 md:h-11 md:w-11",
+          "h-9 w-9 rounded-2xl md:h-11 md:w-11",
           isOpen && "ring-2 ring-mos-amber shadow-[0_0_12px_var(--mos-amber-glow)]",
         )}
       />

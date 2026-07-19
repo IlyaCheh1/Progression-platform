@@ -14,11 +14,13 @@ export type PopupMenuProps = {
   trigger: ReactNode;
   children?: ReactNode;
   className?: string;
-  placement?: "bottom-left" | "bottom-right" | "top-left" | "top-right";
+  placement?: "bottom-left" | "bottom-right" | "top-left" | "top-right" | "bottom" | "top" | "left" | "right";
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   isOverlay?: boolean;
   margin?: number;
+  /** Open on hover (OG talent popups). */
+  hover?: boolean;
 };
 
 export default function PopupMenu({
@@ -30,6 +32,7 @@ export default function PopupMenu({
   onOpenChange,
   isOverlay = false,
   margin = 12,
+  hover = false,
 }: PopupMenuProps) {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = controlledIsOpen ?? internalIsOpen;
@@ -37,9 +40,23 @@ export default function PopupMenu({
 
   const triggerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [menuPosition, setMenuPosition] = useState({ top: -9999, left: -9999 });
   const [hasPosition, setHasPosition] = useState(false);
   const [portalMounted, setPortalMounted] = useState(false);
+
+  const clearCloseTimer = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    if (!hover) return;
+    clearCloseTimer();
+    closeTimer.current = setTimeout(() => setIsOpen(false), 120);
+  };
 
   useEffect(() => {
     setPortalMounted(true);
@@ -88,11 +105,14 @@ export default function PopupMenu({
       let top = triggerRect.bottom + margin;
       let left = triggerRect.left;
 
-      if (placement === "bottom-left") {
+      if (placement === "bottom-left" || placement === "left") {
         left = triggerRect.right - menuRect.width;
       }
-      if (placement === "bottom-right") {
-        left = triggerRect.left;
+      if (placement === "bottom-right" || placement === "right" || placement === "bottom" || placement === "top") {
+        left = triggerRect.left + triggerRect.width / 2 - menuRect.width / 2;
+      }
+      if (placement === "top") {
+        top = triggerRect.top - menuRect.height - margin;
       }
 
       const viewportWidth = window.innerWidth;
@@ -115,15 +135,34 @@ export default function PopupMenu({
     setIsOpen(!isOpen);
   };
 
+  const openMenu = () => {
+    if (!isOpen) {
+      setHasPosition(false);
+      setMenuPosition({ top: -9999, left: -9999 });
+      setIsOpen(true);
+    }
+  };
+
   return (
     <>
-      <div className="relative inline-flex h-full items-center">
+      <div
+        className="relative inline-flex h-full items-center"
+        onMouseEnter={
+          hover
+            ? () => {
+                clearCloseTimer();
+                openMenu();
+              }
+            : undefined
+        }
+        onMouseLeave={hover ? scheduleClose : undefined}
+      >
         <div
           ref={triggerRef}
           role="button"
           tabIndex={0}
           className="inline-flex h-full cursor-pointer items-center"
-          onClick={toggleMenu}
+          onClick={hover ? undefined : toggleMenu}
           onKeyDown={(event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
@@ -155,6 +194,8 @@ export default function PopupMenu({
                 className,
               )}
               style={{ top: menuPosition.top, left: menuPosition.left }}
+              onMouseEnter={hover ? clearCloseTimer : undefined}
+              onMouseLeave={hover ? scheduleClose : undefined}
             >
               {children}
             </div>

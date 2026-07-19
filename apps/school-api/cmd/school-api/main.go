@@ -102,6 +102,24 @@ func main() {
 		writeJSON(w, view)
 	}))
 
+	mux.HandleFunc("POST /v1/store/purchase", authz.RequireAuth(platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		var body engines.PurchaseInventoryInput
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		view, err := platform.PurchaseInventoryItem(actor.ID, body)
+		if err != nil {
+			status := http.StatusBadRequest
+			if err.Error() == "student not found" {
+				status = http.StatusNotFound
+			}
+			http.Error(w, `{"error":"`+err.Error()+`"}`, status)
+			return
+		}
+		writeJSON(w, view)
+	}))
+
 	mux.HandleFunc("POST /v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
 		var body struct {
 			Login    string `json:"login"`
@@ -194,53 +212,20 @@ func main() {
 		writeJSON(w, map[string]any{"ok": true})
 	}))
 
-	mux.HandleFunc("GET /v1/admin/content", authz.RequirePermission(platform, rbac.PermContentRead, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
-		writeJSON(w, contentStore.Snapshot())
-	}))
-
-	mux.HandleFunc("POST /v1/admin/content/quests", authz.RequirePermission(platform, rbac.PermContentWrite, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
-		var body admincontent.Quest
-		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
-			return
+	guardContent := func(perm rbac.Permission) admincontent.GuardFunc {
+		return func(next http.HandlerFunc) http.HandlerFunc {
+			return authz.RequirePermission(platform, perm, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+				next(w, r)
+			})
 		}
-		if err := contentStore.UpsertQuest(body); err != nil {
-			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
-			return
-		}
-		writeJSON(w, map[string]any{"ok": true, "quest": body})
-	}))
-
-	mux.HandleFunc("DELETE /v1/admin/content/quests/{key}", authz.RequirePermission(platform, rbac.PermContentDelete, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
-		key := r.PathValue("key")
-		if err := contentStore.DeleteQuest(key); err != nil {
-			http.Error(w, `{"error":"not_found"}`, http.StatusNotFound)
-			return
-		}
-		writeJSON(w, map[string]any{"ok": true})
-	}))
-
-	mux.HandleFunc("POST /v1/admin/content/achievements", authz.RequirePermission(platform, rbac.PermContentWrite, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
-		var body admincontent.Achievement
-		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
-			return
-		}
-		if err := contentStore.UpsertAchievement(body); err != nil {
-			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
-			return
-		}
-		writeJSON(w, map[string]any{"ok": true, "achievement": body})
-	}))
-
-	mux.HandleFunc("DELETE /v1/admin/content/achievements/{key}", authz.RequirePermission(platform, rbac.PermContentDelete, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
-		key := r.PathValue("key")
-		if err := contentStore.DeleteAchievement(key); err != nil {
-			http.Error(w, `{"error":"not_found"}`, http.StatusNotFound)
-			return
-		}
-		writeJSON(w, map[string]any{"ok": true})
-	}))
+	}
+	admincontent.RegisterRoutes(mux, admincontent.RouteDeps{
+		Store:       contentStore,
+		WriteJSON:   writeJSON,
+		GuardRead:   guardContent(rbac.PermContentRead),
+		GuardWrite:  guardContent(rbac.PermContentWrite),
+		GuardDelete: guardContent(rbac.PermContentDelete),
+	})
 
 	mux.HandleFunc("POST /v1/attendance/confirm", func(w http.ResponseWriter, r *http.Request) {
 		actor, ok := authz.PrincipalFromRequest(platform, r)

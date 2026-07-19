@@ -5,6 +5,7 @@ import type { PlayerProfile } from "@/lib/profile-api";
 import type { GenderId } from "@/lib/avatars";
 import { characterInitial } from "@/lib/characters";
 import type { OgCharacterId } from "@/lib/characters";
+import { readCapsBalance } from "@/lib/caps";
 import type { SessionUser } from "@/lib/session";
 
 const XP_FALLBACK = 500;
@@ -42,7 +43,7 @@ export function useProfileShellData(user: SessionUser | null, profile?: PlayerPr
 
     const gender: GenderId = profile?.gender ?? "MALE";
     const selectedSkinId = profile?.selectedSkinId ?? "3";
-    const balance = typeof window !== "undefined" ? Number(localStorage.getItem("mos.caps") ?? "0") : 0;
+    const balance = typeof window !== "undefined" ? readCapsBalance() : 0;
 
     setData({
       username: profile?.username || user.name || user.login,

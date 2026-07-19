@@ -144,3 +144,102 @@ body {
 .video-overlay {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(11, 11, 12, 0.75) 70%, var(--mos-bg) 100%);
 }
+
+/* Witcher 3–style profile top menu */
+.witcher-header {
+  background-color: #0c0c0d;
+  background-image:
+    linear-gradient(180deg, rgba(28, 27, 25, 0.92) 0%, rgba(12, 12, 13, 0.98) 100%),
+    radial-gradient(ellipse at 20% 40%, rgba(90, 82, 60, 0.18), transparent 55%),
+    radial-gradient(ellipse at 80% 60%, rgba(70, 65, 50, 0.12), transparent 50%),
+    repeating-linear-gradient(
+      105deg,
+      transparent 0,
+      transparent 3px,
+      rgba(180, 160, 110, 0.025) 3px,
+      rgba(180, 160, 110, 0.025) 4px
+    );
+  box-shadow: inset 0 -1px 0 rgba(160, 155, 145, 0.35);
+}
+
+.witcher-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #6a6760 12%,
+    #a8a49a 50%,
+    #6a6760 88%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.witcher-nav {
+  position: relative;
+}
+
+.bg-blurBg {
+  background: rgba(20, 20, 22, 0.55);
+  backdrop-filter: blur(12px);
+}
+
+.mobile-game-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--mos-amber) transparent;
+}
+.mobile-game-scroll::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+.mobile-game-scroll::-webkit-scrollbar-thumb {
+  background: var(--mos-amber);
+  border-radius: 2px;
+}
+
+/* Achievement card border shells (OG geometry, Witcher hues) */
+.bg-gradient-achievements-claimable {
+  background: linear-gradient(
+    180deg,
+    #d4a84b 0%,
+    rgba(20, 20, 22, 0.85) 40%,
+    rgba(20, 20, 22, 0) 100%
+  );
+}
+.bg-gradient-achievements-completed {
+  background: linear-gradient(
+    180deg,
+    #7dba5a 0%,
+    rgba(20, 20, 22, 0.85) 40%,
+    rgba(20, 20, 22, 0) 100%
+  );
+}
+
+.bg-secondaryBg {
+  background: rgba(26, 26, 29, 0.92);
+}
+.bg-controlsBlur {
+  background: rgba(255, 255, 255, 0.08);
+}
+.bg-controlsInactive {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Talent tree connector lines */
+.bg-blade-line-gradient {
+  background: linear-gradient(180deg, #31d053 33.19%, #0b0b0c 68.09%);
+}
+.bg-chronicle-line-gradient {
+  background: linear-gradient(180deg, #0b0b0c 33.19%, #2d68ff 68.09%);
+}
+.bg-path-line-gradient {
+  background: linear-gradient(180deg, #0b0b0c 33.19%, #d4a84b 68.09%);
+}
+.bg-school-line-gradient {
+  background: linear-gradient(180deg, #0b0b0c 33.19%, #ee4810 68.09%);
+}

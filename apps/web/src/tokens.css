@@ -32,4 +32,8 @@
   --color-controlsSecondaryActive: var(--mos-stone);
   --color-controlsStroke: var(--mos-line);
   --color-controlsFocused: var(--mos-amber-hot);
+  --color-accentPositive: #7dba5a;
+  --color-blurBg: rgba(20, 20, 22, 0.55);
+  --color-secondaryBg: rgba(26, 26, 29, 0.72);
+  --color-strokeBg: rgba(255, 255, 255, 0.1);
 }

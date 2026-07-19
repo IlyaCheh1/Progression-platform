@@ -1,109 +1,272 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { clearSession, hasRole, isAdminPrincipal, loadSession } from "@/lib/session";
-import { formatRoleBadges, getRoleCabinetMenuItems, getSettingsTabs } from "@/lib/profile-menu";
-import { routes } from "@/lib/routes";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import SettingsProfileHeader from "@/components/settings/profile-header";
+import NotificationsTab from "@/components/settings/tabs/notifications";
+import PersonalInfoTab from "@/components/settings/tabs/personal-info";
+import PrivacyTab from "@/components/settings/tabs/privacy";
+import RolePanel, { RoleLink } from "@/components/settings/tabs/role-panel";
+import SecurityTab from "@/components/settings/tabs/security";
+import SideBar from "@/components/side-bar";
+import { useAvatarPresentation } from "@/components/character-avatar";
+import { usePlayerProfile } from "@/hooks/use-player-profile";
+import {
+  messageForProfileError,
+  saveMyProfile,
+  writeCachedProfile,
+} from "@/lib/profile-api";
+import {
+  formatRoleBadges,
+  getRoleCabinetMenuItems,
+  getSettingsTabs,
+} from "@/lib/profile-menu";
+import { routes } from "@/lib/routes";
+import {
+  loadNotificationsLocal,
+  loadPersonalLocal,
+  loadPrivacyLocal,
+  saveNotificationsLocal,
+  savePersonalLocal,
+  savePrivacyLocal,
+  type NotificationsLocal,
+  type PersonalLocal,
+  type PrivacyLocal,
+} from "@/lib/settings-local";
+import { hasRole, isAdminPrincipal } from "@/lib/rbac";
+import { clearSession, loadSession, type SessionUser } from "@/lib/session";
+import type { GenderId } from "@/lib/avatars";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const session = typeof window !== "undefined" ? loadSession() : null;
+  const [session, setSession] = useState<SessionUser | null>(null);
+  const { profile, setProfile } = usePlayerProfile(session);
+  const presentation = useAvatarPresentation(profile ?? undefined);
+
   const tabs = useMemo(() => getSettingsTabs(session?.roles ?? ["student"]), [session?.roles]);
-  const [tab, setTab] = useState(tabs[0]?.id ?? "personal");
   const roleLinks = useMemo(() => getRoleCabinetMenuItems(session?.roles ?? []), [session?.roles]);
 
+  const [tab, setTab] = useState("personal");
+  const [username, setUsername] = useState("");
+  const [gender, setGender] = useState<GenderId>("MALE");
+  const [personal, setPersonal] = useState<PersonalLocal>(loadPersonalLocal);
+  const [privacy, setPrivacy] = useState<PrivacyLocal>(loadPrivacyLocal);
+  const [notifications, setNotifications] = useState<NotificationsLocal>(loadNotificationsLocal);
+  const [errors, setErrors] = useState<Partial<Record<"username" | "firstName" | "lastName" | "phone" | "about", string>>>({});
+  const [notifyEmailError, setNotifyEmailError] = useState<string>();
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const loaded = loadSession();
+    if (!loaded) {
+      router.replace("/login");
+      return;
+    }
+    setSession(loaded);
+    setPersonal(loadPersonalLocal());
+    setPrivacy(loadPrivacyLocal());
+    setNotifications(loadNotificationsLocal());
+
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get("tab");
+    if (fromUrl) setTab(fromUrl);
+  }, [router]);
+
+  useEffect(() => {
+    if (!profile) return;
+    setUsername(profile.username);
+    setGender(profile.gender);
+  }, [profile]);
+
+  useEffect(() => {
+    if (!tabs.some((item) => item.id === tab)) {
+      setTab(tabs[0]?.id ?? "personal");
+    }
+  }, [tabs, tab]);
+
+  const persistPrivacy = useCallback((patch: Partial<PrivacyLocal>) => {
+    setPrivacy((prev) => {
+      const next = { ...prev, ...patch };
+      savePrivacyLocal(next);
+      return next;
+    });
+  }, []);
+
+  const persistNotifications = useCallback((patch: Partial<NotificationsLocal>) => {
+    setNotifications((prev) => {
+      const next = { ...prev, ...patch };
+      if (patch.contactEmail !== undefined) {
+        const ok = !next.contactEmail || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(next.contactEmail);
+        setNotifyEmailError(ok ? undefined : "Некорректный email");
+      }
+      saveNotificationsLocal(next);
+      return next;
+    });
+  }, []);
+
+  function validatePersonal(): boolean {
+    const next: typeof errors = {};
+    if (username.trim().length < 3) next.username = "Минимум 3 символа";
+    else if (!/^[a-zA-Z0-9_\-а-яА-ЯёЁ]+$/.test(username.trim())) {
+      next.username = "Только буквы, цифры, _ и -";
+    }
+    if (personal.firstName && personal.firstName.trim().length < 2) {
+      next.firstName = "Минимум 2 символа";
+    }
+    if (personal.lastName && personal.lastName.trim().length < 2) {
+      next.lastName = "Минимум 2 символа";
+    }
+    if (personal.phone && !/^\+?\d{7,15}$/.test(personal.phone.replace(/[\s()-]/g, ""))) {
+      next.phone = "Формат: +79001234567";
+    }
+    if (personal.about.length > 300) next.about = "Максимум 300 символов";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
+
+  async function savePersonal() {
+    if (!session || !profile) {
+      throw new Error("profile_not_ready");
+    }
+    if (!validatePersonal()) {
+      throw new Error("validation");
+    }
+    setSubmitting(true);
+    try {
+      savePersonalLocal(personal);
+      const saved = await saveMyProfile(session, {
+        username: username.trim(),
+        selectedSkinId: profile.selectedSkinId,
+        gender,
+        backgroundKey: profile.backgroundKey,
+        profileComplete: true,
+      });
+      writeCachedProfile(saved);
+      setProfile(saved);
+    } catch (error) {
+      if (error instanceof Error && (error.message === "validation" || error.message === "profile_not_ready")) {
+        throw error;
+      }
+      setErrors((prev) => ({ ...prev, username: messageForProfileError(error) }));
+      throw error;
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (!session) {
+    return <main className="grid min-h-[50vh] place-items-center text-mos-muted">Загрузка…</main>;
+  }
+
+  const displayName = profile?.username || session.name || session.login;
+
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="border border-mos-line/40 bg-mos-stone/40 p-5">
-        <p className="font-display text-2xl text-mos-text">{session?.name ?? "Ученик"}</p>
-        <p className="text-sm text-mos-muted">{session?.login}</p>
-        {session && <p className="mt-2 text-xs text-mos-amber">{formatRoleBadges(session.roles)}</p>}
-      </div>
+    <main className="mx-auto mb-20 mt-3 flex w-full max-w-[840px] flex-col items-center gap-3 px-3 md:mt-11 md:mb-40 md:gap-6 md:px-4">
+      <SettingsProfileHeader
+        username={displayName}
+        rolesLabel={formatRoleBadges(session.roles)}
+        level={profile?.level ?? 1}
+        currentXp={profile?.xp ?? 0}
+        xpToNext={profile?.xpToNextLevel ?? 500}
+        selectedSkinId={presentation.selectedSkinId}
+        gender={presentation.gender}
+      />
 
-      <div className="mt-6 grid gap-6 md:grid-cols-[220px_1fr]">
-        <aside className="space-y-2">
-          {tabs.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setTab(item.id)}
-              className={`block w-full border px-3 py-2 text-left text-sm ${
-                tab === item.id ? "border-mos-amber text-mos-amber" : "border-mos-line/40 text-mos-muted"
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-          <button
-            type="button"
-            className="mos-btn mt-4 w-full text-xs"
-            onClick={() => {
-              clearSession();
-              router.push("/");
-            }}
-          >
-            Выйти
-          </button>
-        </aside>
+      <div className="flex w-full flex-col items-start gap-3 md:flex-row md:gap-6">
+        <div className="flex w-full flex-col gap-6 md:w-auto md:gap-12">
+          <SideBar
+            items={tabs}
+            activeId={tab}
+            onChange={setTab}
+            syncUrlParam="tab"
+            footer={
+              <button
+                type="button"
+                className="og-btn og-btn-secondary og-btn-sm w-full uppercase"
+                onClick={() => {
+                  clearSession();
+                  router.push("/");
+                }}
+              >
+                Выйти
+              </button>
+            }
+          />
+        </div>
 
-        <section className="border border-mos-line/40 bg-mos-bg/50 p-5 text-sm text-mos-muted">
-          {tab === "personal" && (
-            <p>Личные данные ученика. Презентация персонажа меняется на странице профиля, не здесь.</p>
-          )}
-          {tab === "security" && (
-            <p>Сессии OnlyID, смена пароля demo-аккаунта, MFA для staff (sandbox).</p>
-          )}
-          {tab === "privacy" && (
-            <p>Профиль несовершеннолетних private by default. Публичный шаринг отключён.</p>
-          )}
-          {tab === "notifications" && (
-            <p>Напоминания о тренировках и квестах через School Communications.</p>
-          )}
+        <section className="bg-secondaryBg flex min-h-[320px] w-full flex-col gap-3 rounded-2xl p-4 backdrop-blur-[20px] md:gap-6 md:rounded-[32px] md:p-8">
+          {tab === "personal" ? (
+            <PersonalInfoTab
+              username={username}
+              email={session.login.includes("@") ? session.login : `${session.login}@demo.local`}
+              gender={gender}
+              local={personal}
+              onUsernameChange={setUsername}
+              onGenderChange={setGender}
+              onLocalChange={(patch) => setPersonal((prev) => ({ ...prev, ...patch }))}
+              onSubmit={savePersonal}
+              isSubmitting={submitting}
+              errors={errors}
+            />
+          ) : null}
 
-          {tab === "admin" && session && isAdminPrincipal(session.roles) && (
-            <div className="space-y-4">
+          {tab === "security" ? (
+            <SecurityTab
+              email={session.login.includes("@") ? session.login : `${session.login}@demo.local`}
+            />
+          ) : null}
+
+          {tab === "privacy" ? <PrivacyTab value={privacy} onChange={persistPrivacy} /> : null}
+
+          {tab === "notifications" ? (
+            <NotificationsTab
+              value={notifications}
+              onChange={persistNotifications}
+              emailError={notifyEmailError}
+            />
+          ) : null}
+
+          {tab === "admin" && isAdminPrincipal(session.roles) ? (
+            <RolePanel title="Администрирование">
               <p>Управление платформой, пользователями и контентом школы.</p>
-              <Link href={routes.admin} className="mos-btn inline-flex">
-                Войти в админ-панель
-              </Link>
-              {roleLinks
-                .filter((item) => item.href !== routes.admin)
-                .map((item) => (
-                  <Link key={item.id} href={item.href} className="ml-3 inline-flex border border-mos-line/40 px-3 py-2 text-mos-text hover:border-mos-amber">
-                    {item.label}
-                  </Link>
-                ))}
-            </div>
-          )}
+              <RoleLink href={routes.admin}>Войти в админ-панель</RoleLink>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {roleLinks
+                  .filter((item) => item.href !== routes.admin)
+                  .map((item) => (
+                    <Link
+                      key={item.id}
+                      href={item.href}
+                      className="inline-flex rounded-xl border border-mos-line/40 px-3 py-2 text-mos-text hover:border-mos-amber"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+              </div>
+            </RolePanel>
+          ) : null}
 
-          {tab === "coach" && session && hasRole(session.roles, "coach") && (
-            <div className="space-y-4">
+          {tab === "coach" && hasRole(session.roles, "coach") ? (
+            <RolePanel title="Кабинет тренера">
               <p>Расписание, группы и подтверждение посещаемости.</p>
-              <Link href={routes.coach} className="mos-btn inline-flex">
-                Открыть кабинет тренера
-              </Link>
-            </div>
-          )}
+              <RoleLink href={routes.coach}>Открыть кабинет тренера</RoleLink>
+            </RolePanel>
+          ) : null}
 
-          {tab === "guardian" && session && hasRole(session.roles, "guardian") && (
-            <div className="space-y-4">
-              <p>Кабинет опекуна: прогресс подопечных и уведомления школы.</p>
-              <Link href={routes.guardian} className="mos-btn inline-flex">
-                Открыть кабинет опекуна
-              </Link>
-            </div>
-          )}
+          {tab === "guardian" && hasRole(session.roles, "guardian") ? (
+            <RolePanel title="Кабинет опекуна">
+              <p>Прогресс подопечных и уведомления школы.</p>
+              <RoleLink href={routes.guardian}>Открыть кабинет опекуна</RoleLink>
+            </RolePanel>
+          ) : null}
 
-          {tab === "renter" && session && hasRole(session.roles, "renter") && (
-            <div className="space-y-4">
+          {tab === "renter" && hasRole(session.roles, "renter") ? (
+            <RolePanel title="Кабинет арендатора">
               <p>Бронирование залов и управление арендой.</p>
-              <Link href={routes.renter} className="mos-btn inline-flex">
-                Открыть кабинет арендатора
-              </Link>
-            </div>
-          )}
+              <RoleLink href={routes.renter}>Открыть кабинет арендатора</RoleLink>
+            </RolePanel>
+          ) : null}
         </section>
       </div>
     </main>

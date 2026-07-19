@@ -1,5 +1,5 @@
 {
-  "source": "temporary local authoring catalog",
+  "source": "fallback seed — prefer apps/web/public/content/starter.json",
   "quests": [
     { "key": "path.safety", "title": "Сначала безопасность", "type": "ONBOARDING", "xp": 300 },
     { "key": "path.first_trial", "title": "Первый выход в зал", "type": "ONBOARDING", "xp": 300 },

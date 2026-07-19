@@ -1,13 +1,13 @@
 const SCHOOL_ICON_FILES: Record<string, string> = {
-  witcher: "witcher.png",
-  east: "east.png",
-  spanish_rapier: "spanish_rapier.png",
-  italian_rapier: "italian_rapier.png",
-  montante: "montante.png",
-  navaja: "navaja.png",
+  witcher: "witcher.webp",
+  east: "east.webp",
+  spanish_rapier: "spanish_rapier.webp",
+  italian_rapier: "italian_rapier.webp",
+  montante: "montante.webp",
+  navaja: "navaja.webp",
 };
 
 export function getSchoolIconSrc(key: string): string {
   const file = SCHOOL_ICON_FILES[key];
-  return file ? `/media/school-icons/${file}` : `/media/school-icons/${key}.png`;
+  return file ? `/media/school-icons/${file}` : `/media/school-icons/${key}.webp`;
 }

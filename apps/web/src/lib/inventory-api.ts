@@ -83,6 +83,24 @@ export async function equipInventoryItem(
   return normalizeInventory(data);
 }
 
+export async function purchaseInventoryItem(
+  session: SessionUser,
+  kind: InventoryKind,
+  refId: string,
+): Promise<InventoryView> {
+  const res = await fetch(`${SCHOOL_API}/v1/store/purchase`, {
+    method: "POST",
+    headers: authHeaders(session),
+    body: JSON.stringify({ kind, refId }),
+  });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(body.error ?? "purchase_failed");
+  }
+  const data = (await res.json()) as Record<string, unknown>;
+  return normalizeInventory(data);
+}
+
 export function inventoryCharacters(view: InventoryView): InventoryCharacterItem[] {
   return view.items
     .filter((item) => item.kind === "character")

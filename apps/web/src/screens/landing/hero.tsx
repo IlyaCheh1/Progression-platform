@@ -12,7 +12,7 @@ function mediaUrl(file: string) {
 }
 
 function posterUrl(file: string) {
-  return mediaUrl(file.replace(/\.mp4$/i, ".png"));
+  return mediaUrl(file.replace(/\.mp4$/i, ".webp"));
 }
 
 type Particle = {
@@ -30,6 +30,7 @@ function HeroVideoSlide({
   isActive,
   isNext,
   isMounted,
+  isMobile,
   reduceMotion,
   registerVideo,
 }: {
@@ -38,11 +39,14 @@ function HeroVideoSlide({
   isActive: boolean;
   isNext: boolean;
   isMounted: boolean;
+  isMobile: boolean;
   reduceMotion: boolean;
   registerVideo: (index: number, node: HTMLVideoElement | null) => void;
 }) {
   const poster = posterUrl(file);
   const [videoReady, setVideoReady] = useState(false);
+  const mobilePosition = index === 0 || index === 2 ? "object-left" : "object-right";
+  const mediaClassName = `h-full w-full object-cover ${isMobile ? mobilePosition : "object-center"}`;
 
   useEffect(() => {
     if (!isMounted) {
@@ -58,8 +62,10 @@ function HeroVideoSlide({
       <img
         src={poster}
         alt=""
-        className="h-full w-full object-cover"
+        className={mediaClassName}
         style={{ filter: "saturate(1.8) brightness(0.35)" }}
+        decoding="async"
+        fetchPriority={index === 0 ? "high" : "low"}
       />
     );
   }
@@ -71,15 +77,17 @@ function HeroVideoSlide({
         src={poster}
         alt=""
         aria-hidden
-        className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300"
+        className={`absolute inset-0 transition-opacity duration-300 ${mediaClassName}`}
         style={{
           filter: "saturate(1.8) brightness(0.35)",
           opacity: videoReady && isActive ? 0 : 1,
         }}
+        decoding="async"
+        fetchPriority={index === 0 ? "high" : "low"}
       />
       <video
         ref={(node) => registerVideo(index, node)}
-        className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300"
+        className={`absolute inset-0 transition-opacity duration-300 ${mediaClassName}`}
         style={{
           filter: "saturate(1.8) brightness(0.35)",
           opacity: videoReady ? 1 : 0,
@@ -196,6 +204,7 @@ export default function Hero() {
               isActive={isActive}
               isNext={isNext}
               isMounted={isMounted}
+              isMobile={isMobile}
               reduceMotion={reduceMotion}
               registerVideo={registerVideo}
             />

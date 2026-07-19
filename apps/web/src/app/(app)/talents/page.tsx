@@ -1,66 +1,92 @@
 "use client";
 
-import { useState } from "react";
-import { content } from "@/lib/content";
+import GradientLabel from "@/components/onboarding/gradient-label";
+import ActiveSkills from "@/components/talents/active-skills";
+import SkillPoints from "@/components/talents/skill-points";
+import SkillThree from "@/components/talents/skill-three";
+import { useAvatarPresentation } from "@/components/character-avatar";
+import { usePlayerProfile } from "@/hooks/use-player-profile";
+import { useTalents } from "@/hooks/use-talents";
+import { TREE_GRADIENT, TREE_LABEL_CLASS } from "@/lib/talents-catalog";
+import { loadSession } from "@/lib/session";
+import { cn } from "@/lib/utils";
 
 export default function TalentsPage() {
-  const [points, setPoints] = useState(3);
-  const [learned, setLearned] = useState<Record<string, boolean>>({});
-  const [active, setActive] = useState<string[]>([]);
-
-  function learn(key: string) {
-    if (learned[key] || points <= 0) return;
-    setLearned((l) => ({ ...l, [key]: true }));
-    setPoints((p) => p - 1);
-  }
-
-  function toggleActive(key: string) {
-    if (!learned[key]) return;
-    setActive((a) => (a.includes(key) ? a.filter((x) => x !== key) : [...a, key].slice(0, 4)));
-  }
+  const user = typeof window !== "undefined" ? loadSession() : null;
+  const { profile } = usePlayerProfile(user);
+  const presentation = useAvatarPresentation(profile ?? undefined);
+  const {
+    trees,
+    points,
+    favoriteSkills,
+    loading,
+    error,
+    onLearn,
+    handleActivate,
+    handleFavourite,
+    clearError,
+  } = useTalents();
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-display text-3xl text-mos-amber">Таланты</h1>
-          <p className="mt-1 text-sm text-mos-muted">Discipline of the Hall — без мультипликаторов урона и unsafe load.</p>
-        </div>
-        <div className="border border-mos-line px-4 py-2">
-          <p className="text-[10px] uppercase tracking-widest text-mos-muted">Очки навыков</p>
-          <p className="font-display text-2xl text-mos-amber">{points}</p>
-        </div>
+    <div
+      className="relative flex min-h-[calc(100vh-72px)] flex-1 flex-col overflow-x-hidden bg-cover bg-center bg-no-repeat pb-8 md:pb-12 md:pt-6"
+      style={{
+        backgroundImage: "url(/media/ui/talent-background.png)",
+        backgroundSize: "80%",
+      }}
+    >
+      <div className="absolute left-0 top-3 z-10 flex w-full items-start justify-center gap-3 px-3 md:top-6 md:justify-between md:px-6">
+        <ActiveSkills
+          level={profile?.level ?? 1}
+          currentXp={profile?.xp ?? 0}
+          xpToNext={profile?.xpToNextLevel ?? 500}
+          selectedSkinId={presentation.selectedSkinId}
+          gender={presentation.gender}
+          skills={favoriteSkills}
+          onActivate={handleActivate}
+          onFavourite={handleFavourite}
+          loading={loading}
+          className="hidden md:flex"
+        />
+        <SkillPoints skillPoints={points} />
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        {active.length === 0 && <p className="text-sm text-mos-muted">Нет активных талантов</p>}
-        {active.map((k) => (
-          <span key={k} className="border border-mos-amber/50 px-3 py-1 text-xs text-mos-amber">
-            {content.talents.find((t) => t.key === k)?.title}
-          </span>
+      {error ? (
+        <div className="absolute left-1/2 top-20 z-20 -translate-x-1/2 rounded-xl border border-mos-danger/40 bg-mos-stone/95 px-4 py-2 text-sm text-mos-danger shadow-xl">
+          <button type="button" className="mr-2 text-mos-muted" onClick={clearError}>
+            ×
+          </button>
+          {error}
+        </div>
+      ) : null}
+
+      <div className="relative z-0 mx-auto mt-16 flex w-full max-w-[1600px] flex-1 flex-row items-stretch justify-around gap-0 overflow-x-auto px-2 md:mt-[220px] md:gap-4 md:px-4">
+        {trees.map((tree) => (
+          <div
+            key={tree.type}
+            className="relative flex min-w-[180px] flex-1 flex-col items-center justify-end gap-2 md:min-w-0 md:gap-5"
+          >
+            <SkillThree
+              {...tree}
+              availablePoints={points}
+              onLearn={onLearn}
+              onActivate={handleActivate}
+              onFavourite={handleFavourite}
+              loading={loading}
+            />
+            <GradientLabel color={TREE_GRADIENT[tree.type]} className="max-w-[172px]">
+              <h5
+                className={cn(
+                  "font-display text-[10px] font-medium leading-3 md:text-[17px] md:leading-6",
+                  TREE_LABEL_CLASS[tree.type],
+                )}
+              >
+                {tree.name}
+              </h5>
+            </GradientLabel>
+          </div>
         ))}
       </div>
-
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {content.talents.map((t) => {
-          const isLearned = !!learned[t.key];
-          const isActive = active.includes(t.key);
-          return (
-            <article key={t.key} className={`border p-4 ${isActive ? "border-mos-amber bg-mos-amber/5" : "border-mos-line/40 bg-mos-stone/30"}`}>
-              <h3 className="font-display text-lg text-mos-text">{t.title}</h3>
-              <p className="text-xs text-mos-muted">{t.key}</p>
-              <div className="mt-4 flex gap-2">
-                <button type="button" disabled={isLearned || points <= 0} onClick={() => learn(t.key)} className="mos-btn text-[10px] disabled:opacity-40">
-                  {isLearned ? "Изучено" : "Изучить"}
-                </button>
-                <button type="button" disabled={!isLearned} onClick={() => toggleActive(t.key)} className="mos-btn border-mos-line text-[10px] text-mos-text disabled:opacity-40">
-                  {isActive ? "Снять" : "Актив."}
-                </button>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-    </main>
+    </div>
   );
 }
