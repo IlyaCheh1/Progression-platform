@@ -94,3 +94,18 @@ NEXT_PUBLIC_MEDIA_BASE_URL=https://.../media/hero
 ```
 
 Добавь эту переменную в web (Buildtime + Runtime) и сделай **Rebuild**.
+
+## Автодеплой не стартует
+
+Git-пуши уже в **`main`** (и синхронизированы с `master`). Локально `pnpm --filter @mos/web build` проходит.
+
+Если после push в GitHub деплой в Coolify **не появляется**:
+
+1. **Source → Branch** — должна быть **`main`** (не `master`, не `7a9938b`).
+2. **Auto Deploy** — включён (Deploy on push).
+3. **GitHub → Settings → Webhooks** — webhook Coolify есть, последняя доставка **200** (не 4xx/5xx).
+4. Если webhook красный — в Coolify: **Source → Reconnect** / заново привязать репозиторий.
+5. **Deployments** — нет ли зависшего «In Progress» (отмени и **Redeploy**).
+6. Ручной **Redeploy** с веткой `main` и коммитом `4d7c0a3` или новее — если работает, проблема только в webhook.
+
+Репозиторий: `IlyaCheh1/Progression-platform`, актуальный коммит на `main`: см. GitHub → Commits.
