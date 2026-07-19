@@ -354,7 +354,7 @@ function SelectedPanel({
           className="og-btn og-btn-secondary og-btn-md mt-3 flex w-[calc(100%-4px)] items-center justify-center gap-2"
         >
           Купить за {item.price}
-          <GoldCoin className="h-6 w-6" />
+          <GoldCoin className="h-4 w-4" />
         </button>
       ) : (
         <div className="mt-3 flex w-full flex-col gap-2">

@@ -44,25 +44,28 @@ export default function SettingsProfileHeader({
   const { favoriteSkills, handleActivate, handleFavourite, loading } = useTalents();
 
   return (
-    <div className="bg-secondaryBg mx-auto w-full overflow-hidden rounded-2xl backdrop-blur-[20px] md:rounded-[32px]">
+    <div className="relative mx-auto w-full overflow-hidden rounded-2xl md:rounded-[32px]">
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={backgroundSrc} alt="" className="h-full w-full object-cover object-top" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/70 to-[#070708]" />
+      </div>
+
       <button
         type="button"
         onClick={onEditBackground}
         disabled={!onEditBackground}
         className={cn(
-          "group relative block h-[88px] w-full overflow-hidden md:h-[120px]",
+          "group relative z-10 block h-[88px] w-full md:h-[120px]",
           onEditBackground && "cursor-pointer",
           !onEditBackground && "cursor-default",
         )}
         aria-label={onEditBackground ? "Сменить фон профиля" : undefined}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={backgroundSrc} alt="" className="h-full w-full object-cover object-center" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/25 to-black/70" />
         {onEditBackground ? <AppearanceEditBadge label="Сменить фон" className="right-3 top-3 md:right-4 md:top-4" /> : null}
       </button>
 
-      <div className="relative flex flex-col gap-4 px-4 pb-4 md:gap-5 md:px-8 md:pb-8">
+      <div className="relative z-10 flex flex-col gap-4 px-4 pb-4 md:gap-5 md:px-8 md:pb-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex items-end gap-4 md:gap-6">
             <div className="relative -mt-10 shrink-0 md:-mt-12">

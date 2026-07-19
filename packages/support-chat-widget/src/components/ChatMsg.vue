@@ -13,7 +13,7 @@
         >
           <div class="w-full">
             <span class="font-normal text-[12px] leading-[20px] font-unbounded text-neutral-50">{{
-              'pos5player'
+              'Йеннифер'
             }}</span>
           </div>
 
@@ -171,7 +171,7 @@ function onContextMenu(event: MouseEvent) {
 }
 
 const replyUserName = computed(() => {
-  return props.replyingMessage?.sender === 'user' ? props.username || 'Вы' : 'Поддержка';
+  return props.replyingMessage?.sender === 'user' ? props.username || 'Вы' : 'Йеннифер';
 });
 
 const formatTime = (dateString: string): string => {

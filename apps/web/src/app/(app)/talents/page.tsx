@@ -54,11 +54,11 @@ export default function TalentsPage() {
       ) : null}
 
       <div className="relative z-0 flex flex-1 items-center justify-center overflow-x-auto px-2 md:px-4 min-[2400px]:px-10">
-        <div className="mx-auto flex w-full max-w-[1600px] flex-row items-end justify-center gap-2 md:gap-8 min-[2400px]:max-w-[2400px] min-[2400px]:gap-20">
+        <div className="mx-auto flex w-full max-w-[1600px] flex-row items-start justify-center gap-2 md:gap-8 min-[2400px]:max-w-[2400px] min-[2400px]:gap-20">
           {trees.map((tree) => (
             <div
               key={tree.name}
-              className="relative flex min-w-[180px] flex-col items-center justify-end gap-2 md:min-w-0 md:gap-5 min-[2400px]:gap-8"
+              className="relative flex min-w-[180px] flex-col items-center justify-start gap-2 md:min-w-0 md:gap-5 min-[2400px]:gap-8"
             >
               <SkillThree
                 {...tree}
@@ -70,15 +70,21 @@ export default function TalentsPage() {
               />
               <GradientLabel
                 color={TREE_GRADIENT[tree.type]}
-                className="max-w-[172px] min-[2400px]:max-w-[258px]"
+                className="max-w-[172px] items-center min-[2400px]:max-w-[258px]"
               >
                 <h5
                   className={cn(
-                    "font-display text-[10px] font-medium leading-3 md:text-[17px] md:leading-6 min-[2400px]:text-[25px] min-[2400px]:leading-9",
+                    "w-full text-center font-display text-[10px] font-medium leading-3 md:text-[17px] md:leading-6 min-[2400px]:text-[25px] min-[2400px]:leading-9",
                     TREE_LABEL_CLASS[tree.type],
                   )}
                 >
-                  {tree.name}
+                  {tree.type === "path"
+                    ? tree.name.split(/\s+/).map((word) => (
+                        <span key={word} className="block">
+                          {word}
+                        </span>
+                      ))
+                    : tree.name}
                 </h5>
               </GradientLabel>
             </div>

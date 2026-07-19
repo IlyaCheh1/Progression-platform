@@ -286,7 +286,7 @@ export default function SettingsPage() {
             />
           </div>
 
-          <section className="bg-secondaryBg flex min-h-[320px] w-full flex-col gap-3 rounded-2xl p-4 backdrop-blur-[20px] md:gap-6 md:rounded-[32px] md:p-8">
+          <section className="flex min-h-[320px] w-full flex-col gap-3 rounded-2xl bg-[rgba(26,26,29,0.3)] p-4 backdrop-blur-[20px] md:gap-6 md:rounded-[32px] md:p-8">
             {tab === "personal" ? (
               <PersonalInfoTab
                 username={username}

@@ -148,13 +148,6 @@ export const TREE_GRADIENT: Record<TalentTreeType, "green" | "blue" | "amber" | 
   school: "orange",
 };
 
-export const TREE_LINE_CLASS: Record<TalentTreeType, string> = {
-  blade: "bg-blade-line-gradient",
-  chronicle: "bg-chronicle-line-gradient",
-  path: "bg-path-line-gradient",
-  school: "bg-school-line-gradient",
-};
-
 export const TREE_BORDER_COLOR: Record<TalentTreeType, string> = {
   blade: "#7dba5a",
   chronicle: "#2d68ff",

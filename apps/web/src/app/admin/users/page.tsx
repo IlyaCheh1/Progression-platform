@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import SelectField from "@/components/ui/select-field";
 import { SCHOOL_API } from "@/lib/utils";
 import {
   ASSIGNABLE_ROLES,
@@ -161,17 +162,16 @@ export default function AdminUsersPage() {
           />
           <label className="block text-xs uppercase tracking-widest text-mos-muted">
             Роль
-            <select
-              className="mt-1 w-full border border-mos-line bg-mos-bg px-3 py-2 text-mos-text"
-              value={form.role}
-              onChange={(e) => setForm((f) => ({ ...f, role: e.target.value as UserRole }))}
-            >
-              {ASSIGNABLE_ROLES.map((role) => (
-                <option key={role} value={role}>
-                  {ROLE_LABELS[role]}
-                </option>
-              ))}
-            </select>
+            <div className="mt-1">
+              <SelectField
+                options={ASSIGNABLE_ROLES.map((role) => ({
+                  value: role,
+                  label: ROLE_LABELS[role],
+                }))}
+                value={form.role}
+                onChange={(role) => setForm((f) => ({ ...f, role: role as UserRole }))}
+              />
+            </div>
           </label>
           <div className="md:col-span-2 flex flex-wrap gap-2">
             <button type="submit" className="mos-btn" disabled={busy}>

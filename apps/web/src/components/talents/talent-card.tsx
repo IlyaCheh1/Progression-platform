@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import ActiveTalentPopup from "@/components/talents/active-popup";
 import PassiveTalentPopup from "@/components/talents/passive-popup";
 import type { MosTalent, TalentTreeType } from "@/lib/talents-catalog";
@@ -55,7 +55,6 @@ type TalentCardProps = {
   onLearn?: () => void;
   onFavourite?: () => void;
   loading?: { activate: boolean; favorite: boolean; learn: boolean };
-  line?: ReactNode;
   className?: string;
   placement?: "bottom" | "bottom-left" | "bottom-right";
 };
@@ -69,7 +68,6 @@ export default function TalentCard({
   onLearn,
   onFavourite,
   loading,
-  line,
   className,
   placement = "bottom",
 }: TalentCardProps) {
@@ -77,7 +75,7 @@ export default function TalentCard({
 
   const image =
     variant === "secondary" ? (
-      <div className={cn("relative", className)}>
+      <div className={cn("relative mx-auto w-8 md:w-[60px] min-[2400px]:w-[90px]", className)}>
         <div
           className="relative z-20 h-8 w-8 overflow-hidden rounded-full border-2 bg-mos-stone shadow-lg md:h-[60px] md:w-[60px] min-[2400px]:h-[90px] min-[2400px]:w-[90px]"
           style={{ borderColor }}
@@ -100,12 +98,11 @@ export default function TalentCard({
             />
           ) : null}
         </div>
-        <div className="absolute left-0 top-[26px] z-20 flex h-3 w-8 items-center justify-center gap-px rounded border-2 border-white/10 bg-mos-stone px-1 shadow-md backdrop-blur-md md:top-[46px] md:h-5 md:w-[60px] md:rounded-lg min-[2400px]:top-[69px] min-[2400px]:h-[30px] min-[2400px]:w-[90px]">
+        <div className="absolute left-1/2 top-[26px] z-20 flex h-3 w-8 -translate-x-1/2 items-center justify-center gap-px rounded border-2 border-white/10 bg-mos-stone px-1 shadow-md backdrop-blur-md md:top-[46px] md:h-5 md:w-[60px] md:rounded-lg min-[2400px]:top-[69px] min-[2400px]:h-[30px] min-[2400px]:w-[90px]">
           <span className="font-display text-[8px] font-bold uppercase text-mos-text md:text-sm min-[2400px]:text-[21px]">
             {talent.tier}/{talent.maxTier}
           </span>
         </div>
-        {line}
       </div>
     ) : (
       <div className={cn("relative", className)}>

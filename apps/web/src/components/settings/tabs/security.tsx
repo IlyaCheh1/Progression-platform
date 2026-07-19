@@ -148,14 +148,6 @@ export default function SecurityTab({ email }: SecurityTabProps) {
           {emailSuccess ? "Письмо отправлено!" : "Отправить"}
         </button>
       </form>
-
-      <div className="border-t border-white/10 pt-6">
-        <h3 className="font-display text-xs text-mos-text md:text-[15px]">Двухфакторная аутентификация</h3>
-        <p className="mt-2 text-sm text-mos-muted">MFA для staff через OnlyID (sandbox).</p>
-        <button type="button" disabled className="og-btn og-btn-secondary og-btn-md mt-3 uppercase opacity-50">
-          Подключить
-        </button>
-      </div>
     </div>
   );
 }

@@ -58,7 +58,7 @@
         id="typing-indicator"
         :key="'typing-indicator'"
         :msgColor="msgColor"
-        senderName="pos5player"
+        senderName="Йеннифер"
         :isLocal="false"
         type="text"
         :time="new Date()"

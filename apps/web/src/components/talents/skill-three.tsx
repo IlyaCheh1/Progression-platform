@@ -2,7 +2,7 @@
 
 import TalentCard from "@/components/talents/talent-card";
 import {
-  TREE_LINE_CLASS,
+  TREE_BORDER_COLOR,
   type MosTalent,
   type MosTalentTree,
   type TalentTreeType,
@@ -10,87 +10,93 @@ import {
 import { canLearnTalent } from "@/lib/talents-state";
 import { cn } from "@/lib/utils";
 
-function whereIsLine(
-  indexMatrix: number,
-  indexChild: number,
-  matrix: string[][],
-  ignore: "above" | "above-left" | "above-right" | "horizontal",
-) {
-  if (ignore !== "above" && indexMatrix > 0 && matrix[indexMatrix - 1][indexChild] === "1") return "above";
-  if (
-    ignore !== "above-left" &&
-    indexMatrix > 0 &&
-    indexChild > 0 &&
-    matrix[indexMatrix - 1][indexChild - 1] === "1"
-  ) {
-    return "above-left";
-  }
-  if (
-    ignore !== "above-right" &&
-    indexMatrix > 0 &&
-    indexChild < matrix[indexMatrix].length - 1 &&
-    matrix[indexMatrix - 1][indexChild + 1] === "1"
-  ) {
-    return "above-right";
-  }
-  if (
-    ignore !== "horizontal" &&
-    indexChild < matrix[indexMatrix].length - 2 &&
-    matrix[indexMatrix][indexChild + 2] === "1" &&
-    matrix[indexMatrix + 1]?.[indexChild + 1] !== "1"
-  ) {
-    return "horizontal";
-  }
-  return undefined;
+const COLS = 7;
+const ROWS = 6;
+
+type LineKind = "above" | "above-left" | "above-right" | "horizontal";
+
+type TreeLine = {
+  key: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+};
+
+function cellCenter(col: number, row: number) {
+  return { x: col + 0.5, y: row + 0.5 };
 }
 
-function Line({ className, type }: { className?: string; type: TalentTreeType }) {
-  return (
-    <div
-      className={cn(
-        "h-10 w-2 rounded-[10px] opacity-40 md:h-28 md:w-3 min-[2400px]:h-[168px] min-[2400px]:w-[18px]",
-        TREE_LINE_CLASS[type],
-        className,
-      )}
-    />
-  );
+function collectTreeLines(matrix: string[][]): TreeLine[] {
+  const lines: TreeLine[] = [];
+
+  for (let row = 0; row < matrix.length; row += 1) {
+    for (let col = 0; col < matrix[row].length; col += 1) {
+      if (matrix[row][col] !== "1") continue;
+
+      const from = cellCenter(col, row);
+      const kinds: LineKind[] = [];
+
+      if (row > 0 && matrix[row - 1][col] === "1") kinds.push("above");
+      if (row > 0 && col > 0 && matrix[row - 1][col - 1] === "1") kinds.push("above-left");
+      if (row > 0 && col < matrix[row].length - 1 && matrix[row - 1][col + 1] === "1") {
+        kinds.push("above-right");
+      }
+      if (
+        col < matrix[row].length - 2 &&
+        matrix[row][col + 2] === "1" &&
+        matrix[row + 1]?.[col + 1] !== "1"
+      ) {
+        kinds.push("horizontal");
+      }
+
+      for (const kind of kinds) {
+        let to = from;
+        if (kind === "above") to = cellCenter(col, row - 1);
+        if (kind === "above-left") to = cellCenter(col - 1, row - 1);
+        if (kind === "above-right") to = cellCenter(col + 1, row - 1);
+        if (kind === "horizontal") to = cellCenter(col + 2, row);
+
+        lines.push({
+          key: `${row}-${col}-${kind}`,
+          x1: from.x,
+          y1: from.y,
+          x2: to.x,
+          y2: to.y,
+        });
+      }
+    }
+  }
+
+  return lines;
 }
 
-function renderTalentLines(
-  lineFirst: string | undefined,
-  lineSecond: string | undefined,
-  type: TalentTreeType,
-) {
+function TreeConnectors({ matrix, type }: { matrix: string[][]; type: TalentTreeType }) {
+  const lines = collectTreeLines(matrix);
+  const stroke = TREE_BORDER_COLOR[type];
+
   return (
-    <>
-      {lineFirst === "above" ? (
-        <Line type={type} className="absolute bottom-1/2 left-1/2 origin-bottom -translate-x-1/2" />
-      ) : null}
-      {lineFirst === "above-right" || lineSecond === "above-right" ? (
-        <Line
-          type={type}
-          className="absolute bottom-1/2 left-1/2 origin-bottom -translate-x-1/2 rotate-[25deg] max-md:rotate-[32deg]"
+    <svg
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-visible"
+      viewBox={`0 0 ${COLS} ${ROWS}`}
+      preserveAspectRatio="none"
+    >
+      {lines.map((line) => (
+        <line
+          key={line.key}
+          x1={line.x1}
+          y1={line.y1}
+          x2={line.x2}
+          y2={line.y2}
+          stroke={stroke}
+          strokeLinecap="round"
+          opacity={0.4}
+          vectorEffect="non-scaling-stroke"
+          className="[stroke-width:6px] md:[stroke-width:10px] min-[2400px]:[stroke-width:14px]"
         />
-      ) : null}
-      {lineFirst === "above-left" || lineSecond === "above-left" ? (
-        <Line
-          type={type}
-          className="absolute bottom-1/2 left-1/2 origin-bottom -translate-x-1/2 -rotate-[25deg] max-md:-rotate-[32deg]"
-        />
-      ) : null}
-      {lineFirst !== "horizontal" && lineSecond === "horizontal" ? (
-        <Line
-          type={type}
-          className="absolute bottom-1/2 left-1/2 h-16 origin-bottom -translate-x-1/2 rotate-90 min-[2400px]:h-24"
-        />
-      ) : null}
-      {lineFirst === "horizontal" && lineSecond === "horizontal" ? (
-        <Line
-          type={type}
-          className="absolute bottom-1/2 left-1/2 h-16 origin-bottom -translate-x-1/2 rotate-90 min-[2400px]:h-24"
-        />
-      ) : null}
-    </>
+      ))}
+    </svg>
   );
 }
 
@@ -117,45 +123,44 @@ export default function SkillThree({
   return (
     <div
       className={cn(
-        // OG skill-three contract: fixed 6×7 board, items-end, grid-cols-7
-        "relative -ml-3 grid h-full max-h-[250px] w-full max-w-[350px] grid-cols-7 items-end justify-center gap-x-[18px] gap-y-0 max-xl:max-w-[200px] max-xl:gap-x-2 max-xl:gap-y-0 md:-ml-8 md:max-h-[650px] min-[2400px]:-ml-12 min-[2400px]:max-h-[975px] min-[2400px]:max-w-[560px] min-[2400px]:gap-x-8",
+        "relative h-[250px] w-full max-w-[350px] max-xl:max-w-[200px] md:h-[650px] min-[2400px]:h-[975px] min-[2400px]:max-w-[560px]",
         className,
       )}
     >
-      {matrix.map((row, indexMatrix) =>
-        row.map((node, indexChild) => {
-          const talent = skills.find(
-            (skill) => skill.position[0] === indexMatrix && skill.position[1] === indexChild,
-          );
-          if (node !== "1" || !talent) {
-            return <div key={`${indexMatrix}-${indexChild}`} />;
-          }
+      <TreeConnectors matrix={matrix} type={type} />
+      <div className="relative z-10 grid h-full w-full grid-cols-7 grid-rows-6 items-center justify-items-center gap-0">
+        {matrix.map((row, indexMatrix) =>
+          row.map((node, indexChild) => {
+            const talent = skills.find(
+              (skill) => skill.position[0] === indexMatrix && skill.position[1] === indexChild,
+            );
+            if (node !== "1" || !talent) {
+              return <div key={`${indexMatrix}-${indexChild}`} />;
+            }
 
-          const lineFirst = whereIsLine(indexMatrix, indexChild, matrix, "above-right");
-          const lineSecond = whereIsLine(indexMatrix, indexChild, matrix, "above-left");
-          const canBeLearned =
-            canLearnTalent(talent, skills, availablePoints) &&
-            !loading.favorite &&
-            !loading.activate &&
-            !loading.learn;
+            const canBeLearned =
+              canLearnTalent(talent, skills, availablePoints) &&
+              !loading.favorite &&
+              !loading.activate &&
+              !loading.learn;
 
-          return (
-            <div key={`${indexMatrix}-${indexChild}`} className="relative">
-              <TalentCard
-                talent={talent}
-                variant="secondary"
-                treeType={type}
-                canBeLearned={canBeLearned}
-                onActivate={() => void onActivate(talent)}
-                onLearn={() => void onLearn(talent)}
-                onFavourite={() => void onFavourite(talent)}
-                loading={loading}
-                line={renderTalentLines(lineFirst, lineSecond, type)}
-              />
-            </div>
-          );
-        }),
-      )}
+            return (
+              <div key={`${indexMatrix}-${indexChild}`} className="relative">
+                <TalentCard
+                  talent={talent}
+                  variant="secondary"
+                  treeType={type}
+                  canBeLearned={canBeLearned}
+                  onActivate={() => void onActivate(talent)}
+                  onLearn={() => void onLearn(talent)}
+                  onFavourite={() => void onFavourite(talent)}
+                  loading={loading}
+                />
+              </div>
+            );
+          }),
+        )}
+      </div>
     </div>
   );
 }

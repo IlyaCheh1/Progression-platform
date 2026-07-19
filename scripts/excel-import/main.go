@@ -170,8 +170,9 @@ func main() {
 		ri = rj - 1
 
 		slug := slugify(name)
-		login := fmt.Sprintf("demo.%s@masterofsword.local", slug)
-		pass := fmt.Sprintf("MoS-Demo-%s-2026!", strings.ReplaceAll(strings.Title(slug), "-", ""))
+		login := fmt.Sprintf("%s@mastersword.ru", slug)
+		first := strings.Split(slug, "-")[0]
+		pass := first + "123"
 		sid := "student-" + slug
 		cid := "char-" + slug
 		acc := demoAccount{
@@ -204,8 +205,8 @@ func main() {
 
 	// synthetic roles
 	accounts = append(accounts, demoAccount{
-		StudentID: "student-synthetic-adult", Name: "Synthetic Adult", Login: "demo.adult@masterofsword.local",
-		Password: "MoS-Demo-Adult-2026!", CharacterID: "char-synthetic-adult",
+		StudentID: "student-synthetic-adult", Name: "Взрослый ученик", Login: "adult@mastersword.ru",
+		Password: "adult123", CharacterID: "char-synthetic-adult",
 		Mastery: map[string]float64{}, MasteryUnits: map[string]int64{}, Ranks: map[string]int{},
 	})
 

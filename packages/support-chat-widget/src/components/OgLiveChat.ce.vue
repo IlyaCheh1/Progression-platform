@@ -3,7 +3,7 @@
     <!-- Полноэкранная подложка с backdrop-blur (только в fullscreen режиме) -->
     <div
       v-if="shouldUseFullscreen && isOpen"
-      class="fixed inset-0 w-full h-full backdrop-blur-sm bg-black/20 z-20"
+      class="fixed inset-0 w-full h-full backdrop-blur-sm bg-black/20 z-20 pointer-events-auto"
     >
       <!-- Кнопка "Назад" динамически позиционируется над чатом -->
       <div class="absolute z-40" :style="backButtonStyle">
@@ -24,7 +24,7 @@
       v-show="isOpen"
       :class="chatClasses"
       :style="fullscreenStyle"
-      class="relative"
+      class="relative pointer-events-auto"
     >
       <!-- Фоновые градиенты -->
       <div class="absolute inset-0 w-full h-full">
@@ -135,15 +135,15 @@ const updateVisibleDate = (date: string) => {
   visibleMessageDate.value = date;
 };
 
-// обработчик для закрытия чата при взаимодействии снаружи
+// Закрытие при клике снаружи. composedPath нужен из‑за Shadow DOM;
+// pointer-events-auto на панели обязателен — иначе клик «пробивает» хост с pointer-events: none.
 const onDocumentInteraction = (evt: Event) => {
   if (!isOpen.value) return;
 
-  const target = evt.target as Element | null;
-  if (!target) return;
-
-  const ogChatElement = target.closest('og-chat');
-  const isInsideWebComponent = !!ogChatElement;
+  const path = typeof evt.composedPath === 'function' ? evt.composedPath() : [];
+  const isInsideWebComponent = path.some(
+    (node) => node instanceof HTMLElement && node.tagName === 'OG-CHAT'
+  );
 
   if (!isInsideWebComponent) {
     isOpen.value = false;

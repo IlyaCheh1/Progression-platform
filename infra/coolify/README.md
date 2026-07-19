@@ -174,7 +174,7 @@ S3_BUCKET=...
 
 1. Задеплой `school-api`, получи публичный HTTPS URL.
 2. В web пропиши `NEXT_PUBLIC_SCHOOL_API=https://...` и пересобери.
-3. Открой `/login` → `temp.admin@masterofsword.local` / `MoS-Temp-PlatformAdmin-2026!`.
+3. Открой `/login` → `admin@mastersword.ru` / `admin123`.
 4. S3-ключи добавь Runtime-переменными (секреты не в Git).
 
 ## Выгрузка hero-видео на S3 (Coolify Terminal)

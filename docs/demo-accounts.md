@@ -1,70 +1,75 @@
-# Demo Accounts (local/staging only)
+# Учётные записи (локально / staging)
 
-## Temporary local auth (created for sandbox)
+Пароли в plaintext в сиде `school-api` — **только для локальной разработки и staging**.
 
-Use these first while iterating on login + admin flows. Passwords are plaintext in the in-memory school-api seed — **local/demo only**.
+Excel-выгрузка: [`docs/accounts.xlsx`](./accounts.xlsx) (листы «Учётки» и «Служебные»).  
+Пересобрать: `python scripts/export-accounts-xlsx.py`
 
-School API defaults to `127.0.0.1:8082`. Session tokens are random opaque values issued at login (not guessable from student id). Do not expose this API on a shared network.
+School API по умолчанию: `127.0.0.1:8082`. Токены сессии выдаются при логине.
 
-| Name | Role | Login | Password |
+## Служебные роли
+
+| Имя | Роль | Логин | Пароль |
 |---|---|---|---|
-| Platform Administrator | `administrator` | `temp.admin@masterofsword.local` | `MoS-Temp-PlatformAdmin-2026!` |
-| Temp Local Student | `student` | `temp.student@masterofsword.local` | `MoS-Temp-Student-2026!` |
-| Demo Guardian | `guardian` | `demo.guardian@masterofsword.local` | `MoS-Demo-Guardian-2026!` |
-| Demo Coach | `coach` | `demo.coach@masterofsword.local` | `MoS-Demo-Coach-2026!` |
-| Demo Renter | `renter` | `demo.renter@masterofsword.local` | `MoS-Demo-Renter-2026!` |
+| Администратор платформы | `administrator` | `admin@mastersword.ru` | `admin123` |
+| Локальный ученик | `student` | `student@mastersword.ru` | `student123` |
+| Опекун | `guardian` | `guardian@mastersword.ru` | `guardian123` |
+| Тренер | `coach` | `coach@mastersword.ru` | `coach123` |
+| Арендатор | `renter` | `renter@mastersword.ru` | `renter123` |
+| Взрослый ученик | `student` | `adult@mastersword.ru` | `adult123` |
 
-- Platform admin lands on `/admin` (school roster + content authoring + `/studio`).
-- Student lands on onboarding/profile cabinet.
+- Админ открывает `/admin`.
+- Ученик — онбординг / кабинет профиля.
 
-## Excel demo students
+## Ученики из Excel
 
-Source: `Мастер Меча.xlsx` hash `389345302d95` as-of `2026-07-19`
+Источник: `Мастер Меча.xlsx` hash `389345302d95` as-of `2026-07-19`
 
-| Name | Role | Login | Password |
+Формат: `{имя-фамилия}@mastersword.ru` / `{имя}123`
+
+| Имя | Роль | Логин | Пароль |
 |---|---|---|---|
-| Макс Киселев | `administrator` | `demo.maks-kiselev@masterofsword.local` | `MoS-Demo-MaksKiselev-2026!` |
-| Анатолий Бычков | `student` | `demo.anatoliy-bychkov@masterofsword.local` | `MoS-Demo-AnatoliyBychkov-2026!` |
-| Маргарита Тузова | `student` | `demo.margarita-tuzova@masterofsword.local` | `MoS-Demo-MargaritaTuzova-2026!` |
-| Татьяна Грибанова | `administrator` | `demo.tatyana-gribanova@masterofsword.local` | `MoS-Demo-TatyanaGribanova-2026!` |
-| Николай Лобаев | student | `demo.nikolay-lobaev@masterofsword.local` | `MoS-Demo-NikolayLobaev-2026!` |
-| Сергей Власенко | student | `demo.sergey-vlasenko@masterofsword.local` | `MoS-Demo-SergeyVlasenko-2026!` |
-| Артем Шумилов | student | `demo.artem-shumilov@masterofsword.local` | `MoS-Demo-ArtemShumilov-2026!` |
-| Иван Бобровский | student | `demo.ivan-bobrovskiy@masterofsword.local` | `MoS-Demo-IvanBobrovskiy-2026!` |
-| Алексей Шаповалов | student | `demo.aleksey-shapovalov@masterofsword.local` | `MoS-Demo-AlekseyShapovalov-2026!` |
-| Дмитрий Каныгин | student | `demo.dmitriy-kanygin@masterofsword.local` | `MoS-Demo-DmitriyKanygin-2026!` |
-| Анастасия Соловьева | student | `demo.anastasiya-soloveva@masterofsword.local` | `MoS-Demo-AnastasiyaSoloveva-2026!` |
-| Александра Жигачева | student | `demo.aleksandra-zhigacheva@masterofsword.local` | `MoS-Demo-AleksandraZhigacheva-2026!` |
-| Кирилл Жигачев | student | `demo.kirill-zhigachev@masterofsword.local` | `MoS-Demo-KirillZhigachev-2026!` |
-| Ксения Измайловская | student | `demo.kseniya-izmaylovskaya@masterofsword.local` | `MoS-Demo-KseniyaIzmaylovskaya-2026!` |
-| Маргарита Кукушкина | student | `demo.margarita-kukushkina@masterofsword.local` | `MoS-Demo-MargaritaKukushkina-2026!` |
-| Александра Селиванова | student | `demo.aleksandra-selivanova@masterofsword.local` | `MoS-Demo-AleksandraSelivanova-2026!` |
-| Константин Киселев | student | `demo.konstantin-kiselev@masterofsword.local` | `MoS-Demo-KonstantinKiselev-2026!` |
-| Даниил Киселев | student | `demo.daniil-kiselev@masterofsword.local` | `MoS-Demo-DaniilKiselev-2026!` |
-| Григорий Фирсов | student | `demo.grigoriy-firsov@masterofsword.local` | `MoS-Demo-GrigoriyFirsov-2026!` |
-| Дмитрий Круглов | student | `demo.dmitriy-kruglov@masterofsword.local` | `MoS-Demo-DmitriyKruglov-2026!` |
-| Катерина Ветрова | student | `demo.katerina-vetrova@masterofsword.local` | `MoS-Demo-KaterinaVetrova-2026!` |
-| Александр Лебедев | student | `demo.aleksandr-lebedev@masterofsword.local` | `MoS-Demo-AleksandrLebedev-2026!` |
-| Наталья Кияшко | student | `demo.natalya-kiyashko@masterofsword.local` | `MoS-Demo-NatalyaKiyashko-2026!` |
-| Иван Ковальков | student | `demo.ivan-kovalkov@masterofsword.local` | `MoS-Demo-IvanKovalkov-2026!` |
-| Георгий Юкляевских | student | `demo.georgiy-yuklyaevskih@masterofsword.local` | `MoS-Demo-GeorgiyYuklyaevskih-2026!` |
-| Павел Захаров | student | `demo.pavel-zaharov@masterofsword.local` | `MoS-Demo-PavelZaharov-2026!` |
-| Александр Бузаев | student | `demo.aleksandr-buzaev@masterofsword.local` | `MoS-Demo-AleksandrBuzaev-2026!` |
-| Дмитрий Власов | student | `demo.dmitriy-vlasov@masterofsword.local` | `MoS-Demo-DmitriyVlasov-2026!` |
-| Кирилл Шеламов | student | `demo.kirill-shelamov@masterofsword.local` | `MoS-Demo-KirillShelamov-2026!` |
-| Никита Воробьев | student | `demo.nikita-vorobev@masterofsword.local` | `MoS-Demo-NikitaVorobev-2026!` |
-| Георгий Новиков | student | `demo.georgiy-novikov@masterofsword.local` | `MoS-Demo-GeorgiyNovikov-2026!` |
-| Ульяна Грибанова | student | `demo.ulyana-gribanova@masterofsword.local` | `MoS-Demo-UlyanaGribanova-2026!` |
-| Кирилл Краснощеков | student | `demo.kirill-krasnoschekov@masterofsword.local` | `MoS-Demo-KirillKrasnoschekov-2026!` |
-| Василиса Ляшук | student | `demo.vasilisa-lyashuk@masterofsword.local` | `MoS-Demo-VasilisaLyashuk-2026!` |
-| Деметра Яниди | student | `demo.demetra-yanidi@masterofsword.local` | `MoS-Demo-DemetraYanidi-2026!` |
-| Иннокентий Ордин | student | `demo.innokentiy-ordin@masterofsword.local` | `MoS-Demo-InnokentiyOrdin-2026!` |
-| Сергей Харламов | student | `demo.sergey-harlamov@masterofsword.local` | `MoS-Demo-SergeyHarlamov-2026!` |
-| Сергей Шредер | student | `demo.sergey-shreder@masterofsword.local` | `MoS-Demo-SergeyShreder-2026!` |
-| Илья Кузнецов | student | `demo.ilya-kuznetsov@masterofsword.local` | `MoS-Demo-IlyaKuznetsov-2026!` |
-| Лесли Алексис | student | `demo.lesli-aleksis@masterofsword.local` | `MoS-Demo-LesliAleksis-2026!` |
-| Анна Егорова | student | `demo.anna-egorova@masterofsword.local` | `MoS-Demo-AnnaEgorova-2026!` |
-| Софья Соколянская | student | `demo.sofya-sokolyanskaya@masterofsword.local` | `MoS-Demo-SofyaSokolyanskaya-2026!` |
-| Артур Арифуллин | student | `demo.artur-arifullin@masterofsword.local` | `MoS-Demo-ArturArifullin-2026!` |
-| Александр Дон | student | `demo.aleksandr-don@masterofsword.local` | `MoS-Demo-AleksandrDon-2026!` |
-| Synthetic Adult | student | `demo.adult@masterofsword.local` | `MoS-Demo-Adult-2026!` |
+| Макс Киселев | `administrator` | `maks-kiselev@mastersword.ru` | `maks123` |
+| Анатолий Бычков | `student` | `anatoliy-bychkov@mastersword.ru` | `anatoliy123` |
+| Маргарита Тузова | `student` | `margarita-tuzova@mastersword.ru` | `margarita123` |
+| Татьяна Грибанова | `administrator` | `tatyana-gribanova@mastersword.ru` | `tatyana123` |
+| Николай Лобаев | `student` | `nikolay-lobaev@mastersword.ru` | `nikolay123` |
+| Сергей Власенко | `student` | `sergey-vlasenko@mastersword.ru` | `sergey123` |
+| Артем Шумилов | `student` | `artem-shumilov@mastersword.ru` | `artem123` |
+| Иван Бобровский | `student` | `ivan-bobrovskiy@mastersword.ru` | `ivan123` |
+| Алексей Шаповалов | `student` | `aleksey-shapovalov@mastersword.ru` | `aleksey123` |
+| Дмитрий Каныгин | `student` | `dmitriy-kanygin@mastersword.ru` | `dmitriy123` |
+| Анастасия Соловьева | `student` | `anastasiya-soloveva@mastersword.ru` | `anastasiya123` |
+| Александра Жигачева | `student` | `aleksandra-zhigacheva@mastersword.ru` | `aleksandra123` |
+| Кирилл Жигачев | `student` | `kirill-zhigachev@mastersword.ru` | `kirill123` |
+| Ксения Измайловская | `student` | `kseniya-izmaylovskaya@mastersword.ru` | `kseniya123` |
+| Маргарита Кукушкина | `student` | `margarita-kukushkina@mastersword.ru` | `margarita123` |
+| Александра Селиванова | `student` | `aleksandra-selivanova@mastersword.ru` | `aleksandra123` |
+| Константин Киселев | `student` | `konstantin-kiselev@mastersword.ru` | `konstantin123` |
+| Даниил Киселев | `student` | `daniil-kiselev@mastersword.ru` | `daniil123` |
+| Григорий Фирсов | `student` | `grigoriy-firsov@mastersword.ru` | `grigoriy123` |
+| Дмитрий Круглов | `student` | `dmitriy-kruglov@mastersword.ru` | `dmitriy123` |
+| Катерина Ветрова | `student` | `katerina-vetrova@mastersword.ru` | `katerina123` |
+| Александр Лебедев | `student` | `aleksandr-lebedev@mastersword.ru` | `aleksandr123` |
+| Наталья Кияшко | `student` | `natalya-kiyashko@mastersword.ru` | `natalya123` |
+| Иван Ковальков | `student` | `ivan-kovalkov@mastersword.ru` | `ivan123` |
+| Георгий Юкляевских | `student` | `georgiy-yuklyaevskih@mastersword.ru` | `georgiy123` |
+| Павел Захаров | `student` | `pavel-zaharov@mastersword.ru` | `pavel123` |
+| Александр Бузаев | `student` | `aleksandr-buzaev@mastersword.ru` | `aleksandr123` |
+| Дмитрий Власов | `student` | `dmitriy-vlasov@mastersword.ru` | `dmitriy123` |
+| Кирилл Шеламов | `student` | `kirill-shelamov@mastersword.ru` | `kirill123` |
+| Никита Воробьев | `student` | `nikita-vorobev@mastersword.ru` | `nikita123` |
+| Георгий Новиков | `student` | `georgiy-novikov@mastersword.ru` | `georgiy123` |
+| Ульяна Грибанова | `student` | `ulyana-gribanova@mastersword.ru` | `ulyana123` |
+| Кирилл Краснощеков | `student` | `kirill-krasnoschekov@mastersword.ru` | `kirill123` |
+| Василиса Ляшук | `student` | `vasilisa-lyashuk@mastersword.ru` | `vasilisa123` |
+| Деметра Яниди | `student` | `demetra-yanidi@mastersword.ru` | `demetra123` |
+| Иннокентий Ордин | `student` | `innokentiy-ordin@mastersword.ru` | `innokentiy123` |
+| Сергей Харламов | `student` | `sergey-harlamov@mastersword.ru` | `sergey123` |
+| Сергей Шредер | `student` | `sergey-shreder@mastersword.ru` | `sergey123` |
+| Илья Кузнецов | `student` | `ilya-kuznetsov@mastersword.ru` | `ilya123` |
+| Лесли Алексис | `student` | `lesli-aleksis@mastersword.ru` | `lesli123` |
+| Анна Егорова | `student` | `anna-egorova@mastersword.ru` | `anna123` |
+| Софья Соколянская | `student` | `sofya-sokolyanskaya@mastersword.ru` | `sofya123` |
+| Артур Арифуллин | `student` | `artur-arifullin@mastersword.ru` | `artur123` |
+| Александр Дон | `student` | `aleksandr-don@mastersword.ru` | `aleksandr123` |

@@ -250,50 +250,56 @@ body {
 }
 
 .character-stage-figure {
-  height: clamp(190px, 36vh, 46vh);
-  max-height: min(46vh, calc(100vh - 72px - 180px));
+  height: clamp(219px, 41vh, 53vh);
+  max-height: min(53vh, calc(100vh - 72px - 180px));
   width: 100%;
 }
 
 /* Стоячий персонаж на горной террасе: чуть компактнее, ноги на каменной площадке */
 .character-stage-figure--terrace {
-  height: clamp(200px, 38vh, 48vh);
-  max-height: min(48vh, calc(100vh - 72px - 200px));
+  height: clamp(230px, 44vh, 55vh);
+  max-height: min(55vh, calc(100vh - 72px - 200px));
 }
 
 @media (min-width: 768px) {
   .character-stage-figure {
-    height: clamp(280px, 48vh, 58vh);
-    max-height: min(58vh, calc(100vh - 72px - 200px));
+    height: clamp(322px, 55vh, 67vh);
+    max-height: min(67vh, calc(100vh - 72px - 200px));
   }
 
   .character-stage-figure--terrace {
-    height: clamp(300px, 50vh, 56vh);
-    max-height: min(56vh, calc(100vh - 72px - 220px));
+    height: clamp(345px, 58vh, 64vh);
+    max-height: min(64vh, calc(100vh - 72px - 220px));
   }
 }
 
 @media (min-width: 1280px) {
   .character-stage-figure {
-    height: clamp(360px, 54vh, 64vh);
-    max-height: min(64vh, calc(100vh - 72px - 220px));
+    height: clamp(414px, 62vh, 74vh);
+    max-height: min(74vh, calc(100vh - 72px - 220px));
   }
 
   .character-stage-figure--terrace {
-    height: clamp(380px, 52vh, 60vh);
-    max-height: min(60vh, calc(100vh - 72px - 240px));
+    height: clamp(437px, 60vh, 69vh);
+    max-height: min(69vh, calc(100vh - 72px - 240px));
   }
 }
 
 @media (min-width: 2400px) {
+  /* Scale app top menu + all in-bar content by 20% on ultra-wide screens */
+  .witcher-header {
+    zoom: 1.2;
+  }
+
   .character-stage-figure {
-    height: min(68vh, calc(100vh - 72px - 240px));
+    /* 72px header * 1.2 zoom ≈ 86px layout height */
+    height: min(68vh, calc(100vh - 86px - 240px));
     max-height: 68vh;
     max-width: 68vh;
   }
 
   .character-stage-figure--terrace {
-    height: min(62vh, calc(100vh - 72px - 260px));
+    height: min(62vh, calc(100vh - 86px - 260px));
     max-height: 62vh;
     max-width: 62vh;
   }
@@ -415,27 +421,13 @@ body {
 }
 
 .bg-secondaryBg {
-  background: rgba(26, 26, 29, 0.92);
+  background: var(--color-secondaryBg);
 }
 .bg-controlsBlur {
   background: rgba(255, 255, 255, 0.08);
 }
 .bg-controlsInactive {
   background: rgba(255, 255, 255, 0.06);
-}
-
-/* Talent tree connector lines */
-.bg-blade-line-gradient {
-  background: linear-gradient(180deg, #31d053 33.19%, #0b0b0c 68.09%);
-}
-.bg-chronicle-line-gradient {
-  background: linear-gradient(180deg, #0b0b0c 33.19%, #2d68ff 68.09%);
-}
-.bg-path-line-gradient {
-  background: linear-gradient(180deg, #0b0b0c 33.19%, #d4a84b 68.09%);
-}
-.bg-school-line-gradient {
-  background: linear-gradient(180deg, #0b0b0c 33.19%, #ee4810 68.09%);
 }
 
 og-chat {
