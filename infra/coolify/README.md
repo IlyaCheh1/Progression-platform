@@ -122,9 +122,9 @@ Healthcheck: `GET https://chat-api.mastersword.ru/health`
 | Переменная | Значение |
 |---|---|
 | `OGC_TELEGRAM__PUBLIC_BASE_URL` | `https://chat-api.mastersword.ru` |
-| `OGC_TELEGRAM_BOT_TOKEN` | token от @BotFather |
-| `OGC_TELEGRAM_SUPPORT_CHAT_ID` | `-100...` (супергруппа) |
-| `OGC_TELEGRAM_WEBHOOK_SECRET` | случайная строка (openssl rand -hex 32) |
+| `OGC_TELEGRAM__BOT_TOKEN` | token от @BotFather |
+| `OGC_TELEGRAM__SUPPORT_CHAT_ID` | `-100...` (супергруппа) |
+| `OGC_TELEGRAM__WEBHOOK_SECRET` | случайная строка (openssl rand -hex 32) |
 | `OGC_POSTGRESQL__USERNAME` | пользователь Postgres |
 | `OGC_POSTGRESQL__PASSWORD` | пароль |
 | `OGC_POSTGRESQL__DB_HOST` | хост БД |
@@ -208,6 +208,15 @@ NEXT_PUBLIC_MEDIA_BASE_URL=/media/hero
 Пока S3-публичный домен не открывается — ставь `/media/hero` (файлы уже в образе web).
 
 Добавь `NEXT_PUBLIC_MEDIA_BASE_URL` в web (**Buildtime + Runtime**) и сделай **Rebuild**.
+
+Иконки заданий / достижений / талантов — та же схема:
+
+```env
+NEXT_PUBLIC_CONTENT_ICONS_BASE_URL=/media/content-icons
+# или https://<bucket-uuid>.selstorage.ru/media/content-icons
+```
+
+`swordmaster.selstorage.ru` здесь тоже нельзя — в коде такой хост игнорируется и берётся `/media/content-icons`.
 
 ## Автодеплой не стартует
 

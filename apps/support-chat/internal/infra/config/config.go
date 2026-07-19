@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"log/slog"
+	"os"
+	"strconv"
 	"strings"
 
 	"github.com/knadh/koanf/parsers/yaml"
@@ -116,5 +118,44 @@ func LoadConfig(filename string) (Config, error) {
 		return Config{}, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
+	applyTelegramEnvFallbacks(&cfg)
+
 	return cfg, nil
+}
+
+// applyTelegramEnvFallbacks accepts common misnamed Coolify/docs vars that use a
+// single underscore after TELEGRAM (OGC_TELEGRAM_BOT_TOKEN) instead of the nested
+// delimiter form required by koanf (OGC_TELEGRAM__BOT_TOKEN).
+func applyTelegramEnvFallbacks(cfg *Config) {
+	if cfg.Telegram.BotToken == "" {
+		if v := firstNonEmptyEnv("OGC_TELEGRAM_BOT_TOKEN"); v != "" {
+			cfg.Telegram.BotToken = v
+		}
+	}
+	if cfg.Telegram.WebhookSecret == "" {
+		if v := firstNonEmptyEnv("OGC_TELEGRAM_WEBHOOK_SECRET"); v != "" {
+			cfg.Telegram.WebhookSecret = v
+		}
+	}
+	if cfg.Telegram.SupportChatID == 0 {
+		if v := firstNonEmptyEnv("OGC_TELEGRAM_SUPPORT_CHAT_ID"); v != "" {
+			if id, err := strconv.ParseInt(v, 10, 64); err == nil {
+				cfg.Telegram.SupportChatID = id
+			}
+		}
+	}
+	if cfg.Telegram.PublicBaseURL == "" {
+		if v := firstNonEmptyEnv("OGC_TELEGRAM_PUBLIC_BASE_URL"); v != "" {
+			cfg.Telegram.PublicBaseURL = v
+		}
+	}
+}
+
+func firstNonEmptyEnv(keys ...string) string {
+	for _, key := range keys {
+		if v := strings.TrimSpace(os.Getenv(key)); v != "" {
+			return v
+		}
+	}
+	return ""
 }

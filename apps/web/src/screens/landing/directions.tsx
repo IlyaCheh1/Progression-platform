@@ -4,9 +4,26 @@ import { useEffect, useRef } from "react";
 import { directions } from "@/lib/content";
 import { SCHOOL_COURSE_PAGES } from "@/lib/courses/data";
 import { getSchoolColor } from "@/lib/school-colors";
+import { buildServiceButtonTheme } from "@/lib/service-button-theme";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { useRoomsScroll } from "@/hooks/landing/useRoomsScroll";
 import Button from "@/components/ui/button";
+
+const SCHOOL_TAGLINE = "Горизонтальный путь школ — выбери клинок и стиль.";
+
+const RPG_SLIDE = {
+  key: "rpg_profile",
+  title: "RPG-профиль",
+  tag: "Профиль",
+  tagline: "Один аккаунт — вся школа",
+  description:
+    "Ученик — это кастомизируемый RPG-персонаж с путями мастерства, деревом талантов, достижениями и инвентарём. Тренировки в зале начисляют опыт и открывают награды.",
+  stat: "Лист персонажа",
+  image: "/media/directions/7.webp",
+  color: "#d4a84b",
+  href: "/login",
+  cta: "Создать",
+} as const;
 
 function hexToRgb(hex: string) {
   const normalized = hex.replace("#", "");
@@ -34,7 +51,10 @@ type DirectionSlide = {
   description: string;
   image: string;
   tag: string;
+  tagline: string;
   stat: string;
+  href: string;
+  cta: string;
   color: string;
   glow: string;
   gradient: string;
@@ -46,8 +66,9 @@ export default function Directions() {
   const trackRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileMedia();
 
-  const slides: DirectionSlide[] = directions.map((direction, index) => {
+  const schoolSlides: DirectionSlide[] = directions.map((direction, index) => {
     const theme = buildDirectionTheme(getSchoolColor(direction.key, index));
+    const course = SCHOOL_COURSE_PAGES[direction.key];
     return {
       id: index + 1,
       key: direction.key,
@@ -55,10 +76,31 @@ export default function Directions() {
       description: direction.description,
       image: `/media/directions/${index + 1}.webp`,
       tag: "Направление",
+      tagline: SCHOOL_TAGLINE,
       stat: "8 путей мастерства",
+      href: course?.href ?? "#tariffs",
+      cta: course?.cta ?? "Тарифы",
       ...theme,
     };
   });
+
+  const rpgTheme = buildDirectionTheme(RPG_SLIDE.color);
+  const slides: DirectionSlide[] = [
+    ...schoolSlides,
+    {
+      id: schoolSlides.length + 1,
+      key: RPG_SLIDE.key,
+      title: RPG_SLIDE.title,
+      description: RPG_SLIDE.description,
+      image: RPG_SLIDE.image,
+      tag: RPG_SLIDE.tag,
+      tagline: RPG_SLIDE.tagline,
+      stat: RPG_SLIDE.stat,
+      href: RPG_SLIDE.href,
+      cta: RPG_SLIDE.cta,
+      ...rpgTheme,
+    },
+  ];
 
   const { activeRoom, goToRoom } = useRoomsScroll(containerRef, trackRef, slides.length, undefined, isMobile);
 
@@ -255,7 +297,7 @@ function DirectionPanel({
 
         <div className="room-panel-middle">
           <p className="room-panel-tagline mb-4 max-w-lg font-light italic text-white/60">
-            Горизонтальный путь школ — выбери клинок и стиль.
+            {slide.tagline}
           </p>
           <p className="room-panel-description mb-8 max-w-md leading-relaxed text-white/50">
             {slide.description}
@@ -269,12 +311,13 @@ function DirectionPanel({
           </div>
           <div className="h-px max-w-24 flex-1" style={{ background: `${slide.color}40` }} />
           <Button
-            href={SCHOOL_COURSE_PAGES[slide.key]?.href ?? "#tariffs"}
-            variant="secondary"
+            href={slide.href}
+            variant="filled"
             size="sm"
             className="shrink-0 uppercase"
+            style={buildServiceButtonTheme(slide.color)}
           >
-            {SCHOOL_COURSE_PAGES[slide.key]?.cta ?? "Тарифы"}
+            {slide.cta}
           </Button>
         </div>
       </div>

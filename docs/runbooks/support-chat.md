@@ -34,10 +34,11 @@ cd apps/web && npm run chat:build
 
 | Variable | Purpose |
 |---|---|
-| `OGC_TELEGRAM_BOT_TOKEN` | BotFather token |
-| `OGC_TELEGRAM_SUPPORT_CHAT_ID` | Supergroup id (`-100...`) |
-| `OGC_TELEGRAM_WEBHOOK_SECRET` | Webhook path secret |
-| `OGC_POSTGRESQL_*` | Override `configs/values.yml` |
+| `OGC_TELEGRAM__BOT_TOKEN` | BotFather token (nested `__` required by koanf) |
+| `OGC_TELEGRAM__SUPPORT_CHAT_ID` | Supergroup id (`-100...`) |
+| `OGC_TELEGRAM__WEBHOOK_SECRET` | Webhook path secret |
+| `OGC_TELEGRAM__PUBLIC_BASE_URL` | Public chat API URL for webhook auto-register |
+| `OGC_POSTGRESQL__*` | Override `configs/values.yml` |
 
 Frontend:
 
@@ -65,8 +66,8 @@ sh scripts/set-telegram-webhook.sh
 Legacy manual curl:
 
 ```bash
-curl "https://api.telegram.org/bot$OGC_TELEGRAM_BOT_TOKEN/setWebhook" \
-  -d "url=https://<host>/integrations/telegram/webhook/$OGC_TELEGRAM_WEBHOOK_SECRET" \
+curl "https://api.telegram.org/bot$OGC_TELEGRAM__BOT_TOKEN/setWebhook" \
+  -d "url=https://<host>/integrations/telegram/webhook/$OGC_TELEGRAM__WEBHOOK_SECRET" \
   -d "allowed_updates=[\"message\"]"
 ```
 

@@ -4,14 +4,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   equipInventoryItem,
   fetchMyInventory,
+  InventoryApiError,
   inventoryBackgrounds,
   inventoryCharacters,
+  messageForInventoryError,
   type InventoryBackgroundItem,
   type InventoryCharacterItem,
   type InventoryView,
 } from "@/lib/inventory-api";
 import { fetchMyProfile, writeCachedProfile, type PlayerProfile } from "@/lib/profile-api";
-import type { SessionUser } from "@/lib/session";
+import { clearSession, type SessionUser } from "@/lib/session";
 
 type UseAppearanceInventoryOptions = {
   onProfileUpdated?: (profile: PlayerProfile) => void;
@@ -38,8 +40,14 @@ export function useAppearanceInventory(
     try {
       const view = await fetchMyInventory(session);
       setInventory(view);
-    } catch {
-      setError("Не удалось загрузить инвентарь");
+    } catch (error) {
+      if (error instanceof InventoryApiError && error.isUnauthorized) {
+        clearSession();
+        setInventory(null);
+        setError("Сессия истекла. Войдите снова.");
+        return;
+      }
+      setError(messageForInventoryError(error));
     } finally {
       setLoading(false);
     }

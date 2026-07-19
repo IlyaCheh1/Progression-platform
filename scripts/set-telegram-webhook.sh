@@ -13,8 +13,17 @@ elif [ -f "../../.env.local" ]; then
 fi
 
 BASE_URL="${OGC_TELEGRAM__PUBLIC_BASE_URL:-${OGC_TELEGRAM_PUBLIC_BASE_URL:-https://chat-api.mastersword.ru}}"
-SECRET="${OGC_TELEGRAM_WEBHOOK_SECRET:?OGC_TELEGRAM_WEBHOOK_SECRET required}"
-TOKEN="${OGC_TELEGRAM_BOT_TOKEN:?OGC_TELEGRAM_BOT_TOKEN required}"
+SECRET="${OGC_TELEGRAM__WEBHOOK_SECRET:-${OGC_TELEGRAM_WEBHOOK_SECRET:-}}"
+TOKEN="${OGC_TELEGRAM__BOT_TOKEN:-${OGC_TELEGRAM_BOT_TOKEN:-}}"
+
+if [ -z "$SECRET" ]; then
+  echo "OGC_TELEGRAM__WEBHOOK_SECRET (or OGC_TELEGRAM_WEBHOOK_SECRET) required" >&2
+  exit 1
+fi
+if [ -z "$TOKEN" ]; then
+  echo "OGC_TELEGRAM__BOT_TOKEN (or OGC_TELEGRAM_BOT_TOKEN) required" >&2
+  exit 1
+fi
 
 WEBHOOK_URL="${BASE_URL%/}/integrations/telegram/webhook/${SECRET}"
 

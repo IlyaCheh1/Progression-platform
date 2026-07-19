@@ -33,6 +33,18 @@ function resolveChatEndpoints() {
   const protocol = window.location.protocol === "https:" ? "https" : "http";
   const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
 
+  // Deployed site with loopback env baked into the web build: talk to chat-api.<apex>,
+  // never hang on `{page-host}:8084` (common cause of ~1 min connect overlay).
+  if (!isLoopback) {
+    const parts = host.split(".");
+    const apex = parts.length >= 2 ? parts.slice(-2).join(".") : host;
+    const chatHost = `chat-api.${apex}`;
+    return {
+      apiBaseUrl: `${protocol}://${chatHost}`,
+      wsBaseUrl: `${wsProtocol}://${chatHost}`,
+    };
+  }
+
   return {
     apiBaseUrl: `${protocol}://${host}:8084`,
     wsBaseUrl: `${wsProtocol}://${host}:8084`,

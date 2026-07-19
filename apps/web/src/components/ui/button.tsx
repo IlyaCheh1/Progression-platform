@@ -9,6 +9,7 @@ const variantClasses = {
   secondary: "og-btn-secondary",
   stroke: "og-btn-stroke",
   ghost: "og-btn-ghost",
+  filled: "og-btn-filled",
 } as const;
 
 const sizeClasses = {
@@ -35,16 +36,17 @@ export default function Button({
   children,
   ...rest
 }: ButtonProps) {
+  const { style, disabled, onClick, ...buttonRest } = rest;
   const classes = cn("og-btn", variantClasses[variant], sizeClasses[size], className);
   if (href) {
     return (
-      <a href={href} className={classes}>
+      <a href={href} className={classes} style={style} aria-disabled={disabled || undefined} onClick={onClick}>
         {children}
       </a>
     );
   }
   return (
-    <button type={type} className={classes} {...rest}>
+    <button type={type} className={classes} style={style} disabled={disabled} onClick={onClick} {...buttonRest}>
       {children}
     </button>
   );

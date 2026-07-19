@@ -2,6 +2,7 @@ package conversation
 
 import (
 	"context"
+	"time"
 
 	cm "github.com/masterofsword/support-chat/internal/domain/conversation/model"
 	"github.com/masterofsword/support-chat/internal/domain/user/model"
@@ -53,16 +54,22 @@ func (s *ConversationAppServiceImpl) CreateConversation(ctx context.Context, inf
 		return nil, err
 	}
 
-	// If support conversation, ensure Telegram topic exists
+	// Ensure Telegram topic in background so chat open is not blocked by Bot API latency.
+	// First user message also lazily ensures the topic if it is still missing.
 	if createdConversation.Type == cm.SupportConversationType && s.telegramService != nil {
-		updatedConversation, err := s.telegramService.EnsureSupportTopic(ctx, createdConversation)
-		if err != nil {
-			s.logger.Error("Failed to ensure Telegram topic", "error", err, "conversation_id", createdConversation.Id)
-			// Don't fail the entire operation - conversation is already created
-			return createdConversation, nil
-		}
-		return updatedConversation, nil
+		go s.ensureSupportTopicAsync(createdConversation)
 	}
 
 	return createdConversation, nil
+}
+
+func (s *ConversationAppServiceImpl) ensureSupportTopicAsync(conversation *cm.Conversation) {
+	bgCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	if _, err := s.telegramService.EnsureSupportTopic(bgCtx, conversation); err != nil {
+		s.logger.Error("Failed to ensure Telegram topic (async)",
+			"error", err,
+			"conversation_id", conversation.Id)
+	}
 }

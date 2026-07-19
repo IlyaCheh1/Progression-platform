@@ -81,6 +81,16 @@ body {
     0 4px 18px rgba(212, 168, 75, 0.45),
     inset 0 0 0 1000px rgba(255, 255, 255, 0.06);
 }
+.og-btn-filled {
+  color: var(--og-btn-text, #fff);
+  background-image: var(--og-btn-gradient);
+  box-shadow: var(--og-btn-shadow);
+}
+.og-btn-filled:hover:not(:disabled) {
+  box-shadow:
+    var(--og-btn-shadow-hover),
+    inset 0 0 0 1000px rgba(255, 255, 255, 0.08);
+}
 .og-btn-magenta {
   @apply border border-mos-line text-mos-text;
   background: rgba(20, 20, 22, 0.85);

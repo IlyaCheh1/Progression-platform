@@ -53,25 +53,20 @@ export function IconInventoryBackgrounds(props: IconProps) {
   );
 }
 
-/** Helmet / equipment filter */
+/** Sword / equipment filter */
 export function IconInventoryEquipment(props: IconProps) {
   return (
     <svg {...base(props)}>
       <path
-        d="M12 3C7.58 3 4 6.8 4 12v1.5h16V12c0-5.2-3.58-9-8-9Z"
+        d="M14.5 17.5 3 6V3h3l11.5 11.5"
         stroke="currentColor"
         strokeWidth="1.5"
+        strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M4 13.5h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path
-        d="M6 13.5V17c0 1.66 1.79 3 4 3h4c2.21 0 4-1.34 4-3v-3.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <path d="M9 16.5h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M12 3v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M13 19l6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M19 21l2.5-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }

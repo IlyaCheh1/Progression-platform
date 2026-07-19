@@ -1,5 +1,7 @@
 /** Каталог деревьев талантов MoS — из content store (starter.json / GET /v1/talents/catalog). */
 
+import { talentIconUrl } from "@/lib/content-icons";
+
 export type TalentTreeType = "blade" | "chronicle" | "path" | "school";
 export type TalentKind = "PASSIVE" | "ACTIVE_TYPE";
 
@@ -62,22 +64,6 @@ const DEFAULT_TREES: ContentTalentTree[] = [
   { id: "codex.lore", title: "Кодекс", theme: "chronicle" },
 ];
 
-function talentIconUrl(key: string, icon?: string): string {
-  const base = (
-    process.env.NEXT_PUBLIC_CONTENT_ICONS_BASE_URL ?? "/media/content-icons"
-  ).replace(/\/$/, "");
-  if (icon) {
-    if (
-      icon.startsWith("http://") ||
-      icon.startsWith("https://") ||
-      icon.startsWith("/")
-    ) {
-      return icon;
-    }
-    return `${base}/${icon.replace(/^\//, "")}`;
-  }
-  return `${base}/talents/${key}.webp`;
-}
 
 function toMosTalent(t: ContentTalent): MosTalent {
   const kind = t.kind ?? "PASSIVE";

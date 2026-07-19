@@ -502,7 +502,7 @@ func (ws *WebSocketServer) sendInitialWelcomeMessage(conn *Connection, convUUID 
 	}
 
 	// Create welcome message
-	welcomeText := "Кемп заблочил! Чем еще помочь?"
+	welcomeText := "Любишь боль. Мы уже поняли."
 	welcomeMessage := &messageModel.Message{
 		ConversationID: convUUID,
 		SenderKind:     messageModel.SystemSenderKind,

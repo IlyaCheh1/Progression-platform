@@ -1,4 +1,4 @@
-import { SCHOOL_API } from "@/lib/utils";
+import { SCHOOL_API, schoolApiUnavailableMessage } from "@/lib/utils";
 import { authHeaders, type SessionUser } from "@/lib/session";
 import { getCharacterById, type OgCharacterId } from "@/lib/characters";
 import {
@@ -8,6 +8,28 @@ import {
   type ProfileBackground,
 } from "@/lib/backgrounds";
 import { content } from "@/lib/content";
+
+export class InventoryApiError extends Error {
+  readonly status: number;
+  readonly code: string;
+
+  constructor(status: number, code: string, message: string) {
+    super(message);
+    this.name = "InventoryApiError";
+    this.status = status;
+    this.code = code;
+  }
+
+  get isUnauthorized(): boolean {
+    return this.status === 401;
+  }
+}
+
+export function messageForInventoryError(error: unknown): string {
+  if (error instanceof InventoryApiError) return error.message;
+  if (error instanceof TypeError) return schoolApiUnavailableMessage();
+  return schoolApiUnavailableMessage();
+}
 
 export type InventoryKind = "character" | "background" | "title";
 
@@ -74,9 +96,22 @@ function normalizeInventory(data: Record<string, unknown>): InventoryView {
   };
 }
 
-export async function fetchMyInventory(session: SessionUser): Promise<InventoryView | null> {
-  const res = await fetch(`${SCHOOL_API}/v1/inventory/me`, { headers: authHeaders(session) });
-  if (!res.ok) return null;
+export async function fetchMyInventory(session: SessionUser): Promise<InventoryView> {
+  let res: Response;
+  try {
+    res = await fetch(`${SCHOOL_API}/v1/inventory/me`, { headers: authHeaders(session) });
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new InventoryApiError(0, "network", schoolApiUnavailableMessage());
+    }
+    throw error;
+  }
+  if (res.status === 401) {
+    throw new InventoryApiError(401, "unauthorized", "Сессия истекла. Войдите снова.");
+  }
+  if (!res.ok) {
+    throw new InventoryApiError(res.status, "inventory_unavailable", schoolApiUnavailableMessage());
+  }
   const data = (await res.json()) as Record<string, unknown>;
   return normalizeInventory(data);
 }

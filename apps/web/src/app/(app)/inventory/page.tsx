@@ -12,9 +12,11 @@ import TabSelector from "@/components/ui/tab-selector";
 import {
   equipInventoryItem,
   fetchMyInventory,
+  InventoryApiError,
   inventoryBackgrounds,
   inventoryCharacters,
   inventoryTitles,
+  messageForInventoryError,
   type InventoryBackgroundItem,
   type InventoryCharacterItem,
   type InventoryKind,
@@ -22,8 +24,8 @@ import {
   type InventoryView,
 } from "@/lib/inventory-api";
 import { fetchMyProfile, writeCachedProfile } from "@/lib/profile-api";
-import { loadSession } from "@/lib/session";
-import { cn, schoolApiUnavailableMessage } from "@/lib/utils";
+import { clearSession, loadSession } from "@/lib/session";
+import { cn } from "@/lib/utils";
 
 type FilterId = "all" | "characters" | "equipment" | "backgrounds";
 
@@ -108,13 +110,18 @@ export default function InventoryPage() {
       router.replace("/login");
       return;
     }
-    const view = await fetchMyInventory(session);
-    if (!view) {
-      setError(schoolApiUnavailableMessage());
-      return;
+    try {
+      const view = await fetchMyInventory(session);
+      setInventory(view);
+      setError("");
+    } catch (error) {
+      if (error instanceof InventoryApiError && error.isUnauthorized) {
+        clearSession();
+        router.replace("/login");
+        return;
+      }
+      setError(messageForInventoryError(error));
     }
-    setInventory(view);
-    setError("");
   }, [router]);
 
   useEffect(() => {

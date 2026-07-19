@@ -12,12 +12,14 @@ import { spendCoins, writeCoinsBalance } from "@/lib/coins";
 import {
   equipInventoryItem,
   fetchMyInventory,
+  InventoryApiError,
+  messageForInventoryError,
   purchaseInventoryItem,
   type InventoryView,
 } from "@/lib/inventory-api";
 import { fetchMyProfile, writeCachedProfile } from "@/lib/profile-api";
-import { loadSession } from "@/lib/session";
-import { cn, schoolApiUnavailableMessage } from "@/lib/utils";
+import { clearSession, loadSession } from "@/lib/session";
+import { cn } from "@/lib/utils";
 
 type StoreKind = "character" | "background";
 type SelectedSource = "store" | "user";
@@ -49,13 +51,18 @@ export default function StorePage() {
       router.replace("/login");
       return;
     }
-    const view = await fetchMyInventory(session);
-    if (!view) {
-      setError(schoolApiUnavailableMessage());
-      return;
+    try {
+      const view = await fetchMyInventory(session);
+      setInventory(view);
+      setError("");
+    } catch (error) {
+      if (error instanceof InventoryApiError && error.isUnauthorized) {
+        clearSession();
+        router.replace("/login");
+        return;
+      }
+      setError(messageForInventoryError(error));
     }
-    setInventory(view);
-    setError("");
   }, [router, session]);
 
   useEffect(() => {
@@ -304,9 +311,9 @@ function OfferGrid({
                 <img src={item.imageSrc} alt={item.title} />
               </span>
               {showPrice ? (
-                <span className="absolute bottom-1 left-1/2 z-[3] flex -translate-x-1/2 items-center gap-0.5 rounded bg-black/55 px-1 py-px font-display text-[8px] leading-none text-mos-text md:text-[9px]">
+                <span className="absolute bottom-1 left-1/2 z-[3] flex -translate-x-1/2 items-center gap-0.5 rounded bg-black/55 px-1.5 py-0.5 font-display text-[12px] leading-none text-mos-text md:text-[13.5px]">
                   {item.price}
-                  <GoldCoin className="h-2.5 w-2.5" />
+                  <GoldCoin className="h-[15px] w-[15px]" />
                 </span>
               ) : null}
             </button>

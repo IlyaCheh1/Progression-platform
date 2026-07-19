@@ -24,6 +24,7 @@ type ConversationDomainService interface {
 }
 
 type TelegramAppService interface {
+	EnsureSupportTopic(ctx context.Context, conversation *cm.Conversation) (*cm.Conversation, error)
 	SendMessageToTelegram(ctx context.Context, message *model.Message) error
 }
 

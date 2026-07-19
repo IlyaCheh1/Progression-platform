@@ -26,7 +26,8 @@ func NewTelegramBotClient(cfg *config.TelegramConfig, logger *slog.Logger) *Tele
 		botToken: cfg.BotToken,
 		baseURL:  cfg.APIBaseURL,
 		httpClient: &http.Client{
-			Timeout: 30 * time.Second,
+			// Bound Bot API waits so a stuck Telegram call cannot freeze chat open/send for ~minute.
+			Timeout: 10 * time.Second,
 		},
 		logger: logger,
 	}
