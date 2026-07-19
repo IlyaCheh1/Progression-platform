@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ProfileHeader from "@/components/profile-header";
+import SupportChatRoot from "@/components/support-chat-root";
 import { useProfileShellData } from "@/hooks/use-profile-shell";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
 import { hasProfile, loadSession, type SessionUser } from "@/lib/session";
@@ -41,6 +42,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-mos-bg">
       <ProfileHeader user={user} {...shell} />
       {children}
+      <SupportChatRoot />
     </div>
   );
 }

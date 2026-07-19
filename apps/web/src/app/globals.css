@@ -402,3 +402,11 @@ body {
 .bg-school-line-gradient {
   background: linear-gradient(180deg, #0b0b0c 33.19%, #ee4810 68.09%);
 }
+
+og-chat {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 9999;
+  pointer-events: none;
+}

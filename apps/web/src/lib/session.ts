@@ -26,6 +26,12 @@ export type SessionUser = {
 
 const KEY = "mos.session";
 const PROFILE_CACHE_KEY = "mos.player-profile";
+export const SESSION_CHANGED_EVENT = "mos:session-changed";
+
+function notifySessionChanged() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(SESSION_CHANGED_EVENT));
+}
 
 export { canManageUsers, homePathForRoles, isAdminPrincipal, normalizeRole, normalizeRoles, primaryRole };
 
@@ -44,6 +50,7 @@ export function isPlatformAdmin(user: SessionUser | null | undefined): boolean {
 export function saveSession(user: SessionUser) {
   if (typeof window === "undefined") return;
   localStorage.setItem(KEY, JSON.stringify(user));
+  notifySessionChanged();
 }
 
 export function loadSession(): SessionUser | null {
@@ -79,6 +86,7 @@ export function clearSession() {
   localStorage.removeItem("mos.skin");
   localStorage.removeItem("mos.gender");
   localStorage.removeItem("mos.background");
+  notifySessionChanged();
 }
 
 export function hasProfile(session?: SessionUser | null): boolean {
