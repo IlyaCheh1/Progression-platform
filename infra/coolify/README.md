@@ -188,13 +188,24 @@ sh scripts/coolify-upload-hero-s3.sh
 Скрипт зальёт `apps/web/public/media/hero/*` в бакет с префиксом `media/hero/` и напечатает:
 
 ```env
-NEXT_PUBLIC_MEDIA_BASE_URL=https://<bucket-uuid>.selstorage.ru/media/hero
+# Пока нет рабочего публичного домена Selectel — отдавай с самого сайта:
+NEXT_PUBLIC_MEDIA_BASE_URL=/media/hero
+
+# Или UUID-домен из панели Selectel (НЕ имя бакета):
+# NEXT_PUBLIC_MEDIA_BASE_URL=https://<bucket-uuid>.selstorage.ru/media/hero
 ```
 
 Для Selectel публичный URL — `https://<bucket-uuid>.selstorage.ru/<key>` **без** повторного имени бакета в пути.
-Если в env уже стоит `...selstorage.ru/<bucket>/media/hero` — убери сегмент `/<bucket>/`, иначе видео отдадут 404.
 
-Добавь `NEXT_PUBLIC_MEDIA_BASE_URL` в web (**Buildtime + Runtime**) и сделай **Rebuild** (переменная вшивается при сборке Next.js).
+Частые ошибки (видео в hero «не играют»):
+- `https://swordmaster.selstorage.ru/...` — **имя бакета ≠ публичный хост**, DNS = NXDOMAIN.
+- `...selstorage.ru/<bucket>/media/hero` — лишний сегмент `/<bucket>/` → 404.
+- Переменная задана только Runtime без Rebuild — Next.js вшивает `NEXT_PUBLIC_*` на **Buildtime**.
+
+Проверка: `curl -I https://<host>/media/hero/1.mp4` должен дать `200` и `Content-Type: video/mp4`.
+Пока S3-публичный домен не открывается — ставь `/media/hero` (файлы уже в образе web).
+
+Добавь `NEXT_PUBLIC_MEDIA_BASE_URL` в web (**Buildtime + Runtime**) и сделай **Rebuild**.
 
 ## Автодеплой не стартует
 

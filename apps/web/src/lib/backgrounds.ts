@@ -3,6 +3,9 @@ export type BackgroundId =
   | "onboarding_background"
   | "northern_lights"
   | "mountain_terrace"
+  | "aurora_flow"
+  | "cloud_ridge"
+  | "crimson_peak"
   | "prison"
   | "building_castle"
   | "volcano"
@@ -13,7 +16,9 @@ export type BackgroundId =
   | "red_squere"
   | "apocalips_atomic_blow"
   | "heaven"
-  | "moon";
+  | "moon"
+  | "neon_dragon"
+  | "moss_dragon";
 
 export type ProfileBackground = {
   id: BackgroundId;
@@ -73,6 +78,27 @@ export const PROFILE_BACKGROUNDS: ProfileBackground[] = [
     category: "fantasy",
     unlock: "default",
     src: "/media/backgrounds/mountain_terrace.webp",
+  },
+  {
+    id: "aurora_flow",
+    label: "Неоновая дымка",
+    category: "cosmic",
+    unlock: "default",
+    src: "/media/backgrounds/aurora_flow.webp",
+  },
+  {
+    id: "cloud_ridge",
+    label: "Хребет в облаках",
+    category: "nature",
+    unlock: "default",
+    src: "/media/backgrounds/cloud_ridge.webp",
+  },
+  {
+    id: "crimson_peak",
+    label: "Алый пик",
+    category: "fantasy",
+    unlock: "default",
+    src: "/media/backgrounds/crimson_peak.webp",
   },
   {
     id: "prison",
@@ -161,6 +187,22 @@ export const PROFILE_BACKGROUNDS: ProfileBackground[] = [
     unlock: "purchase",
     price: 700,
     src: `${BUY}/moon.webp`,
+  },
+  {
+    id: "neon_dragon",
+    label: "Изумрудный дракон",
+    category: "fantasy",
+    unlock: "purchase",
+    price: 750,
+    src: `${BUY}/neon_dragon.webp`,
+  },
+  {
+    id: "moss_dragon",
+    label: "Дракон водопада",
+    category: "nature",
+    unlock: "purchase",
+    price: 800,
+    src: `${BUY}/moss_dragon.webp`,
   },
 ];
 

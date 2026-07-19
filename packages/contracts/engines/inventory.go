@@ -18,6 +18,9 @@ var starterBackgroundKeys = []string{
 	"onboarding_background",
 	"northern_lights",
 	"mountain_terrace",
+	"aurora_flow",
+	"cloud_ridge",
+	"crimson_peak",
 }
 
 var maleCharacterIDs = []string{"3"}

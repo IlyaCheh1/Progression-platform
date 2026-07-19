@@ -48,6 +48,9 @@ var allowedBackgrounds = map[string]struct{}{
 	"onboarding_background": {},
 	"northern_lights":         {},
 	"mountain_terrace":        {},
+	"aurora_flow":             {},
+	"cloud_ridge":             {},
+	"crimson_peak":            {},
 	"prison":                  {},
 	"building_castle":         {},
 	"volcano":                 {},
@@ -59,6 +62,8 @@ var allowedBackgrounds = map[string]struct{}{
 	"apocalips_atomic_blow":   {},
 	"heaven":                  {},
 	"moon":                    {},
+	"neon_dragon":             {},
+	"moss_dragon":             {},
 }
 
 var legacyBackgroundKeys = map[string]string{

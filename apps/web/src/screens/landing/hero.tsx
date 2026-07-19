@@ -6,8 +6,12 @@ import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 
 const VIDEOS = ["1.mp4", "6.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4"];
 
+/** Same-origin files from the Next.js public/ folder (always deployed with the web app). */
+const LOCAL_MEDIA_BASE = "/media/hero";
+
 /**
  * Selectel public domain is https://<bucket-uuid>.selstorage.ru/<key>.
+ * Bucket name (e.g. swordmaster.selstorage.ru) is NOT a valid public host — use the UUID from Selectel.
  * Older upload scripts printed .../selstorage.ru/<bucket>/media/hero — strip the extra segment.
  */
 function normalizeMediaBase(raw: string): string {
@@ -29,14 +33,16 @@ function normalizeMediaBase(raw: string): string {
   return trimmed;
 }
 
-const MEDIA_BASE = normalizeMediaBase(process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? "/media/hero");
+const REMOTE_MEDIA_BASE = normalizeMediaBase(process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? LOCAL_MEDIA_BASE);
+const CAN_FALLBACK_TO_LOCAL = REMOTE_MEDIA_BASE !== LOCAL_MEDIA_BASE;
 
-function mediaUrl(file: string) {
-  return `${MEDIA_BASE}/${file}`;
+function mediaUrl(file: string, useLocal = false) {
+  const base = useLocal ? LOCAL_MEDIA_BASE : REMOTE_MEDIA_BASE;
+  return `${base}/${file}`;
 }
 
-function posterUrl(file: string) {
-  return mediaUrl(file.replace(/\.mp4$/i, ".webp"));
+function posterUrl(file: string, useLocal = false) {
+  return mediaUrl(file.replace(/\.mp4$/i, ".webp"), useLocal);
 }
 
 type Particle = {
@@ -67,14 +73,23 @@ function HeroVideoSlide({
   reduceMotion: boolean;
   registerVideo: (index: number, node: HTMLVideoElement | null) => void;
 }) {
-  const poster = posterUrl(file);
+  const [useLocalFallback, setUseLocalFallback] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
+  const poster = posterUrl(file, useLocalFallback);
+  const videoSrc = mediaUrl(file, useLocalFallback);
   const mobilePosition = index === 0 || index === 2 ? "object-left" : "object-right";
   const mediaClassName = `h-full w-full object-cover ${isMobile ? mobilePosition : "object-center"}`;
+
+  const fallBackToLocal = useCallback(() => {
+    if (!CAN_FALLBACK_TO_LOCAL || useLocalFallback) return;
+    setUseLocalFallback(true);
+    setVideoReady(false);
+  }, [useLocalFallback]);
 
   useEffect(() => {
     if (!isMounted) {
       setVideoReady(false);
+      setUseLocalFallback(false);
     }
   }, [isMounted]);
 
@@ -90,6 +105,7 @@ function HeroVideoSlide({
         style={{ filter: "saturate(1.8) brightness(0.35)" }}
         decoding="async"
         fetchPriority={index === 0 ? "high" : "low"}
+        onError={fallBackToLocal}
       />
     );
   }
@@ -108,8 +124,10 @@ function HeroVideoSlide({
         }}
         decoding="async"
         fetchPriority={index === 0 ? "high" : "low"}
+        onError={fallBackToLocal}
       />
       <video
+        key={videoSrc}
         ref={(node) => registerVideo(index, node)}
         className={`absolute inset-0 transition-opacity duration-300 ${mediaClassName}`}
         style={{
@@ -122,10 +140,11 @@ function HeroVideoSlide({
         playsInline
         preload={isActive || isNext || index === 0 ? "auto" : "metadata"}
         poster={poster}
-        src={mediaUrl(file)}
+        src={videoSrc}
         onCanPlay={() => {
           setVideoReady(true);
         }}
+        onError={fallBackToLocal}
       />
     </div>
   );
