@@ -3,6 +3,7 @@ import Progress from "@/components/ui/progress";
 import type { GenderId } from "@/lib/avatars";
 import type { OgCharacterId } from "@/lib/characters";
 import type { Quest } from "@/lib/content";
+import { questIconUrl } from "@/lib/content-icons";
 import { cn } from "@/lib/utils";
 
 type DailyTasksProps = {
@@ -60,8 +61,16 @@ function TaskRow({ task }: { task: Quest }) {
 
   return (
     <div className="flex w-full flex-col gap-1 transition-opacity duration-200 hover:opacity-80">
-      <div className="flex w-full items-start justify-between text-[8px] leading-3 md:text-xs md:leading-4">
-        <p className="font-normal text-mos-text">{task.title}</p>
+      <div className="flex w-full items-start justify-between gap-2 text-[8px] leading-3 md:text-xs md:leading-4">
+        <div className="flex min-w-0 items-center gap-2">
+          <div
+            className="h-6 w-6 shrink-0 rounded-full bg-mos-stone bg-cover bg-center md:h-8 md:w-8"
+            style={{ backgroundImage: `url('${questIconUrl(task.key, task.icon)}')` }}
+            role="img"
+            aria-hidden
+          />
+          <p className="truncate font-normal text-mos-text">{task.title}</p>
+        </div>
         <p className="whitespace-nowrap font-medium text-mos-amber">+{task.xp} XP</p>
       </div>
       <div className="flex w-full items-center justify-between">

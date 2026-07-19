@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.weapon.mastery.rank.changed.v1",
+  "type": "object",
+  "properties": {
+    "eventType": { "const": "school.weapon.mastery.rank.changed.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["studentId", "weaponKey", "rank"],
+      "properties": {
+        "studentId": { "type": "string" },
+        "weaponKey": { "type": "string" },
+        "rank": { "type": "integer" }
+      }
+    }
+  }
+}

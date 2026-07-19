@@ -12,6 +12,10 @@ type PlatformSnapshot struct {
 	UserLogins      map[string]string               `json:"userLogins"`
 	AccessTokens    map[string]string               `json:"accessTokens"`
 	InboxSeen       []string                        `json:"inboxSeen"`
+	Holdings        map[string]map[string]InventoryHolding `json:"holdings,omitempty"`
+	GuardianLinks   map[string][]string             `json:"guardianLinks,omitempty"`
+	SupportCases    map[string]*SupportCase         `json:"supportCases,omitempty"`
+	AssetRevisions  map[string]*AssetRevision       `json:"assetRevisions,omitempty"`
 	School          SchoolSnapshot                  `json:"school"`
 }
 
@@ -32,6 +36,13 @@ type SchoolSnapshot struct {
 	DecayApplied    []string                       `json:"decayApplied"`
 	CommsLog        []string                       `json:"commsLog"`
 	ImportBatches   []ImportBatch                  `json:"importBatches"`
+	Waitlist        []school.WaitlistEntry         `json:"waitlist"`
+	RankReviews     []school.MasterRankReview      `json:"rankReviews"`
+	Reservations    []school.Reservation           `json:"reservations"`
+	ActiveSeason    *SeasonState                   `json:"activeSeason,omitempty"`
+	BattlePass      map[string]BattlePassState     `json:"battlePass,omitempty"`
+	TalentUnlocks   map[string]map[string]bool     `json:"talentUnlocks,omitempty"`
+	IsMinor         map[string]bool                `json:"isMinor,omitempty"`
 }
 
 // ExportSnapshot captures current mutable state.
@@ -70,6 +81,35 @@ func (p *Platform) ExportSnapshot() PlatformSnapshot {
 		AccessTokens: tokens,
 		InboxSeen:    inbox,
 	}
+	if len(p.holdings) > 0 {
+		snap.Holdings = map[string]map[string]InventoryHolding{}
+		for sid, bag := range p.holdings {
+			snap.Holdings[sid] = map[string]InventoryHolding{}
+			for k, v := range bag {
+				snap.Holdings[sid][k] = v
+			}
+		}
+	}
+	if len(p.guardianLinks) > 0 {
+		snap.GuardianLinks = map[string][]string{}
+		for gid, deps := range p.guardianLinks {
+			snap.GuardianLinks[gid] = append([]string{}, deps...)
+		}
+	}
+	if len(p.supportCases) > 0 {
+		snap.SupportCases = map[string]*SupportCase{}
+		for id, c := range p.supportCases {
+			cp := cloneSupportCase(c)
+			snap.SupportCases[id] = cp
+		}
+	}
+	if len(p.assetRevisions) > 0 {
+		snap.AssetRevisions = map[string]*AssetRevision{}
+		for id, r := range p.assetRevisions {
+			cp := *r
+			snap.AssetRevisions[id] = &cp
+		}
+	}
 	if p.School != nil {
 		snap.School = p.School.exportSnapshotLocked()
 	}
@@ -98,6 +138,18 @@ func (p *Platform) RestoreSnapshot(s PlatformSnapshot) {
 	p.inboxSeen = make(map[string]struct{})
 	for _, k := range s.InboxSeen {
 		p.inboxSeen[k] = struct{}{}
+	}
+	if s.Holdings != nil {
+		p.holdings = s.Holdings
+	}
+	if s.GuardianLinks != nil {
+		p.guardianLinks = s.GuardianLinks
+	}
+	if s.SupportCases != nil {
+		p.supportCases = s.SupportCases
+	}
+	if s.AssetRevisions != nil {
+		p.assetRevisions = s.AssetRevisions
 	}
 	if p.School != nil {
 		p.School.restoreSnapshotLocked(s.School)
@@ -160,7 +212,7 @@ func (sm *SchoolModule) exportSnapshotLocked() SchoolSnapshot {
 			floors[sid][w] = u
 		}
 	}
-	return SchoolSnapshot{
+	snap := SchoolSnapshot{
 		Records: records, Leads: leads, Tasks: tasks, Sessions: sessions, Bookings: bookings,
 		Orders: orders, Payments: payments, Memberships: memberships,
 		QuestProgress: qp, Achievements: ach,
@@ -168,6 +220,41 @@ func (sm *SchoolModule) exportSnapshotLocked() SchoolSnapshot {
 		RankFloors: floors, DecayApplied: decay, CommsLog: append([]string{}, sm.commsLog...),
 		ImportBatches: append([]ImportBatch{}, sm.importBatches...),
 	}
+	for _, w := range sm.waitlist {
+		snap.Waitlist = append(snap.Waitlist, *w)
+	}
+	for _, r := range sm.rankReviews {
+		snap.RankReviews = append(snap.RankReviews, *r)
+	}
+	for _, r := range sm.reserve {
+		snap.Reservations = append(snap.Reservations, *r)
+	}
+	if sm.activeSeason != nil {
+		cp := *sm.activeSeason
+		snap.ActiveSeason = &cp
+	}
+	if len(sm.isMinor) > 0 {
+		snap.IsMinor = map[string]bool{}
+		for k, v := range sm.isMinor {
+			snap.IsMinor[k] = v
+		}
+	}
+	if len(sm.battlePass) > 0 {
+		snap.BattlePass = map[string]BattlePassState{}
+		for sid, bp := range sm.battlePass {
+			snap.BattlePass[sid] = *bp
+		}
+	}
+	if len(sm.talentUnlocks) > 0 {
+		snap.TalentUnlocks = map[string]map[string]bool{}
+		for sid, m := range sm.talentUnlocks {
+			snap.TalentUnlocks[sid] = map[string]bool{}
+			for k, v := range m {
+				snap.TalentUnlocks[sid][k] = v
+			}
+		}
+	}
+	return snap
 }
 
 func (sm *SchoolModule) restoreSnapshotLocked(s SchoolSnapshot) {
@@ -236,4 +323,38 @@ func (sm *SchoolModule) restoreSnapshotLocked(s SchoolSnapshot) {
 	}
 	sm.commsLog = append([]string{}, s.CommsLog...)
 	sm.importBatches = append([]ImportBatch{}, s.ImportBatches...)
+	sm.waitlist = map[string]*school.WaitlistEntry{}
+	for i := range s.Waitlist {
+		w := s.Waitlist[i]
+		sm.waitlist[w.ID] = &w
+	}
+	sm.rankReviews = map[string]*school.MasterRankReview{}
+	for i := range s.RankReviews {
+		r := s.RankReviews[i]
+		sm.rankReviews[r.ID] = &r
+	}
+	sm.reserve = map[string]*school.Reservation{}
+	for i := range s.Reservations {
+		r := s.Reservations[i]
+		sm.reserve[r.ID] = &r
+	}
+	sm.activeSeason = s.ActiveSeason
+	if s.IsMinor != nil {
+		sm.isMinor = map[string]bool{}
+		for k, v := range s.IsMinor {
+			sm.isMinor[k] = v
+		}
+	}
+	sm.battlePass = map[string]*BattlePassState{}
+	for sid, bp := range s.BattlePass {
+		cp := bp
+		sm.battlePass[sid] = &cp
+	}
+	sm.talentUnlocks = map[string]map[string]bool{}
+	for sid, m := range s.TalentUnlocks {
+		sm.talentUnlocks[sid] = map[string]bool{}
+		for k, v := range m {
+			sm.talentUnlocks[sid][k] = v
+		}
+	}
 }

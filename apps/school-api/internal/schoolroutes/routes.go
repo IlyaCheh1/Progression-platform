@@ -254,7 +254,7 @@ func Register(mux *http.ServeMux, d Deps) {
 			return
 		}
 		d.WriteJSON(w, map[string]any{"membership": mem})
-	}))
+	})
 
 	mux.HandleFunc("GET /v1/commerce/membership/me", authz.RequireAuth(d.Platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
 		m, ok := d.Platform.School.MembershipForStudent(actor.ID)
@@ -429,5 +429,248 @@ func Register(mux *http.ServeMux, d Deps) {
 			return
 		}
 		d.WriteJSON(w, b)
+	}))
+
+	mux.HandleFunc("POST /v1/waitlist/join", authz.RequirePermission(d.Platform, rbac.PermBookingCreate, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		var body struct {
+			SessionID string `json:"sessionId"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		e, err := d.Platform.School.JoinWaitlist(body.SessionID, actor.ID)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, e)
+	}))
+
+	mux.HandleFunc("POST /v1/waitlist/{id}/claim", authz.RequireAuth(d.Platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		b, err := d.Platform.School.ClaimWaitlistOffer(r.PathValue("id"), actor.ID)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, b)
+	}))
+
+	mux.HandleFunc("GET /v1/waitlist", authz.RequirePermission(d.Platform, rbac.PermScheduleRead, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		d.WriteJSON(w, d.Platform.School.ListWaitlist(r.URL.Query().Get("sessionId")))
+	}))
+
+	mux.HandleFunc("POST /v1/waitlist/offer-next", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body struct {
+			SessionID string `json:"sessionId"`
+		}
+		_ = json.NewDecoder(r.Body).Decode(&body)
+		e, err := d.Platform.School.OfferNextWaitlist(body.SessionID)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, e)
+	}))
+
+	mux.HandleFunc("GET /v1/renter/bookings", authz.RequirePermission(d.Platform, rbac.PermHallsRead, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		d.WriteJSON(w, d.Platform.School.ListRentalsForStudent(actor.ID))
+	}))
+
+	mux.HandleFunc("GET /v1/halls/{id}/availability", func(w http.ResponseWriter, r *http.Request) {
+		d.WriteJSON(w, d.Platform.School.HallAvailability(r.PathValue("id"), time.Time{}, time.Time{}))
+	})
+
+	mux.HandleFunc("POST /v1/mastery/reviews", authz.RequireAuth(d.Platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		var body struct {
+			WeaponKey string `json:"weaponKey"`
+			Rank      int    `json:"rank"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		rev, err := d.Platform.School.RequestMasterRankReview(actor.ID, body.WeaponKey, body.Rank)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, rev)
+	}))
+
+	mux.HandleFunc("GET /v1/mastery/reviews", authz.RequirePermission(d.Platform, rbac.PermUsersRead, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		d.WriteJSON(w, d.Platform.School.ListMasterRankReviews(r.URL.Query().Get("status")))
+	}))
+
+	mux.HandleFunc("POST /v1/mastery/reviews/{id}/decide", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body struct {
+			Decision string `json:"decision"`
+			Note     string `json:"note"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		rev, err := d.Platform.School.DecideMasterRankReview(r.PathValue("id"), body.Decision, body.Note)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, rev)
+	}))
+
+	mux.HandleFunc("GET /v1/guardian/dependants", authz.RequirePermission(d.Platform, rbac.PermDependantsRead, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		ids := d.Platform.ListDependantIDs(actor.ID)
+		out := make([]engines.DependantSummary, 0, len(ids))
+		for _, id := range ids {
+			sum, err := d.Platform.DependantSummaryFor(actor.ID, id)
+			if err != nil {
+				continue
+			}
+			out = append(out, *sum)
+		}
+		d.WriteJSON(w, out)
+	}))
+
+	mux.HandleFunc("GET /v1/guardian/dependants/{id}", authz.RequirePermission(d.Platform, rbac.PermDependantsRead, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		sum, err := d.Platform.DependantSummaryFor(actor.ID, r.PathValue("id"))
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusForbidden)
+			return
+		}
+		d.WriteJSON(w, sum)
+	}))
+
+	mux.HandleFunc("GET /v1/leaderboard", func(w http.ResponseWriter, r *http.Request) {
+		d.WriteJSON(w, d.Platform.Leaderboard(20))
+	})
+
+	mux.HandleFunc("POST /v1/privacy/public-share", authz.RequireAuth(d.Platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		if err := d.Platform.RequestPublicShare(actor.ID); err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusForbidden)
+			return
+		}
+		d.WriteJSON(w, map[string]any{"ok": true})
+	}))
+
+	mux.HandleFunc("POST /v1/admin/students/{id}/minor", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body struct {
+			Minor bool `json:"minor"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		d.Platform.School.SetMinor(r.PathValue("id"), body.Minor)
+		d.WriteJSON(w, map[string]any{"ok": true})
+	}))
+
+	mux.HandleFunc("POST /v1/support/cases", authz.RequireAuth(d.Platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		var body struct {
+			Subject          string `json:"subject"`
+			Body             string `json:"body"`
+			TrainingRecordID string `json:"trainingRecordId"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		c, err := d.Platform.CreateSupportCase(actor.ID, body.Subject, body.TrainingRecordID, body.Body)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, c)
+	}))
+
+	mux.HandleFunc("GET /v1/support/cases/me", authz.RequireAuth(d.Platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		d.WriteJSON(w, d.Platform.ListSupportCasesForStudent(actor.ID))
+	}))
+
+	mux.HandleFunc("POST /v1/support/cases/{id}/messages", authz.RequireAuth(d.Platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		var body struct {
+			Body string `json:"body"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		c, err := d.Platform.AddSupportMessage(r.PathValue("id"), actor.ID, body.Body)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, c)
+	}))
+
+	mux.HandleFunc("GET /v1/admin/support/cases", authz.RequirePermission(d.Platform, rbac.PermUsersRead, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		d.WriteJSON(w, d.Platform.ListSupportCases(r.URL.Query().Get("status")))
+	}))
+
+	mux.HandleFunc("POST /v1/admin/support/cases/{id}/resolve", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body struct {
+			Note            string `json:"note"`
+			ApplyCorrection bool   `json:"applyCorrection"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		c, err := d.Platform.ResolveSupportCase(r.PathValue("id"), body.Note, body.ApplyCorrection)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, c)
+	}))
+
+	mux.HandleFunc("GET /v1/admin/assets", authz.RequirePermission(d.Platform, rbac.PermContentRead, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		d.WriteJSON(w, d.Platform.ListAssetRevisions(r.URL.Query().Get("status")))
+	}))
+
+	mux.HandleFunc("POST /v1/admin/assets", authz.RequirePermission(d.Platform, rbac.PermContentWrite, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body struct {
+			ItemKey  string `json:"itemKey"`
+			ImageURL string `json:"imageUrl"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		rev, err := d.Platform.CreateAssetRevision(body.ItemKey, body.ImageURL)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, rev)
+	}))
+
+	mux.HandleFunc("POST /v1/admin/assets/{id}/decide", authz.RequirePermission(d.Platform, rbac.PermContentWrite, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body struct {
+			Decision string `json:"decision"`
+			Note     string `json:"note"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		rev, err := d.Platform.DecideAssetRevision(r.PathValue("id"), body.Decision, body.Note)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, rev)
+	}))
+
+	mux.HandleFunc("GET /v1/analytics/cohorts", authz.RequirePermission(d.Platform, rbac.PermCommerceAdmin, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		d.WriteJSON(w, d.Platform.AnalyticsCohorts())
+	}))
+
+	mux.HandleFunc("GET /v1/analytics/churn", authz.RequirePermission(d.Platform, rbac.PermCommerceAdmin, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		d.WriteJSON(w, d.Platform.AnalyticsChurn(30))
+	}))
+
+	mux.HandleFunc("GET /v1/analytics/hall-heatmap", authz.RequirePermission(d.Platform, rbac.PermCommerceAdmin, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		d.WriteJSON(w, d.Platform.AnalyticsHallHeatmap(time.Time{}, time.Time{}))
 	}))
 }

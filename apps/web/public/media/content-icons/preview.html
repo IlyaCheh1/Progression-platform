@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Content Icons Preview — Master of the Sword</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: Georgia, "Times New Roman", serif;
+      background: #0f0f11;
+      color: #b8b0a4;
+    }
+    h1 { color: #c9a227; font-size: 1.5rem; margin: 0 0 8px; }
+    p { margin: 0 0 24px; opacity: 0.8; }
+    h2 {
+      color: #c9a227;
+      font-size: 1.1rem;
+      margin: 32px 0 16px;
+      border-bottom: 1px solid #2b2824;
+      padding-bottom: 8px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      background: #1a1a1d;
+      border: 1px solid #2b2824;
+      border-radius: 12px;
+    }
+    .card img {
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
+    }
+    .card span {
+      font-size: 10px;
+      text-align: center;
+      word-break: break-all;
+      line-height: 1.3;
+    }
+    .hero .card { border-color: #c9a227; }
+  </style>
+</head>
+<body>
+  <h1>Иконки заданий и достижений</h1>
+  <p>58 PNG-иконок в стиле hero: тёмный камень, бронзово-золотая рама.</p>
+
+  <h2>Квесты (PNG)</h2>
+  <div class="grid" id="quests"></div>
+
+  <h2>Достижения (PNG)</h2>
+  <div class="grid" id="achievements"></div>
+
+  <script>
+    const quests = [
+      "path.profile","path.safety","path.first_trial","path.first_training","path.first_record",
+      "path.choose_weapon","path.monthly_roll","path.open_inventory","path.choose_cosmetic","path.complete",
+      "training.ready","training.focus","training.balance","training.partner","training.reflection",
+      "weekly.rhythm.2","weekly.rhythm.3","weekly.two_paths","weekly.curriculum","weekly.history",
+      "weekly.community","weekly.event_prep","monthly.roll","monthly.sessions.8","monthly.new_path",
+      "monthly.consistency","monthly.event","season.eight_paths"
+    ];
+    const achievements = [
+      "start.first_salute","start.safety","start.character","start.inventory","start.quest","start.event",
+      "practice.sessions","practice.weeks","practice.years","practice.return",
+      "mastery.first_rank","mastery.four_paths","mastery.eight_paths","mastery.two_rank_five",
+      "mastery.one_rank_ten","mastery.all_rank_ten",
+      "mastery.spada_a_uno_mano.rank","mastery.due_spade.rank","mastery.spada_e_scudo.rank",
+      "mastery.spada_a_due_mani.rank","mastery.spadone.rank","mastery.ascia_e_alabarda.rank",
+      "mastery.spiedo_e_partesana.rank","mastery.spiedo_e_scudo.rank",
+      "curriculum.objectives","curriculum.marozzo",
+      "community.events","community.mentor","community.tournament","community.masterclass"
+    ];
+
+    function render(containerId, keys, base, ext) {
+      const el = document.getElementById(containerId);
+      keys.forEach((key) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        const img = document.createElement("img");
+        img.src = `${base}/${key}.${ext}`;
+        img.alt = key;
+        const label = document.createElement("span");
+        label.textContent = key;
+        card.append(img, label);
+        el.appendChild(card);
+      });
+    }
+
+    render("quests", quests, "quests", "png");
+    render("achievements", achievements, "achievements", "png");
+  </script>
+</body>
+</html>

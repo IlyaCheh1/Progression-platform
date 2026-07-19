@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.training.session.completed.v1",
+  "type": "object",
+  "properties": {
+    "eventType": { "const": "school.training.session.completed.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["sessionId"],
+      "properties": {
+        "sessionId": { "type": "string" },
+        "coachId": { "type": "string" }
+      }
+    }
+  }
+}

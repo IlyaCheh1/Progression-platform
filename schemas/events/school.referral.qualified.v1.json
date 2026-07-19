@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.referral.qualified.v1",
+  "type": "object",
+  "properties": {
+    "eventType": { "const": "school.referral.qualified.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["referrerId", "referredId"],
+      "properties": {
+        "referrerId": { "type": "string" },
+        "referredId": { "type": "string" },
+        "leadId": { "type": "string" }
+      }
+    }
+  }
+}

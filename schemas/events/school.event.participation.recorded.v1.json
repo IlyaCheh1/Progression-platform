@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.event.participation.recorded.v1",
+  "type": "object",
+  "properties": {
+    "eventType": { "const": "school.event.participation.recorded.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["studentId", "eventKey"],
+      "properties": {
+        "studentId": { "type": "string" },
+        "eventKey": { "type": "string" },
+        "sessionId": { "type": "string" }
+      }
+    }
+  }
+}

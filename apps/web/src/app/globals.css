@@ -190,31 +190,39 @@ body {
   box-shadow: inset 0 0 0 2px var(--mos-amber);
 }
 
+.character-stage-stack {
+  min-height: calc(100vh - 72px);
+}
+
+.character-stage-gap {
+  min-height: 1.5rem;
+}
+
 .character-stage-figure {
-  height: clamp(160px, 30vh, 38vh);
-  max-height: min(38vh, calc(100vh - 72px - 120px));
+  height: clamp(190px, 36vh, 46vh);
+  max-height: min(46vh, calc(100vh - 72px - 180px));
   width: auto;
 }
 
 @media (min-width: 768px) {
   .character-stage-figure {
-    height: clamp(240px, 42vh, 52vh);
-    max-height: min(52vh, calc(100vh - 72px - 140px));
+    height: clamp(280px, 48vh, 58vh);
+    max-height: min(58vh, calc(100vh - 72px - 200px));
   }
 }
 
 @media (min-width: 1280px) {
   .character-stage-figure {
-    height: clamp(320px, 48vh, 58vh);
-    max-height: min(58vh, calc(100vh - 72px - 160px));
+    height: clamp(360px, 54vh, 64vh);
+    max-height: min(64vh, calc(100vh - 72px - 220px));
   }
 }
 
 @media (min-width: 2400px) {
   .character-stage-figure {
-    height: min(62vh, calc(100vh - 72px - 180px));
-    max-height: 62vh;
-    max-width: 62vh;
+    height: min(68vh, calc(100vh - 72px - 240px));
+    max-height: 68vh;
+    max-width: 68vh;
   }
 }
 

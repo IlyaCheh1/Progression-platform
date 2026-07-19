@@ -77,6 +77,8 @@ var rolePermissions = map[string][]Permission{
 	},
 	RoleRenter: {
 		PermHallsRead,
+		PermBookingCreate,
+		PermScheduleRead,
 	},
 	RoleAdministrator: allPermissions,
 	RolePlatformAdmin:   allPermissions,

@@ -9,6 +9,7 @@ import (
 const (
 	InventoryKindCharacter  = "character"
 	InventoryKindBackground = "background"
+	InventoryKindTitle      = "title"
 )
 
 // Starter backgrounds granted on onboarding (default unlock catalog).
@@ -31,9 +32,10 @@ type InventoryHolding struct {
 
 // InventoryView is returned by GET /v1/inventory/me.
 type InventoryView struct {
-	Items                   []InventoryHolding `json:"items"`
-	EquippedCharacterID     string             `json:"equippedCharacterId"`
-	EquippedBackgroundKey   string             `json:"equippedBackgroundKey"`
+	Items                 []InventoryHolding `json:"items"`
+	EquippedCharacterID   string             `json:"equippedCharacterId"`
+	EquippedBackgroundKey string             `json:"equippedBackgroundKey"`
+	EquippedTitleKey      string             `json:"equippedTitleKey,omitempty"`
 }
 
 // EquipInventoryInput equips an owned cosmetic onto the profile presentation.
@@ -60,6 +62,8 @@ func (p *Platform) grantHoldingLocked(studentID, kind, refID string) {
 		key = characterItemKey(refID)
 	case InventoryKindBackground:
 		key = backgroundItemKey(refID)
+	case InventoryKindTitle:
+		key = titleItemKey(refID)
 	default:
 		return
 	}
@@ -85,6 +89,8 @@ func (p *Platform) ownsHoldingLocked(studentID, kind, refID string) bool {
 		key = characterItemKey(refID)
 	case InventoryKindBackground:
 		key = backgroundItemKey(refID)
+	case InventoryKindTitle:
+		key = titleItemKey(refID)
 	default:
 		return false
 	}
@@ -159,6 +165,7 @@ func inventoryViewLocked(p *Platform, s *Student) *InventoryView {
 		Items:                 items,
 		EquippedCharacterID:   normalizedCharacterID(s.SelectedSkinID, gender),
 		EquippedBackgroundKey: normalizedBackgroundKey(s.BackgroundKey),
+		EquippedTitleKey:      s.EquippedTitleKey,
 	}
 }
 
@@ -211,7 +218,7 @@ func (p *Platform) PurchaseInventoryItem(studentID string, in PurchaseInventoryI
 func (p *Platform) EquipInventoryItem(studentID string, in EquipInventoryInput) (*InventoryView, error) {
 	in.Kind = strings.TrimSpace(strings.ToLower(in.Kind))
 	in.RefID = strings.TrimSpace(in.RefID)
-	if in.Kind != InventoryKindCharacter && in.Kind != InventoryKindBackground {
+	if in.Kind != InventoryKindCharacter && in.Kind != InventoryKindBackground && in.Kind != InventoryKindTitle {
 		return nil, fmt.Errorf("invalid_kind")
 	}
 	if in.RefID == "" {
@@ -248,6 +255,11 @@ func (p *Platform) EquipInventoryItem(studentID string, in EquipInventoryInput) 
 			return nil, fmt.Errorf("not_owned")
 		}
 		s.BackgroundKey = normalized
+	case InventoryKindTitle:
+		if !p.ownsTitleLocked(studentID, in.RefID) {
+			return nil, fmt.Errorf("not_owned")
+		}
+		s.EquippedTitleKey = in.RefID
 	}
 
 	return inventoryViewLocked(p, s), nil

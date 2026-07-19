@@ -8,6 +8,7 @@ import TaskCard from "@/components/achievements/task-card";
 import SideBar from "@/components/side-bar";
 import Selector from "@/components/ui/selector";
 import { content } from "@/lib/content";
+import { achievementIconUrl, questIconUrl } from "@/lib/content-icons";
 
 type Mode = "achievements" | "tasks";
 
@@ -160,6 +161,7 @@ export default function AchievementsPage() {
                         key={a.key}
                         title={a.title}
                         description={a.key}
+                        iconUrl={achievementIconUrl(a.key, a.icon)}
                         stages={a.stages}
                         pinned={!!pinned[a.key]}
                         onPin={() => togglePin(a.key)}
@@ -172,6 +174,7 @@ export default function AchievementsPage() {
                       key={a.key}
                       title={a.title}
                       description={a.key}
+                      iconUrl={achievementIconUrl(a.key, a.icon)}
                       current={1}
                       target={1}
                       reward={a.xp || 100}
@@ -187,6 +190,7 @@ export default function AchievementsPage() {
                     key={q.key}
                     title={q.title}
                     description={`${q.type} · ${q.key}`}
+                    iconUrl={questIconUrl(q.key, q.icon)}
                     current={1}
                     target={1}
                     reward={q.xp}

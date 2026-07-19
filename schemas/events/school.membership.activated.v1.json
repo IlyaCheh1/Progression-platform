@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.membership.activated.v1",
+  "type": "object",
+  "properties": {
+    "eventType": { "const": "school.membership.activated.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["studentId", "membershipId"],
+      "properties": {
+        "studentId": { "type": "string" },
+        "membershipId": { "type": "string" }
+      }
+    }
+  }
+}

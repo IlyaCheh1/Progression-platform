@@ -53,6 +53,7 @@ type Student struct {
 	Skin            string           `json:"skin,omitempty"` // legacy MoS skins, migrated to selectedSkinId
 	Gender          string           `json:"gender,omitempty"`
 	BackgroundKey   string           `json:"backgroundKey,omitempty"`
+	EquippedTitleKey string          `json:"equippedTitleKey,omitempty"`
 }
 
 // NormalizedRole returns the primary role for routing/display.
@@ -85,8 +86,11 @@ type Platform struct {
 	students   map[string]*Student
 	users      map[string]*Student // login -> student
 	sessions   map[string]string   // opaque access token -> studentID
-	// holdings: studentID -> itemKey -> cosmetic holding (characters + backgrounds)
+	// holdings: studentID -> itemKey -> cosmetic holding (characters + backgrounds + titles)
 	holdings map[string]map[string]InventoryHolding
+	guardianLinks map[string][]string // guardianID -> dependant student IDs
+	supportCases  map[string]*SupportCase
+	assetRevisions map[string]*AssetRevision
 	audit    []string
 	School   *SchoolModule
 }
@@ -101,6 +105,9 @@ func NewPlatform() *Platform {
 		users:      make(map[string]*Student),
 		sessions:   make(map[string]string),
 		holdings:   make(map[string]map[string]InventoryHolding),
+		guardianLinks: make(map[string][]string),
+		supportCases:  make(map[string]*SupportCase),
+		assetRevisions: make(map[string]*AssetRevision),
 	}
 	p.School = NewSchoolModule(p)
 	return p

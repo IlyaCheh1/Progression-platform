@@ -71,6 +71,14 @@ func LoadDemo(p *engines.Platform, root string) (int, error) {
 	return len(data.Accounts), nil
 }
 
+// WireDemoRelations links guardian/minor demo accounts after seed load.
+func WireDemoRelations(p *engines.Platform) {
+	_ = p.LinkGuardian("demo-guardian", "student-synthetic-adult")
+	if p.School != nil {
+		p.School.SetMinor("student-temp-local", true)
+	}
+}
+
 func FindRoot() string {
 	wd, _ := os.Getwd()
 	for d := wd; d != filepath.Dir(d); d = filepath.Dir(d) {
@@ -88,4 +96,5 @@ func MustLoad(p *engines.Platform) {
 		return
 	}
 	fmt.Printf("loaded %d demo students\n", n)
+	WireDemoRelations(p)
 }

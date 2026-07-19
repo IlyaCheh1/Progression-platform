@@ -14,6 +14,7 @@ type Quest struct {
 	Title string `json:"title"`
 	Type  string `json:"type"`
 	XP    int    `json:"xp"`
+	Icon  string `json:"icon,omitempty"`
 }
 
 type Achievement struct {
@@ -21,6 +22,7 @@ type Achievement struct {
 	Title string `json:"title"`
 	Tiers any    `json:"tiers"`
 	XP    int    `json:"xp"`
+	Icon  string `json:"icon,omitempty"`
 }
 
 type Talent struct {

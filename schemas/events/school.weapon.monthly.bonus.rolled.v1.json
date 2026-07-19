@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.weapon.monthly.bonus.rolled.v1",
+  "type": "object",
+  "properties": {
+    "eventType": { "const": "school.weapon.monthly.bonus.rolled.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["studentId", "weaponKey", "roll"],
+      "properties": {
+        "studentId": { "type": "string" },
+        "weaponKey": { "type": "string" },
+        "roll": { "type": "integer", "minimum": 1, "maximum": 8 }
+      }
+    }
+  }
+}

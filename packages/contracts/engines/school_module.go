@@ -56,6 +56,8 @@ type SchoolModule struct {
 	activeSeason    *SeasonState
 	battlePass      map[string]*BattlePassState
 	talentUnlocks   map[string]map[string]bool
+	waitlist        map[string]*school.WaitlistEntry
+	rankReviews     map[string]*school.MasterRankReview
 }
 
 func NewSchoolModule(p *Platform) *SchoolModule {
@@ -87,6 +89,8 @@ func NewSchoolModule(p *Platform) *SchoolModule {
 		isMinor:         make(map[string]bool),
 		battlePass:      make(map[string]*BattlePassState),
 		talentUnlocks:   make(map[string]map[string]bool),
+		waitlist:        make(map[string]*school.WaitlistEntry),
+		rankReviews:     make(map[string]*school.MasterRankReview),
 	}
 	sm.seedDefaults()
 	return sm
@@ -241,6 +245,29 @@ func (sm *SchoolModule) CreateTrialBooking(sessionID, leadID, studentID string) 
 		"Booking", b.ID, "booking:trial:"+b.ID, 1, map[string]any{"sessionId": sessionID, "leadId": leadID})
 	_, _ = sm.p.outbox.Append(ev)
 	return b, nil
+}
+
+// CancelBooking frees a session seat for trial/enrollment bookings.
+func (sm *SchoolModule) CancelBooking(bookingID string) error {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	b, ok := sm.bookings[bookingID]
+	if !ok {
+		return fmt.Errorf("booking not found")
+	}
+	if b.Status == "cancelled" {
+		return fmt.Errorf("already cancelled")
+	}
+	if b.SessionID != "" {
+		if sess, ok := sm.sessions[b.SessionID]; ok && sess.Enrolled > 0 {
+			sess.Enrolled--
+		}
+	}
+	b.Status = "cancelled"
+	ev := envelope.NewEvent("school.booking.cancelled.v1", "school-booking", TenantDemo, RealmKey,
+		"Booking", b.ID, "booking:cancel:"+b.ID, 1, map[string]any{"bookingId": b.ID})
+	_, _ = sm.p.outbox.Append(ev)
+	return nil
 }
 
 func (sm *SchoolModule) CreateTrainingRecord(rec training.Record) (*training.Record, error) {
@@ -451,6 +478,7 @@ func (sm *SchoolModule) publishRankChanged(studentID, weapon string, rank int) {
 		"MasteryAccount", studentID+":"+weapon, fmt.Sprintf("mastery:rank:%s:%s:%d", studentID, weapon, rank), int64(rank),
 		map[string]any{"studentId": studentID, "weaponKey": weapon, "rank": rank})
 	_, _ = sm.p.outbox.Append(ev)
+	sm.p.grantTitleForRankFromSchool(studentID, rank)
 }
 
 // RunDailyDecay applies decay for a local calendar date (Europe/Moscow).

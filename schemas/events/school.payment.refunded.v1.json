@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.payment.refunded.v1",
+  "type": "object",
+  "properties": {
+    "eventType": { "const": "school.payment.refunded.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["paymentId", "amountMinor"],
+      "properties": {
+        "paymentId": { "type": "string" },
+        "amountMinor": { "type": "integer" }
+      }
+    }
+  }
+}

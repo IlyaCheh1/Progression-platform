@@ -3,129 +3,843 @@
   "bundleVersion": 2,
   "source": "Master of the Sword module/fencing-school/104-content-pack.md",
   "quests": [
-    { "key": "path.profile", "title": "Лист персонажа", "type": "ONBOARDING", "xp": 300 },
-    { "key": "path.safety", "title": "Сначала безопасность", "type": "ONBOARDING", "xp": 300 },
-    { "key": "path.first_trial", "title": "Первый выход в зал", "type": "ONBOARDING", "xp": 300 },
-    { "key": "path.first_training", "title": "Первый салют", "type": "ONBOARDING", "xp": 500 },
-    { "key": "path.first_record", "title": "Запись в хронике", "type": "ONBOARDING", "xp": 300 },
-    { "key": "path.choose_weapon", "title": "Выбери путь", "type": "ONBOARDING", "xp": 250 },
-    { "key": "path.monthly_roll", "title": "Бросок судьбы", "type": "ONBOARDING", "xp": 150 },
-    { "key": "path.open_inventory", "title": "Арсенал героя", "type": "ONBOARDING", "xp": 100 },
-    { "key": "path.choose_cosmetic", "title": "Собственный герб", "type": "ONBOARDING", "xp": 100 },
-    { "key": "path.complete", "title": "Путь начат", "type": "ONBOARDING", "xp": 1000 },
-    { "key": "training.ready", "title": "Готовность", "type": "DAILY", "xp": 100 },
-    { "key": "training.focus", "title": "Технический фокус", "type": "DAILY", "xp": 150 },
-    { "key": "training.balance", "title": "Обе стороны", "type": "DAILY", "xp": 100 },
-    { "key": "training.partner", "title": "Работа в паре", "type": "DAILY", "xp": 150 },
-    { "key": "training.reflection", "title": "Страница хроники", "type": "WEEKLY", "xp": 100 },
-    { "key": "weekly.rhythm.2", "title": "Держать ритм", "type": "WEEKLY", "xp": 300 },
-    { "key": "weekly.rhythm.3", "title": "Три шага вперёд", "type": "WEEKLY", "xp": 500 },
-    { "key": "weekly.two_paths", "title": "Два пути", "type": "WEEKLY", "xp": 400 },
-    { "key": "weekly.curriculum", "title": "Урок мастера", "type": "WEEKLY", "xp": 400 },
-    { "key": "weekly.history", "title": "След Мароццо", "type": "WEEKLY", "xp": 250 },
-    { "key": "weekly.community", "title": "Товарищ по залу", "type": "WEEKLY", "xp": 300 },
-    { "key": "weekly.event_prep", "title": "Перед событием", "type": "WEEKLY", "xp": 300 },
-    { "key": "monthly.roll", "title": "Восемь граней", "type": "MONTHLY", "xp": 150 },
-    { "key": "monthly.sessions.8", "title": "Дисциплина месяца", "type": "MONTHLY", "xp": 1000 },
-    { "key": "monthly.new_path", "title": "Новый клинок", "type": "MONTHLY", "xp": 500 },
-    { "key": "monthly.consistency", "title": "Без спешки, без перерыва", "type": "MONTHLY", "xp": 750 },
-    { "key": "monthly.event", "title": "Жизнь школы", "type": "MONTHLY", "xp": 500 },
-    { "key": "season.eight_paths", "title": "Восемь путей", "type": "SEASONAL", "xp": 3000 }
+    {
+      "key": "path.profile",
+      "title": "Лист персонажа",
+      "type": "ONBOARDING",
+      "xp": 300,
+      "icon": "quests/path.profile.png"
+    },
+    {
+      "key": "path.safety",
+      "title": "Сначала безопасность",
+      "type": "ONBOARDING",
+      "xp": 300,
+      "icon": "quests/path.safety.png"
+    },
+    {
+      "key": "path.first_trial",
+      "title": "Первый выход в зал",
+      "type": "ONBOARDING",
+      "xp": 300,
+      "icon": "quests/path.first_trial.png"
+    },
+    {
+      "key": "path.first_training",
+      "title": "Первый салют",
+      "type": "ONBOARDING",
+      "xp": 500,
+      "icon": "quests/path.first_training.png"
+    },
+    {
+      "key": "path.first_record",
+      "title": "Запись в хронике",
+      "type": "ONBOARDING",
+      "xp": 300,
+      "icon": "quests/path.first_record.png"
+    },
+    {
+      "key": "path.choose_weapon",
+      "title": "Выбери путь",
+      "type": "ONBOARDING",
+      "xp": 250,
+      "icon": "quests/path.choose_weapon.png"
+    },
+    {
+      "key": "path.monthly_roll",
+      "title": "Бросок судьбы",
+      "type": "ONBOARDING",
+      "xp": 150,
+      "icon": "quests/path.monthly_roll.png"
+    },
+    {
+      "key": "path.open_inventory",
+      "title": "Арсенал героя",
+      "type": "ONBOARDING",
+      "xp": 100,
+      "icon": "quests/path.open_inventory.png"
+    },
+    {
+      "key": "path.choose_cosmetic",
+      "title": "Собственный герб",
+      "type": "ONBOARDING",
+      "xp": 100,
+      "icon": "quests/path.choose_cosmetic.png"
+    },
+    {
+      "key": "path.complete",
+      "title": "Путь начат",
+      "type": "ONBOARDING",
+      "xp": 1000,
+      "icon": "quests/path.complete.png"
+    },
+    {
+      "key": "training.ready",
+      "title": "Готовность",
+      "type": "DAILY",
+      "xp": 100,
+      "icon": "quests/training.ready.png"
+    },
+    {
+      "key": "training.focus",
+      "title": "Технический фокус",
+      "type": "DAILY",
+      "xp": 150,
+      "icon": "quests/training.focus.png"
+    },
+    {
+      "key": "training.balance",
+      "title": "Обе стороны",
+      "type": "DAILY",
+      "xp": 100,
+      "icon": "quests/training.balance.png"
+    },
+    {
+      "key": "training.partner",
+      "title": "Работа в паре",
+      "type": "DAILY",
+      "xp": 150,
+      "icon": "quests/training.partner.png"
+    },
+    {
+      "key": "training.reflection",
+      "title": "Страница хроники",
+      "type": "WEEKLY",
+      "xp": 100,
+      "icon": "quests/training.reflection.png"
+    },
+    {
+      "key": "weekly.rhythm.2",
+      "title": "Держать ритм",
+      "type": "WEEKLY",
+      "xp": 300,
+      "icon": "quests/weekly.rhythm.2.png"
+    },
+    {
+      "key": "weekly.rhythm.3",
+      "title": "Три шага вперёд",
+      "type": "WEEKLY",
+      "xp": 500,
+      "icon": "quests/weekly.rhythm.3.png"
+    },
+    {
+      "key": "weekly.two_paths",
+      "title": "Два пути",
+      "type": "WEEKLY",
+      "xp": 400,
+      "icon": "quests/weekly.two_paths.png"
+    },
+    {
+      "key": "weekly.curriculum",
+      "title": "Урок мастера",
+      "type": "WEEKLY",
+      "xp": 400,
+      "icon": "quests/weekly.curriculum.png"
+    },
+    {
+      "key": "weekly.history",
+      "title": "След Мароццо",
+      "type": "WEEKLY",
+      "xp": 250,
+      "icon": "quests/weekly.history.png"
+    },
+    {
+      "key": "weekly.community",
+      "title": "Товарищ по залу",
+      "type": "WEEKLY",
+      "xp": 300,
+      "icon": "quests/weekly.community.png"
+    },
+    {
+      "key": "weekly.event_prep",
+      "title": "Перед событием",
+      "type": "WEEKLY",
+      "xp": 300,
+      "icon": "quests/weekly.event_prep.png"
+    },
+    {
+      "key": "monthly.roll",
+      "title": "Восемь граней",
+      "type": "MONTHLY",
+      "xp": 150,
+      "icon": "quests/monthly.roll.png"
+    },
+    {
+      "key": "monthly.sessions.8",
+      "title": "Дисциплина месяца",
+      "type": "MONTHLY",
+      "xp": 1000,
+      "icon": "quests/monthly.sessions.8.png"
+    },
+    {
+      "key": "monthly.new_path",
+      "title": "Новый клинок",
+      "type": "MONTHLY",
+      "xp": 500,
+      "icon": "quests/monthly.new_path.png"
+    },
+    {
+      "key": "monthly.consistency",
+      "title": "Без спешки, без перерыва",
+      "type": "MONTHLY",
+      "xp": 750,
+      "icon": "quests/monthly.consistency.png"
+    },
+    {
+      "key": "monthly.event",
+      "title": "Жизнь школы",
+      "type": "MONTHLY",
+      "xp": 500,
+      "icon": "quests/monthly.event.png"
+    },
+    {
+      "key": "season.eight_paths",
+      "title": "Восемь путей",
+      "type": "SEASONAL",
+      "xp": 3000,
+      "icon": "quests/season.eight_paths.png"
+    }
   ],
   "achievements": [
-    { "key": "start.first_salute", "title": "Первый салют", "tiers": 1, "xp": 0 },
-    { "key": "start.safety", "title": "Береги себя и партнёра", "tiers": 1, "xp": 0 },
-    { "key": "start.character", "title": "Герой вступает в зал", "tiers": 1, "xp": 0 },
-    { "key": "start.inventory", "title": "Первый трофей", "tiers": 1, "xp": 250 },
-    { "key": "start.quest", "title": "Задание выполнено", "tiers": 1, "xp": 250 },
-    { "key": "start.event", "title": "Часть школы", "tiers": 1, "xp": 0 },
-    { "key": "practice.sessions", "title": "Практика зала", "tiers": [1, 10, 25, 50, 100, 250, 500], "xp": 250 },
-    { "key": "practice.weeks", "title": "Недели ритма", "tiers": [4, 12, 26, 52], "xp": 0 },
-    { "key": "practice.years", "title": "Годы в зале", "tiers": [1, 3, 5, 10], "xp": 0 },
-    { "key": "practice.return", "title": "Возвращение в зал", "tiers": 1, "xp": 0 },
-    { "key": "mastery.first_rank", "title": "Первый знак", "tiers": 1, "xp": 750 },
-    { "key": "mastery.four_paths", "title": "Четыре пути", "tiers": 1, "xp": 1500 },
-    { "key": "mastery.eight_paths", "title": "Универсальный воин", "tiers": 1, "xp": 3000 },
-    { "key": "mastery.two_rank_five", "title": "Две школы", "tiers": 1, "xp": 3000 },
-    { "key": "mastery.one_rank_ten", "title": "Мастер оружия", "tiers": 1, "xp": 0 },
-    { "key": "mastery.all_rank_ten", "title": "Мастер Меча", "tiers": 1, "xp": 0 },
-    { "key": "mastery.spada_a_una_mano.rank", "title": "Мастерство: одноручный меч", "tiers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "xp": 0 },
-    { "key": "mastery.due_spade.rank", "title": "Мастерство: два меча", "tiers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "xp": 0 },
-    { "key": "mastery.spada_e_scudo.rank", "title": "Мастерство: меч и щит", "tiers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "xp": 0 },
-    { "key": "mastery.spada_a_due_mani.rank", "title": "Мастерство: двуручный меч", "tiers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "xp": 0 },
-    { "key": "mastery.spadone.rank", "title": "Мастерство: спадоне", "tiers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "xp": 0 },
-    { "key": "mastery.ascia_e_alabarda.rank", "title": "Мастерство: топор и алебарда", "tiers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "xp": 0 },
-    { "key": "mastery.spiedo_e_partesana.rank", "title": "Мастерство: копьё и протазан", "tiers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "xp": 0 },
-    { "key": "mastery.spiedo_e_scudo.rank", "title": "Мастерство: копьё и щит", "tiers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "xp": 0 },
-    { "key": "curriculum.objectives", "title": "Цели учебной программы", "tiers": [10, 25, 50, 100], "xp": 0 },
-    { "key": "curriculum.marozzo", "title": "Ученик Мароццо", "tiers": 1, "xp": 0 },
-    { "key": "community.events", "title": "События школы", "tiers": [1, 5, 10, 25], "xp": 0 },
-    { "key": "community.mentor", "title": "Товарищ", "tiers": 1, "xp": 0 },
-    { "key": "community.tournament", "title": "Турнир школы", "tiers": 1, "xp": 0 },
-    { "key": "community.masterclass", "title": "Мастер-класс", "tiers": 1, "xp": 0 }
+    {
+      "key": "start.first_salute",
+      "title": "Первый салют",
+      "tiers": 1,
+      "xp": 0,
+      "icon": "achievements/start.first_salute.png"
+    },
+    {
+      "key": "start.safety",
+      "title": "Береги себя и партнёра",
+      "tiers": 1,
+      "xp": 0,
+      "icon": "achievements/start.safety.png"
+    },
+    {
+      "key": "start.character",
+      "title": "Герой вступает в зал",
+      "tiers": 1,
+      "xp": 0,
+      "icon": "achievements/start.character.png"
+    },
+    {
+      "key": "start.inventory",
+      "title": "Первый трофей",
+      "tiers": 1,
+      "xp": 250,
+      "icon": "achievements/start.inventory.png"
+    },
+    {
+      "key": "start.quest",
+      "title": "Задание выполнено",
+      "tiers": 1,
+      "xp": 250,
+      "icon": "achievements/start.quest.png"
+    },
+    {
+      "key": "start.event",
+      "title": "Часть школы",
+      "tiers": 1,
+      "xp": 0,
+      "icon": "achievements/start.event.png"
+    },
+    {
+      "key": "practice.sessions",
+      "title": "Практика зала",
+      "tiers": [
+        1,
+        10,
+        25,
+        50,
+        100,
+        250,
+        500
+      ],
+      "xp": 250,
+      "icon": "achievements/practice.sessions.png"
+    },
+    {
+      "key": "practice.weeks",
+      "title": "Недели ритма",
+      "tiers": [
+        4,
+        12,
+        26,
+        52
+      ],
+      "xp": 0,
+      "icon": "achievements/practice.weeks.png"
+    },
+    {
+      "key": "practice.years",
+      "title": "Годы в зале",
+      "tiers": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "xp": 0,
+      "icon": "achievements/practice.years.png"
+    },
+    {
+      "key": "practice.return",
+      "title": "Возвращение в зал",
+      "tiers": 1,
+      "xp": 0,
+      "icon": "achievements/practice.return.png"
+    },
+    {
+      "key": "mastery.first_rank",
+      "title": "Первый знак",
+      "tiers": 1,
+      "xp": 750,
+      "icon": "achievements/mastery.first_rank.png"
+    },
+    {
+      "key": "mastery.four_paths",
+      "title": "Четыре пути",
+      "tiers": 1,
+      "xp": 1500,
+      "icon": "achievements/mastery.four_paths.png"
+    },
+    {
+      "key": "mastery.eight_paths",
+      "title": "Универсальный воин",
+      "tiers": 1,
+      "xp": 3000,
+      "icon": "achievements/mastery.eight_paths.png"
+    },
+    {
+      "key": "mastery.two_rank_five",
+      "title": "Две школы",
+      "tiers": 1,
+      "xp": 3000,
+      "icon": "achievements/mastery.two_rank_five.png"
+    },
+    {
+      "key": "mastery.one_rank_ten",
+      "title": "Мастер оружия",
+      "tiers": 1,
+      "xp": 0,
+      "icon": "achievements/mastery.one_rank_ten.png"
+    },
+    {
+      "key": "mastery.all_rank_ten",
+      "title": "Мастер Меча",
+      "tiers": 1,
+      "xp": 0,
+      "icon": "achievements/mastery.all_rank_ten.png"
+    },
+    {
+      "key": "mastery.spada_a_una_mano.rank",
+      "title": "Мастерство: одноручный меч",
+      "tiers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "xp": 0,
+      "icon": "achievements/mastery.spada_a_una_mano.rank.png"
+    },
+    {
+      "key": "mastery.due_spade.rank",
+      "title": "Мастерство: два меча",
+      "tiers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "xp": 0,
+      "icon": "achievements/mastery.due_spade.rank.png"
+    },
+    {
+      "key": "mastery.spada_e_scudo.rank",
+      "title": "Мастерство: меч и щит",
+      "tiers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "xp": 0,
+      "icon": "achievements/mastery.spada_e_scudo.rank.png"
+    },
+    {
+      "key": "mastery.spada_a_due_mani.rank",
+      "title": "Мастерство: двуручный меч",
+      "tiers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "xp": 0,
+      "icon": "achievements/mastery.spada_a_due_mani.rank.png"
+    },
+    {
+      "key": "mastery.spadone.rank",
+      "title": "Мастерство: спадоне",
+      "tiers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "xp": 0,
+      "icon": "achievements/mastery.spadone.rank.png"
+    },
+    {
+      "key": "mastery.ascia_e_alabarda.rank",
+      "title": "Мастерство: топор и алебарда",
+      "tiers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "xp": 0,
+      "icon": "achievements/mastery.ascia_e_alabarda.rank.png"
+    },
+    {
+      "key": "mastery.spiedo_e_partesana.rank",
+      "title": "Мастерство: копьё и протазан",
+      "tiers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "xp": 0,
+      "icon": "achievements/mastery.spiedo_e_partesana.rank.png"
+    },
+    {
+      "key": "mastery.spiedo_e_scudo.rank",
+      "title": "Мастерство: копьё и щит",
+      "tiers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "xp": 0,
+      "icon": "achievements/mastery.spiedo_e_scudo.rank.png"
+    },
+    {
+      "key": "curriculum.objectives",
+      "title": "Цели учебной программы",
+      "tiers": [
+        10,
+        25,
+        50,
+        100
+      ],
+      "xp": 0,
+      "icon": "achievements/curriculum.objectives.png"
+    },
+    {
+      "key": "curriculum.marozzo",
+      "title": "Ученик Мароццо",
+      "tiers": 1,
+      "xp": 0,
+      "icon": "achievements/curriculum.marozzo.png"
+    },
+    {
+      "key": "community.events",
+      "title": "События школы",
+      "tiers": [
+        1,
+        5,
+        10,
+        25
+      ],
+      "xp": 0,
+      "icon": "achievements/community.events.png"
+    },
+    {
+      "key": "community.mentor",
+      "title": "Товарищ",
+      "tiers": 1,
+      "xp": 0,
+      "icon": "achievements/community.mentor.png"
+    },
+    {
+      "key": "community.tournament",
+      "title": "Турнир школы",
+      "tiers": 1,
+      "xp": 0,
+      "icon": "achievements/community.tournament.png"
+    },
+    {
+      "key": "community.masterclass",
+      "title": "Мастер-класс",
+      "tiers": 1,
+      "xp": 0,
+      "icon": "achievements/community.masterclass.png"
+    }
   ],
   "talents": [
-    { "key": "discipline.observer", "title": "Наблюдатель техники", "rank": 1 },
-    { "key": "discipline.chronicler", "title": "Хронист", "rank": 1 },
-    { "key": "discipline.scholar", "title": "Учёный зала", "rank": 1 },
-    { "key": "discipline.pathfinder", "title": "Следопыт", "rank": 1 },
-    { "key": "discipline.companion", "title": "Товарищ", "rank": 1 },
-    { "key": "discipline.curator", "title": "Хранитель облика", "rank": 1 },
-    { "key": "discipline.archivist", "title": "Архивариус", "rank": 1 },
-    { "key": "discipline.herald", "title": "Глашатай", "rank": 1 },
-    { "key": "discipline.collector", "title": "Коллекционер", "rank": 1 },
-    { "key": "discipline.universalist", "title": "Универсалист", "rank": 1 },
-    { "key": "discipline.steward", "title": "Стюард", "rank": 1 },
-    { "key": "discipline.master", "title": "Мастер дисциплины", "rank": 1 }
+    {
+      "key": "discipline.observer",
+      "title": "Наблюдатель техники",
+      "rank": 1
+    },
+    {
+      "key": "discipline.chronicler",
+      "title": "Хронист",
+      "rank": 1
+    },
+    {
+      "key": "discipline.scholar",
+      "title": "Учёный зала",
+      "rank": 1
+    },
+    {
+      "key": "discipline.pathfinder",
+      "title": "Следопыт",
+      "rank": 1
+    },
+    {
+      "key": "discipline.companion",
+      "title": "Товарищ",
+      "rank": 1
+    },
+    {
+      "key": "discipline.curator",
+      "title": "Хранитель облика",
+      "rank": 1
+    },
+    {
+      "key": "discipline.archivist",
+      "title": "Архивариус",
+      "rank": 1
+    },
+    {
+      "key": "discipline.herald",
+      "title": "Глашатай",
+      "rank": 1
+    },
+    {
+      "key": "discipline.collector",
+      "title": "Коллекционер",
+      "rank": 1
+    },
+    {
+      "key": "discipline.universalist",
+      "title": "Универсалист",
+      "rank": 1
+    },
+    {
+      "key": "discipline.steward",
+      "title": "Стюард",
+      "rank": 1
+    },
+    {
+      "key": "discipline.master",
+      "title": "Мастер дисциплины",
+      "rank": 1
+    }
   ],
   "items": [
-    { "key": "school.fencing.avatar.novice", "title": "Новобранец", "type": "COSMETIC", "category": "avatar" },
-    { "key": "school.fencing.avatar.scholar", "title": "Ученик трактата", "type": "COSMETIC", "category": "avatar" },
-    { "key": "school.fencing.avatar.duelist", "title": "Дуэлянт", "type": "COSMETIC", "category": "avatar" },
-    { "key": "school.fencing.avatar.shieldbearer", "title": "Щитоносец", "type": "COSMETIC", "category": "avatar" },
-    { "key": "school.fencing.avatar.polearm", "title": "Мастер древкового оружия", "type": "COSMETIC", "category": "avatar" },
-    { "key": "school.fencing.avatar.universal", "title": "Универсальный воин", "type": "COSMETIC", "category": "avatar" },
-    { "key": "school.fencing.frame.hall", "title": "Герб зала", "type": "COSMETIC", "category": "frame" },
-    { "key": "school.fencing.frame.bronze", "title": "Бронзовый орнамент", "type": "COSMETIC", "category": "frame" },
-    { "key": "school.fencing.frame.steel", "title": "Стальной орнамент", "type": "COSMETIC", "category": "frame" },
-    { "key": "school.fencing.frame.crimson", "title": "Багряная стража", "type": "COSMETIC", "category": "frame" },
-    { "key": "school.fencing.frame.manuscript", "title": "Поля трактата", "type": "COSMETIC", "category": "frame" },
-    { "key": "school.fencing.frame.eight_paths", "title": "Восемь путей", "type": "COSMETIC", "category": "frame" },
-    { "key": "school.fencing.banner.night_hall", "title": "Ночной зал", "type": "COSMETIC", "category": "banner" },
-    { "key": "school.fencing.banner.manuscript_1536", "title": "Трактат 1536", "type": "COSMETIC", "category": "banner" },
-    { "key": "school.fencing.banner.arsenal", "title": "Арсенал", "type": "COSMETIC", "category": "banner" },
-    { "key": "school.fencing.banner.eight_paths", "title": "Восемь путей", "type": "COSMETIC", "category": "banner" },
-    { "key": "school.fencing.theme.parchment", "title": "Пергамент", "type": "COSMETIC", "category": "theme" },
-    { "key": "school.fencing.theme.steel", "title": "Сталь", "type": "COSMETIC", "category": "theme" },
-    { "key": "school.fencing.title.student", "title": "Ученик зала", "type": "COSMETIC", "category": "title" },
-    { "key": "school.fencing.title.marozzo_student", "title": "Ученик Мароццо", "type": "COSMETIC", "category": "title" },
-    { "key": "school.fencing.title.steadfast", "title": "Стойкий", "type": "COSMETIC", "category": "title" },
-    { "key": "school.fencing.title.companion", "title": "Товарищ по залу", "type": "COSMETIC", "category": "title" },
-    { "key": "school.fencing.title.weapon_master", "title": "Мастер оружия", "type": "COSMETIC", "category": "title" },
-    { "key": "school.fencing.title.eight_paths", "title": "Восемь путей", "type": "COSMETIC", "category": "title" },
-    { "key": "school.fencing.title.master_of_sword", "title": "Мастер Меча", "type": "COSMETIC", "category": "title" },
-    { "key": "school.fencing.collectible.monthly_die", "title": "Месячная кость", "type": "COLLECTIBLE", "category": "collectible" }
+    {
+      "key": "school.fencing.avatar.novice",
+      "title": "Новобранец",
+      "type": "COSMETIC",
+      "category": "avatar"
+    },
+    {
+      "key": "school.fencing.avatar.scholar",
+      "title": "Ученик трактата",
+      "type": "COSMETIC",
+      "category": "avatar"
+    },
+    {
+      "key": "school.fencing.avatar.duelist",
+      "title": "Дуэлянт",
+      "type": "COSMETIC",
+      "category": "avatar"
+    },
+    {
+      "key": "school.fencing.avatar.shieldbearer",
+      "title": "Щитоносец",
+      "type": "COSMETIC",
+      "category": "avatar"
+    },
+    {
+      "key": "school.fencing.avatar.polearm",
+      "title": "Мастер древкового оружия",
+      "type": "COSMETIC",
+      "category": "avatar"
+    },
+    {
+      "key": "school.fencing.avatar.universal",
+      "title": "Универсальный воин",
+      "type": "COSMETIC",
+      "category": "avatar"
+    },
+    {
+      "key": "school.fencing.frame.hall",
+      "title": "Герб зала",
+      "type": "COSMETIC",
+      "category": "frame"
+    },
+    {
+      "key": "school.fencing.frame.bronze",
+      "title": "Бронзовый орнамент",
+      "type": "COSMETIC",
+      "category": "frame"
+    },
+    {
+      "key": "school.fencing.frame.steel",
+      "title": "Стальной орнамент",
+      "type": "COSMETIC",
+      "category": "frame"
+    },
+    {
+      "key": "school.fencing.frame.crimson",
+      "title": "Багряная стража",
+      "type": "COSMETIC",
+      "category": "frame"
+    },
+    {
+      "key": "school.fencing.frame.manuscript",
+      "title": "Поля трактата",
+      "type": "COSMETIC",
+      "category": "frame"
+    },
+    {
+      "key": "school.fencing.frame.eight_paths",
+      "title": "Восемь путей",
+      "type": "COSMETIC",
+      "category": "frame"
+    },
+    {
+      "key": "school.fencing.banner.night_hall",
+      "title": "Ночной зал",
+      "type": "COSMETIC",
+      "category": "banner"
+    },
+    {
+      "key": "school.fencing.banner.manuscript_1536",
+      "title": "Трактат 1536",
+      "type": "COSMETIC",
+      "category": "banner"
+    },
+    {
+      "key": "school.fencing.banner.arsenal",
+      "title": "Арсенал",
+      "type": "COSMETIC",
+      "category": "banner"
+    },
+    {
+      "key": "school.fencing.banner.eight_paths",
+      "title": "Восемь путей",
+      "type": "COSMETIC",
+      "category": "banner"
+    },
+    {
+      "key": "school.fencing.theme.parchment",
+      "title": "Пергамент",
+      "type": "COSMETIC",
+      "category": "theme"
+    },
+    {
+      "key": "school.fencing.theme.steel",
+      "title": "Сталь",
+      "type": "COSMETIC",
+      "category": "theme"
+    },
+    {
+      "key": "school.fencing.title.student",
+      "title": "Ученик зала",
+      "type": "COSMETIC",
+      "category": "title"
+    },
+    {
+      "key": "school.fencing.title.marozzo_student",
+      "title": "Ученик Мароццо",
+      "type": "COSMETIC",
+      "category": "title"
+    },
+    {
+      "key": "school.fencing.title.steadfast",
+      "title": "Стойкий",
+      "type": "COSMETIC",
+      "category": "title"
+    },
+    {
+      "key": "school.fencing.title.companion",
+      "title": "Товарищ по залу",
+      "type": "COSMETIC",
+      "category": "title"
+    },
+    {
+      "key": "school.fencing.title.weapon_master",
+      "title": "Мастер оружия",
+      "type": "COSMETIC",
+      "category": "title"
+    },
+    {
+      "key": "school.fencing.title.eight_paths",
+      "title": "Восемь путей",
+      "type": "COSMETIC",
+      "category": "title"
+    },
+    {
+      "key": "school.fencing.title.master_of_sword",
+      "title": "Мастер Меча",
+      "type": "COSMETIC",
+      "category": "title"
+    },
+    {
+      "key": "school.fencing.collectible.monthly_die",
+      "title": "Месячная кость",
+      "type": "COLLECTIBLE",
+      "category": "collectible"
+    }
   ],
   "rewards": [
-    { "key": "school.fencing.reward.welcome", "title": "Приветственный набор", "components": "300 XP, выбор стартового аватара" },
-    { "key": "school.fencing.reward.first_training", "title": "Первый салют", "components": "500 XP, значок «Первый салют»" },
-    { "key": "school.fencing.reward.training_attendance", "title": "Посещение тренировки", "components": "500 опыта за посещение" },
-    { "key": "school.fencing.reward.weekly_rhythm", "title": "Недельный ритм", "components": "300 XP, фрагмент манускрипта" },
-    { "key": "school.fencing.reward.monthly_discipline", "title": "Дисциплина месяца", "components": "1000 XP, сезонный косметический предмет" },
-    { "key": "school.fencing.reward.weapon_rank_minor", "title": "Знак оружия (младший)", "components": "750 XP, печать оружия" },
-    { "key": "school.fencing.reward.weapon_rank_major", "title": "Знак оружия (старший)", "components": "1500 XP, рамка или баннер" },
-    { "key": "school.fencing.reward.weapon_rank_master", "title": "Знак оружия (мастер)", "components": "3000 XP, косметика с fallback, титул" },
-    { "key": "school.fencing.reward.event_participant", "title": "Участник события", "components": "500 XP, коллекционный предмет события" },
-    { "key": "school.fencing.reward.mentor", "title": "Наставничество", "components": "750 XP, прогресс титула" },
-    { "key": "school.fencing.reward.level_milestone", "title": "Рубеж уровня", "components": "предмет или косметика без XP" },
-    { "key": "school.fencing.reward.referral", "title": "Реферальная награда", "components": "ваучер после проверки, без автоматического XP" }
+    {
+      "key": "school.fencing.reward.welcome",
+      "title": "Приветственный набор",
+      "components": "300 XP, выбор стартового аватара"
+    },
+    {
+      "key": "school.fencing.reward.first_training",
+      "title": "Первый салют",
+      "components": "500 XP, значок «Первый салют»"
+    },
+    {
+      "key": "school.fencing.reward.training_attendance",
+      "title": "Посещение тренировки",
+      "components": "500 опыта за посещение"
+    },
+    {
+      "key": "school.fencing.reward.weekly_rhythm",
+      "title": "Недельный ритм",
+      "components": "300 XP, фрагмент манускрипта"
+    },
+    {
+      "key": "school.fencing.reward.monthly_discipline",
+      "title": "Дисциплина месяца",
+      "components": "1000 XP, сезонный косметический предмет"
+    },
+    {
+      "key": "school.fencing.reward.weapon_rank_minor",
+      "title": "Знак оружия (младший)",
+      "components": "750 XP, печать оружия"
+    },
+    {
+      "key": "school.fencing.reward.weapon_rank_major",
+      "title": "Знак оружия (старший)",
+      "components": "1500 XP, рамка или баннер"
+    },
+    {
+      "key": "school.fencing.reward.weapon_rank_master",
+      "title": "Знак оружия (мастер)",
+      "components": "3000 XP, косметика с fallback, титул"
+    },
+    {
+      "key": "school.fencing.reward.event_participant",
+      "title": "Участник события",
+      "components": "500 XP, коллекционный предмет события"
+    },
+    {
+      "key": "school.fencing.reward.mentor",
+      "title": "Наставничество",
+      "components": "750 XP, прогресс титула"
+    },
+    {
+      "key": "school.fencing.reward.level_milestone",
+      "title": "Рубеж уровня",
+      "components": "предмет или косметика без XP"
+    },
+    {
+      "key": "school.fencing.reward.referral",
+      "title": "Реферальная награда",
+      "components": "ваучер после проверки, без автоматического XP"
+    }
   ],
   "schools": [
-    { "key": "witcher", "title": "Курс Ведьмака", "description": "Силовая работа клинком, мобильность и выносливость в духе школы Волка." },
-    { "key": "east", "title": "Клинки Востока", "description": "Восточные системы клинка: ритм, дистанция и точность." },
-    { "key": "spanish_rapier", "title": "Испанская рапира", "description": "Verdadera Destreza: фехтование разума, геометрии и расчёта дистанции." },
-    { "key": "italian_rapier", "title": "Итальянская рапира", "description": "Итальянская школа: темп, финты и работа в ближней дистанции." },
-    { "key": "montante", "title": "Иберийский двуручный меч", "description": "Монтанте XVI–XVII веков: длина, подвижность и техника по испанским и португальским трактатам." },
-    { "key": "navaja", "title": "Наваха", "description": "Испанский складной нож: техника перемещения, атака, защита и работа на дистанции." }
+    {
+      "key": "witcher",
+      "title": "Курс Ведьмака",
+      "description": "Силовая работа клинком, мобильность и выносливость в духе школы Волка."
+    },
+    {
+      "key": "east",
+      "title": "Клинки Востока",
+      "description": "Восточные системы клинка: ритм, дистанция и точность."
+    },
+    {
+      "key": "spanish_rapier",
+      "title": "Испанская рапира",
+      "description": "Verdadera Destreza: фехтование разума, геометрии и расчёта дистанции."
+    },
+    {
+      "key": "italian_rapier",
+      "title": "Итальянская рапира",
+      "description": "Итальянская школа: темп, финты и работа в ближней дистанции."
+    },
+    {
+      "key": "montante",
+      "title": "Иберийский двуручный меч",
+      "description": "Монтанте XVI–XVII веков: длина, подвижность и техника по испанским и португальским трактатам."
+    },
+    {
+      "key": "navaja",
+      "title": "Наваха",
+      "description": "Испанский складной нож: техника перемещения, атака, защита и работа на дистанции."
+    }
   ]
 }

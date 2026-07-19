@@ -5,7 +5,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/masterofsword/contracts/engines"
@@ -28,17 +30,52 @@ func main() {
 	contentStore = admincontent.MustLoad(root)
 
 	statePath := env("SCHOOL_STATE_PATH", "")
-	if statePath != "" {
+	dbURL := env("DATABASE_URL", "")
+	if dbURL != "" {
+		if err := persist.LoadPlatformFromPostgres(platform, dbURL); err != nil {
+			log.Printf("postgres load: %v (continuing with seed)", err)
+		} else {
+			log.Printf("restored platform state from postgres row-level repos")
+		}
+	} else if statePath != "" {
 		if err := persist.LoadPlatform(platform, statePath); err != nil {
 			log.Printf("state load: %v (continuing with seed)", err)
 		} else {
 			log.Printf("restored platform state from %s", statePath)
 		}
+	}
+
+	saveState := func() {
+		if dbURL != "" {
+			if err := persist.SavePlatformToPostgres(platform, dbURL); err != nil {
+				log.Printf("postgres save: %v", err)
+			}
+			return
+		}
+		if statePath != "" {
+			if err := persist.SavePlatform(platform, statePath); err != nil {
+				log.Printf("state save: %v", err)
+			}
+		}
+	}
+
+	if dbURL != "" || statePath != "" {
 		go func() {
 			ticker := time.NewTicker(30 * time.Second)
 			for range ticker.C {
-				if err := persist.SavePlatform(platform, statePath); err != nil {
-					log.Printf("state save: %v", err)
+				saveState()
+				if dbURL != "" {
+					if n, err := persist.DrainPostgresOutbox(dbURL, 50); err != nil {
+						log.Printf("outbox drain: %v", err)
+					} else if n > 0 {
+						platform.ProcessUnpublishedOutbox()
+						log.Printf("drained %d outbox events", n)
+					}
+				} else {
+					n := platform.ProcessUnpublishedOutbox()
+					if n > 0 {
+						log.Printf("marked %d outbox entries published", n)
+					}
 				}
 			}
 		}()
@@ -51,6 +88,21 @@ func main() {
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]any{"ok": true, "service": "school-api"})
+	})
+
+	mux.HandleFunc("GET /ready", func(w http.ResponseWriter, r *http.Request) {
+		status := map[string]any{"ok": true, "checks": map[string]any{"platform": true}}
+		if dbURL != "" {
+			err := persist.PingPostgres(dbURL)
+			status["checks"] = map[string]any{"platform": true, "postgres": err == nil}
+		if err != nil {
+			status["ok"] = false
+			w.WriteHeader(http.StatusServiceUnavailable)
+			writeJSON(w, status)
+			return
+		}
+		}
+		writeJSON(w, status)
 	})
 
 	mux.HandleFunc("GET /v1/students", authz.RequirePermission(platform, rbac.PermSchoolRead, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
@@ -309,6 +361,14 @@ func main() {
 	}))
 
 	log.Printf("school-api listening on %s", addr)
+	go func() {
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+		<-sig
+		log.Println("shutting down, saving state…")
+		saveState()
+		os.Exit(0)
+	}()
 	log.Fatal(http.ListenAndServe(addr, withCORS(mux)))
 }
 

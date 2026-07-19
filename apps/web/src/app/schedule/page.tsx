@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { bookTrial, fetchPublicSchedule, type SessionRow } from "@/lib/school-api";
+import { bookTrial, fetchPublicSchedule, joinWaitlist, type SessionRow } from "@/lib/school-api";
 import { loadSession } from "@/lib/session";
 import { routes } from "@/lib/routes";
 
@@ -29,7 +29,12 @@ export default function SchedulePage() {
       const b = await bookTrial(user, sessionId);
       setMessage(`Запись подтверждена: ${b.id}`);
     } catch {
-      setError("Не удалось записаться. Войдите как ученик.");
+      try {
+        const w = await joinWaitlist(user, sessionId);
+        setMessage(`Группа заполнена — вы в waitlist, позиция ${w.position}`);
+      } catch {
+        setError("Не удалось записаться. Войдите как ученик.");
+      }
     }
   }
 

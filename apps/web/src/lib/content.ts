@@ -1,7 +1,7 @@
 import starter from "../../public/content/starter.json";
 
-export type Quest = { key: string; title: string; type: string; xp: number };
-export type Achievement = { key: string; title: string; tiers: number | number[]; xp: number };
+export type Quest = { key: string; title: string; type: string; xp: number; icon?: string };
+export type Achievement = { key: string; title: string; tiers: number | number[]; xp: number; icon?: string };
 export type Talent = { key: string; title: string; rank: number };
 export type School = { key: string; title: string; description: string };
 export type ContentItem = {

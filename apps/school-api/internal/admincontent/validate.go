@@ -58,7 +58,7 @@ func (s *Store) Validate() ValidationReport {
 			report.Issues = append(report.Issues, ValidationIssue{Level: "error", Entity: "achievements", Key: k, Message: "title required"})
 		}
 	}
-	for k, it := range s.items {
+	for k := range s.items {
 		check("items", k, "empty item key")
 		if !strings.HasPrefix(k, "school.fencing.") {
 			report.Issues = append(report.Issues, ValidationIssue{Level: "warn", Entity: "items", Key: k, Message: "key should use school.fencing prefix"})

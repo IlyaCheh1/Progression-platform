@@ -108,6 +108,54 @@ export async function fetchLeads(user: SessionUser): Promise<unknown[]> {
   return parseJson(res);
 }
 
+export type RentalBooking = {
+  id: string;
+  type: string;
+  status: string;
+  createdAt: string;
+};
+
+export type HallSlot = {
+  id: string;
+  hallId: string;
+  type: string;
+  startsAt: string;
+  endsAt: string;
+};
+
+export async function fetchRenterBookings(user: SessionUser): Promise<RentalBooking[]> {
+  const res = await fetch(`${SCHOOL_API}/v1/renter/bookings`, { headers: authHeaders(user) });
+  return parseJson(res);
+}
+
+export async function fetchHallAvailability(hallId: string): Promise<HallSlot[]> {
+  const res = await fetch(`${SCHOOL_API}/v1/halls/${encodeURIComponent(hallId)}/availability`);
+  return parseJson(res);
+}
+
+export async function createRentalBooking(
+  user: SessionUser,
+  hallId: string,
+  startsAt: string,
+  endsAt: string,
+): Promise<RentalBooking> {
+  const res = await fetch(`${SCHOOL_API}/v1/bookings/rental`, {
+    method: "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify({ hallId, startsAt, endsAt }),
+  });
+  return parseJson(res);
+}
+
+export async function joinWaitlist(user: SessionUser, sessionId: string): Promise<{ id: string; position: number }> {
+  const res = await fetch(`${SCHOOL_API}/v1/waitlist/join`, {
+    method: "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify({ sessionId }),
+  });
+  return parseJson(res);
+}
+
 export async function createLead(data: {
   name: string;
   phone?: string;

@@ -14,6 +14,7 @@ export const routes = {
   schedule: "/schedule",
   guardian: "/guardian",
   renter: "/renter",
+  support: "/support",
   studio: "/studio",
 } as const;
 

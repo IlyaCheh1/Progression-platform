@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.training.exercise.recorded.v1",
+  "type": "object",
+  "properties": {
+    "eventType": { "const": "school.training.exercise.recorded.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["trainingRecordId", "exerciseCode"],
+      "properties": {
+        "trainingRecordId": { "type": "string" },
+        "exerciseCode": { "type": "string" },
+        "studentId": { "type": "string" }
+      }
+    }
+  }
+}

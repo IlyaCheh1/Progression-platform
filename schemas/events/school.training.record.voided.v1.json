@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.training.record.voided.v1",
+  "type": "object",
+  "properties": {
+    "eventType": { "const": "school.training.record.voided.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["trainingRecordId", "reason"],
+      "properties": {
+        "trainingRecordId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "reason": { "type": "string" }
+      }
+    }
+  }
+}
