@@ -9,8 +9,16 @@ function isMobileViewport(): boolean {
   return window.matchMedia(MOBILE_QUERY).matches;
 }
 
+type LockableOrientation = ScreenOrientation & {
+  lock?: (orientation: "landscape" | "portrait") => Promise<void>;
+};
+
+function orientationApi(): LockableOrientation | undefined {
+  return window.screen?.orientation as LockableOrientation | undefined;
+}
+
 async function lockLandscape(): Promise<void> {
-  const orientation = window.screen?.orientation;
+  const orientation = orientationApi();
   if (!orientation || typeof orientation.lock !== "function") return;
   try {
     await orientation.lock("landscape");
@@ -21,7 +29,7 @@ async function lockLandscape(): Promise<void> {
 
 function unlockOrientation(): void {
   try {
-    window.screen?.orientation?.unlock?.();
+    orientationApi()?.unlock?.();
   } catch {
     // ignore
   }

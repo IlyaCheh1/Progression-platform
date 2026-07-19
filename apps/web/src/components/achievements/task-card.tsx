@@ -9,6 +9,7 @@ type TaskCardProps = {
   current: number;
   target: number;
   reward: number;
+  rewardKind?: "xp" | "coins";
   claimed?: boolean;
   pinned: boolean;
   onClaim: () => void;
