@@ -35,3 +35,14 @@ func PrincipalFromRequest(platform *engines.Platform, r *http.Request) (*engines
 	}
 	return platform.ResolveAccessToken(h[len(prefix):])
 }
+
+func RequireAuth(platform *engines.Platform, next Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		actor, ok := PrincipalFromRequest(platform, r)
+		if !ok {
+			http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
+			return
+		}
+		next(w, r, actor)
+	}
+}
