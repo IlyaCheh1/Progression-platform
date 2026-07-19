@@ -1,16 +1,9 @@
-import ProfileMiniCard from "@/components/profile-mini-card";
-import TalentCard from "@/components/talents/talent-card";
-import type { GenderId } from "@/lib/avatars";
-import type { OgCharacterId } from "@/lib/characters";
+import ActiveSkillsList from "@/components/talents/active-skills-list";
 import type { MosTalent } from "@/lib/talents-catalog";
 import { cn } from "@/lib/utils";
 
 type ActiveSkillsProps = {
-  level: number;
-  currentXp: number;
-  xpToNext: number;
-  selectedSkinId?: OgCharacterId;
-  gender?: GenderId;
+  skillPoints: number;
   skills: MosTalent[];
   onActivate: (talent: MosTalent) => Promise<void>;
   onFavourite: (talent: MosTalent) => Promise<void>;
@@ -19,11 +12,7 @@ type ActiveSkillsProps = {
 };
 
 export default function ActiveSkills({
-  level,
-  currentXp,
-  xpToNext,
-  selectedSkinId,
-  gender,
+  skillPoints,
   skills,
   onActivate,
   onFavourite,
@@ -37,35 +26,22 @@ export default function ActiveSkills({
         className,
       )}
     >
-      <ProfileMiniCard
-        userLevel={level}
-        currentXp={currentXp}
-        xpToNext={xpToNext}
-        selectedSkinId={selectedSkinId}
-        gender={gender}
-      />
-      <div>
-        {skills.length > 0 ? (
-          <h6 className="font-display text-[10px] font-medium leading-6 text-mos-text md:text-[15px]">
-            Активные умения
-          </h6>
-        ) : (
-          <p className="text-[10px] text-mos-muted md:text-xs">Добавьте умения в избранное</p>
-        )}
-        <div className="mt-1 flex w-full justify-start gap-1.5 md:mt-2.5">
-          {skills.map((skill) => (
-            <TalentCard
-              key={skill.id}
-              talent={skill}
-              variant="primary"
-              placement="bottom-right"
-              onActivate={() => onActivate(skill)}
-              onFavourite={() => onFavourite(skill)}
-              loading={loading}
-            />
-          ))}
+      <div className="flex items-center justify-between gap-2">
+        <p className="font-display text-[10px] font-medium leading-6 text-mos-text md:text-[15px]">
+          Доступно умений
+        </p>
+        <div className="flex min-w-[32px] items-center justify-center rounded-lg bg-white/10 px-1 py-0.5 md:min-w-[42px] md:rounded-xl md:px-2">
+          <p className="font-display text-[10px] font-medium text-mos-text md:text-[15px] md:leading-6">
+            {skillPoints}
+          </p>
         </div>
       </div>
+      <ActiveSkillsList
+        skills={skills}
+        onActivate={onActivate}
+        onFavourite={onFavourite}
+        loading={loading}
+      />
     </div>
   );
 }

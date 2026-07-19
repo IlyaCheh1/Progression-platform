@@ -30,7 +30,7 @@ export type ProfileNavItem = {
 export const profileNavItems: ProfileNavItem[] = [
   { id: "home", label: "ПРОФИЛЬ", href: routes.home },
   { id: "inventory", label: "ИНВЕНТАРЬ", href: routes.inventory },
-  { id: "achievements", label: "АЧИВКИ", href: routes.achievements },
+  { id: "achievements", label: "ЗАДАНИЯ", href: routes.achievements },
   { id: "talents", label: "ТАЛАНТЫ", href: routes.talents },
   { id: "store", label: "ЛАВКА", href: routes.store },
   { id: "schools", label: "ШКОЛЫ", href: "/schools", dropdown: true },

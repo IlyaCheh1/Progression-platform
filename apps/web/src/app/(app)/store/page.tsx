@@ -143,67 +143,68 @@ export default function StorePage() {
   }
 
   return (
-    <div
-      className="relative flex min-h-[calc(100vh-72px)] flex-1 flex-row items-start justify-center gap-4 bg-no-repeat px-3 py-3 md:gap-8 md:px-6 md:py-12 md:pt-16"
-      style={{
-        backgroundImage: "url(/media/ui/store-background.webp)",
-        backgroundSize: "cover",
-        backgroundPosition: "center top",
-      }}
-    >
-      <div className="flex flex-col gap-3">
-        <GradientLabel color="amber">
-          <h5 className="font-unbounded text-xs font-medium leading-3.5 text-primaryText md:text-[17px] md:leading-6">
-            {shell.username}
-          </h5>
-        </GradientLabel>
-        <OfferGrid
-          items={userOffers}
-          selectedId={selected?.source === "user" ? selected.item.id : null}
-          onSelect={(item) => {
-            setNotify(null);
-            setSelected({ item, source: "user" });
-          }}
-        />
-      </div>
+    <div className="relative flex min-h-[calc(100vh-72px)] flex-1 flex-row items-start justify-center gap-4 px-3 py-3 md:gap-8 md:px-6 md:py-12 md:pt-16">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url(/media/ui/store-background.webp)",
+        }}
+      />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-black/50" />
+      <div className="relative z-10 flex w-full flex-row items-start justify-center gap-4 md:gap-8">
+        <div className="flex flex-col gap-3">
+          <GradientLabel color="amber">
+            <h5 className="font-unbounded text-xs font-medium leading-3.5 text-primaryText md:text-[17px] md:leading-6">
+              {shell.username}
+            </h5>
+          </GradientLabel>
+          <OfferGrid
+            items={userOffers}
+            selectedId={selected?.source === "user" ? selected.item.id : null}
+            onSelect={(item) => {
+              setNotify(null);
+              setSelected({ item, source: "user" });
+            }}
+          />
+        </div>
 
-      {!notify ? (
-        <SelectedPanel
-          item={selected?.item ?? null}
-          source={selected?.source ?? null}
-          busy={busy}
-          error={error}
-          onBuy={() => void onBuy()}
-          onEquip={() => void onEquip()}
-          onInventory={() => router.push("/inventory")}
-        />
-      ) : (
-        <Notification
-          notify={notify}
-          onClick={() => {
-            if (notify === "buy") setNotify(null);
-            else setNotify(null);
-          }}
-        />
-      )}
+        {!notify ? (
+          <SelectedPanel
+            item={selected?.item ?? null}
+            source={selected?.source ?? null}
+            busy={busy}
+            error={error}
+            onBuy={() => void onBuy()}
+            onEquip={() => void onEquip()}
+            onInventory={() => router.push("/inventory")}
+          />
+        ) : (
+          <Notification
+            notify={notify}
+            onClick={() => {
+              if (notify === "buy") setNotify(null);
+              else setNotify(null);
+            }}
+          />
+        )}
 
-      <div className="flex flex-col gap-3">
-        <GradientLabel color="orange">
-          <h5 className="inline-flex items-center gap-2.5 font-display text-xs font-medium text-[#ee4810] md:text-[17px]">
-            Лавка мастера Хаттори
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/media/ui/store-owner.png" alt="" className="h-4 w-4" />
-          </h5>
-        </GradientLabel>
-        <OfferGrid
-          items={storeOffers}
-          selectedId={selected?.source === "store" ? selected.item.id : null}
-          showPrice
-          onSelect={(item) => {
-            setNotify(null);
-            setSelected({ item, source: "store" });
-          }}
-        />
+        <div className="flex flex-col gap-3">
+          <GradientLabel color="orange">
+            <h5 className="font-display text-xs font-medium text-[#ee4810] md:text-[17px]">
+              Лавка мастера Хаттори
+            </h5>
+          </GradientLabel>
+          <OfferGrid
+            items={storeOffers}
+            selectedId={selected?.source === "store" ? selected.item.id : null}
+            showPrice
+            onSelect={(item) => {
+              setNotify(null);
+              setSelected({ item, source: "store" });
+            }}
+          />
+        </div>
       </div>
     </div>
   );

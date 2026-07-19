@@ -20,9 +20,9 @@ export default function Input({
   return (
     <div
       className={cn(
-        "relative flex h-11 w-full items-center rounded-2xl border bg-mos-bg/60 px-3 backdrop-blur-sm transition-colors",
-        error ? "border-mos-danger" : "border-mos-line/40 focus-within:border-mos-amber",
-        disabled && "opacity-60",
+        "relative flex h-11 w-full items-center rounded-2xl px-3 transition-colors",
+        disabled ? "bg-transparent opacity-60" : "bg-controlsBlur",
+        error && "ring-1 ring-mos-danger",
         className,
       )}
     >

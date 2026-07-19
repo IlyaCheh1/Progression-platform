@@ -1,6 +1,8 @@
 "use client";
 
 import AppearanceEditBadge from "@/components/appearance/appearance-edit-badge";
+import ActiveSkillsList from "@/components/talents/active-skills-list";
+import { useTalents } from "@/components/talents/talents-provider";
 import Progress from "@/components/ui/progress";
 import ProgressCircle from "@/components/ui/progress-circle";
 import type { GenderId } from "@/lib/avatars";
@@ -39,6 +41,7 @@ export default function SettingsProfileHeader({
   avatarBusy = false,
 }: SettingsProfileHeaderProps) {
   const progressPercent = xpToNext > 0 ? (currentXp / xpToNext) * 100 : 0;
+  const { favoriteSkills, handleActivate, handleFavourite, loading } = useTalents();
 
   return (
     <div className="bg-secondaryBg mx-auto w-full overflow-hidden rounded-2xl backdrop-blur-[20px] md:rounded-[32px]">
@@ -60,7 +63,7 @@ export default function SettingsProfileHeader({
       </button>
 
       <div className="relative flex flex-col gap-4 px-4 pb-4 md:gap-5 md:px-8 md:pb-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex items-end gap-4 md:gap-6">
             <button
               type="button"
@@ -116,14 +119,22 @@ export default function SettingsProfileHeader({
             </div>
           </div>
 
-          <div className="hidden min-w-[160px] flex-col items-end gap-3 md:flex md:min-w-[220px]">
+          <div className="hidden min-w-[160px] flex-col items-end gap-2 md:flex md:min-w-[220px] md:pt-1">
             <div className="flex w-full items-center justify-end gap-2">
               <p className="font-display text-sm font-medium text-mos-text md:text-[15px]">Уровень</p>
-              <div className="flex min-w-[42px] items-center justify-center rounded-xl bg-mos-bg px-2 py-0.5">
+              <div className="flex min-w-[42px] items-center justify-center rounded-xl bg-controlsBlur px-2 py-0.5">
                 <p className="font-display text-sm font-medium text-mos-text md:text-[15px]">{level}</p>
               </div>
             </div>
             <Progress value={currentXp} max={xpToNext} size="xl" showText suffix="XP" className="w-full" />
+            <ActiveSkillsList
+              skills={favoriteSkills}
+              onActivate={handleActivate}
+              onFavourite={handleFavourite}
+              loading={loading}
+              align="end"
+              className="w-full"
+            />
           </div>
         </div>
 
@@ -135,6 +146,13 @@ export default function SettingsProfileHeader({
             </p>
           </div>
           <Progress value={currentXp} max={xpToNext} size="md" className="w-full" />
+          <ActiveSkillsList
+            skills={favoriteSkills}
+            onActivate={handleActivate}
+            onFavourite={handleFavourite}
+            loading={loading}
+            compact
+          />
         </div>
       </div>
     </div>

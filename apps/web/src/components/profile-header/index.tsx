@@ -33,9 +33,9 @@ export default function ProfileHeader({
     <header className="witcher-header relative z-40">
       <div className="flex h-14 w-full items-stretch gap-2 px-3 md:h-[72px] md:gap-4 md:px-5">
         <Link
-          href="/profile"
+          href="/"
           className="flex min-w-0 flex-1 items-center justify-start transition-opacity hover:opacity-80"
-          aria-label="Мастер меча — профиль"
+          aria-label="Мастер меча — главная"
         >
           <AppLogo size={28} className="md:hidden" />
           <AppLogo size={36} className="hidden md:block" />

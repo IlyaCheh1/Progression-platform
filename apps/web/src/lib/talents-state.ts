@@ -136,5 +136,7 @@ export function toggleFavoriteInState(state: TalentsPersisted, talentId: string)
 
 export function favoriteTalentsFromTrees(trees: MosTalentTree[], favorites: string[]): MosTalent[] {
   const map = new Map(trees.flatMap((t) => t.skills).map((s) => [s.id, s]));
-  return favorites.map((id) => map.get(id)).filter(Boolean) as MosTalent[];
+  return favorites
+    .map((id) => map.get(id))
+    .filter((skill): skill is MosTalent => Boolean(skill?.isLearned));
 }

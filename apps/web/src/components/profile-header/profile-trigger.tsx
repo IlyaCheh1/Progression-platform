@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import CharacterAvatar from "@/components/character-avatar";
+import ActiveSkillsList from "@/components/talents/active-skills-list";
+import { useTalents } from "@/components/talents/talents-provider";
 import Progress from "@/components/ui/progress";
 import PopupMenu from "@/components/ui/popup-menu";
 import UserMenu from "@/components/profile-header/user-menu";
@@ -34,24 +36,33 @@ export default function ProfileTrigger({
   user,
 }: ProfileTriggerProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { favoriteSkills, handleActivate, handleFavourite, loading } = useTalents();
 
   const trigger = (
     <div className="flex h-full w-fit items-center gap-2 md:gap-6">
-      <div className="hidden min-w-[115px] flex-col gap-0 md:flex md:min-w-[180px]">
+      <div className="hidden min-w-[115px] flex-col gap-0.5 md:flex md:min-w-[180px]">
         <div className="flex w-full items-center justify-end gap-2">
           <h6 className="truncate font-unbounded text-[9px] font-medium text-primaryText md:text-sm">
             {username}
           </h6>
         </div>
-        <div className="flex w-full items-center">
-          <Progress value={currentXp} max={xpToNext} size="md" className="w-full" />
-        </div>
-        <div className="flex w-full items-center justify-between text-[7px] font-light leading-2.5 text-secondaryText md:text-[10px] md:leading-4">
+        <div className="flex w-full items-center justify-between gap-2 text-[7px] font-light leading-2.5 text-secondaryText md:text-[10px] md:leading-4">
           <span className="font-unbounded">{level} уровень</span>
           <span className="font-unbounded">
             {currentXp}/{xpToNext}
           </span>
         </div>
+        <div className="flex w-full items-center">
+          <Progress value={currentXp} max={xpToNext} size="md" className="w-full" />
+        </div>
+        <ActiveSkillsList
+          skills={favoriteSkills}
+          onActivate={handleActivate}
+          onFavourite={handleFavourite}
+          loading={loading}
+          compact
+          className="hidden md:block"
+        />
       </div>
       <CharacterAvatar
         selectedSkinId={selectedSkinId}

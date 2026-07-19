@@ -17,7 +17,11 @@
     "upload:hero-s3:coolify": "sh scripts/coolify-upload-hero-s3.sh",
     "convert:content-icons-webp": "python3 apps/web/scripts/convert-content-icons-webp.py",
     "upload:content-icons-s3": "node scripts/upload-content-icons-to-s3.mjs",
-    "upload:content-icons-s3:local": "node --env-file=infra/local/.env scripts/upload-content-icons-to-s3.mjs"
+    "upload:content-icons-s3:local": "node --env-file=infra/local/.env scripts/upload-content-icons-to-s3.mjs",
+    "upload:all-media-s3": "node scripts/upload-all-media-to-s3.mjs",
+    "upload:all-media-s3:local": "node --env-file=infra/local/.env scripts/upload-all-media-to-s3.mjs",
+    "upload:all-media-s3:dry-run": "DRY_RUN=1 node --env-file=infra/local/.env scripts/upload-all-media-to-s3.mjs",
+    "upload:all-media-s3:coolify": "sh scripts/coolify-upload-all-media-s3.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1090.0"

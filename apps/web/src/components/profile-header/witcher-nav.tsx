@@ -1,29 +1,16 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import PopupMenu from "@/components/ui/popup-menu";
 import SchoolsMenu from "@/components/profile-header/schools-menu";
 import {
-  IconAchievements,
   IconDirectionDown,
-  IconInventory,
-  IconProfile,
-  IconSchools,
-  IconStore,
-  IconTalents,
+  NAV_ICON_SRC,
+  NavRasterIcon,
 } from "@/components/profile-header/nav-icons";
 import { profileNavItems, type ProfileNavItem } from "@/lib/routes";
 import { cn } from "@/lib/utils";
-
-const NAV_ICONS: Record<string, (props: { className?: string }) => ReactNode> = {
-  home: (p) => <IconProfile className={p.className} />,
-  inventory: (p) => <IconInventory className={p.className} />,
-  achievements: (p) => <IconAchievements className={p.className} />,
-  talents: (p) => <IconTalents className={p.className} />,
-  store: (p) => <IconStore className={p.className} />,
-  schools: (p) => <IconSchools className={p.className} />,
-};
 
 function WitcherTab({
   item,
@@ -34,7 +21,7 @@ function WitcherTab({
 }) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const Icon = NAV_ICONS[item.id];
+  const iconSrc = NAV_ICON_SRC[item.id as keyof typeof NAV_ICON_SRC];
 
   const button = (
     <button
@@ -69,7 +56,7 @@ function WitcherTab({
             : "opacity-70 group-hover:opacity-90",
         )}
       >
-        {Icon ? <Icon className="h-6 w-6 md:h-7 md:w-7" /> : null}
+        {iconSrc ? <NavRasterIcon src={iconSrc} /> : null}
       </span>
 
       <span
@@ -98,15 +85,6 @@ function WitcherTab({
           </span>
         ) : null}
       </span>
-
-      {/* Upward triangle on the separator line */}
-      <span
-        aria-hidden
-        className={cn(
-          "absolute bottom-0 left-1/2 z-20 h-0 w-0 -translate-x-1/2 translate-y-[1px] border-x-[5px] border-b-[6px] border-x-transparent border-b-[#e5b042] transition-opacity duration-300 md:border-x-[6px] md:border-b-[7px]",
-          active ? "opacity-100" : "opacity-0",
-        )}
-      />
 
       {/* Gold segment of the bottom metallic line */}
       <span

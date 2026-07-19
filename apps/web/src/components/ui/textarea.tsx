@@ -20,9 +20,9 @@ export default function Textarea({
       {...props}
       disabled={disabled}
       className={cn(
-        "min-h-[96px] w-full resize-y rounded-2xl border bg-mos-bg/60 px-3 py-2.5 text-sm text-mos-text outline-none backdrop-blur-sm placeholder:text-mos-muted",
-        error ? "border-mos-danger" : "border-mos-line/40 focus:border-mos-amber",
-        disabled && "opacity-60",
+        "min-h-[96px] w-full resize-y rounded-2xl px-3 py-2.5 text-sm text-mos-text outline-none placeholder:text-mos-muted",
+        disabled ? "bg-transparent opacity-60" : "bg-controlsBlur",
+        error && "ring-1 ring-mos-danger",
         className,
       )}
       onChange={(event) => onValueChange?.(event.target.value)}

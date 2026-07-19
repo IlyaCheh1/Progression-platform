@@ -36,7 +36,7 @@ export default function WeaponMasteryPanel({ mastery, ranks, className }: Weapon
         </div>
       </div>
 
-      <div className="flex max-h-[min(52vh,420px)] w-full flex-col gap-1.5 overflow-y-auto pr-0.5 md:max-h-[min(58vh,520px)] md:gap-3">
+      <div className="mobile-game-scroll -mr-3 flex max-h-[min(52vh,420px)] flex-col gap-1.5 overflow-y-auto md:-mr-6 md:max-h-[min(58vh,520px)] md:gap-3">
         {WEAPONS.map((weapon) => {
           const units = mastery?.[weapon.key] ?? 0;
           const rank = clampMasteryRank(ranks?.[weapon.key] ?? 0);

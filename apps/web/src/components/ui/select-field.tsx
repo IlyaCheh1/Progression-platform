@@ -27,7 +27,8 @@ export default function SelectField({
       disabled={disabled}
       onChange={(event) => onChange(event.target.value)}
       className={cn(
-        "h-11 w-full appearance-none rounded-2xl border border-mos-line/40 bg-mos-bg/60 px-3 text-sm text-mos-text outline-none backdrop-blur-sm focus:border-mos-amber disabled:opacity-60",
+        "h-11 w-full appearance-none rounded-2xl px-3 text-sm text-mos-text outline-none",
+        disabled ? "bg-transparent opacity-60" : "bg-controlsBlur",
         className,
       )}
     >

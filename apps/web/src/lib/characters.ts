@@ -38,7 +38,7 @@ export const OG_CHARACTERS: OgCharacter[] = [
     slug: "staff-adept",
     name: "Хранительница шеста",
     description:
-      "Сидячая готовность и контроль шеста. Чувствует ритм боя, ловит момент входа и отвечает резкой сменой дистанции",
+      "Стоячая готовность и контроль шеста. Чувствует ритм боя, ловит момент входа и отвечает резкой сменой дистанции",
     gender: "female",
     bonus: "+1 Очко талантов",
     avatarSrc: "/media/characters/female/staff-adept/avatar.webp",

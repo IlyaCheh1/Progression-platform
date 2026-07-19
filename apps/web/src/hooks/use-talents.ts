@@ -30,7 +30,9 @@ function fallbackCatalog(): TalentCatalogResponse {
   };
 }
 
-export function useTalents() {
+export type TalentsController = ReturnType<typeof useTalentsState>;
+
+export function useTalentsState() {
   const [catalogTrees, setCatalogTrees] = useState<MosTalentTree[]>(() =>
     buildTalentTreesFromCatalog(fallbackCatalog()),
   );
