@@ -341,6 +341,33 @@ func (p *Platform) ApplyMasterySnapshot(studentID, weaponAlias string, points fl
 	return nil
 }
 
+// SyncCharacterXPFromMastery raises character XP to the sum of weapon mastery
+// display points (1 point = 1 XP) and refreshes Level. Never decreases XP.
+// Returns how many characters were updated.
+func (p *Platform) SyncCharacterXPFromMastery() int {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	updated := 0
+	for _, s := range p.students {
+		if s == nil || s.CharacterID == "" || len(s.Mastery) == 0 {
+			continue
+		}
+		c, ok := p.characters[s.CharacterID]
+		if !ok || c == nil {
+			continue
+		}
+		target := mastery.CharacterXPFromMasteryUnits(s.Mastery)
+		if target <= c.XP {
+			continue
+		}
+		c.XP = target
+		c.Level = p.track.LevelForXP(target)
+		c.Version++
+		updated++
+	}
+	return updated
+}
+
 func (p *Platform) ApplyTrainingAllocation(studentID, primaryWeapon string, totalUnits int64, paired bool) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()

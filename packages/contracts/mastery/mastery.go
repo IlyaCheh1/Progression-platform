@@ -35,6 +35,25 @@ func PointsToUnits(points float64) int64 {
 	return int64(math.Round(points * 10000))
 }
 
+// UnitsToPoints converts integer mastery units back to displayed points.
+func UnitsToPoints(units int64) float64 {
+	return float64(units) / 10000.0
+}
+
+// CharacterXPFromMasteryUnits sums weapon mastery into character XP (1 display point = 1 XP).
+func CharacterXPFromMasteryUnits(mastery map[string]int64) int64 {
+	if len(mastery) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, units := range mastery {
+		if units > 0 {
+			sum += UnitsToPoints(units)
+		}
+	}
+	return int64(math.Round(sum))
+}
+
 // AllocatePair applies 75/25 split for paired tracks (integer, conserved).
 func AllocatePair(total int64) (primary int64, secondary int64) {
 	primary = (total * 75) / 100

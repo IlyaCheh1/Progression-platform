@@ -63,6 +63,13 @@ func main() {
 		}
 	}
 
+	// Excel mastery points → character XP/level (1 display point = 1 XP).
+	// Runs after seed + optional postgres restore so levels survive restarts.
+	if n := platform.SyncCharacterXPFromMastery(); n > 0 {
+		log.Printf("synced character XP/level from weapon mastery for %d students", n)
+		saveState()
+	}
+
 	if dbURL != "" || statePath != "" {
 		go func() {
 			ticker := time.NewTicker(30 * time.Second)
