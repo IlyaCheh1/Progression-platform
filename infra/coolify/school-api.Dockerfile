@@ -5,6 +5,9 @@ WORKDIR /src
 COPY packages/contracts packages/contracts
 COPY apps/school-api apps/school-api
 
+# Production image must not depend on test package names.
+RUN find /src -name '*_test.go' -delete
+
 WORKDIR /src/apps/school-api
 ENV GOWORK=off
 RUN go build -o /out/school-api ./cmd/school-api

@@ -1,4 +1,4 @@
-package profile_test
+package engines_test
 
 import (
 	"testing"
