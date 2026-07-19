@@ -95,38 +95,31 @@ export default function UserMenu({
             </span>
           </button>
         ))}
-      </div>
 
-      {roleItems.length > 0 && (
-        <>
-          <div className="my-3 h-px bg-[var(--color-strokeBg)] md:my-4" />
-          <div className="flex flex-col gap-2 md:gap-4">
-            {roleItems.map((item) => {
-              const Icon = iconForRoleItem(item.id);
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  className="group flex w-full items-center gap-2 md:gap-3"
-                  onClick={() => navigate(item.href)}
-                >
-                  <Icon className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-mos-amber md:h-6 md:w-6" />
-                  <span
-                    className={cn(
-                      "font-golos text-xs font-normal leading-4 transition-colors duration-100 md:text-sm md:leading-5",
-                      item.highlight
-                        ? "bg-gradient-premium bg-clip-text font-medium text-transparent"
-                        : "text-primaryText group-hover:text-mos-amber",
-                    )}
-                  >
-                    {item.label}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </>
-      )}
+        {roleItems.map((item) => {
+          const Icon = iconForRoleItem(item.id);
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className="group flex w-full items-center gap-2 md:gap-3"
+              onClick={() => navigate(item.href)}
+            >
+              <Icon className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-mos-amber md:h-6 md:w-6" />
+              <span
+                className={cn(
+                  "font-golos text-xs font-normal leading-4 transition-colors duration-100 md:text-sm md:leading-5",
+                  item.highlight
+                    ? "bg-gradient-premium bg-clip-text font-medium text-transparent"
+                    : "text-primaryText group-hover:text-mos-amber",
+                )}
+              >
+                {item.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
       <div className="my-3 h-px bg-[var(--color-strokeBg)] md:my-4" />
 

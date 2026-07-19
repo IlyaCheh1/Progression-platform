@@ -18,7 +18,7 @@ import { useAvatarPresentation } from "@/components/character-avatar";
 import { useAppearanceInventory } from "@/hooks/use-appearance-inventory";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
 import { AvatarUploadError, uploadAvatarToS3, validateAvatarFile } from "@/lib/avatar-upload";
-import { PROFILE_BACKGROUNDS, type BackgroundId } from "@/lib/backgrounds";
+import { PROFILE_BACKGROUNDS, normalizeBackgroundId, type BackgroundId } from "@/lib/backgrounds";
 import { getCharacterById, type OgCharacterId } from "@/lib/characters";
 import {
   messageForProfileError,
@@ -116,12 +116,15 @@ export default function SettingsPage() {
       ownedBackgroundIds.add(item.background.id);
     }
     if (profile?.selectedSkinId) ownedCharacterIds.add(profile.selectedSkinId);
-    if (profile?.backgroundKey) ownedBackgroundIds.add(profile.backgroundKey);
+    if (profile?.backgroundKey) {
+      ownedBackgroundIds.add(normalizeBackgroundId(profile.backgroundKey));
+    }
 
     const equippedCharacter =
       appearance.characters.find((item) => item.equipped)?.characterId ?? profile?.selectedSkinId;
     const equippedProfileBackground =
-      appearance.backgrounds.find((item) => item.equipped)?.background.id ?? profile?.backgroundKey;
+      appearance.backgrounds.find((item) => item.equipped)?.background.id ??
+      (profile?.backgroundKey ? normalizeBackgroundId(profile.backgroundKey) : undefined);
     return {
       ownedCharacterIds,
       ownedBackgroundIds,
