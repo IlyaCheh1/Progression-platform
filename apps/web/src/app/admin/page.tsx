@@ -10,7 +10,11 @@ export default function AdminHomePage() {
         Временный локальный контур: админ школы (учётки учеников, подтверждение посещаемости) и authoring
         заданий/достижений. Не для production.
       </p>
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
+      <div className="mt-8 grid gap-4 md:grid-cols-3">
+        <Link href="/admin/users" className="border border-mos-line/40 bg-mos-stone/30 p-5 hover:border-mos-amber">
+          <h2 className="font-display text-xl text-mos-amber">Пользователи</h2>
+          <p className="mt-2 text-sm text-mos-muted">Создание, редактирование и удаление учётных записей и ролей.</p>
+        </Link>
         <Link href="/admin/school" className="border border-mos-line/40 bg-mos-stone/30 p-5 hover:border-mos-amber">
           <h2 className="font-display text-xl text-mos-amber">Школа</h2>
           <p className="mt-2 text-sm text-mos-muted">Список учеников и подтверждение attendance → XP.</p>

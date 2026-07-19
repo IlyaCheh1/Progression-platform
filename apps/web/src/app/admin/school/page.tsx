@@ -2,13 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { SCHOOL_API } from "@/lib/utils";
-import { authHeaders, loadSession, type SessionUser } from "@/lib/session";
+import { formatRoles, normalizeRoles, type UserRole } from "@/lib/rbac";
+import { authHeaders, hasPermission, isAdminPrincipal, loadSession, type SessionUser } from "@/lib/session";
 
 type StudentRow = {
   id: string;
   displayName: string;
   login: string;
   role: string;
+  roles?: string[];
   characterId: string;
 };
 
@@ -25,7 +27,7 @@ export default function AdminSchoolPage() {
       headers: authHeaders(user),
     });
     if (!res.ok) {
-      setError("Не удалось загрузить учеников (нужна роль platform_admin).");
+      setError("Не удалось загрузить учеников (нужны права users.read).");
       return;
     }
     const data = (await res.json()) as StudentRow[];
@@ -89,11 +91,11 @@ export default function AdminSchoolPage() {
               <tr key={s.id} className="border-b border-mos-line/20 text-mos-text">
                 <td className="px-3 py-2">{s.displayName}</td>
                 <td className="px-3 py-2 text-mos-muted">{s.login}</td>
-                <td className="px-3 py-2 text-mos-muted">{s.role || "student"}</td>
+                <td className="px-3 py-2 text-mos-muted">
+                  {formatRoles(normalizeRoles(s.roles ?? s.role) as UserRole[])}
+                </td>
                 <td className="px-3 py-2">
-                  {s.role === "platform_admin" ? (
-                    <span className="text-xs text-mos-muted">—</span>
-                  ) : (
+                  {session && hasPermission(session, "attendance.confirm") && !isAdminPrincipal(normalizeRoles(s.roles ?? s.role)) ? (
                     <button
                       type="button"
                       className="mos-btn px-2 py-1 text-xs"
@@ -102,6 +104,8 @@ export default function AdminSchoolPage() {
                     >
                       {busyId === s.id ? "…" : "Attendance +500 XP"}
                     </button>
+                  ) : (
+                    <span className="text-xs text-mos-muted">—</span>
                   )}
                 </td>
               </tr>

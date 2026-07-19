@@ -3,13 +3,15 @@
   "sourceHash": "389345302d956197251dff1a3291ca05bf64d534235871048b792b4cc5cc8dda",
   "asOf": "2026-07-19",
   "sheet": "июль",
-  "count": 47,
+  "count": 50,
   "accounts": [
     {
       "studentId": "student-maks-kiselev",
       "name": "Макс Киселев",
       "login": "demo.maks-kiselev@masterofsword.local",
       "password": "MoS-Demo-MaksKiselev-2026!",
+      "role": "administrator",
+      "roles": ["administrator", "coach"],
       "characterId": "char-maks-kiselev",
       "masteryPointsAsOf": {
         "spada a uno mano": 7896.92,
@@ -121,6 +123,8 @@
       "name": "Татьяна Грибанова",
       "login": "demo.tatyana-gribanova@masterofsword.local",
       "password": "MoS-Demo-TatyanaGribanova-2026!",
+      "role": "administrator",
+      "roles": ["administrator", "coach"],
       "characterId": "char-tatyana-gribanova",
       "masteryPointsAsOf": {
         "spada a uno mano": 0.0,
@@ -158,6 +162,7 @@
       "name": "Николай Лобаев",
       "login": "demo.nikolay-lobaev@masterofsword.local",
       "password": "MoS-Demo-NikolayLobaev-2026!",
+      "roles": ["student", "coach"],
       "characterId": "char-nikolay-lobaev",
       "masteryPointsAsOf": {
         "spada a uno mano": 57989.770000000004,
@@ -1660,8 +1665,41 @@
       "name": "Platform Administrator",
       "login": "temp.admin@masterofsword.local",
       "password": "MoS-Temp-PlatformAdmin-2026!",
-      "role": "platform_admin",
+      "role": "administrator",
       "characterId": "char-platform-admin",
+      "masteryPointsAsOf": {},
+      "masteryUnits": {},
+      "ranks": {}
+    },
+    {
+      "studentId": "demo-guardian",
+      "name": "Demo Guardian",
+      "login": "demo.guardian@masterofsword.local",
+      "password": "MoS-Demo-Guardian-2026!",
+      "role": "guardian",
+      "characterId": "char-demo-guardian",
+      "masteryPointsAsOf": {},
+      "masteryUnits": {},
+      "ranks": {}
+    },
+    {
+      "studentId": "demo-coach",
+      "name": "Demo Coach",
+      "login": "demo.coach@masterofsword.local",
+      "password": "MoS-Demo-Coach-2026!",
+      "role": "coach",
+      "characterId": "char-demo-coach",
+      "masteryPointsAsOf": {},
+      "masteryUnits": {},
+      "ranks": {}
+    },
+    {
+      "studentId": "demo-renter",
+      "name": "Demo Renter",
+      "login": "demo.renter@masterofsword.local",
+      "password": "MoS-Demo-Renter-2026!",
+      "role": "renter",
+      "characterId": "char-demo-renter",
       "masteryPointsAsOf": {},
       "masteryUnits": {},
       "ranks": {}

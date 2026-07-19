@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { content } from "@/lib/content";
-import { isPlatformAdmin, loadSession } from "@/lib/session";
+import { isAdminPrincipal, loadSession } from "@/lib/session";
 
 export default function StudioPage() {
   const router = useRouter();
@@ -16,7 +16,7 @@ export default function StudioPage() {
       router.replace("/login");
       return;
     }
-    if (!isPlatformAdmin(s)) {
+    if (!isAdminPrincipal(s.roles)) {
       router.replace("/profile");
       return;
     }

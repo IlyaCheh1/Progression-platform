@@ -16,6 +16,7 @@ type fileShape struct {
 		Login        string             `json:"login"`
 		Password     string             `json:"password"`
 		Role         string             `json:"role"`
+		Roles        []string           `json:"roles"`
 		CharacterID  string             `json:"characterId"`
 		Mastery      map[string]float64 `json:"masteryPointsAsOf"`
 		MasteryUnits map[string]int64   `json:"masteryUnits"`
@@ -49,8 +50,12 @@ func LoadDemo(p *engines.Platform, root string) (int, error) {
 			Login:       a.Login,
 			Password:    a.Password,
 			Role:        role,
+			Roles:       append([]string(nil), a.Roles...),
 			Mastery:     map[string]int64{},
 			Ranks:       map[string]int{},
+		}
+		if len(st.Roles) == 0 && st.Role != "" {
+			st.Roles = []string{st.Role}
 		}
 		for k, v := range a.MasteryUnits {
 			st.Mastery[k] = v

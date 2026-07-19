@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { clearSession, isPlatformAdmin, loadSession, type SessionUser } from "@/lib/session";
+import { RoleSwitch } from "@/components/role-switch";
+import { clearSession, hasRole, isAdminPrincipal, loadSession, type SessionUser } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/admin", label: "Обзор" },
   { href: "/admin/school", label: "Школа" },
+  { href: "/admin/users", label: "Пользователи" },
   { href: "/admin/content", label: "Контент" },
-];
+  { href: "/coach", label: "Тренер", coachOnly: true },
+] as const;
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -23,7 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.replace("/login");
       return;
     }
-    if (!isPlatformAdmin(s)) {
+    if (!isAdminPrincipal(s.roles)) {
       router.replace("/profile");
       return;
     }
@@ -44,6 +47,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <nav className="flex flex-wrap gap-2">
             {NAV.map((item) => {
+              if ("coachOnly" in item && item.coachOnly && !hasRole(user.roles, "coach")) {
+                return null;
+              }
               const active = pathname === item.href;
               return (
                 <Link
@@ -74,6 +80,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
         </div>
       </header>
+      <div className="mx-auto max-w-6xl px-4 pt-4">
+        <RoleSwitch user={user} />
+      </div>
       {children}
     </div>
   );

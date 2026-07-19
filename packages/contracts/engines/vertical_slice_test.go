@@ -49,7 +49,7 @@ func TestTemporaryLocalAuthRoles(t *testing.T) {
 		ID: "student-temp", Login: "temp.student@local", Password: "pass-student", Role: RoleStudent,
 	})
 	p.UpsertStudent(Student{
-		ID: "admin-temp", Login: "temp.admin@local", Password: "pass-admin", Role: RolePlatformAdmin,
+		ID: "admin-temp", Login: "temp.admin@local", Password: "pass-admin", Role: RoleAdministrator,
 	})
 
 	student, ok := p.Authenticate("temp.student@local", "pass-student")

@@ -1,66 +1,273 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Button from "@/components/ui/button";
+import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 
-const VIDEOS = ["1.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4", "6.mp4"];
-
-/** S3/CDN base (no trailing slash), e.g. https://bucket.selstorage.ru/<bucket>/media/hero */
+const VIDEOS = ["1.mp4", "6.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4"];
 const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? "/media/hero").replace(/\/$/, "");
 
 function mediaUrl(file: string) {
   return `${MEDIA_BASE}/${file}`;
 }
 
-export default function Hero() {
-  const [idx, setIdx] = useState(0);
-  const [reduced, setReduced] = useState(false);
+function posterUrl(file: string) {
+  return mediaUrl(file.replace(/\.mp4$/i, ".png"));
+}
+
+type Particle = {
+  id: number;
+  x: number;
+  color: string;
+  size: number;
+  duration: number;
+  delay: number;
+};
+
+function HeroVideoSlide({
+  index,
+  file,
+  isActive,
+  isNext,
+  isMounted,
+  reduceMotion,
+  registerVideo,
+}: {
+  index: number;
+  file: string;
+  isActive: boolean;
+  isNext: boolean;
+  isMounted: boolean;
+  reduceMotion: boolean;
+  registerVideo: (index: number, node: HTMLVideoElement | null) => void;
+}) {
+  const poster = posterUrl(file);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduced(mq.matches);
-    if (mq.matches) return;
-    const t = setInterval(() => setIdx((i) => (i + 1) % VIDEOS.length), 8000);
-    return () => clearInterval(t);
-  }, []);
+    if (!isMounted) {
+      setVideoReady(false);
+    }
+  }, [isMounted]);
 
-  const poster = mediaUrl(`${idx + 1}.png`);
+  if (!isMounted) return null;
+
+  if (reduceMotion) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={poster}
+        alt=""
+        className="h-full w-full object-cover"
+        style={{ filter: "saturate(1.8) brightness(0.35)" }}
+      />
+    );
+  }
 
   return (
-    <section id="hero" className="relative min-h-screen w-full overflow-hidden">
-      {!reduced ? (
-        <video
-          key={VIDEOS[idx]}
-          className="absolute inset-0 h-full w-full object-cover brightness-[0.45] saturate-[0.85]"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={poster}
-          src={mediaUrl(VIDEOS[idx])}
+    <div className="relative h-full w-full overflow-hidden">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={poster}
+        alt=""
+        aria-hidden
+        className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300"
+        style={{
+          filter: "saturate(1.8) brightness(0.35)",
+          opacity: videoReady && isActive ? 0 : 1,
+        }}
+      />
+      <video
+        ref={(node) => registerVideo(index, node)}
+        className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300"
+        style={{
+          filter: "saturate(1.8) brightness(0.35)",
+          opacity: videoReady ? 1 : 0,
+          transform: "translateZ(0)",
+        }}
+        muted
+        loop
+        playsInline
+        preload={isActive || isNext || index === 0 ? "auto" : "metadata"}
+        poster={poster}
+        src={mediaUrl(file)}
+        onCanPlay={() => {
+          setVideoReady(true);
+        }}
+      />
+    </div>
+  );
+}
+
+export default function Hero() {
+  const isMobile = useMobileMedia();
+  const [idx, setIdx] = useState(0);
+  const [mountedSlides, setMountedSlides] = useState(() => new Set([0, 1]));
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const videoRefs = useRef<Map<number, HTMLVideoElement>>(new Map());
+
+  const registerVideo = useCallback((index: number, node: HTMLVideoElement | null) => {
+    if (node) videoRefs.current.set(index, node);
+    else videoRefs.current.delete(index);
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduceMotion(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    const interval = setInterval(() => {
+      setIdx((i) => (i + 1) % VIDEOS.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    const next = (idx + 1) % VIDEOS.length;
+    setMountedSlides((prev) => {
+      const nextSet = new Set(prev);
+      nextSet.add(idx);
+      nextSet.add(next);
+      if (isMobile && nextSet.size > 3) {
+        return new Set([idx, next, (idx + VIDEOS.length - 1) % VIDEOS.length]);
+      }
+      return nextSet;
+    });
+  }, [idx, isMobile]);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+
+    const next = (idx + 1) % VIDEOS.length;
+    videoRefs.current.forEach((video, index) => {
+      if (index === idx || index === next) {
+        void video.play().catch(() => {});
+        return;
+      }
+      video.pause();
+    });
+  }, [idx, mountedSlides, reduceMotion]);
+
+  useEffect(() => {
+    if (isMobile || reduceMotion) {
+      setParticles([]);
+      return;
+    }
+    const colors = ["#d4a84b", "#f0c35a", "#c8c6c2"];
+    setParticles(
+      Array.from({ length: 12 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: Math.random() * 6 + 2,
+        duration: (Math.random() * 8 + 4) * 1.95,
+        delay: Math.random() * 6,
+      })),
+    );
+  }, [isMobile, reduceMotion]);
+
+  return (
+    <section id="hero" className="relative h-screen w-full overflow-hidden" style={{ background: "var(--void)" }}>
+      {VIDEOS.map((file, i) => {
+        const isActive = i === idx;
+        const isNext = i === (idx + 1) % VIDEOS.length;
+        const isMounted = mountedSlides.has(i);
+        return (
+          <div
+            key={file}
+            className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+            style={{
+              opacity: isActive ? 1 : 0,
+              zIndex: isActive ? 1 : 0,
+              pointerEvents: "none",
+              willChange: "opacity",
+            }}
+            aria-hidden={!isActive}
+          >
+            <HeroVideoSlide
+              index={i}
+              file={file}
+              isActive={isActive}
+              isNext={isNext}
+              isMounted={isMounted}
+              reduceMotion={reduceMotion}
+              registerVideo={registerVideo}
+            />
+          </div>
+        );
+      })}
+
+      <div className="video-overlay pointer-events-none absolute inset-0" style={{ zIndex: 2 }} />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          zIndex: 2,
+          background:
+            "radial-gradient(ellipse at 20% 50%, rgba(196,92,42,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(212,168,75,0.16) 0%, transparent 60%)",
+        }}
+      />
+
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          className="particle"
+          style={{
+            left: `${p.x}%`,
+            bottom: "-10px",
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            animationDuration: `${p.duration}s`,
+            animationDelay: `${p.delay}s`,
+            zIndex: 3,
+            background: p.color,
+            borderRadius: "9999px",
+            boxShadow: `0 0 ${p.size * 3}px ${p.color}`,
+          }}
         />
-      ) : (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={poster} alt="" className="absolute inset-0 h-full w-full object-cover brightness-[0.45]" />
-      )}
-      <div className="video-overlay absolute inset-0" />
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col items-start justify-center px-6 pt-20">
-        <p className="mb-4 font-display text-xs uppercase tracking-[0.35em] text-mos-amber">Master of Sword</p>
-        <h1 className="max-w-xl font-display text-4xl leading-tight text-mos-text md:text-6xl">
-          Играй. Тренируйся.
+      ))}
+
+      <div className="relative z-10 flex h-full flex-col items-center px-6 pb-28 text-center">
+        <div className="flex w-full flex-1 flex-col items-center justify-end">
+          <h1
+            className="mobile-fluid-hero-title flex max-w-4xl flex-col items-center gap-4 font-unbounded font-medium tracking-tight md:gap-6 md:text-6xl lg:gap-7 lg:text-7xl"
+            style={{ textShadow: "0 0 60px rgba(212,168,75,0.28)" }}
+          >
+            <span className="block text-white leading-tight">Играй. Тренируйся.</span>
+            <span className="block leading-tight" style={{ color: "var(--color-controlsPrimaryActive)" }}>
+              Прокачивай персонажа.
+            </span>
+          </h1>
+        </div>
+
+        <div className="flex w-full flex-1 items-center justify-center">
+          <div className="grid w-full max-w-[14rem] grid-cols-1 gap-4 sm:max-w-md sm:grid-cols-2">
+            <Button href="/login" variant="primary" size="lg" className="w-full px-6 uppercase">
+              Начать путь
+            </Button>
+            <Button href="#directions" variant="magenta" size="lg" className="w-full px-6 uppercase">
+              Направления
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-8 left-1/2 z-10 flex w-[calc(100%-1.5rem)] max-w-xl -translate-x-1/2 flex-col items-center gap-2 px-3 text-center sm:w-auto sm:px-6">
+        <p className="font-golos text-[calc(0.875rem+2pt)] font-medium leading-relaxed text-white/60 md:text-[calc(0.875rem+4pt)]">
+          Школа исторического фехтования с RPG-развитием:
           <br />
-          Прокачивай персонажа.
-        </h1>
-        <p className="mt-5 max-w-lg text-base text-mos-muted md:text-lg">
-          Школа исторического фехтования с RPG-прогрессией: опыт за тренировки, достижения и путь мастерства.
+          опыт за тренировки, достижения и путь мастерства.
         </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/login" className="mos-btn">
-            Начать путь
-          </Link>
-          <a href="#tariffs" className="mos-btn border-mos-line text-mos-text">
-            Смотреть тарифы
-          </a>
+        <div className="relative h-12 w-px overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
+          <div
+            className="absolute top-0 h-4 w-full animate-bounce"
+            style={{ background: "linear-gradient(to bottom, var(--mos-amber), transparent)" }}
+          />
         </div>
       </div>
     </section>

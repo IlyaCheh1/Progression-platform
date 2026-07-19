@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WitcherNav from "@/components/witcher-nav";
+import { RoleSwitch } from "@/components/role-switch";
 import { loadSession, type SessionUser } from "@/lib/session";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -25,6 +26,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-mos-bg">
       <WitcherNav />
+      <div className="mx-auto max-w-6xl px-4 pt-4">
+        <RoleSwitch user={user} />
+      </div>
       {children}
     </div>
   );

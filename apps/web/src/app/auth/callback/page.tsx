@@ -14,6 +14,7 @@ export default function AuthCallbackPage() {
       characterId: "char-oauth-demo",
       accessToken: "demo-oauth",
       role: "student",
+      roles: ["student"],
     });
     router.replace(hasProfile() ? "/profile" : "/onboarding");
   }, [router]);

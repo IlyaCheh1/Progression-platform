@@ -62,6 +62,34 @@ export default function AdminContentPage() {
     await reload(session);
   }
 
+  async function deleteQuest(key: string) {
+    if (!session || !window.confirm(`Удалить задание ${key}?`)) return;
+    const res = await fetch(`${SCHOOL_API}/v1/admin/content/quests/${encodeURIComponent(key)}`, {
+      method: "DELETE",
+      headers: authHeaders(session),
+    });
+    if (!res.ok) {
+      setError("Не удалось удалить задание.");
+      return;
+    }
+    setMessage("Задание удалено.");
+    await reload(session);
+  }
+
+  async function deleteAchievement(key: string) {
+    if (!session || !window.confirm(`Удалить достижение ${key}?`)) return;
+    const res = await fetch(`${SCHOOL_API}/v1/admin/content/achievements/${encodeURIComponent(key)}`, {
+      method: "DELETE",
+      headers: authHeaders(session),
+    });
+    if (!res.ok) {
+      setError("Не удалось удалить достижение.");
+      return;
+    }
+    setMessage("Достижение удалено.");
+    await reload(session);
+  }
+
   async function createAchievement(e: React.FormEvent) {
     e.preventDefault();
     if (!session) return;
@@ -128,8 +156,18 @@ export default function AdminContentPage() {
       </div>
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">
-        <Catalog title="Quests" items={quests.map((q) => `${q.title} · ${q.type} · ${q.xp} XP`)} />
-        <Catalog title="Achievements" items={achievements.map((a) => `${a.title} · ${a.xp} XP`)} />
+        <Catalog
+          title="Quests"
+          items={quests.map((q) => q.title)}
+          keys={quests.map((q) => q.key)}
+          onDelete={deleteQuest}
+        />
+        <Catalog
+          title="Achievements"
+          items={achievements.map((a) => a.title)}
+          keys={achievements.map((a) => a.key)}
+          onDelete={deleteAchievement}
+        />
       </div>
     </main>
   );
@@ -160,15 +198,34 @@ function Field({
   );
 }
 
-function Catalog({ title, items }: { title: string; items: string[] }) {
+function Catalog({
+  title,
+  items,
+  keys,
+  onDelete,
+}: {
+  title: string;
+  items: string[];
+  keys: string[];
+  onDelete: (key: string) => void;
+}) {
   return (
     <section className="border border-mos-line/40 p-4">
       <h3 className="font-display text-lg text-mos-text">
         {title} <span className="text-mos-amber">({items.length})</span>
       </h3>
-      <ul className="mt-3 max-h-72 space-y-1 overflow-auto text-sm text-mos-muted">
-        {items.map((item) => (
-          <li key={item}>{item}</li>
+      <ul className="mt-3 max-h-72 space-y-2 overflow-auto text-sm text-mos-muted">
+        {items.map((item, index) => (
+          <li key={keys[index]} className="flex items-center justify-between gap-2">
+            <span>{item}</span>
+            <button
+              type="button"
+              className="border border-[#c45c2a]/40 px-2 py-0.5 text-[10px] uppercase tracking-widest text-[#c45c2a]"
+              onClick={() => onDelete(keys[index])}
+            >
+              Удалить
+            </button>
+          </li>
         ))}
       </ul>
     </section>

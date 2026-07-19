@@ -10,15 +10,19 @@ import (
 	"github.com/masterofsword/contracts/mastery"
 	"github.com/masterofsword/contracts/outbox"
 	"github.com/masterofsword/contracts/progression"
+	"github.com/masterofsword/contracts/rbac"
 )
 
 const (
 	TenantDemo = "tenant.school.fencing.demo"
 	RealmKey   = "school.fencing"
 
-	// Temporary local roles until OnlyID + RBAC land.
-	RoleStudent       = "student"
-	RolePlatformAdmin = "platform_admin"
+	RoleStudent       = rbac.RoleStudent
+	RoleGuardian      = rbac.RoleGuardian
+	RoleCoach         = rbac.RoleCoach
+	RoleRenter        = rbac.RoleRenter
+	RoleAdministrator = rbac.RoleAdministrator
+	RolePlatformAdmin = rbac.RolePlatformAdmin
 )
 
 // Character is a platform Character (not a school Student).
@@ -40,21 +44,30 @@ type Student struct {
 	Login       string           `json:"login"`
 	Password    string           `json:"password,omitempty"`
 	Role        string           `json:"role"`
+	Roles       []string         `json:"roles,omitempty"`
 	Mastery     map[string]int64 `json:"mastery"` // weaponKey -> units
 	Ranks       map[string]int   `json:"ranks"`
 }
 
-// NormalizedRole returns a concrete role for auth checks.
+// NormalizedRole returns the primary role for routing/display.
 func (s *Student) NormalizedRole() string {
-	if s == nil || s.Role == "" {
+	if s == nil {
 		return RoleStudent
 	}
-	return s.Role
+	if len(s.Roles) > 0 {
+		return rbac.PrimaryRole(s.Roles)
+	}
+	return rbac.NormalizeRole(s.Role)
 }
 
-// IsPlatformAdmin reports whether the principal may use school admin + content authoring.
+// IsPlatformAdmin reports admin access (administrator or platform_admin).
 func (s *Student) IsPlatformAdmin() bool {
-	return s != nil && s.NormalizedRole() == RolePlatformAdmin
+	return s != nil && rbac.IsAdministratorInRoles(s.RolesList())
+}
+
+// HasPermission checks RBAC across all assigned roles.
+func (s *Student) HasPermission(perm rbac.Permission) bool {
+	return s != nil && rbac.HasPermissionForRoles(s.RolesList(), perm)
 }
 
 type Platform struct {
@@ -103,9 +116,7 @@ func (p *Platform) UpsertStudent(s Student) {
 	if s.Ranks == nil {
 		s.Ranks = map[string]int{}
 	}
-	if s.Role == "" {
-		s.Role = RoleStudent
-	}
+	s.syncRoles()
 	cp := s
 	p.students[s.ID] = &cp
 	if s.Login != "" {
