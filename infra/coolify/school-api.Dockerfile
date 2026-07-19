@@ -2,11 +2,12 @@ FROM golang:1.22-alpine AS build
 
 WORKDIR /src
 
-COPY go.work go.work.sum ./
 COPY packages/contracts packages/contracts
 COPY apps/school-api apps/school-api
 
-RUN go build -o /out/school-api ./apps/school-api/cmd/school-api
+WORKDIR /src/apps/school-api
+ENV GOWORK=off
+RUN go build -o /out/school-api ./cmd/school-api
 
 FROM alpine:3.20
 
