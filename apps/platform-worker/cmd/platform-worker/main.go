@@ -3,12 +3,18 @@ package main
 import (
 	"log"
 	"time"
+
+	"github.com/masterofsword/contracts/engines"
 )
 
-// Platform worker placeholder: drains outbox, runs timers, reward fulfillment.
 func main() {
-	log.Println("platform-worker started (local stub) — poll outbox every 2s")
+	p := engines.NewPlatform()
+	log.Println("platform-worker started — draining in-process outbox (Postgres outbox when DATABASE_URL is set)")
 	for {
+		n := p.ProcessUnpublishedOutbox()
+		if n > 0 {
+			log.Printf("marked %d outbox entries published", n)
+		}
 		time.Sleep(2 * time.Second)
 	}
 }

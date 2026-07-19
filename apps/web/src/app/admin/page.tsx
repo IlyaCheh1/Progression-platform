@@ -23,6 +23,14 @@ export default function AdminHomePage() {
           <h2 className="font-display text-xl text-mos-amber">Контент</h2>
           <p className="mt-2 text-sm text-mos-muted">Создание и просмотр заданий (quests) и достижений.</p>
         </Link>
+        <Link href="/admin/crm" className="border border-mos-line/40 bg-mos-stone/30 p-5 hover:border-mos-amber">
+          <h2 className="font-display text-xl text-mos-amber">CRM</h2>
+          <p className="mt-2 text-sm text-mos-muted">Лиды, воронка и задачи.</p>
+        </Link>
+        <Link href="/admin/import" className="border border-mos-line/40 bg-mos-stone/30 p-5 hover:border-mos-amber">
+          <h2 className="font-display text-xl text-mos-amber">Import</h2>
+          <p className="mt-2 text-sm text-mos-muted">Staging, preview и commit Excel/JSON.</p>
+        </Link>
       </div>
     </main>
   );

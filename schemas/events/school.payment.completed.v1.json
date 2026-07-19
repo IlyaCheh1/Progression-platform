@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.payment.completed.v1",
+  "type": "object",
+  "required": ["eventType", "payload"],
+  "properties": {
+    "eventType": { "const": "school.payment.completed.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["orderId", "studentId", "amountMinor"],
+      "properties": {
+        "orderId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "amountMinor": { "type": "integer" }
+      }
+    }
+  }
+}

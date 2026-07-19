@@ -6,12 +6,15 @@ import (
 	"net/http"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/masterofsword/contracts/engines"
+	"github.com/masterofsword/contracts/persist"
 	"github.com/masterofsword/contracts/rbac"
 	"github.com/masterofsword/school-api/internal/admincontent"
 	"github.com/masterofsword/school-api/internal/authz"
 	"github.com/masterofsword/school-api/internal/seed"
+	"github.com/masterofsword/school-api/internal/schoolroutes"
 )
 
 // Shared in-process platform for local modular monolith slice.
@@ -23,6 +26,23 @@ func main() {
 	root := seed.FindRoot()
 	seed.MustLoad(platform)
 	contentStore = admincontent.MustLoad(root)
+
+	statePath := env("SCHOOL_STATE_PATH", "")
+	if statePath != "" {
+		if err := persist.LoadPlatform(platform, statePath); err != nil {
+			log.Printf("state load: %v (continuing with seed)", err)
+		} else {
+			log.Printf("restored platform state from %s", statePath)
+		}
+		go func() {
+			ticker := time.NewTicker(30 * time.Second)
+			for range ticker.C {
+				if err := persist.SavePlatform(platform, statePath); err != nil {
+					log.Printf("state save: %v", err)
+				}
+			}
+		}()
+	}
 
 	// Default loopback-only: temporary local auth must not be exposed on LAN.
 	addr := env("SCHOOL_API_ADDR", "127.0.0.1:8082")
@@ -226,6 +246,8 @@ func main() {
 		GuardWrite:  guardContent(rbac.PermContentWrite),
 		GuardDelete: guardContent(rbac.PermContentDelete),
 	})
+
+	schoolroutes.Register(mux, schoolroutes.Deps{Platform: platform, WriteJSON: writeJSON})
 
 	mux.HandleFunc("POST /v1/attendance/confirm", func(w http.ResponseWriter, r *http.Request) {
 		actor, ok := authz.PrincipalFromRequest(platform, r)

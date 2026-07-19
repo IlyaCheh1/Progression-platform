@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.weapon.mastery.points.applied.v1",
+  "type": "object",
+  "required": ["eventType", "payload"],
+  "properties": {
+    "eventType": { "const": "school.weapon.mastery.points.applied.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["studentId", "weaponKey", "units"],
+      "properties": {
+        "studentId": { "type": "string" },
+        "weaponKey": { "type": "string" },
+        "units": { "type": "integer" }
+      }
+    }
+  }
+}

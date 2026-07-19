@@ -88,10 +88,11 @@ type Platform struct {
 	// holdings: studentID -> itemKey -> cosmetic holding (characters + backgrounds)
 	holdings map[string]map[string]InventoryHolding
 	audit    []string
+	School   *SchoolModule
 }
 
 func NewPlatform() *Platform {
-	return &Platform{
+	p := &Platform{
 		track:      progression.Standard100(),
 		outbox:     outbox.NewMemoryStore(),
 		inboxSeen:  make(map[string]struct{}),
@@ -101,6 +102,8 @@ func NewPlatform() *Platform {
 		sessions:   make(map[string]string),
 		holdings:   make(map[string]map[string]InventoryHolding),
 	}
+	p.School = NewSchoolModule(p)
+	return p
 }
 
 func (p *Platform) CreateCharacter(id, userID string) (*Character, error) {
@@ -201,7 +204,26 @@ func (p *Platform) GetCharacter(id string) (*Character, bool) {
 // RecordAttendance confirms attendance and grants XP via Reward path (exactly-once by idempotencyKey).
 func (p *Platform) RecordAttendance(characterID, attendanceID string, xp int64) (level int, granted bool, err error) {
 	p.mu.Lock()
+	level, granted, err = p.recordAttendanceUnlocked(characterID, attendanceID, xp)
+	studentID := ""
+	if granted {
+		studentID = p.studentIDForCharacter(characterID)
+	}
+	p.mu.Unlock()
+	if granted && studentID != "" && p.School != nil {
+		p.School.AfterAttendanceConfirmed(studentID, attendanceID)
+	}
+	return level, granted, err
+}
+
+// GrantQuestXP grants quest reward XP without counting as session attendance.
+func (p *Platform) GrantQuestXP(characterID, questKey string, xp int64) (level int, granted bool, err error) {
+	p.mu.Lock()
 	defer p.mu.Unlock()
+	return p.recordAttendanceUnlocked(characterID, "quest:"+questKey, xp)
+}
+
+func (p *Platform) recordAttendanceUnlocked(characterID, attendanceID string, xp int64) (level int, granted bool, err error) {
 	c, ok := p.characters[characterID]
 	if !ok {
 		return 0, false, fmt.Errorf("character not found")
@@ -218,7 +240,6 @@ func (p *Platform) RecordAttendance(characterID, attendanceID string, xp int64) 
 	if !appended {
 		return c.Level, false, nil
 	}
-	// Reward engine fulfillment request -> Progression (same process for MVP modular monolith slice)
 	if _, seen := p.inboxSeen[idem]; seen {
 		return c.Level, false, nil
 	}
@@ -239,7 +260,26 @@ func (p *Platform) RecordAttendance(characterID, attendanceID string, xp int64) 
 		})
 		_, _ = p.outbox.Append(levEv)
 	}
-	return c.Level, true, nil
+	granted = true
+	level = c.Level
+	return level, granted, nil
+}
+
+func (p *Platform) studentIDForCharacter(characterID string) string {
+	for _, s := range p.students {
+		if s.CharacterID == characterID {
+			return s.ID
+		}
+	}
+	return ""
+}
+
+func (p *Platform) OutboxUnpublished() []outbox.Entry {
+	return p.outbox.Unpublished()
+}
+
+func (p *Platform) MarkOutboxPublished(id string) {
+	p.outbox.MarkPublished(id)
 }
 
 // ApplyMasterySnapshot sets legacy mastery units for a weapon.

@@ -170,14 +170,15 @@ body {
 }
 
 .og-inventory-slot {
-  @apply relative overflow-hidden rounded-xl bg-mos-bg/60 transition-all duration-200 md:rounded-2xl;
+  @apply relative overflow-hidden rounded-xl transition-all duration-200 md:rounded-2xl;
+  background: color-mix(in srgb, var(--mos-bg) 60%, transparent);
   width: var(--og-slot-w);
   height: var(--og-slot-h);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .og-inventory-slot:hover {
-  @apply bg-mos-stone/80;
+  background: color-mix(in srgb, var(--mos-stone) 80%, transparent);
   box-shadow: inset 0 0 0 1px rgba(212, 168, 75, 0.22);
 }
 
@@ -190,23 +191,30 @@ body {
 }
 
 .character-stage-figure {
-  height: clamp(220px, 38vh, 52vh);
-  max-height: min(52vh, 100%);
+  height: clamp(160px, 30vh, 38vh);
+  max-height: min(38vh, calc(100vh - 72px - 120px));
   width: auto;
 }
 
 @media (min-width: 768px) {
   .character-stage-figure {
-    height: clamp(320px, 58vh, 68vh);
-    max-height: min(68vh, 100%);
+    height: clamp(240px, 42vh, 52vh);
+    max-height: min(52vh, calc(100vh - 72px - 140px));
+  }
+}
+
+@media (min-width: 1280px) {
+  .character-stage-figure {
+    height: clamp(320px, 48vh, 58vh);
+    max-height: min(58vh, calc(100vh - 72px - 160px));
   }
 }
 
 @media (min-width: 2400px) {
   .character-stage-figure {
-    height: 75vh;
-    max-height: 75vh;
-    max-width: 75vh;
+    height: min(62vh, calc(100vh - 72px - 180px));
+    max-height: 62vh;
+    max-width: 62vh;
   }
 }
 

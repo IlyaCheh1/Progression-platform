@@ -3,7 +3,6 @@
 import { useState } from "react";
 import CharacterStage from "@/components/character-stage";
 import DailyTasks from "@/components/daily-tasks";
-import MusicControl from "@/components/music-control";
 import { useAvatarPresentation } from "@/components/character-avatar";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
 import { content } from "@/lib/content";
@@ -36,8 +35,6 @@ export default function ProfilePage() {
         gender={presentation.gender}
         className="absolute left-4 top-0 z-20 mt-8 md:left-8 md:mt-[72px]"
       />
-
-      <MusicControl className="absolute bottom-4 left-4 z-20 md:bottom-12 md:left-8" />
 
       <div className="absolute bottom-3 right-3 z-20 flex flex-wrap justify-end gap-2 md:bottom-4 md:right-4">
         <a

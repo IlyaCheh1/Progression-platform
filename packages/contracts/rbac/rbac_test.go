@@ -38,6 +38,8 @@ func TestMultiRoleAdministratorAndCoach(t *testing.T) {
 	if !IsAdministratorInRoles(roles) {
 		t.Fatal("admin+coach must remain administrator")
 	}
+}
+
 func TestNormalizeRoleDefaultsToStudent(t *testing.T) {
 	if NormalizeRole("") != RoleStudent {
 		t.Fatal("empty role must default to student")

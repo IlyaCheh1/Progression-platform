@@ -38,7 +38,7 @@ export default function CharacterStage({
         className="absolute bottom-0 left-1/2 z-10 flex -translate-x-1/2 flex-col select-none"
         onDragStart={(event) => event.preventDefault()}
       >
-        <GradientLabel color="amber" className="mx-auto mb-5 max-w-[200px]">
+        <GradientLabel color="amber" className="relative z-20 mx-auto mb-8 max-w-[200px] md:mb-10">
           <p className="text-center font-display text-xs font-medium leading-3 text-mos-text md:text-lg md:leading-6">
             {username}
           </p>

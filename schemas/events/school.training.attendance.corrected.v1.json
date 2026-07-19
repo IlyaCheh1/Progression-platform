@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "school.training.attendance.corrected.v1",
+  "type": "object",
+  "required": ["eventType", "payload"],
+  "properties": {
+    "eventType": { "const": "school.training.attendance.corrected.v1" },
+    "payload": {
+      "type": "object",
+      "required": ["studentId", "deltaUnits"],
+      "properties": {
+        "studentId": { "type": "string" },
+        "deltaUnits": { "type": "integer" }
+      }
+    }
+  }
+}

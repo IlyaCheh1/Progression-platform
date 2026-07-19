@@ -2,6 +2,7 @@ package admincontent
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -22,6 +23,24 @@ func RegisterRoutes(mux *http.ServeMux, deps RouteDeps) {
 
 	mux.HandleFunc("GET /v1/admin/content", deps.GuardRead(func(w http.ResponseWriter, r *http.Request) {
 		write(w, st.Snapshot())
+	}))
+
+	mux.HandleFunc("GET /v1/admin/content/validate", deps.GuardRead(func(w http.ResponseWriter, r *http.Request) {
+		write(w, st.Validate())
+	}))
+
+	mux.HandleFunc("GET /v1/admin/content/simulate", deps.GuardRead(func(w http.ResponseWriter, r *http.Request) {
+		questKey := r.URL.Query().Get("questKey")
+		progress := 0
+		if p := r.URL.Query().Get("progress"); p != "" {
+			fmt.Sscanf(p, "%d", &progress)
+		}
+		res, err := st.SimulateQuest(questKey, progress)
+		if err != nil {
+			http.Error(w, `{"error":"not_found"}`, http.StatusNotFound)
+			return
+		}
+		write(w, res)
 	}))
 
 	registerEntity(mux, deps, "quests",

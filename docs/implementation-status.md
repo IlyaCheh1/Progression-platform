@@ -6,23 +6,30 @@ Last updated: 2026-07-19
 |---|---|---|
 | Stage 0 Intake | **done** | ADRs 001–005, reference-intake, conflicts, traceability, monorepo |
 | Stage 1 Foundation | **done** | envelopes, outbox memory store, Character/Progression/Reward slice, auth-adapter, migrations SQL |
-| Stage 2 Vertical slice | **done** | attendance→XP exactly-once tests; mastery 75/25 tests |
-| Stage 3 School ops + landing + Excel | **done** | Next landing (Witcher), tariffs/RPG/legal; Excel seed 45 accounts; school-api load |
-| Stage 4 Game MVP + profile pages | **done** | profile shell, onboarding, achievements/tasks, talents, settings, schools dropdown |
-| Stage 5 Studio | **partial** | `/studio` catalog viewer over starter bundle; full editors later |
-| Stage 6 Phase 2 | **scaffold** | Season/Pass/Talent hardening pending Postgres + Studio publish |
-| Stage 7 Hardening | **scaffold** | runbooks started; DR/load later |
+| Stage 2 Vertical slice | **done** | attendance→XP; training record→mastery; decay; correction; tests |
+| Stage 3 School ops | **partial** | CRM/schedule/booking/commerce/comms/import API; ЮMoney sandbox; Postgres wiring pending |
+| Stage 4 Game MVP | **partial** | quest/achievement runtime; kill switches |
+| Stage 5 Studio | **partial** | live catalog, validation, simulation, release center |
+| Stage 6 Phase 2 | **partial** | Season/BattlePass/rental API scaffold; full content pending |
+| Stage 7 Hardening | **scaffold** | runbooks started |
 
-## Verification performed
+## Latest (continue in order)
 
-- `go test ./...` in `packages/contracts` — pass
-- `go build` platform-api, school-api, auth-adapter — pass
-- `pnpm --filter @mos/web build` — pass
-- Excel import → `docs/demo-accounts.md` + `infra/local/seed/demo-students.json`
-- school-api `/health` + `/v1/auth/login` with seeded user
+- **JSON persistence:** `SCHOOL_STATE_PATH` + `packages/contracts/persist/` (auto-save every 30s)
+- **Comms:** `/v1/comms/send`, `/v1/comms/reminders/run`, `/v1/comms/log`
+- **Import pipeline:** stage → preview → commit (`/v1/import/*`), UI `/admin/import`
+- **Studio Phase D:** live catalog, validation, quest simulation, release center (`/studio?tab=validation`)
 
-## Blockers (TZ §40)
+## Local dev
 
-- Production OnlyID / payment / SMS / TG / hosting
-- Tariff price finalization
-- Docker not installed on this machine — Compose file ready for when available
+```bash
+export SCHOOL_STATE_PATH=infra/local/data/platform-state.json
+# run school-api — state survives restarts
+```
+
+## Blockers
+
+- Postgres `DATABASE_URL` for production durability
+- Real ЮKassa HTTP client
+- OnlyID deferred
+- SMS/TG real providers

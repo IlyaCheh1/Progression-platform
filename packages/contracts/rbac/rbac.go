@@ -26,6 +26,13 @@ const (
 	PermAttendanceConfirm Permission = "attendance.confirm"
 	PermDependantsRead    Permission = "dependants.read"
 	PermHallsRead         Permission = "halls.read"
+	PermCRMRead           Permission = "crm.read"
+	PermCRMWrite          Permission = "crm.write"
+	PermScheduleRead      Permission = "schedule.read"
+	PermBookingCreate     Permission = "booking.create"
+	PermCommerceCheckout  Permission = "commerce.checkout"
+	PermCommerceAdmin     Permission = "commerce.admin"
+	PermTrainingWrite     Permission = "training.write"
 )
 
 var allPermissions = []Permission{
@@ -40,19 +47,33 @@ var allPermissions = []Permission{
 	PermAttendanceConfirm,
 	PermDependantsRead,
 	PermHallsRead,
+	PermCRMRead,
+	PermCRMWrite,
+	PermScheduleRead,
+	PermBookingCreate,
+	PermCommerceCheckout,
+	PermCommerceAdmin,
+	PermTrainingWrite,
 }
 
 var rolePermissions = map[string][]Permission{
 	RoleStudent: {
 		PermSchoolRead,
+		PermScheduleRead,
+		PermBookingCreate,
+		PermCommerceCheckout,
+		PermTrainingWrite,
 	},
 	RoleGuardian: {
 		PermDependantsRead,
 		PermSchoolRead,
+		PermScheduleRead,
 	},
 	RoleCoach: {
 		PermSchoolRead,
 		PermAttendanceConfirm,
+		PermScheduleRead,
+		PermTrainingWrite,
 	},
 	RoleRenter: {
 		PermHallsRead,

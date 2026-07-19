@@ -67,3 +67,49 @@ export async function deleteContentEntity(
   });
   if (!res.ok) throw new Error("delete_failed");
 }
+
+export type ValidationReport = {
+  ok: boolean;
+  issues: { level: string; entity: string; key?: string; message: string }[];
+  counts: Record<string, number>;
+};
+
+export async function validateContentCatalog(user: SessionUser): Promise<ValidationReport> {
+  const res = await fetch(`${SCHOOL_API}/v1/admin/content/validate`, { headers: authHeaders(user) });
+  if (!res.ok) throw new Error("validate_failed");
+  return (await res.json()) as ValidationReport;
+}
+
+export type SimulationResult = {
+  questKey: string;
+  target: number;
+  sampleXp: number;
+  eligible: boolean;
+  explanation: string;
+};
+
+export async function simulateQuest(
+  user: SessionUser,
+  questKey: string,
+  progress: number,
+): Promise<SimulationResult> {
+  const res = await fetch(
+    `${SCHOOL_API}/v1/admin/content/simulate?questKey=${encodeURIComponent(questKey)}&progress=${progress}`,
+    { headers: authHeaders(user) },
+  );
+  if (!res.ok) throw new Error("simulate_failed");
+  return (await res.json()) as SimulationResult;
+}
+
+export type ReleaseInfo = {
+  bundleKey: string;
+  bundleVersion: number;
+  status: string;
+  killSwitches: Record<string, boolean>;
+};
+
+export async function fetchReleaseInfo(user: SessionUser): Promise<ReleaseInfo> {
+  const res = await fetch(`${SCHOOL_API}/v1/studio/release`, { headers: authHeaders(user) });
+  if (!res.ok) throw new Error("release_failed");
+  return (await res.json()) as ReleaseInfo;
+}

@@ -12,6 +12,16 @@ import {
   IconTrophy,
 } from "@/components/studio/studio-icons";
 import { content } from "@/lib/content";
+import {
+  fetchContentCatalog,
+  fetchReleaseInfo,
+  simulateQuest,
+  validateContentCatalog,
+  type ContentCatalog,
+  type ReleaseInfo,
+  type SimulationResult,
+  type ValidationReport,
+} from "@/lib/admin-content-api";
 import { routes } from "@/lib/routes";
 import { isAdminPrincipal, loadSession, type SessionUser } from "@/lib/session";
 import { cn } from "@/lib/utils";
@@ -23,7 +33,10 @@ type StudioTab =
   | "talents"
   | "items"
   | "rewards"
-  | "schools";
+  | "schools"
+  | "validation"
+  | "simulation"
+  | "release";
 
 const TAB_META: { id: StudioTab; label: string; icon: ReactNode }[] = [
   { id: "overview", label: "Обзор", icon: <IconOverview className="h-5 w-5 shrink-0 md:h-6 md:w-6" /> },
@@ -33,12 +46,21 @@ const TAB_META: { id: StudioTab; label: string; icon: ReactNode }[] = [
   { id: "items", label: "Предметы", icon: <IconTrophy className="h-5 w-5 shrink-0 md:h-6 md:w-6" /> },
   { id: "rewards", label: "Награды", icon: <IconQuest className="h-5 w-5 shrink-0 md:h-6 md:w-6" /> },
   { id: "schools", label: "Школы", icon: <IconSchool className="h-5 w-5 shrink-0 md:h-6 md:w-6" /> },
+  { id: "validation", label: "Validation", icon: <IconOverview className="h-5 w-5 shrink-0 md:h-6 md:w-6" /> },
+  { id: "simulation", label: "Simulation", icon: <IconQuest className="h-5 w-5 shrink-0 md:h-6 md:w-6" /> },
+  { id: "release", label: "Release", icon: <IconTrophy className="h-5 w-5 shrink-0 md:h-6 md:w-6" /> },
 ];
 
 export default function StudioPage() {
   const router = useRouter();
   const [session, setSession] = useState<SessionUser | null>(null);
   const [tab, setTab] = useState<StudioTab>("overview");
+  const [catalog, setCatalog] = useState<ContentCatalog | null>(null);
+  const [validation, setValidation] = useState<ValidationReport | null>(null);
+  const [simulation, setSimulation] = useState<SimulationResult | null>(null);
+  const [release, setRelease] = useState<ReleaseInfo | null>(null);
+  const [simQuestKey, setSimQuestKey] = useState("training.ready");
+  const [simProgress, setSimProgress] = useState(1);
 
   useEffect(() => {
     const loaded = loadSession();
@@ -51,6 +73,9 @@ export default function StudioPage() {
       return;
     }
     setSession(loaded);
+    void fetchContentCatalog(loaded).then(setCatalog).catch(() => setCatalog(null));
+    void validateContentCatalog(loaded).then(setValidation).catch(() => undefined);
+    void fetchReleaseInfo(loaded).then(setRelease).catch(() => undefined);
 
     const params = new URLSearchParams(window.location.search);
     const fromUrl = params.get("tab") as StudioTab | null;
@@ -59,17 +84,32 @@ export default function StudioPage() {
     }
   }, [router]);
 
+  const live = catalog ?? {
+    quests: content.quests,
+    achievements: content.achievements,
+    talents: content.talents,
+    items: content.items,
+    rewards: content.rewards,
+    schools: content.schools,
+  };
+
   const counts = useMemo(
     () => ({
-      quests: content.quests.length,
-      achievements: content.achievements.length,
-      talents: content.talents.length,
-      items: content.items.length,
-      rewards: content.rewards.length,
-      schools: content.schools.length,
+      quests: live.quests.length,
+      achievements: live.achievements.length,
+      talents: live.talents.length,
+      items: live.items.length,
+      rewards: live.rewards.length,
+      schools: live.schools.length,
     }),
-    [],
+    [live],
   );
+
+  async function runSimulation() {
+    if (!session) return;
+    const res = await simulateQuest(session, simQuestKey, simProgress);
+    setSimulation(res);
+  }
 
   if (!session) {
     return <main className="grid min-h-[50vh] place-items-center text-mos-muted">Проверка доступа…</main>;
@@ -84,7 +124,7 @@ export default function StudioPage() {
           </p>
           <h1 className="font-display text-xl font-medium text-mos-text md:text-3xl">Каталог контента</h1>
           <p className="max-w-xl font-golos text-sm text-mos-muted">
-            Read-only просмотр starter bundle. Создание и правка — в authoring-контуре админки.
+            Live catalog из school-api + validation, simulation и release center.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -119,7 +159,7 @@ export default function StudioPage() {
               subtitle="Онбординг, daily / weekly / monthly задания starter pack"
               count={counts.quests}
             >
-              {content.quests.map((quest) => (
+              {live.quests.map((quest) => (
                 <CatalogRow
                   key={quest.key}
                   title={quest.title}
@@ -137,7 +177,7 @@ export default function StudioPage() {
               subtitle="Достижения и тиры прогресса"
               count={counts.achievements}
             >
-              {content.achievements.map((item) => (
+              {live.achievements.map((item) => (
                 <CatalogRow
                   key={item.key}
                   title={item.title}
@@ -151,7 +191,7 @@ export default function StudioPage() {
 
           {tab === "talents" ? (
             <CatalogPanel title="Таланты" subtitle="Узлы дерева способностей" count={counts.talents}>
-              {content.talents.map((item) => (
+              {live.talents.map((item) => (
                 <CatalogRow
                   key={item.key}
                   title={item.title}
@@ -168,7 +208,7 @@ export default function StudioPage() {
               subtitle="Аватары, рамки, баннеры, темы, титулы и коллекционные"
               count={counts.items}
             >
-              {content.items.map((item) => (
+              {live.items.map((item) => (
                 <CatalogRow
                   key={item.key}
                   title={item.title}
@@ -182,7 +222,7 @@ export default function StudioPage() {
 
           {tab === "rewards" ? (
             <CatalogPanel title="Наградные наборы" subtitle="Reward bundles из content-pack" count={counts.rewards}>
-              {content.rewards.map((item) => (
+              {live.rewards.map((item) => (
                 <CatalogRow
                   key={item.key}
                   title={item.title}
@@ -195,7 +235,7 @@ export default function StudioPage() {
 
           {tab === "schools" ? (
             <CatalogPanel title="Школы" subtitle="Направления мастерства" count={counts.schools}>
-              {content.schools.map((item) => (
+              {live.schools.map((item) => (
                 <CatalogRow
                   key={item.key}
                   title={item.title}
@@ -205,6 +245,23 @@ export default function StudioPage() {
               ))}
             </CatalogPanel>
           ) : null}
+
+          {tab === "validation" ? (
+            <ValidationPanel report={validation} onRefresh={() => session && validateContentCatalog(session).then(setValidation)} />
+          ) : null}
+
+          {tab === "simulation" ? (
+            <SimulationPanel
+              questKey={simQuestKey}
+              progress={simProgress}
+              result={simulation}
+              onQuestKeyChange={setSimQuestKey}
+              onProgressChange={setSimProgress}
+              onRun={() => void runSimulation()}
+            />
+          ) : null}
+
+          {tab === "release" ? <ReleasePanel info={release} /> : null}
         </section>
       </div>
     </main>
@@ -324,4 +381,99 @@ function CatalogRow({
 function formatTiers(tiers: number | number[]): string {
   if (Array.isArray(tiers)) return `${tiers.length} tiers`;
   return tiers === 1 ? "1 tier" : `${tiers} tiers`;
+}
+
+function ValidationPanel({ report, onRefresh }: { report: ValidationReport | null; onRefresh: () => void }) {
+  return (
+    <>
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="font-display text-sm font-medium text-mos-text md:text-[17px]">Content validation</h2>
+        <button type="button" onClick={onRefresh} className="og-btn og-btn-secondary og-btn-sm">
+          Обновить
+        </button>
+      </div>
+      {!report ? (
+        <p className="font-golos text-sm text-mos-muted">Загрузка…</p>
+      ) : (
+        <>
+          <p className={cn("font-golos text-sm", report.ok ? "text-green-400" : "text-red-400")}>
+            {report.ok ? "Каталог прошёл validation" : "Есть ошибки validation"}
+          </p>
+          <ul className="max-h-[400px] space-y-2 overflow-auto">
+            {report.issues.map((iss, i) => (
+              <li key={i} className="rounded-xl border border-white/10 px-3 py-2 font-golos text-xs">
+                <span className="uppercase text-mos-amber">{iss.level}</span> {iss.entity}/{iss.key}: {iss.message}
+              </li>
+            ))}
+            {report.issues.length === 0 ? <li className="text-mos-muted">Issues не найдены</li> : null}
+          </ul>
+        </>
+      )}
+    </>
+  );
+}
+
+function SimulationPanel({
+  questKey,
+  progress,
+  result,
+  onQuestKeyChange,
+  onProgressChange,
+  onRun,
+}: {
+  questKey: string;
+  progress: number;
+  result: SimulationResult | null;
+  onQuestKeyChange: (v: string) => void;
+  onProgressChange: (v: number) => void;
+  onRun: () => void;
+}) {
+  return (
+    <>
+      <h2 className="font-display text-sm font-medium text-mos-text md:text-[17px]">Quest simulation</h2>
+      <div className="flex flex-wrap gap-3">
+        <input
+          className="rounded-lg border border-white/10 bg-mos-bg px-3 py-2 font-golos text-sm"
+          value={questKey}
+          onChange={(e) => onQuestKeyChange(e.target.value)}
+          placeholder="questKey"
+        />
+        <input
+          type="number"
+          className="w-24 rounded-lg border border-white/10 bg-mos-bg px-3 py-2 font-golos text-sm"
+          value={progress}
+          onChange={(e) => onProgressChange(Number(e.target.value))}
+        />
+        <button type="button" onClick={onRun} className="og-btn og-btn-primary og-btn-sm">
+          Simulate
+        </button>
+      </div>
+      {result ? (
+        <p className="font-golos text-sm text-mos-muted">
+          {result.explanation} · eligible={String(result.eligible)} · +{result.sampleXp} XP
+        </p>
+      ) : null}
+    </>
+  );
+}
+
+function ReleasePanel({ info }: { info: ReleaseInfo | null }) {
+  if (!info) return <p className="text-mos-muted">Загрузка release info…</p>;
+  const switches = Object.entries(info.killSwitches ?? {});
+  return (
+    <>
+      <h2 className="font-display text-sm font-medium text-mos-text md:text-[17px]">Release center</h2>
+      <p className="font-golos text-sm text-mos-muted">
+        {info.bundleKey} v{info.bundleVersion} · status: {info.status}
+      </p>
+      <ul className="mt-4 space-y-2 font-golos text-xs">
+        {switches.length === 0 ? <li className="text-mos-muted">Kill switches не активны</li> : null}
+        {switches.map(([k, v]) => (
+          <li key={k}>
+            {k}: {v ? "ON" : "off"}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
 }
