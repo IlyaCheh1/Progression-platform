@@ -56,8 +56,11 @@ func TestEnsureUserFromOnlyIDCreatesStudent(t *testing.T) {
 	if first.NormalizedRole() != RoleStudent {
 		t.Fatalf("role=%q", first.NormalizedRole())
 	}
-	if first.ProfileComplete {
-		t.Fatal("new OnlyID users must start onboarding")
+	if !first.ProfileComplete {
+		t.Fatal("new OnlyID users must open profile without onboarding")
+	}
+	if first.ProfileUsername != "New Hero" {
+		t.Fatalf("username=%q", first.ProfileUsername)
 	}
 
 	again, createdAgain, err := p.EnsureUserFromOnlyID("New.Hero@example.com", "Ignored", "user_abc")

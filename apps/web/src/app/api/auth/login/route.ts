@@ -43,8 +43,10 @@ export async function GET(request: NextRequest) {
     const rawReturn =
       request.nextUrl.searchParams.get("returnUrl") ||
       request.nextUrl.searchParams.get("redirect") ||
-      "/";
-    const returnUrl = isSafeReturnPath(rawReturn) ? rawReturn : "/";
+      "/profile";
+    // "/" is the marketing landing — after OnlyID always send users to the profile cabinet.
+    const returnUrl =
+      isSafeReturnPath(rawReturn) && rawReturn !== "/" ? rawReturn : "/profile";
 
     const params = new URLSearchParams({
       redirect_uri: callbackUrl,

@@ -247,11 +247,14 @@ export async function GET(request: NextRequest) {
     } catch {
       return redirectWithError(request, "sso_not_configured");
     }
-    const redirectTo = request.cookies.get(REDIRECT_COOKIE)?.value || "/auth/callback";
-    const safeRedirect = isSafeReturnPath(redirectTo) ? redirectTo : "/auth/callback";
+    const redirectTo = request.cookies.get(REDIRECT_COOKIE)?.value || "/profile";
+    const safeRedirect =
+      isSafeReturnPath(redirectTo) && redirectTo !== "/" && redirectTo !== "/auth/callback"
+        ? redirectTo
+        : "/profile";
 
     const landing = new URL("/auth/callback", origin);
-    if (safeRedirect !== "/auth/callback") {
+    if (safeRedirect !== "/profile") {
       landing.searchParams.set("next", safeRedirect);
     }
 

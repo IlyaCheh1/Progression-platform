@@ -63,7 +63,22 @@ func (p *Platform) EnsureUserFromOnlyID(email, displayName, _sub string) (*Stude
 		}
 		return nil, false, err
 	}
-	return created, true, nil
+
+	// Skip onboarding: open profile cabinet with sensible defaults from OnlyID.
+	if _, err := p.UpdateStudentProfile(created.ID, ProfileInput{
+		Username:        name,
+		SelectedSkinID:  defaultMaleCharacterID,
+		Gender:          "MALE",
+		BackgroundKey:   defaultBackgroundKey,
+		ProfileComplete: true,
+	}); err != nil {
+		return nil, false, err
+	}
+	ready, ok := p.GetStudent(created.ID)
+	if !ok {
+		return created, true, nil
+	}
+	return ready, true, nil
 }
 
 func (p *Platform) CreateUser(in UserInput) (*Student, error) {

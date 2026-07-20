@@ -1,18 +1,14 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { writeCachedProfile } from "@/lib/profile-api";
-import {
-  hasProfile,
-  homePathForRoles,
-  saveSession,
-  type SessionUser,
-} from "@/lib/session";
+import { saveSession, type SessionUser } from "@/lib/session";
 import { normalizeGender } from "@/lib/avatars";
 import { DEFAULT_BACKGROUND_ID, normalizeBackgroundId } from "@/lib/backgrounds";
 import { normalizeSelectedSkinId } from "@/lib/characters";
+import { routes } from "@/lib/routes";
 import { SCHOOL_API } from "@/lib/utils";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -20,9 +16,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   sso_not_configured: "Вход через OnlyID не настроен.",
 };
 
-function AuthCallbackInner() {
+export default function AuthCallbackPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [message, setMessage] = useState("Завершаем вход через OnlyID…");
 
   useEffect(() => {
@@ -57,11 +52,12 @@ function AuthCallbackInner() {
           if (profileRes.ok) {
             const profile = (await profileRes.json()) as Record<string, unknown>;
             const gender = normalizeGender(String(profile.gender ?? "MALE"));
+            const profileComplete = Boolean(profile.profileComplete);
             writeCachedProfile({
               studentId: session.studentId,
               characterId: session.characterId,
               displayName: session.name,
-              profileComplete: Boolean(profile.profileComplete),
+              profileComplete,
               username: String(profile.username ?? session.name),
               selectedSkinId: normalizeSelectedSkinId(String(profile.selectedSkinId ?? ""), gender),
               gender,
@@ -73,28 +69,15 @@ function AuthCallbackInner() {
               mastery: (profile.mastery as Record<string, number>) ?? {},
               ranks: (profile.ranks as Record<string, number>) ?? {},
             });
-            if (profile.profileComplete) {
-              session.profileComplete = true;
-              saveSession(session);
-            }
+            session.profileComplete = profileComplete;
+            saveSession(session);
           }
         } catch {
           // Profile cache is optional; cabinet will refetch.
         }
 
-        const next = searchParams.get("next");
-        const safeNext =
-          next &&
-          next.startsWith("/") &&
-          !next.startsWith("//") &&
-          !next.startsWith("/\\") &&
-          !next.includes("\\") &&
-          !next.includes("@")
-            ? next
-            : null;
-        const target = safeNext || homePathForRoles(session.roles, hasProfile(session));
         if (!cancelled) {
-          router.replace(target);
+          router.replace(routes.home);
         }
       } catch {
         if (!cancelled) {
@@ -107,15 +90,7 @@ function AuthCallbackInner() {
     return () => {
       cancelled = true;
     };
-  }, [router, searchParams]);
+  }, [router]);
 
   return <main className="grid min-h-screen place-items-center text-mos-muted">{message}</main>;
-}
-
-export default function AuthCallbackPage() {
-  return (
-    <Suspense fallback={<main className="grid min-h-screen place-items-center text-mos-muted">Завершаем вход…</main>}>
-      <AuthCallbackInner />
-    </Suspense>
-  );
 }
