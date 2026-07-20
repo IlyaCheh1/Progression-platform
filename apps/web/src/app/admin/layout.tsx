@@ -74,8 +74,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               type="button"
               className="border border-mos-line/40 px-3 py-1 text-xs uppercase tracking-widest text-mos-muted hover:text-mos-text"
               onClick={() => {
-                clearSession();
-                router.push("/login");
+                void (async () => {
+                  clearSession();
+                  try {
+                    const res = await fetch("/api/auth/logout", { method: "POST" });
+                    if (res.ok) {
+                      const data = (await res.json()) as { ssoLogoutUrl?: string | null };
+                      if (data.ssoLogoutUrl) {
+                        window.location.assign(data.ssoLogoutUrl);
+                        return;
+                      }
+                    }
+                  } catch {
+                    // local logout fallback
+                  }
+                  router.push("/login");
+                })();
               }}
             >
               Выйти

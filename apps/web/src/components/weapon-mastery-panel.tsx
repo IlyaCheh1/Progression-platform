@@ -81,8 +81,11 @@ function WeaponRow({
           <img
             src={iconSrc}
             alt=""
+            width={32}
+            height={32}
             className="h-6 w-6 shrink-0 rounded-full bg-mos-stone object-cover md:h-8 md:w-8"
-            loading="lazy"
+            // Native lazy-load can stall inside overflow-hidden/auto ancestors (CharacterStage).
+            loading="eager"
             decoding="async"
             aria-hidden
           />

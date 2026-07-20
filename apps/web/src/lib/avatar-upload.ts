@@ -1,8 +1,7 @@
 import {
-  confirmAvatarUpload,
   messageForProfileError,
-  PresignAvatarError,
-  presignAvatarUpload,
+  ProfileApiError,
+  uploadAvatarFile,
   type PlayerProfile,
 } from "@/lib/profile-api";
 import type { SessionUser } from "@/lib/session";
@@ -27,37 +26,18 @@ export function validateAvatarFile(file: File): void {
   }
 }
 
-/** Uploads avatar via school-api presigned S3 URL and confirms it on the profile. */
+/** Uploads avatar via school-api (server-side S3 put). */
 export async function uploadAvatarToS3(session: SessionUser, file: File): Promise<PlayerProfile> {
   validateAvatarFile(file);
 
   try {
-    const { uploadUrl, fileId, key } = await presignAvatarUpload(session, {
-      filename: file.name || "avatar.jpg",
-      mimeType: file.type || "application/octet-stream",
-      fileSize: file.size,
-    });
-
-    const putRes = await fetch(uploadUrl, {
-      method: "PUT",
-      headers: {
-        "Content-Type": file.type || "application/octet-stream",
-      },
-      body: file,
-    });
-    if (!putRes.ok) {
-      throw new AvatarUploadError("Не удалось загрузить файл в хранилище.");
-    }
-
-    return await confirmAvatarUpload(session, { fileId, key });
+    return await uploadAvatarFile(session, file);
   } catch (error) {
-    if (error instanceof AvatarUploadError || error instanceof PresignAvatarError) {
-      throw error instanceof PresignAvatarError
-        ? new AvatarUploadError(error.message)
-        : error;
+    if (error instanceof AvatarUploadError) {
+      throw error;
     }
-    if (error instanceof TypeError) {
-      throw new AvatarUploadError(messageForProfileError(error));
+    if (error instanceof ProfileApiError) {
+      throw new AvatarUploadError(error.message);
     }
     throw new AvatarUploadError(messageForProfileError(error));
   }

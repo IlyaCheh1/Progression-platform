@@ -146,8 +146,6 @@ export function RewardBadge({
   claimable?: boolean;
   onClick?: () => void;
 }) {
-  const resolvedLabel = kind === "coins" ? "золото" : label;
-
   return (
     <button
       type="button"
@@ -167,8 +165,9 @@ export function RewardBadge({
         {kind === "coins" ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src="/media/ui/coin.png" alt="" className="h-3 w-3 object-contain md:h-3.5 md:w-3.5" />
-        ) : null}
-        {resolvedLabel}
+        ) : (
+          label
+        )}
       </span>
       <span
         className={cn(

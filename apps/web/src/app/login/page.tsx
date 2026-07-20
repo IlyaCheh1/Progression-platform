@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SCHOOL_API, schoolApiUnavailableMessage } from "@/lib/utils";
-import { hasProfile, homePathForRoles, normalizeRole, normalizeRoles, primaryRole, saveSession } from "@/lib/session";
+import { hasProfile, homePathForRoles, normalizeRoles, primaryRole, saveSession } from "@/lib/session";
 import { writeCachedProfile } from "@/lib/profile-api";
 import { normalizeGender } from "@/lib/avatars";
 import { DEFAULT_BACKGROUND_ID, normalizeBackgroundId } from "@/lib/backgrounds";
@@ -37,12 +37,30 @@ function PasswordToggleIcon({ visible }: { visible: boolean }) {
   );
 }
 
-export default function LoginPage() {
+const LOGIN_ERROR_MESSAGES: Record<string, string> = {
+  sso_not_configured: "Вход через OnlyID не настроен на сервере.",
+  sso_error: "Ошибка входа через OnlyID. Попробуйте снова.",
+  invalid_callback: "Некорректный ответ OnlyID.",
+  invalid_state: "Сессия входа устарела. Начните вход заново.",
+  token_exchange_failed: "OnlyID не выдал токен. Проверьте redirect_uri и секреты.",
+  account_not_linked:
+    "Аккаунт OnlyID не связан со школой. Логин в ростере должен совпадать с email OnlyID.",
+  user_blocked: "Аккаунт OnlyID заблокирован.",
+  no_email: "У аккаунта OnlyID нет email.",
+  email_not_verified: "Подтвердите email в OnlyID и войдите снова.",
+  school_session_failed: "Не удалось создать сессию школы.",
+};
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() => {
+    const code = searchParams.get("login_error");
+    return code ? LOGIN_ERROR_MESSAGES[code] || "Ошибка входа. Попробуйте снова." : "";
+  });
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -107,7 +125,18 @@ export default function LoginPage() {
         <AppLogo size={78} priority />
       </Link>
       <h1 className="font-display text-3xl text-mos-text">Вход</h1>
-      <form onSubmit={onSubmit} className="mt-6 w-full space-y-4 text-left">
+
+      <a href="/api/auth/login" className="mos-btn mt-6 w-full no-underline">
+        Войти через OnlyID
+      </a>
+
+      <div className="mt-6 flex w-full items-center gap-3 text-xs uppercase tracking-widest text-mos-muted">
+        <span className="h-px flex-1 bg-mos-line" />
+        или логин школы
+        <span className="h-px flex-1 bg-mos-line" />
+      </div>
+
+      <form onSubmit={onSubmit} className="mt-4 w-full space-y-4 text-left">
         <label className="block text-xs uppercase tracking-widest text-mos-muted">
           Логин
           <input
@@ -144,5 +173,17 @@ export default function LoginPage() {
         </button>
       </form>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="grid min-h-screen place-items-center text-mos-muted">Загрузка…</main>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

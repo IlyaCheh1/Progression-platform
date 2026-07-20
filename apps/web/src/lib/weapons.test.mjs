@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 const WEAPON_KEYS = [
   "spada_a_uno_mano",
@@ -10,6 +13,18 @@ const WEAPON_KEYS = [
   "acia_alabarda",
   "spiedo_partesana",
   "spiedo_e_scudo",
+];
+
+/** iconKey values from weapons.ts → public webp filenames (doc spelling may differ from ledger key). */
+const WEAPON_ICON_KEYS = [
+  "mastery.spada_a_uno_mano.rank",
+  "mastery.due_spade.rank",
+  "mastery.spada_e_scudo.rank",
+  "mastery.spada_a_due_mani.rank",
+  "mastery.spadone.rank",
+  "mastery.ascia_e_alabarda.rank",
+  "mastery.spiedo_e_partesana.rank",
+  "mastery.spiedo_e_scudo.rank",
 ];
 
 const MASTERY_RANK_THRESHOLDS_POINTS = [
@@ -59,4 +74,16 @@ test("clamp mastery rank", () => {
   assert.equal(clampMasteryRank(-1), 0);
   assert.equal(clampMasteryRank(3.9), 3);
   assert.equal(clampMasteryRank(99), MASTERY_MAX_RANK);
+});
+
+test("each mastery weapon has a local achievement webp icon", () => {
+  const achievementsDir = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "../../public/media/content-icons/achievements",
+  );
+  assert.equal(WEAPON_ICON_KEYS.length, WEAPON_KEYS.length);
+  for (const iconKey of WEAPON_ICON_KEYS) {
+    const file = path.join(achievementsDir, `${iconKey}.webp`);
+    assert.ok(existsSync(file), `missing icon: ${iconKey}.webp`);
+  }
 });

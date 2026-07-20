@@ -2,7 +2,7 @@ import { SCHOOL_API, schoolApiUnavailableMessage } from "@/lib/utils";
 import type { GenderId } from "@/lib/avatars";
 import { DEFAULT_BACKGROUND_ID, normalizeBackgroundId } from "@/lib/backgrounds";
 import { normalizeSelectedSkinId, type OgCharacterId } from "@/lib/characters";
-import { authHeaders, type SessionUser } from "@/lib/session";
+import { authBearerHeaders, authHeaders, type SessionUser } from "@/lib/session";
 
 export type PlayerProfile = {
   studentId: string;
@@ -66,13 +66,6 @@ const PROFILE_ERROR_MESSAGES: Record<string, string> = {
   bad_request: "Некорректные данные профиля.",
   "student not found": "Профиль не найден. Войдите снова.",
 };
-
-export class PresignAvatarError extends ProfileApiError {
-  constructor(status: number, code: string, message: string) {
-    super(status, code, message);
-    this.name = "PresignAvatarError";
-  }
-}
 
 export function messageForProfileError(error: unknown): string {
   if (error instanceof ProfileApiError) {
@@ -211,60 +204,17 @@ export async function saveMyProfile(session: SessionUser, input: SaveProfileInpu
   return profile;
 }
 
-export type AvatarPresignResponse = {
-  uploadUrl: string;
-  fileId: string;
-  key: string;
-};
+/** Uploads avatar bytes through school-api (server puts to S3). */
+export async function uploadAvatarFile(session: SessionUser, file: File): Promise<PlayerProfile> {
+  const body = new FormData();
+  body.append("file", file, file.name || "avatar.jpg");
 
-export async function presignAvatarUpload(
-  session: SessionUser,
-  input: { filename: string; mimeType: string; fileSize: number },
-): Promise<AvatarPresignResponse> {
   let res: Response;
   try {
-    res = await fetch(`${SCHOOL_API}/v1/profile/avatar/presign`, {
+    res = await fetch(`${SCHOOL_API}/v1/profile/avatar`, {
       method: "POST",
-      headers: authHeaders(session),
-      body: JSON.stringify({
-        filename: input.filename,
-        mimeType: input.mimeType,
-        fileSize: String(input.fileSize),
-      }),
-    });
-  } catch (error) {
-    if (error instanceof TypeError) {
-      throw new PresignAvatarError(0, "network", schoolApiUnavailableMessage());
-    }
-    throw error;
-  }
-  if (!res.ok) {
-    const apiError = await readApiError(res, res.status === 503 ? "storage_unavailable" : "avatar_presign_failed");
-    throw new PresignAvatarError(apiError.status, apiError.code, apiError.message);
-  }
-  const data = (await res.json()) as Record<string, unknown>;
-  const uploadUrl = typeof data.uploadUrl === "string" ? data.uploadUrl : "";
-  const fileId = typeof data.fileId === "string" ? data.fileId : "";
-  const key = typeof data.key === "string" ? data.key : "";
-  if (!uploadUrl || !fileId || !key) {
-    throw new PresignAvatarError(502, "avatar_presign_failed", PROFILE_ERROR_MESSAGES.avatar_presign_failed);
-  }
-  return { uploadUrl, fileId, key };
-}
-
-export async function confirmAvatarUpload(
-  session: SessionUser,
-  input: { fileId: string; key?: string },
-): Promise<PlayerProfile> {
-  let res: Response;
-  try {
-    res = await fetch(`${SCHOOL_API}/v1/profile/avatar/confirm`, {
-      method: "POST",
-      headers: authHeaders(session),
-      body: JSON.stringify({
-        fileId: input.fileId,
-        key: input.key,
-      }),
+      headers: authBearerHeaders(session),
+      body,
     });
   } catch (error) {
     if (error instanceof TypeError) {
@@ -273,7 +223,7 @@ export async function confirmAvatarUpload(
     throw error;
   }
   if (!res.ok) {
-    throw await readApiError(res, "avatar_upload_failed");
+    throw await readApiError(res, res.status === 503 ? "storage_unavailable" : "avatar_upload_failed");
   }
   const data = (await res.json()) as Record<string, unknown>;
   const profile = normalizeProfile(data);

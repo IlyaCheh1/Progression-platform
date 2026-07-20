@@ -1,13 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"crypto/subtle"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -18,8 +22,8 @@ import (
 	"github.com/masterofsword/school-api/internal/admincontent"
 	"github.com/masterofsword/school-api/internal/authz"
 	"github.com/masterofsword/school-api/internal/avatarupload"
-	"github.com/masterofsword/school-api/internal/seed"
 	"github.com/masterofsword/school-api/internal/schoolroutes"
+	"github.com/masterofsword/school-api/internal/seed"
 	"github.com/masterofsword/school-api/internal/storage"
 )
 
@@ -122,12 +126,12 @@ func main() {
 		if dbURL != "" {
 			err := persist.PingPostgres(dbURL)
 			status["checks"] = map[string]any{"platform": true, "postgres": err == nil}
-		if err != nil {
-			status["ok"] = false
-			w.WriteHeader(http.StatusServiceUnavailable)
-			writeJSON(w, status)
-			return
-		}
+			if err != nil {
+				status["ok"] = false
+				w.WriteHeader(http.StatusServiceUnavailable)
+				writeJSON(w, status)
+				return
+			}
 		}
 		writeJSON(w, status)
 	})
@@ -255,6 +259,76 @@ func main() {
 		writeJSON(w, view)
 	}))
 
+	// Direct upload via school-api → S3 (no browser CORS to the bucket).
+	mux.HandleFunc("POST /v1/profile/avatar", authz.RequireAuth(platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		if s3Client == nil {
+			http.Error(w, `{"error":"storage_unavailable"}`, http.StatusServiceUnavailable)
+			return
+		}
+		r.Body = http.MaxBytesReader(w, r.Body, avatarupload.MaxFileSizeBytes+64<<10)
+		if err := r.ParseMultipartForm(avatarupload.MaxFileSizeBytes + 64<<10); err != nil {
+			http.Error(w, `{"error":"avatar_too_large"}`, http.StatusBadRequest)
+			return
+		}
+		file, header, err := r.FormFile("file")
+		if err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
+
+		mime := strings.TrimSpace(header.Header.Get("Content-Type"))
+		normalized, ext, ok := avatarupload.NormalizeMIME(mime)
+		if !ok {
+			if fileExt := avatarupload.ExtFromFilename(header.Filename); fileExt != "" {
+				switch fileExt {
+				case ".jpg":
+					normalized, ext, ok = "image/jpeg", ".jpg", true
+				case ".png":
+					normalized, ext, ok = "image/png", ".png", true
+				case ".webp":
+					normalized, ext, ok = "image/webp", ".webp", true
+				}
+			}
+		}
+		if !ok {
+			http.Error(w, `{"error":"invalid_avatar"}`, http.StatusBadRequest)
+			return
+		}
+		if fileExt := avatarupload.ExtFromFilename(header.Filename); fileExt != "" {
+			ext = fileExt
+		}
+		if header.Size > avatarupload.MaxFileSizeBytes {
+			http.Error(w, `{"error":"avatar_too_large"}`, http.StatusBadRequest)
+			return
+		}
+
+		key := avatarupload.ObjectKey(actor.ID, ext)
+		limited := io.LimitReader(file, avatarupload.MaxFileSizeBytes+1)
+		payload, err := io.ReadAll(limited)
+		if err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		if int64(len(payload)) > avatarupload.MaxFileSizeBytes {
+			http.Error(w, `{"error":"avatar_too_large"}`, http.StatusBadRequest)
+			return
+		}
+		if err := s3Client.PutObject(r.Context(), key, normalized, bytes.NewReader(payload), int64(len(payload))); err != nil {
+			log.Printf("avatar put: %v", err)
+			http.Error(w, `{"error":"avatar_upload_failed"}`, http.StatusBadGateway)
+			return
+		}
+
+		publicURL := s3Client.PublicURL(key)
+		view, err := platform.UpdateStudentProfile(actor.ID, engines.ProfileInput{AvatarURL: &publicURL})
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		writeJSON(w, view)
+	}))
+
 	mux.HandleFunc("GET /v1/inventory/me", authz.RequireAuth(platform, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
 		view, err := platform.InventoryForStudent(actor.ID)
 		if err != nil {
@@ -314,20 +388,42 @@ func main() {
 			http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
 			return
 		}
-		token, err := platform.IssueAccessToken(s.ID)
-		if err != nil {
-			http.Error(w, `{"error":"token_issue_failed"}`, http.StatusInternalServerError)
+		writeAuthSession(w, s)
+	})
+
+	// OnlyID bridge: web BFF verifies OIDC, then exchanges identity for a school session.
+	// Protected by SSO_BRIDGE_SECRET (shared with apps/web). Does not auto-provision users.
+	bridgeSecret := strings.TrimSpace(env("SSO_BRIDGE_SECRET", ""))
+	mux.HandleFunc("POST /v1/auth/onlyid", func(w http.ResponseWriter, r *http.Request) {
+		if bridgeSecret == "" {
+			http.Error(w, `{"error":"onlyid_not_configured"}`, http.StatusServiceUnavailable)
 			return
 		}
-		public := *s
-		public.Password = ""
-		writeJSON(w, map[string]any{
-			"accessToken": token,
-			"role":        s.NormalizedRole(),
-			"roles":       s.RolesList(),
-			"permissions": permissionListForRoles(s.RolesList()),
-			"student":     public,
-		})
+		provided := strings.TrimSpace(r.Header.Get("X-SSO-Bridge-Secret"))
+		if provided == "" || subtle.ConstantTimeCompare([]byte(provided), []byte(bridgeSecret)) != 1 {
+			http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
+			return
+		}
+		var body struct {
+			Email       string `json:"email"`
+			Sub         string `json:"sub"`
+			DisplayName string `json:"displayName"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		email := strings.TrimSpace(body.Email)
+		if email == "" {
+			http.Error(w, `{"error":"email_required"}`, http.StatusBadRequest)
+			return
+		}
+		s, ok := platform.FindStudentByLogin(email)
+		if !ok {
+			http.Error(w, `{"error":"account_not_linked"}`, http.StatusNotFound)
+			return
+		}
+		writeAuthSession(w, s)
 	})
 
 	mux.HandleFunc("GET /v1/admin/students", authz.RequirePermission(platform, rbac.PermUsersRead, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
@@ -515,6 +611,23 @@ func withCORS(next http.Handler) http.Handler {
 			return
 		}
 		next.ServeHTTP(w, r)
+	})
+}
+
+func writeAuthSession(w http.ResponseWriter, s *engines.Student) {
+	token, err := platform.IssueAccessToken(s.ID)
+	if err != nil {
+		http.Error(w, `{"error":"token_issue_failed"}`, http.StatusInternalServerError)
+		return
+	}
+	public := *s
+	public.Password = ""
+	writeJSON(w, map[string]any{
+		"accessToken": token,
+		"role":        s.NormalizedRole(),
+		"roles":       s.RolesList(),
+		"permissions": permissionListForRoles(s.RolesList()),
+		"student":     public,
 	})
 }
 

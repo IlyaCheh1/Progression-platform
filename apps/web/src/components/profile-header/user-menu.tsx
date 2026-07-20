@@ -59,9 +59,21 @@ export default function UserMenu({
     router.push(href);
   }
 
-  function logout() {
+  async function logout() {
     onClose();
     clearSession();
+    try {
+      const res = await fetch("/api/auth/logout", { method: "POST" });
+      if (res.ok) {
+        const data = (await res.json()) as { ssoLogoutUrl?: string | null };
+        if (data.ssoLogoutUrl) {
+          window.location.assign(data.ssoLogoutUrl);
+          return;
+        }
+      }
+    } catch {
+      // Fall through to local logout.
+    }
     router.push("/");
   }
 

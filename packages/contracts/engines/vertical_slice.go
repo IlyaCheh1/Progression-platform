@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/masterofsword/contracts/envelope"
@@ -152,6 +153,26 @@ func (p *Platform) Authenticate(login, password string) (*Student, bool) {
 		return nil, false
 	}
 	return s, true
+}
+
+// FindStudentByLogin resolves a school user by login (exact, then case-insensitive).
+func (p *Platform) FindStudentByLogin(login string) (*Student, bool) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	login = strings.TrimSpace(login)
+	if login == "" {
+		return nil, false
+	}
+	if s, ok := p.users[login]; ok {
+		return s, true
+	}
+	lower := strings.ToLower(login)
+	for key, s := range p.users {
+		if strings.ToLower(key) == lower {
+			return s, true
+		}
+	}
+	return nil, false
 }
 
 // IssueAccessToken creates a random opaque session token after successful login.

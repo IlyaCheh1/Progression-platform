@@ -6,7 +6,8 @@
 2. **school-api** (Go)
 3. **support-chat** (Go, og-chat + Telegram webhook)
 
-`auth-adapter` — только если нужна кнопка OnlyID.
+OnlyID идёт напрямую через web BFF (`/api/auth/*`) + `school-api` (`POST /v1/auth/onlyid`).  
+`auth-adapter` для продакшена не нужен.
 
 Шаблон переменных: [`env.example`](./env.example).
 
@@ -39,13 +40,46 @@
 | Переменная | Обязательно | Когда |
 |---|---|---|
 | `NEXT_PUBLIC_SCHOOL_API` | да | build + runtime |
-| `NEXT_PUBLIC_AUTH_URL` | да* | build + runtime |
+| `NEXT_PUBLIC_SITE_URL` | да (OnlyID) | build + runtime |
+| `SSO_BASE_URL` | да (OnlyID) | runtime |
+| `SSO_ISSUER` | да (OnlyID) | runtime |
+| `SSO_CLIENT_ID` | да (OnlyID) | runtime |
+| `SSO_CLIENT_SECRET` | да (OnlyID) | runtime |
+| `SSO_OAUTH_CALLBACK_URL` | да (OnlyID) | runtime |
+| `AUTH_SECRET` | да (OnlyID) | runtime |
+| `SSO_BRIDGE_SECRET` | да (OnlyID) | runtime (тот же, что у school-api) |
+| `SCHOOL_API_INTERNAL_URL` | рекомендуется | runtime (внутренний URL school-api) |
 | `NEXT_PUBLIC_PLATFORM_API` | нет | можно сразу |
 | `NEXT_PUBLIC_SUPPORT_CHAT_API` | да** | build + runtime, если есть чат |
 | `NEXT_PUBLIC_SUPPORT_CHAT_WS` | да** | build + runtime, wss:// тот же хост |
-| `NEXT_PUBLIC_SITE_URL` | нет | рекомендуется |
 
 \*\* Для чата: `https://chat-api.mastersword.ru` (API и WS на одном хосте).
+
+### OnlyID (prod)
+
+В кабинете OnlyID для клиента должны быть:
+
+- `redirect_uris`: `https://mastersword.ru/api/auth/oauth/callback`
+- `post_logout_redirect_uris`: `https://mastersword.ru/login`
+- `scopes`: `openid profile email`
+
+Пример env для **web**:
+
+```env
+NEXT_PUBLIC_SITE_URL=https://mastersword.ru
+SSO_BASE_URL=https://onlyid.ru
+SSO_ISSUER=https://api.onlyid.ru/api/v1/user
+SSO_CLIENT_ID=cid_...
+SSO_CLIENT_SECRET=...
+SSO_OAUTH_CALLBACK_URL=https://mastersword.ru/api/auth/oauth/callback
+AUTH_SECRET=<случайная длинная строка>
+SSO_BRIDGE_SECRET=<случайная длинная строка>
+SCHOOL_API_INTERNAL_URL=http://school-api:8082
+```
+
+Для **school-api** добавь тот же `SSO_BRIDGE_SECRET`.
+
+Вход: email OnlyID должен совпадать с `login` ученика в ростере (например `maks-kiselev@mastersword.ru`). Новые пользователи автоматически не создаются.
 
 После смены `NEXT_PUBLIC_*` сделай **Rebuild**.
 
@@ -76,6 +110,7 @@ Start / Build Command оставь пустым — задаётся в Dockerfi
 | Переменная | Значение |
 |---|---|
 | `SCHOOL_API_ADDR` | `0.0.0.0:8082` |
+| `SSO_BRIDGE_SECRET` | тот же, что у web |
 | `S3_ENDPOINT` | `https://s3.ru-7.storage.selcloud.ru` |
 | `S3_REGION` | `ru-7` |
 | `S3_ACCESS_KEY` | Selectel S3 key |
@@ -168,9 +203,9 @@ S3_BUCKET=...
 Ключи: панель Selectel → Объектное хранилище → S3-ключи.  
 Документация SDK: https://developers.selectel.com/docs/cloud-services/cloud-storage/s3/aws_sdk/
 
-> Эти переменные нужны сервису **school-api** для загрузки аватаров (`POST /v1/profile/avatar/presign` → PUT в S3 → `POST /v1/profile/avatar/confirm`).  
+> Эти переменные нужны сервису **school-api** для загрузки аватаров (`POST /v1/profile/avatar` — multipart → PutObject в S3).  
 > Обязательно задай `S3_PUBLIC_BASE_URL` (публичный HTTPS бакета Selectel), иначе в профиле сохранится path-style URL.  
-> В бакете включи CORS: метод `PUT`, origin веб-приложения (и `GET`/`HEAD` при необходимости).
+> Браузер больше не ходит в S3 напрямую, поэтому CORS бакета для аватаров не обязателен.
 
 ## Чеклист
 

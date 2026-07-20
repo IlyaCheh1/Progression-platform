@@ -116,6 +116,13 @@ export function authHeaders(user: SessionUser): HeadersInit {
   };
 }
 
+/** Bearer only — for multipart uploads where the browser sets Content-Type. */
+export function authBearerHeaders(user: SessionUser): HeadersInit {
+  return {
+    Authorization: `Bearer ${user.accessToken}`,
+  };
+}
+
 export function homePathForRole(role: UserRole, profileReady: boolean): string {
   return homePathForRoles([role], profileReady);
 }

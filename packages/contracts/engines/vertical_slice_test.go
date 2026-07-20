@@ -43,6 +43,20 @@ func TestMasteryPairAllocation(t *testing.T) {
 	}
 }
 
+func TestFindStudentByLoginCaseInsensitive(t *testing.T) {
+	p := NewPlatform()
+	p.UpsertStudent(Student{
+		ID: "s-email", Login: "Hero@MasterSword.ru", Password: "x", Role: RoleStudent,
+	})
+	found, ok := p.FindStudentByLogin("hero@mastersword.ru")
+	if !ok || found.ID != "s-email" {
+		t.Fatalf("case-insensitive login lookup failed: ok=%v id=%q", ok, found.ID)
+	}
+	if _, ok := p.FindStudentByLogin("missing@example.com"); ok {
+		t.Fatal("missing login must not resolve")
+	}
+}
+
 func TestTemporaryLocalAuthRoles(t *testing.T) {
 	p := NewPlatform()
 	p.UpsertStudent(Student{

@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -93,6 +94,24 @@ func (c *Client) PresignPut(ctx context.Context, key, contentType string) (strin
 		return "", fmt.Errorf("presign put: %w", err)
 	}
 	return req.URL, nil
+}
+
+// PutObject uploads object bytes server-side (avoids browser→S3 CORS).
+func (c *Client) PutObject(ctx context.Context, key, contentType string, body io.Reader, size int64) error {
+	input := &s3.PutObjectInput{
+		Bucket:      aws.String(c.cfg.Bucket),
+		Key:         aws.String(key),
+		Body:        body,
+		ContentType: aws.String(contentType),
+	}
+	if size >= 0 {
+		input.ContentLength = aws.Int64(size)
+	}
+	_, err := c.client.PutObject(ctx, input)
+	if err != nil {
+		return fmt.Errorf("put object: %w", err)
+	}
+	return nil
 }
 
 func (c *Client) HeadObject(ctx context.Context, key string) error {

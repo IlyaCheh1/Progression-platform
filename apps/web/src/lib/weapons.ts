@@ -101,5 +101,5 @@ export function masteryRankProgress(points: number, rank: number): { value: numb
 }
 
 export function weaponIconUrl(weapon: WeaponDefinition): string {
-  return achievementIconUrl(weapon.iconKey);
+  return achievementIconUrl(weapon.iconKey, `achievements/${weapon.iconKey}.webp`);
 }
