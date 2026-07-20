@@ -1,4 +1,4 @@
-import { decryptPayload, encryptPayload, isSecureRequest } from "@/lib/onlyid/crypto";
+import { SignJWT, jwtVerify } from "jose";
 
 export const SSO_PATHS = {
   authorize: "/api/v1/user/oauth/authorize",
@@ -9,15 +9,14 @@ export const SSO_PATHS = {
   issuerSuffix: "/api/v1/user",
 } as const;
 
-const PKCE_COOKIE = "mos_oauth_pkce";
-const PKCE_SALT = "mos-onlyid-oauth-pkce";
+export const PKCE_COOKIE = "mos_oauth_pkce";
+export const REDIRECT_COOKIE = "oauth_redirect_after";
 const PKCE_MAX_AGE = 600;
 
 export type OAuthPkcePayload = {
   state: string;
   codeVerifier: string;
   nonce: string;
-  expiresAt: number;
 };
 
 export type SsoUserInfo = {
@@ -30,6 +29,39 @@ export type SsoUserInfo = {
   is_active?: boolean;
   is_blocked?: boolean;
 };
+
+export type CookieWriteOptions = {
+  httpOnly: true;
+  secure: boolean;
+  sameSite: "lax";
+  path: "/";
+  maxAge: number;
+};
+
+function secretKey(secret: string): Uint8Array {
+  return new TextEncoder().encode(secret);
+}
+
+export function cookieSecurity(request: Request): boolean {
+  if (process.env.NODE_ENV === "production") return true;
+  const proto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+  if (proto) return proto === "https";
+  try {
+    return new URL(request.url).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+export function cookieOptions(request: Request, maxAge: number): CookieWriteOptions {
+  return {
+    httpOnly: true,
+    secure: cookieSecurity(request),
+    sameSite: "lax",
+    path: "/",
+    maxAge,
+  };
+}
 
 export function randomBase64Url(bytes: number): string {
   const buf = crypto.getRandomValues(new Uint8Array(bytes));
@@ -91,56 +123,35 @@ export function extractDisplayName(info: SsoUserInfo): string {
   return typeof raw === "string" && raw.trim() ? raw.trim() : info.email;
 }
 
-export async function buildOAuthPkceCookie(
-  payload: OAuthPkcePayload,
-  secret: string,
-  options?: { secure?: boolean },
-): Promise<string> {
-  const secure = options?.secure ?? process.env.NODE_ENV === "production";
-  const encrypted = await encryptPayload(JSON.stringify(payload), secret, PKCE_SALT);
-  const parts = [
-    `${PKCE_COOKIE}=${encrypted}`,
-    "Path=/",
-    "HttpOnly",
-    ...(secure ? ["Secure"] : []),
-    "SameSite=Lax",
-    `Max-Age=${PKCE_MAX_AGE}`,
-  ];
-  return parts.join("; ");
+export async function signPkceCookieValue(payload: OAuthPkcePayload, secret: string): Promise<string> {
+  return new SignJWT({
+    codeVerifier: payload.codeVerifier,
+    nonce: payload.nonce,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setSubject(payload.state)
+    .setIssuedAt()
+    .setExpirationTime(`${PKCE_MAX_AGE}s`)
+    .sign(secretKey(secret));
 }
 
-export async function readOAuthPkceCookie(request: Request, secret: string): Promise<OAuthPkcePayload | null> {
-  const raw = request.headers
-    .get("cookie")
-    ?.split(";")
-    .map((part) => part.trim())
-    .find((part) => part.startsWith(`${PKCE_COOKIE}=`))
-    ?.slice(PKCE_COOKIE.length + 1);
+export async function readPkceCookieValue(
+  raw: string | undefined,
+  secret: string,
+): Promise<OAuthPkcePayload | null> {
   if (!raw) return null;
-
-  const decrypted = await decryptPayload(raw, secret, PKCE_SALT);
-  if (!decrypted) return null;
-
   try {
-    const payload = JSON.parse(decrypted) as OAuthPkcePayload;
-    if (!payload.state || !payload.codeVerifier || !payload.nonce) return null;
-    if (payload.expiresAt < Date.now()) return null;
-    return payload;
+    const { payload } = await jwtVerify(raw, secretKey(secret), {
+      algorithms: ["HS256"],
+    });
+    const state = typeof payload.sub === "string" ? payload.sub : "";
+    const codeVerifier = typeof payload.codeVerifier === "string" ? payload.codeVerifier : "";
+    const nonce = typeof payload.nonce === "string" ? payload.nonce : "";
+    if (!state || !codeVerifier || !nonce) return null;
+    return { state, codeVerifier, nonce };
   } catch {
     return null;
   }
 }
 
-export function clearOAuthPkceCookie(options?: { secure?: boolean }): string {
-  const secure = options?.secure ?? process.env.NODE_ENV === "production";
-  return [
-    `${PKCE_COOKIE}=`,
-    "Path=/",
-    "HttpOnly",
-    ...(secure ? ["Secure"] : []),
-    "SameSite=Lax",
-    "Max-Age=0",
-  ].join("; ");
-}
-
-export { isSecureRequest };
+export { PKCE_MAX_AGE };

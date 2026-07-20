@@ -41,7 +41,7 @@ const LOGIN_ERROR_MESSAGES: Record<string, string> = {
   sso_not_configured: "Вход через OnlyID не настроен на сервере.",
   sso_error: "Ошибка входа через OnlyID. Попробуйте снова.",
   invalid_callback: "Некорректный ответ OnlyID.",
-  invalid_state: "Сессия входа устарела. Начните вход заново.",
+  invalid_state: "Не удалось сохранить сессию входа (cookie). Попробуйте ещё раз в том же браузере, без инкогнито.",
   token_exchange_failed: "OnlyID не выдал токен. Проверьте redirect_uri и секреты.",
   account_not_linked:
     "Аккаунт OnlyID не связан со школой. Логин в ростере должен совпадать с email OnlyID.",

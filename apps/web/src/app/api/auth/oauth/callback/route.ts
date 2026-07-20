@@ -6,20 +6,23 @@ import {
   type JWTVerifyOptions,
 } from "jose";
 
-import { buildAuthBridgeCookie } from "@/lib/onlyid/bridge";
+import { BRIDGE_COOKIE, BRIDGE_MAX_AGE, signBridgeCookieValue } from "@/lib/onlyid/bridge";
 import {
   buildCallbackUrl,
-  clearOAuthPkceCookie,
+  cookieOptions,
   extractDisplayName,
   getPublicOrigin,
   isSafeReturnPath,
-  isSecureRequest,
-  readOAuthPkceCookie,
+  PKCE_COOKIE,
+  readPkceCookieValue,
+  REDIRECT_COOKIE,
   schoolApiBaseUrl,
   SSO_PATHS,
   type SsoUserInfo,
 } from "@/lib/onlyid/sso";
 import { normalizeRole, normalizeRoles, primaryRole, type SessionUser } from "@/lib/session";
+
+export const dynamic = "force-dynamic";
 
 type TokenResponse = {
   access_token: string;
@@ -50,7 +53,11 @@ function redirectWithError(request: NextRequest, error: string): NextResponse {
   }
   const url = new URL("/login", origin);
   url.searchParams.set("login_error", error);
-  return NextResponse.redirect(url);
+  const res = NextResponse.redirect(url);
+  const options = cookieOptions(request, 0);
+  res.cookies.set(PKCE_COOKIE, "", { ...options, maxAge: 0 });
+  res.cookies.set(REDIRECT_COOKIE, "", { ...options, maxAge: 0 });
+  return res;
 }
 
 function sessionFromSchool(data: SchoolAuthResponse, email: string): SessionUser | null {
@@ -72,11 +79,11 @@ function sessionFromSchool(data: SchoolAuthResponse, email: string): SessionUser
 }
 
 export async function GET(request: NextRequest) {
-  const authSecret = process.env.AUTH_SECRET;
-  const ssoBase = process.env.SSO_BASE_URL?.replace(/\/$/, "");
-  const clientId = process.env.SSO_CLIENT_ID;
-  const clientSecret = process.env.SSO_CLIENT_SECRET;
-  const bridgeSecret = process.env.SSO_BRIDGE_SECRET;
+  const authSecret = process.env.AUTH_SECRET?.trim();
+  const ssoBase = process.env.SSO_BASE_URL?.trim().replace(/\/$/, "");
+  const clientId = process.env.SSO_CLIENT_ID?.trim();
+  const clientSecret = process.env.SSO_CLIENT_SECRET?.trim();
+  const bridgeSecret = process.env.SSO_BRIDGE_SECRET?.trim();
 
   if (!authSecret || !ssoBase || !clientId || !clientSecret || !bridgeSecret) {
     return redirectWithError(request, "sso_not_configured");
@@ -93,13 +100,21 @@ export async function GET(request: NextRequest) {
     return redirectWithError(request, "invalid_callback");
   }
 
-  const pkce = await readOAuthPkceCookie(request, authSecret);
-  if (!pkce || pkce.state !== state) {
+  const rawPkce = request.cookies.get(PKCE_COOKIE)?.value;
+  const pkce = await readPkceCookieValue(rawPkce, authSecret);
+  if (!pkce) {
+    console.error("[oauth/callback] missing or invalid PKCE cookie", {
+      hasCookie: Boolean(rawPkce),
+      cookieNames: request.cookies.getAll().map((c) => c.name),
+    });
+    return redirectWithError(request, "invalid_state");
+  }
+  if (pkce.state !== state) {
+    console.error("[oauth/callback] state mismatch");
     return redirectWithError(request, "invalid_state");
   }
 
   const { codeVerifier, nonce } = pkce;
-  const secure = isSecureRequest(request);
   const callbackUrl = buildCallbackUrl(request.url);
 
   try {
@@ -222,29 +237,27 @@ export async function GET(request: NextRequest) {
       return redirectWithError(request, "school_session_failed");
     }
 
-    const bridgeCookie = await buildAuthBridgeCookie(session, authSecret, { secure });
     let origin: string;
     try {
       origin = getPublicOrigin(request.url);
     } catch {
       return redirectWithError(request, "sso_not_configured");
     }
-    const redirectTo = request.cookies.get("oauth_redirect_after")?.value || "/auth/callback";
+    const redirectTo = request.cookies.get(REDIRECT_COOKIE)?.value || "/auth/callback";
     const safeRedirect = isSafeReturnPath(redirectTo) ? redirectTo : "/auth/callback";
 
-    // Always land on /auth/callback so the client can hydrate localStorage from the bridge cookie.
     const landing = new URL("/auth/callback", origin);
     if (safeRedirect !== "/auth/callback") {
       landing.searchParams.set("next", safeRedirect);
     }
 
+    const bridgeValue = await signBridgeCookieValue(session, authSecret);
     const res = NextResponse.redirect(landing);
-    res.headers.append("Set-Cookie", bridgeCookie);
-    res.headers.append("Set-Cookie", clearOAuthPkceCookie({ secure }));
-    res.headers.append(
-      "Set-Cookie",
-      `oauth_redirect_after=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax${secure ? "; Secure" : ""}`,
-    );
+    const bridgeOpts = cookieOptions(request, BRIDGE_MAX_AGE);
+    const clearOpts = cookieOptions(request, 0);
+    res.cookies.set(BRIDGE_COOKIE, bridgeValue, bridgeOpts);
+    res.cookies.set(PKCE_COOKIE, "", { ...clearOpts, maxAge: 0 });
+    res.cookies.set(REDIRECT_COOKIE, "", { ...clearOpts, maxAge: 0 });
     return res;
   } catch (error) {
     console.error("[oauth/callback]", error);

@@ -2,19 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 
 import {
   buildCallbackUrl,
-  buildOAuthPkceCookie,
+  cookieOptions,
   isSafeReturnPath,
-  isSecureRequest,
+  PKCE_COOKIE,
+  PKCE_MAX_AGE,
   randomBase64Url,
+  REDIRECT_COOKIE,
   sha256Base64Url,
+  signPkceCookieValue,
   SSO_PATHS,
 } from "@/lib/onlyid/sso";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
-  const authSecret = process.env.AUTH_SECRET;
-  const ssoBase = process.env.SSO_BASE_URL?.replace(/\/$/, "");
-  const clientId = process.env.SSO_CLIENT_ID;
-  const clientSecret = process.env.SSO_CLIENT_SECRET;
+  const authSecret = process.env.AUTH_SECRET?.trim();
+  const ssoBase = process.env.SSO_BASE_URL?.trim().replace(/\/$/, "");
+  const clientId = process.env.SSO_CLIENT_ID?.trim();
+  const clientSecret = process.env.SSO_CLIENT_SECRET?.trim();
 
   if (!authSecret || !ssoBase || !clientId || !clientSecret) {
     const loginUrl = new URL("/login", request.url);
@@ -27,17 +32,11 @@ export async function GET(request: NextRequest) {
     const nonce = randomBase64Url(32);
     const codeVerifier = randomBase64Url(64);
     const codeChallenge = await sha256Base64Url(codeVerifier);
-    const secure = isSecureRequest(request);
+    const options = cookieOptions(request, PKCE_MAX_AGE);
 
-    const pkceCookie = await buildOAuthPkceCookie(
-      {
-        state,
-        codeVerifier,
-        nonce,
-        expiresAt: Date.now() + 600_000,
-      },
+    const pkceValue = await signPkceCookieValue(
+      { state, codeVerifier, nonce },
       authSecret,
-      { secure },
     );
 
     const callbackUrl = buildCallbackUrl(request.url);
@@ -65,14 +64,8 @@ export async function GET(request: NextRequest) {
 
     const authorizeUrl = `${ssoBase}${SSO_PATHS.authorize}?${params.toString()}`;
     const res = NextResponse.redirect(authorizeUrl);
-    res.headers.append("Set-Cookie", pkceCookie);
-    res.cookies.set("oauth_redirect_after", returnUrl, {
-      path: "/",
-      httpOnly: true,
-      secure,
-      sameSite: "lax",
-      maxAge: 600,
-    });
+    res.cookies.set(PKCE_COOKIE, pkceValue, options);
+    res.cookies.set(REDIRECT_COOKIE, returnUrl, options);
     return res;
   } catch (error) {
     console.error("[api/auth/login]", error);
