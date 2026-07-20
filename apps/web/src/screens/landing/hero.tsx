@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Button from "@/components/ui/button";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
+import { isHeroVideoReady } from "@/lib/hero-video-ready";
 
 const VIDEOS = ["1.mp4", "6.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4"];
 
@@ -75,10 +76,18 @@ function HeroVideoSlide({
 }) {
   const [useLocalFallback, setUseLocalFallback] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const poster = posterUrl(file, useLocalFallback);
   const videoSrc = mediaUrl(file, useLocalFallback);
   const mobilePosition = index === 0 || index === 2 ? "object-left" : "object-right";
   const mediaClassName = `h-full w-full object-cover ${isMobile ? mobilePosition : "object-center"}`;
+
+  const syncVideoReady = useCallback(() => {
+    const video = videoRef.current;
+    if (video) {
+      setVideoReady(isHeroVideoReady(video.readyState));
+    }
+  }, []);
 
   const fallBackToLocal = useCallback(() => {
     if (!CAN_FALLBACK_TO_LOCAL || useLocalFallback) return;
@@ -86,12 +95,41 @@ function HeroVideoSlide({
     setVideoReady(false);
   }, [useLocalFallback]);
 
+  const handleVideoRef = useCallback(
+    (node: HTMLVideoElement | null) => {
+      videoRef.current = node;
+      registerVideo(index, node);
+    },
+    [index, registerVideo],
+  );
+
   useEffect(() => {
     if (!isMounted) {
       setVideoReady(false);
       setUseLocalFallback(false);
     }
   }, [isMounted]);
+
+  useLayoutEffect(() => {
+    const video = videoRef.current;
+    if (!isMounted || !video) {
+      setVideoReady(false);
+      return;
+    }
+
+    const sync = () => {
+      setVideoReady(isHeroVideoReady(video.readyState));
+    };
+
+    sync();
+    video.addEventListener("canplay", sync);
+    video.addEventListener("loadeddata", sync);
+
+    return () => {
+      video.removeEventListener("canplay", sync);
+      video.removeEventListener("loadeddata", sync);
+    };
+  }, [isMounted, videoSrc]);
 
   if (!isMounted) return null;
 
@@ -128,7 +166,7 @@ function HeroVideoSlide({
       />
       <video
         key={videoSrc}
-        ref={(node) => registerVideo(index, node)}
+        ref={handleVideoRef}
         className={`absolute inset-0 transition-opacity duration-300 ${mediaClassName}`}
         style={{
           filter: "saturate(1.8) brightness(0.35)",
@@ -141,9 +179,8 @@ function HeroVideoSlide({
         preload={isActive || isNext || index === 0 ? "auto" : "metadata"}
         poster={poster}
         src={videoSrc}
-        onCanPlay={() => {
-          setVideoReady(true);
-        }}
+        onCanPlay={syncVideoReady}
+        onLoadedData={syncVideoReady}
         onError={fallBackToLocal}
       />
     </div>

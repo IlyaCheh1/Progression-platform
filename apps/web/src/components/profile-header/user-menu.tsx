@@ -1,11 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import CharacterAvatar from "@/components/character-avatar";
 import {
   IconProfileAdmin,
   IconProfileCabinet,
   IconProfileLogout,
+  IconProfilePeople,
   IconProfileSettings,
   IconProfileStudio,
 } from "@/components/profile-header/profile-menu-icons";
@@ -52,11 +53,23 @@ export default function UserMenu({
   onClose,
 }: UserMenuProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const roleItems = getRoleCabinetMenuItems(user.roles);
 
   function navigate(href: string) {
     onClose();
     router.push(href);
+  }
+
+  function switchAccount() {
+    onClose();
+    clearSession();
+    const returnUrl = pathname && pathname.startsWith("/") ? pathname : "/";
+    const params = new URLSearchParams({
+      prompt: "select_account",
+      returnUrl,
+    });
+    window.location.assign(`/api/auth/login?${params.toString()}`);
   }
 
   async function logout() {
@@ -135,12 +148,21 @@ export default function UserMenu({
 
       <div className="my-3 h-px bg-[var(--color-strokeBg)] md:my-4" />
 
-      <button type="button" className="group flex w-full items-center gap-2 md:gap-3" onClick={logout}>
-        <IconProfileLogout className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-primaryText md:h-6 md:w-6" />
-        <span className="font-golos text-xs font-normal leading-4 text-secondaryText transition-colors duration-100 group-hover:text-primaryText md:text-sm md:leading-5">
-          Выход
-        </span>
-      </button>
+      <div className="flex flex-col gap-2 md:gap-4">
+        <button type="button" className="group flex w-full items-center gap-2 md:gap-3" onClick={switchAccount}>
+          <IconProfilePeople className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-mos-amber md:h-6 md:w-6" />
+          <span className="font-golos text-xs font-normal leading-4 text-primaryText transition-colors duration-100 group-hover:text-mos-amber md:text-sm md:leading-5">
+            Сменить аккаунт
+          </span>
+        </button>
+
+        <button type="button" className="group flex w-full items-center gap-2 md:gap-3" onClick={logout}>
+          <IconProfileLogout className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-primaryText md:h-6 md:w-6" />
+          <span className="font-golos text-xs font-normal leading-4 text-secondaryText transition-colors duration-100 group-hover:text-primaryText md:text-sm md:leading-5">
+            Выход
+          </span>
+        </button>
+      </div>
     </div>
   );
 }
