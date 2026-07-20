@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"time"
@@ -146,15 +147,27 @@ func (c *TelegramBotClient) makeRequest(ctx context.Context, method, url string,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		var errorResp TelegramErrorResponse
-		if err := json.NewDecoder(resp.Body).Decode(&errorResp); err != nil {
-			return fmt.Errorf("HTTP %d: failed to decode error response", resp.StatusCode)
-		}
-		return fmt.Errorf("telegram API error: %s (code: %d)", errorResp.Description, errorResp.ErrorCode)
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
+	if err != nil {
+		return fmt.Errorf("failed to read Telegram response: %w", err)
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(response); err != nil {
+	var apiStatus struct {
+		OK          bool   `json:"ok"`
+		Description string `json:"description"`
+		ErrorCode   int    `json:"error_code"`
+	}
+	if err := json.Unmarshal(body, &apiStatus); err != nil {
+		return fmt.Errorf("HTTP %d: invalid Telegram response: %w", resp.StatusCode, err)
+	}
+	if resp.StatusCode != http.StatusOK || !apiStatus.OK {
+		if apiStatus.Description != "" {
+			return fmt.Errorf("telegram API error: %s (http: %d, code: %d)", apiStatus.Description, resp.StatusCode, apiStatus.ErrorCode)
+		}
+		return fmt.Errorf("telegram API error: HTTP %d", resp.StatusCode)
+	}
+
+	if err := json.Unmarshal(body, response); err != nil {
 		return fmt.Errorf("failed to decode response: %w", err)
 	}
 

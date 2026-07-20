@@ -44,11 +44,11 @@ type ServerConfig struct {
 }
 
 type TelegramConfig struct {
-	BotToken       string `koanf:"bot_token"`
-	SupportChatID  int64  `koanf:"support_chat_id"`
-	WebhookSecret  string `koanf:"webhook_secret"`
-	APIBaseURL     string `koanf:"api_base_url"`
-	PublicBaseURL  string `koanf:"public_base_url"`
+	BotToken      string `koanf:"bot_token"`
+	SupportChatID int64  `koanf:"support_chat_id"`
+	WebhookSecret string `koanf:"webhook_secret"`
+	APIBaseURL    string `koanf:"api_base_url"`
+	PublicBaseURL string `koanf:"public_base_url"`
 }
 
 type StorageConfig struct {
@@ -89,6 +89,10 @@ func (c *LoggerConfig) Level() slog.Level {
 	}
 }
 
+func (c *TelegramConfig) IsConfigured() bool {
+	return strings.TrimSpace(c.BotToken) != "" && c.SupportChatID != 0
+}
+
 func LoadConfig(filename string) (Config, error) {
 	// Set default values
 	cfg := Config{
@@ -118,37 +122,43 @@ func LoadConfig(filename string) (Config, error) {
 		return Config{}, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	applyTelegramEnvFallbacks(&cfg)
+	applyTelegramEnvOverrides(&cfg)
 
 	return cfg, nil
 }
 
-// applyTelegramEnvFallbacks accepts common misnamed Coolify/docs vars that use a
-// single underscore after TELEGRAM (OGC_TELEGRAM_BOT_TOKEN) instead of the nested
-// delimiter form required by koanf (OGC_TELEGRAM__BOT_TOKEN).
-func applyTelegramEnvFallbacks(cfg *Config) {
-	if cfg.Telegram.BotToken == "" {
-		if v := firstNonEmptyEnv("OGC_TELEGRAM_BOT_TOKEN"); v != "" {
-			cfg.Telegram.BotToken = v
+// applyTelegramEnvOverrides re-reads Telegram settings from the process environment.
+// This is intentional: Coolify/env values are always strings, may include quotes/spaces,
+// and nested koanf keys are easy to mis-name (OGC_TELEGRAM_* vs OGC_TELEGRAM__*).
+func applyTelegramEnvOverrides(cfg *Config) {
+	if v := firstNonEmptyEnv("OGC_TELEGRAM__BOT_TOKEN", "OGC_TELEGRAM_BOT_TOKEN"); v != "" {
+		cfg.Telegram.BotToken = sanitizeEnvValue(v)
+	}
+	if v := firstNonEmptyEnv("OGC_TELEGRAM__WEBHOOK_SECRET", "OGC_TELEGRAM_WEBHOOK_SECRET"); v != "" {
+		cfg.Telegram.WebhookSecret = sanitizeEnvValue(v)
+	}
+	if v := firstNonEmptyEnv("OGC_TELEGRAM__PUBLIC_BASE_URL", "OGC_TELEGRAM_PUBLIC_BASE_URL"); v != "" {
+		cfg.Telegram.PublicBaseURL = strings.TrimRight(sanitizeEnvValue(v), "/")
+	}
+	if v := firstNonEmptyEnv("OGC_TELEGRAM__API_BASE_URL", "OGC_TELEGRAM_API_BASE_URL"); v != "" {
+		cfg.Telegram.APIBaseURL = strings.TrimRight(sanitizeEnvValue(v), "/")
+	}
+	if v := firstNonEmptyEnv("OGC_TELEGRAM__SUPPORT_CHAT_ID", "OGC_TELEGRAM_SUPPORT_CHAT_ID"); v != "" {
+		parsed, err := strconv.ParseInt(sanitizeEnvValue(v), 10, 64)
+		if err == nil {
+			cfg.Telegram.SupportChatID = parsed
 		}
 	}
-	if cfg.Telegram.WebhookSecret == "" {
-		if v := firstNonEmptyEnv("OGC_TELEGRAM_WEBHOOK_SECRET"); v != "" {
-			cfg.Telegram.WebhookSecret = v
+}
+
+func sanitizeEnvValue(v string) string {
+	v = strings.TrimSpace(v)
+	if len(v) >= 2 {
+		if (v[0] == '"' && v[len(v)-1] == '"') || (v[0] == '\'' && v[len(v)-1] == '\'') {
+			v = strings.TrimSpace(v[1 : len(v)-1])
 		}
 	}
-	if cfg.Telegram.SupportChatID == 0 {
-		if v := firstNonEmptyEnv("OGC_TELEGRAM_SUPPORT_CHAT_ID"); v != "" {
-			if id, err := strconv.ParseInt(v, 10, 64); err == nil {
-				cfg.Telegram.SupportChatID = id
-			}
-		}
-	}
-	if cfg.Telegram.PublicBaseURL == "" {
-		if v := firstNonEmptyEnv("OGC_TELEGRAM_PUBLIC_BASE_URL"); v != "" {
-			cfg.Telegram.PublicBaseURL = v
-		}
-	}
+	return v
 }
 
 func firstNonEmptyEnv(keys ...string) string {

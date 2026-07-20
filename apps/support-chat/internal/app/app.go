@@ -55,6 +55,18 @@ func NewApp(configPath string) (*App, error) {
 		Level: cfg.Logger.Level(),
 	}))
 
+	logger.Info("telegram config loaded",
+		"configured", cfg.Telegram.IsConfigured(),
+		"support_chat_id", cfg.Telegram.SupportChatID,
+		"bot_token_set", cfg.Telegram.BotToken != "",
+		"webhook_secret_set", cfg.Telegram.WebhookSecret != "",
+		"public_base_url", cfg.Telegram.PublicBaseURL,
+		"api_base_url", cfg.Telegram.APIBaseURL,
+	)
+	if !cfg.Telegram.IsConfigured() {
+		logger.Warn("telegram delivery disabled: set OGC_TELEGRAM__BOT_TOKEN and OGC_TELEGRAM__SUPPORT_CHAT_ID")
+	}
+
 	ctx := context.Background()
 
 	masterUrl := generatePgConnectionUrl(&cfg, logger, false)
@@ -179,7 +191,15 @@ func (a *App) corsMiddleware(next http.Handler) http.Handler {
 }
 
 func (a *App) healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte(fmt.Sprintf(
+		`{"ok":true,"telegram_configured":%t,"support_chat_id":%d,"bot_token_set":%t,"webhook_secret_set":%t}`,
+		a.config.Telegram.IsConfigured(),
+		a.config.Telegram.SupportChatID,
+		a.config.Telegram.BotToken != "",
+		a.config.Telegram.WebhookSecret != "",
+	)))
 }
 
 func (a *App) readinessHandler(w http.ResponseWriter, r *http.Request) {

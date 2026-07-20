@@ -9,29 +9,16 @@ import (
 func (s *ConversationDomainServiceImpl) CreateConversation(ctx context.Context, conversation *model.Conversation) (*model.Conversation, error) {
 	var createdConv *model.Conversation
 
+	// Always create a new conversation. The web widget expects a fresh support
+	// thread on each init; reusing an open one kept stale welcome text in history.
 	err := s.txManager.WithTransaction(ctx, func(ctx context.Context) error {
-		conv, err := s.repo.FindOpenConversationByUser(ctx, conversation.CreatedBy, conversation.Type)
+		conv, err := s.repo.CreateConversation(ctx, conversation)
 		if err != nil {
 			return err
 		}
+		createdConv = conv
 
-		if conv != nil {
-			createdConv = conv
-			s.logger.Info("Open conversation already exists with id: ", "id", conv.Id)
-			return nil
-		}
-
-		createdConv, err = s.repo.CreateConversation(ctx, conversation)
-		if err != nil {
-			return err
-		}
-
-		err = s.repo.AddParticipant(ctx, createdConv.Id, conversation.CreatedBy)
-		if err != nil {
-			return err
-		}
-
-		return nil
+		return s.repo.AddParticipant(ctx, createdConv.Id, conversation.CreatedBy)
 	})
 
 	if err != nil {

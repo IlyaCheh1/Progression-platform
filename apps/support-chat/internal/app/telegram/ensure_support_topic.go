@@ -9,7 +9,7 @@ import (
 
 func (s *TelegramAppServiceImpl) EnsureSupportTopic(ctx context.Context, conversation *cm.Conversation) (*cm.Conversation, error) {
 	// Check if Telegram info already exists
-	if conversation.TgSupportChatID != nil && conversation.TgSupportTopicID != nil {
+	if conversation.TgSupportChatID != nil && conversation.TgSupportTopicID != nil && *conversation.TgSupportTopicID != 0 {
 		s.logger.Debug("Telegram topic already exists for conversation",
 			"conversation_id", conversation.Id,
 			"chat_id", *conversation.TgSupportChatID,
@@ -22,7 +22,11 @@ func (s *TelegramAppServiceImpl) EnsureSupportTopic(ctx context.Context, convers
 		return nil, fmt.Errorf("failed to get user for conversation: %w", err)
 	}
 
-	// Create topic in Telegram
+	s.logger.Info("Creating Telegram support topic",
+		"conversation_id", conversation.Id,
+		"user_id", conversation.CreatedBy,
+		"username", user.Username)
+
 	topicInfo, err := s.telegramAdapter.CreateSupportTopic(ctx, conversation, user)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Telegram topic: %w", err)
