@@ -203,8 +203,12 @@ export async function GET(request: NextRequest) {
     if (!userinfo.email) {
       return redirectWithError(request, "no_email");
     }
+    // OnlyID часто отдаёт email_verified=false даже для рабочих аккаунтов.
+    // Доступ в школу всё равно ограничен ростером (login == email) через /v1/auth/onlyid.
     if (userinfo.email_verified === false) {
-      return redirectWithError(request, "email_not_verified");
+      console.warn("[oauth/callback] email_verified=false; continuing with roster check", {
+        emailDomain: userinfo.email.split("@")[1] || "",
+      });
     }
     if (userinfo.is_blocked) {
       return redirectWithError(request, "user_blocked");

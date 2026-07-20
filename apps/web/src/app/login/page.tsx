@@ -47,7 +47,6 @@ const LOGIN_ERROR_MESSAGES: Record<string, string> = {
     "Аккаунт OnlyID не связан со школой. Логин в ростере должен совпадать с email OnlyID.",
   user_blocked: "Аккаунт OnlyID заблокирован.",
   no_email: "У аккаунта OnlyID нет email.",
-  email_not_verified: "Подтвердите email в OnlyID и войдите снова.",
   school_session_failed: "Не удалось создать сессию школы.",
 };
 
