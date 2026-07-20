@@ -14,6 +14,15 @@ import (
 
 // SendMessageToTopic sends a message to specific forum topic in Telegram supergroup
 func (a *TelegramAdapterImpl) SendMessageToTopic(ctx context.Context, chatID int64, topicID int32, message *mm.Message, user *model.User) (*telegramApp.SentMessage, error) {
+	return a.sendMessage(ctx, chatID, &topicID, message, user)
+}
+
+// SendMessageToChat sends a message to the support chat without a forum topic.
+func (a *TelegramAdapterImpl) SendMessageToChat(ctx context.Context, chatID int64, message *mm.Message, user *model.User) (*telegramApp.SentMessage, error) {
+	return a.sendMessage(ctx, chatID, nil, message, user)
+}
+
+func (a *TelegramAdapterImpl) sendMessage(ctx context.Context, chatID int64, topicID *int32, message *mm.Message, user *model.User) (*telegramApp.SentMessage, error) {
 	var lastResponse *telegramApp.SentMessage
 
 	// Send attachments as media group if they exist
@@ -37,13 +46,11 @@ func (a *TelegramAdapterImpl) SendMessageToTopic(ctx context.Context, chatID int
 				continue
 			}
 
-			// Determine media type
 			mediaType := "document"
 			if a.isImageContentType(attachment.ContentType) {
 				mediaType = "photo"
 			}
 
-			// Add caption to first item only
 			caption := ""
 			if len(mediaItems) == 0 && message.ContentText != nil {
 				caption = a.formatMessageForTelegram(message, user)
@@ -56,15 +63,13 @@ func (a *TelegramAdapterImpl) SendMessageToTopic(ctx context.Context, chatID int
 			})
 		}
 
-		// Send media group if we have items
 		if len(mediaItems) > 0 {
-			response, err := a.client.SendMediaGroup(ctx, chatID, mediaItems, &topicID)
+			response, err := a.client.SendMediaGroup(ctx, chatID, mediaItems, topicID)
 			if err != nil {
 				a.logger.Error("Failed to send media group", "error", err, "media_count", len(mediaItems))
 				return nil, fmt.Errorf("failed to send media group: %w", err)
 			}
 
-			// Use the first message from the group as the response
 			if len(response.Result) > 0 {
 				lastResponse = &telegramApp.SentMessage{
 					TelegramMessageID: response.Result[0].MessageID,
@@ -78,10 +83,9 @@ func (a *TelegramAdapterImpl) SendMessageToTopic(ctx context.Context, chatID int
 		}
 	}
 
-	// Send text message if no attachments were sent or if text wasn't included in media caption
 	if lastResponse == nil && message.ContentText != nil {
 		text := a.formatMessageForTelegram(message, user)
-		response, err := a.client.SendMessage(ctx, chatID, text, &topicID)
+		response, err := a.client.SendMessage(ctx, chatID, text, topicID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to send message to Telegram: %w", err)
 		}
@@ -96,11 +100,16 @@ func (a *TelegramAdapterImpl) SendMessageToTopic(ctx context.Context, chatID int
 		return nil, fmt.Errorf("no content was sent to Telegram")
 	}
 
-	a.logger.Info("Successfully sent message to Telegram topic",
+	topicValue := int32(0)
+	if topicID != nil {
+		topicValue = *topicID
+	}
+
+	a.logger.Info("Successfully sent message to Telegram",
 		"message_id", message.ID,
 		"conversation_id", message.ConversationID,
 		"chat_id", chatID,
-		"topic_id", topicID,
+		"topic_id", topicValue,
 		"attachments_count", len(message.AttachmentIDs))
 
 	return lastResponse, nil

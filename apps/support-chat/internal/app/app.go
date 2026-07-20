@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -9,8 +10,8 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
-	"sync"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -146,6 +147,7 @@ func (a *App) setupOpenAPIRoutes() http.Handler {
 
 	mux.HandleFunc("/health", a.healthHandler)
 	mux.HandleFunc("/ready", a.readinessHandler)
+	mux.HandleFunc("/diagnostics/telegram", a.telegramDiagnosticsHandler)
 	mux.HandleFunc("/api/v1/messages/ws", http.HandlerFunc(a.wsServer.HandleWebSocket))
 	a.logger.Info("WebSocket route registered", "path", "/api/v1/messages/ws")
 
@@ -216,10 +218,87 @@ func (a *App) readinessHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (a *App) telegramDiagnosticsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	type stepResult struct {
+		OK    bool   `json:"ok"`
+		Error string `json:"error,omitempty"`
+		Detail any   `json:"detail,omitempty"`
+	}
+	out := map[string]any{
+		"configured":      a.config.Telegram.IsConfigured(),
+		"support_chat_id": a.config.Telegram.SupportChatID,
+		"api_base_url":    a.config.Telegram.APIBaseURL,
+	}
+
+	if !a.config.Telegram.IsConfigured() {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		out["error"] = "telegram is not configured"
+		_ = json.NewEncoder(w).Encode(out)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 12*time.Second)
+	defer cancel()
+	client := tclient.NewTelegramBotClient(&a.config.Telegram, a.logger)
+
+	meStep := stepResult{OK: true}
+	me, err := client.GetMe(ctx)
+	if err != nil {
+		meStep.OK = false
+		meStep.Error = err.Error()
+	} else {
+		meStep.Detail = map[string]any{
+			"id":       me.Result.ID,
+			"username": me.Result.Username,
+			"name":     me.Result.FirstName,
+		}
+	}
+	out["getMe"] = meStep
+
+	chatStep := stepResult{OK: true}
+	chat, err := client.GetChat(ctx, a.config.Telegram.SupportChatID)
+	if err != nil {
+		chatStep.OK = false
+		chatStep.Error = err.Error()
+	} else {
+		chatStep.Detail = map[string]any{
+			"id":       chat.Result.ID,
+			"type":     chat.Result.Type,
+			"title":    chat.Result.Title,
+			"is_forum": chat.Result.IsForum,
+		}
+	}
+	out["getChat"] = chatStep
+
+	probeStep := stepResult{OK: true}
+	if meStep.OK && chatStep.OK {
+		_, err := client.SendMessage(ctx, a.config.Telegram.SupportChatID, "MoS diagnostics probe: bot can post to this chat.", nil)
+		if err != nil {
+			probeStep.OK = false
+			probeStep.Error = err.Error()
+		} else {
+			probeStep.Detail = "probe message sent to chat root"
+		}
+	} else {
+		probeStep.OK = false
+		probeStep.Error = "skipped: getMe/getChat failed"
+	}
+	out["sendProbe"] = probeStep
+
+	status := http.StatusOK
+	if !meStep.OK || !chatStep.OK || !probeStep.OK {
+		status = http.StatusBadGateway
+	}
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(out)
+}
+
 func (a *App) loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Пропускаем логгирование для технических эндпоинтов
-		if r.URL.Path == "/health" || r.URL.Path == "/ready" {
+		if r.URL.Path == "/health" || r.URL.Path == "/ready" || r.URL.Path == "/diagnostics/telegram" {
 			next.ServeHTTP(w, r)
 			return
 		}

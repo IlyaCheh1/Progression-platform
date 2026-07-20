@@ -61,3 +61,24 @@ type TelegramErrorResponse struct {
 	ErrorCode   int    `json:"error_code"`
 	Description string `json:"description"`
 }
+
+type GetMeResponse struct {
+	OK     bool `json:"ok"`
+	Result struct {
+		ID        int64  `json:"id"`
+		IsBot     bool   `json:"is_bot"`
+		FirstName string `json:"first_name"`
+		Username  string `json:"username"`
+	} `json:"result"`
+}
+
+type GetChatResponse struct {
+	OK     bool `json:"ok"`
+	Result struct {
+		ID       int64  `json:"id"`
+		Type     string `json:"type"`
+		Title    string `json:"title"`
+		IsForum  bool   `json:"is_forum"`
+		Username string `json:"username"`
+	} `json:"result"`
+}

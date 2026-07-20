@@ -37,6 +37,7 @@ type TelegramAppServiceImpl struct {
 	broadcaster             MessageBroadcaster
 	conversationBroadcaster ConversationBroadcaster
 	webhookSecret           string
+	supportChatID           int64
 	logger                  *slog.Logger
 }
 
@@ -58,6 +59,7 @@ func NewAppService(
 		broadcaster:             broadcaster,
 		conversationBroadcaster: conversationBroadcaster,
 		webhookSecret:           cfg.WebhookSecret,
+		supportChatID:           cfg.SupportChatID,
 		logger:                  logger,
 	}
 }

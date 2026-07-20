@@ -14,6 +14,8 @@ import (
 type TelegramAdapter interface {
 	CreateSupportTopic(ctx context.Context, conversation *cm.Conversation, user *um.User) (*TopicInfo, error)
 	SendMessageToTopic(ctx context.Context, chatID int64, topicID int32, message *mm.Message, user *um.User) (*SentMessage, error)
+	// SendMessageToChat sends into the support chat root (no forum topic).
+	SendMessageToChat(ctx context.Context, chatID int64, message *mm.Message, user *um.User) (*SentMessage, error)
 }
 
 // ConversationDomainService interface for domain layer interaction

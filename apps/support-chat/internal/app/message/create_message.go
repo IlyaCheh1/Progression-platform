@@ -106,30 +106,24 @@ func (s *MessageAppServiceImpl) sendToTelegramIfNeeded(ctx context.Context, mess
 		*conversation.TgSupportTopicID == 0
 
 	// Lazily create Telegram topic if CreateConversation raced ahead of async ensure.
+	// If topic creation fails, SendMessageToTelegram still falls back to chat root.
 	if needsTopic {
 		s.logger.Info("Conversation missing Telegram topic, ensuring before send",
 			"conversation_id", message.ConversationID)
 		updated, err := s.telegramService.EnsureSupportTopic(ctx, conversation)
 		if err != nil {
-			s.logger.Error("Failed to ensure Telegram topic before send",
+			s.logger.Error("Failed to ensure Telegram topic before send; will try chat root fallback",
 				"conversation_id", message.ConversationID,
 				"error", err)
-			return err
+		} else {
+			conversation = updated
 		}
-		conversation = updated
-	}
-
-	if conversation.TgSupportChatID == nil || conversation.TgSupportTopicID == nil || *conversation.TgSupportTopicID == 0 {
-		s.logger.Error("Conversation still has no Telegram integration after ensure, skipping",
-			"conversation_id", message.ConversationID)
-		return nil
 	}
 
 	s.logger.Info("Sending user message to Telegram",
 		"message_id", message.ID,
 		"conversation_id", message.ConversationID,
-		"chat_id", *conversation.TgSupportChatID,
-		"topic_id", *conversation.TgSupportTopicID)
+		"has_topic", conversation.TgSupportChatID != nil && conversation.TgSupportTopicID != nil && *conversation.TgSupportTopicID != 0)
 
 	return s.telegramService.SendMessageToTelegram(ctx, message)
 }

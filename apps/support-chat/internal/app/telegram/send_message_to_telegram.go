@@ -2,8 +2,10 @@ package telegram
 
 import (
 	"context"
+	"fmt"
 
 	mm "github.com/masterofsword/support-chat/internal/domain/message/model"
+	um "github.com/masterofsword/support-chat/internal/domain/user/model"
 )
 
 func (s *TelegramAppServiceImpl) SendMessageToTelegram(ctx context.Context, message *mm.Message) error {
@@ -11,7 +13,6 @@ func (s *TelegramAppServiceImpl) SendMessageToTelegram(ctx context.Context, mess
 		"message_id", message.ID,
 		"conversation_id", message.ConversationID)
 
-	// Get conversation info to obtain chat_id and topic_id
 	conversation, err := s.conversationService.GetConversationById(ctx, message.ConversationID)
 	if err != nil {
 		s.logger.Error("Failed to get conversation info for Telegram send",
@@ -29,31 +30,58 @@ func (s *TelegramAppServiceImpl) SendMessageToTelegram(ctx context.Context, mess
 		return err
 	}
 
-	// At this point we assume all checks were done by caller
-	// Just send the message to Telegram topic
-	sentMessage, err := s.telegramAdapter.SendMessageToTopic(
-		ctx,
-		*conversation.TgSupportChatID,
-		*conversation.TgSupportTopicID,
-		message,
-		user,
-	)
+	hasTopic := conversation.TgSupportChatID != nil &&
+		conversation.TgSupportTopicID != nil &&
+		*conversation.TgSupportTopicID != 0
 
-	if err != nil {
-		s.logger.Error("Failed to send message to Telegram",
+	if hasTopic {
+		sentMessage, err := s.telegramAdapter.SendMessageToTopic(
+			ctx,
+			*conversation.TgSupportChatID,
+			*conversation.TgSupportTopicID,
+			message,
+			user,
+		)
+		if err != nil {
+			s.logger.Error("Failed to send message to Telegram topic, trying chat root fallback",
+				"conversation_id", message.ConversationID,
+				"chat_id", *conversation.TgSupportChatID,
+				"topic_id", *conversation.TgSupportTopicID,
+				"error", err)
+			return s.sendToChatRoot(ctx, message, user)
+		}
+
+		s.logger.Info("Message sent to Telegram topic successfully",
+			"message_id", message.ID,
 			"conversation_id", message.ConversationID,
+			"telegram_message_id", sentMessage.TelegramMessageID,
 			"chat_id", *conversation.TgSupportChatID,
-			"topic_id", *conversation.TgSupportTopicID,
+			"topic_id", *conversation.TgSupportTopicID)
+		return nil
+	}
+
+	return s.sendToChatRoot(ctx, message, user)
+}
+
+func (s *TelegramAppServiceImpl) sendToChatRoot(ctx context.Context, message *mm.Message, user *um.User) error {
+	chatID := s.supportChatID
+	if chatID == 0 {
+		return fmt.Errorf("telegram support_chat_id is not configured")
+	}
+
+	sentMessage, err := s.telegramAdapter.SendMessageToChat(ctx, chatID, message, user)
+	if err != nil {
+		s.logger.Error("Failed to send message to Telegram chat root",
+			"conversation_id", message.ConversationID,
+			"chat_id", chatID,
 			"error", err)
 		return err
 	}
 
-	s.logger.Info("Message sent to Telegram successfully",
+	s.logger.Info("Message sent to Telegram chat root successfully",
 		"message_id", message.ID,
 		"conversation_id", message.ConversationID,
 		"telegram_message_id", sentMessage.TelegramMessageID,
-		"chat_id", *conversation.TgSupportChatID,
-		"topic_id", *conversation.TgSupportTopicID)
-
+		"chat_id", chatID)
 	return nil
 }

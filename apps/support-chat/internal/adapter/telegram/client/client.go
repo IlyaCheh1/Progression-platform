@@ -8,6 +8,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/masterofsword/support-chat/internal/infra/config"
@@ -32,6 +33,27 @@ func NewTelegramBotClient(cfg *config.TelegramConfig, logger *slog.Logger) *Tele
 		},
 		logger: logger,
 	}
+}
+
+// GetMe returns the bot identity for the configured token.
+func (c *TelegramBotClient) GetMe(ctx context.Context) (*GetMeResponse, error) {
+	url := fmt.Sprintf("%s/bot%s/getMe", c.baseURL, c.botToken)
+	var response GetMeResponse
+	if err := c.makeRequest(ctx, "GET", url, nil, &response); err != nil {
+		return nil, fmt.Errorf("failed to call getMe: %w", err)
+	}
+	return &response, nil
+}
+
+// GetChat returns chat metadata for the support group/channel.
+func (c *TelegramBotClient) GetChat(ctx context.Context, chatID int64) (*GetChatResponse, error) {
+	url := fmt.Sprintf("%s/bot%s/getChat", c.baseURL, c.botToken)
+	request := map[string]int64{"chat_id": chatID}
+	var response GetChatResponse
+	if err := c.makeRequest(ctx, "POST", url, request, &response); err != nil {
+		return nil, fmt.Errorf("failed to call getChat: %w", err)
+	}
+	return &response, nil
 }
 
 // CreateForumTopic creates a new forum topic in supergroup
@@ -124,22 +146,31 @@ func (c *TelegramBotClient) SetWebhook(ctx context.Context, webhookURL string) e
 
 // makeRequest makes HTTP request to Telegram Bot API
 func (c *TelegramBotClient) makeRequest(ctx context.Context, method, url string, request interface{}, response interface{}) error {
-	jsonData, err := json.Marshal(request)
-	if err != nil {
-		return fmt.Errorf("failed to marshal request: %w", err)
+	var bodyReader *bytes.Reader
+	if request != nil {
+		jsonData, err := json.Marshal(request)
+		if err != nil {
+			return fmt.Errorf("failed to marshal request: %w", err)
+		}
+		bodyReader = bytes.NewReader(jsonData)
+		c.logger.Debug("Making Telegram API request",
+			"method", method,
+			"path", telegramPathForLog(url),
+			"request", string(jsonData))
+	} else {
+		bodyReader = bytes.NewReader(nil)
+		c.logger.Debug("Making Telegram API request",
+			"method", method,
+			"path", telegramPathForLog(url))
 	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, method, url, bytes.NewBuffer(jsonData))
+	httpReq, err := http.NewRequestWithContext(ctx, method, url, bodyReader)
 	if err != nil {
 		return fmt.Errorf("failed to create HTTP request: %w", err)
 	}
-
-	httpReq.Header.Set("Content-Type", "application/json")
-
-	c.logger.Debug("Making Telegram API request",
-		"method", method,
-		"url", url,
-		"request", string(jsonData))
+	if request != nil {
+		httpReq.Header.Set("Content-Type", "application/json")
+	}
 
 	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
@@ -172,4 +203,18 @@ func (c *TelegramBotClient) makeRequest(ctx context.Context, method, url string,
 	}
 
 	return nil
+}
+
+func telegramPathForLog(url string) string {
+	// Avoid logging the bot token.
+	const marker = "/bot"
+	idx := strings.Index(url, marker)
+	if idx < 0 {
+		return url
+	}
+	rest := url[idx+len(marker):]
+	if slash := strings.Index(rest, "/"); slash >= 0 {
+		return url[:idx+len(marker)] + "***" + rest[slash:]
+	}
+	return url[:idx+len(marker)] + "***"
 }
