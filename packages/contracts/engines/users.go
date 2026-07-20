@@ -208,8 +208,8 @@ func (p *Platform) DeleteUser(id string) error {
 	if st.Login != "" {
 		delete(p.users, st.Login)
 	}
-	for token, sid := range p.sessions {
-		if sid == id {
+	for token, sess := range p.sessions {
+		if sess.StudentID == id {
 			delete(p.sessions, token)
 		}
 	}

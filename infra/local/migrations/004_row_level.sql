@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS school_identity.students (
 
 CREATE TABLE IF NOT EXISTS school_identity.access_tokens (
   token TEXT PRIMARY KEY,
-  student_id TEXT NOT NULL
+  student_id TEXT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL DEFAULT (now() + interval '30 days')
 );
 
 CREATE TABLE IF NOT EXISTS school_identity.inbox_seen (

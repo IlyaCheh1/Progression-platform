@@ -3,6 +3,7 @@ package persist
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/masterofsword/contracts/engines"
 )
@@ -117,17 +118,44 @@ func saveStudents(ctx context.Context, tx *sql.Tx, snap engines.PlatformSnapshot
 }
 
 func (s *PlatformStore) loadAccessTokens(ctx context.Context, snap *engines.PlatformSnapshot) error {
-	rows, err := s.db.QueryContext(ctx, `SELECT token, student_id FROM school_identity.access_tokens`)
-	if err != nil {
-		return err
+	if snap.AccessTokens == nil {
+		snap.AccessTokens = engines.AccessTokenMap{}
 	}
-	defer rows.Close()
-	for rows.Next() {
-		var token, sid string
-		if err := rows.Scan(&token, &sid); err != nil {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT token, student_id, expires_at FROM school_identity.access_tokens
+	`)
+	if err != nil {
+		// Pre-migration schema without expires_at.
+		rows, err = s.db.QueryContext(ctx, `SELECT token, student_id FROM school_identity.access_tokens`)
+		if err != nil {
 			return err
 		}
-		snap.AccessTokens[token] = sid
+		defer rows.Close()
+		fallbackExp := time.Now().UTC().Add(engines.AccessTokenTTL)
+		for rows.Next() {
+			var token, sid string
+			if err := rows.Scan(&token, &sid); err != nil {
+				return err
+			}
+			snap.AccessTokens[token] = engines.AccessTokenSession{StudentID: sid, ExpiresAt: fallbackExp}
+		}
+		return rows.Err()
+	}
+	defer rows.Close()
+	now := time.Now().UTC()
+	for rows.Next() {
+		var token, sid string
+		var expiresAt time.Time
+		if err := rows.Scan(&token, &sid, &expiresAt); err != nil {
+			return err
+		}
+		if !expiresAt.IsZero() && now.After(expiresAt.UTC()) {
+			continue
+		}
+		if expiresAt.IsZero() {
+			expiresAt = now.Add(engines.AccessTokenTTL)
+		}
+		snap.AccessTokens[token] = engines.AccessTokenSession{StudentID: sid, ExpiresAt: expiresAt.UTC()}
 	}
 	return rows.Err()
 }
@@ -136,12 +164,29 @@ func saveAccessTokens(ctx context.Context, tx *sql.Tx, snap engines.PlatformSnap
 	if err := execDeleteAll(ctx, tx, "school_identity.access_tokens"); err != nil {
 		return err
 	}
-	for token, sid := range snap.AccessTokens {
+	now := time.Now().UTC()
+	for token, sess := range snap.AccessTokens {
+		if sess.StudentID == "" {
+			continue
+		}
+		expiresAt := sess.ExpiresAt.UTC()
+		if expiresAt.IsZero() {
+			expiresAt = now.Add(engines.AccessTokenTTL)
+		}
+		if now.After(expiresAt) {
+			continue
+		}
 		_, err := tx.ExecContext(ctx, `
-			INSERT INTO school_identity.access_tokens (token, student_id) VALUES ($1, $2)
-		`, token, sid)
+			INSERT INTO school_identity.access_tokens (token, student_id, expires_at)
+			VALUES ($1, $2, $3)
+		`, token, sess.StudentID, expiresAt)
 		if err != nil {
-			return err
+			_, err = tx.ExecContext(ctx, `
+				INSERT INTO school_identity.access_tokens (token, student_id) VALUES ($1, $2)
+			`, token, sess.StudentID)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil

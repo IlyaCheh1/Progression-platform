@@ -620,7 +620,7 @@ func withCORS(next http.Handler) http.Handler {
 }
 
 func writeAuthSession(w http.ResponseWriter, s *engines.Student) {
-	token, err := platform.IssueAccessToken(s.ID)
+	token, expiresAt, err := platform.IssueAccessToken(s.ID)
 	if err != nil {
 		http.Error(w, `{"error":"token_issue_failed"}`, http.StatusInternalServerError)
 		return
@@ -629,6 +629,8 @@ func writeAuthSession(w http.ResponseWriter, s *engines.Student) {
 	public.Password = ""
 	writeJSON(w, map[string]any{
 		"accessToken": token,
+		"expiresAt":   expiresAt.UTC().Format(time.RFC3339),
+		"expiresIn":   int(time.Until(expiresAt).Seconds()),
 		"role":        s.NormalizedRole(),
 		"roles":       s.RolesList(),
 		"permissions": permissionListForRoles(s.RolesList()),

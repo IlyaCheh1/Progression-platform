@@ -79,6 +79,21 @@ SCHOOL_API_INTERNAL_URL=http://school-api:8082
 
 Для **school-api** добавь тот же `SSO_BRIDGE_SECRET`.
 
+Сессия входа живёт **30 дней** (токен school-api + `localStorage`). На Postgres один раз выполни миграцию:
+
+```sql
+-- infra/local/migrations/005_access_token_expiry.sql
+ALTER TABLE school_identity.access_tokens
+  ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ;
+UPDATE school_identity.access_tokens
+SET expires_at = now() + interval '30 days'
+WHERE expires_at IS NULL;
+ALTER TABLE school_identity.access_tokens
+  ALTER COLUMN expires_at SET DEFAULT (now() + interval '30 days');
+ALTER TABLE school_identity.access_tokens
+  ALTER COLUMN expires_at SET NOT NULL;
+```
+
 Вход: при первом OnlyID-логине, если email ещё нет в школе, создаётся ученик (`student`) с `login` = email и именем из OnlyID. Дальше пользователь проходит onboarding. Существующие логины в ростере матчятся без дублей (case-insensitive).
 
 После смены `NEXT_PUBLIC_*` сделай **Rebuild**.

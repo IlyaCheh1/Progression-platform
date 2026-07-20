@@ -20,7 +20,13 @@ import {
   SSO_PATHS,
   type SsoUserInfo,
 } from "@/lib/onlyid/sso";
-import { normalizeRole, normalizeRoles, primaryRole, type SessionUser } from "@/lib/session";
+import {
+  normalizeRole,
+  normalizeRoles,
+  parseExpiresAt,
+  primaryRole,
+  type SessionUser,
+} from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +37,7 @@ type TokenResponse = {
 
 type SchoolAuthResponse = {
   accessToken: string;
+  expiresAt?: string;
   role?: string;
   roles?: string[];
   student: {
@@ -75,6 +82,7 @@ function sessionFromSchool(data: SchoolAuthResponse, email: string): SessionUser
     roles,
     role: normalizeRole(data.role ?? primaryRole(roles)),
     profileComplete: Boolean(student.profileComplete),
+    expiresAt: parseExpiresAt(data.expiresAt),
   };
 }
 

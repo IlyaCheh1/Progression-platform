@@ -49,6 +49,7 @@ import {
 import { hasRole, isAdminPrincipal } from "@/lib/rbac";
 import { clearSession, loadSession, patchSession, type SessionUser } from "@/lib/session";
 import type { GenderId } from "@/lib/avatars";
+import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -304,16 +305,18 @@ export default function SettingsPage() {
   }
 
   const displayName = profileDisplayName(profile, session);
+  const settingsBackdropClass =
+    "pointer-events-none fixed inset-x-0 bottom-0 top-14 z-0 md:top-[72px]";
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col">
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-mos-bg" />
+      <div aria-hidden className={cn(settingsBackdropClass, "bg-mos-bg")} />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className={cn(settingsBackdropClass, "bg-cover bg-center bg-no-repeat")}
         style={{ backgroundImage: `url(${settingsPageBackgroundSrc})` }}
       />
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-black/55" />
+      <div aria-hidden className={cn(settingsBackdropClass, "bg-black/55")} />
 
       <main className="relative z-10 mx-auto mb-20 mt-3 flex w-full max-w-[840px] flex-col items-center gap-3 px-3 md:mt-11 md:mb-40 md:gap-6 md:px-4">
         <input

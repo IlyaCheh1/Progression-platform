@@ -3,7 +3,14 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SCHOOL_API, schoolApiUnavailableMessage } from "@/lib/utils";
-import { hasProfile, homePathForRoles, normalizeRoles, primaryRole, saveSession } from "@/lib/session";
+import {
+  hasProfile,
+  homePathForRoles,
+  normalizeRoles,
+  parseExpiresAt,
+  primaryRole,
+  saveSession,
+} from "@/lib/session";
 import { writeCachedProfile } from "@/lib/profile-api";
 import { normalizeGender } from "@/lib/avatars";
 import { DEFAULT_BACKGROUND_ID, normalizeBackgroundId } from "@/lib/backgrounds";
@@ -87,6 +94,7 @@ function LoginForm() {
         role,
         roles,
         profileComplete,
+        expiresAt: parseExpiresAt(data.expiresAt),
       };
       saveSession(session);
       const gender = normalizeGender(String(student.gender ?? "MALE"));

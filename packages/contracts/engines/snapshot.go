@@ -10,7 +10,7 @@ type PlatformSnapshot struct {
 	Characters      map[string]*Character           `json:"characters"`
 	Students        map[string]*Student             `json:"students"`
 	UserLogins      map[string]string               `json:"userLogins"`
-	AccessTokens    map[string]string               `json:"accessTokens"`
+	AccessTokens    AccessTokenMap                  `json:"accessTokens"`
 	InboxSeen       []string                        `json:"inboxSeen"`
 	Holdings        map[string]map[string]InventoryHolding `json:"holdings,omitempty"`
 	GuardianLinks   map[string][]string             `json:"guardianLinks,omitempty"`
@@ -59,9 +59,9 @@ func (p *Platform) ExportSnapshot() PlatformSnapshot {
 			users[login] = s.ID
 		}
 	}
-	tokens := make(map[string]string, len(p.sessions))
-	for t, id := range p.sessions {
-		tokens[t] = id
+	tokens := make(AccessTokenMap, len(p.sessions))
+	for t, sess := range p.sessions {
+		tokens[t] = sess
 	}
 	chars := make(map[string]*Character, len(p.characters))
 	for k, v := range p.characters {
@@ -133,7 +133,7 @@ func (p *Platform) RestoreSnapshot(s PlatformSnapshot) {
 		}
 	}
 	if s.AccessTokens != nil {
-		p.sessions = s.AccessTokens
+		p.sessions = map[string]AccessTokenSession(s.AccessTokens)
 	}
 	p.inboxSeen = make(map[string]struct{})
 	for _, k := range s.InboxSeen {

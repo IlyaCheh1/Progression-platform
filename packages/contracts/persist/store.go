@@ -126,7 +126,7 @@ func (s *PlatformStore) loadSnapshot(ctx context.Context) (engines.PlatformSnaps
 		Characters:     map[string]*engines.Character{},
 		Students:       map[string]*engines.Student{},
 		UserLogins:     map[string]string{},
-		AccessTokens:   map[string]string{},
+		AccessTokens:   engines.AccessTokenMap{},
 		Holdings:       map[string]map[string]engines.InventoryHolding{},
 		GuardianLinks:  map[string][]string{},
 		SupportCases:   map[string]*engines.SupportCase{},

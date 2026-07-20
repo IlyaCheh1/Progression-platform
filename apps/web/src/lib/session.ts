@@ -13,6 +13,9 @@ import {
 
 export type { Permission, UserRole };
 
+/** School login session lifetime (aligned with school-api AccessTokenTTL). */
+export const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
 export type SessionUser = {
   studentId: string;
   name: string;
@@ -22,6 +25,8 @@ export type SessionUser = {
   role: UserRole;
   roles: UserRole[];
   profileComplete?: boolean;
+  /** Epoch ms when the school access token expires. */
+  expiresAt?: number;
 };
 
 const KEY = "mos.session";
@@ -47,9 +52,28 @@ export function isPlatformAdmin(user: SessionUser | null | undefined): boolean {
   return isAdminPrincipal(user?.roles ?? [user?.role ?? "student"]);
 }
 
+function withDefaultExpiry(user: SessionUser): SessionUser {
+  if (user.expiresAt && user.expiresAt > Date.now()) {
+    return user;
+  }
+  return { ...user, expiresAt: Date.now() + SESSION_TTL_MS };
+}
+
+export function parseExpiresAt(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value) && value > 0) {
+    return value < 1_000_000_000_000 ? value * 1000 : value;
+  }
+  if (typeof value === "string" && value.trim()) {
+    const ms = Date.parse(value);
+    if (!Number.isNaN(ms)) return ms;
+  }
+  return undefined;
+}
+
 export function saveSession(user: SessionUser) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(user));
+  const next = withDefaultExpiry(user);
+  localStorage.setItem(KEY, JSON.stringify(next));
   notifySessionChanged();
 }
 
@@ -60,8 +84,13 @@ export function loadSession(): SessionUser | null {
   try {
     const parsed = JSON.parse(raw) as Partial<SessionUser> & { roles?: unknown };
     if (!parsed.studentId || !parsed.accessToken) return null;
+    const expiresAt = parseExpiresAt(parsed.expiresAt);
+    if (expiresAt && expiresAt <= Date.now()) {
+      clearSession();
+      return null;
+    }
     const roles = normalizeRoles(parsed.roles ?? parsed.role);
-    return {
+    const session: SessionUser = {
       studentId: parsed.studentId,
       name: parsed.name ?? "",
       login: parsed.login ?? "",
@@ -70,7 +99,13 @@ export function loadSession(): SessionUser | null {
       roles,
       role: normalizeRole(parsed.role ?? roles[0]),
       profileComplete: Boolean(parsed.profileComplete),
+      expiresAt: expiresAt ?? Date.now() + SESSION_TTL_MS,
     };
+    // Backfill expiry for sessions saved before TTL existed.
+    if (!expiresAt) {
+      localStorage.setItem(KEY, JSON.stringify(session));
+    }
+    return session;
   } catch {
     return null;
   }
@@ -139,6 +174,7 @@ export function patchSession(partial: Partial<SessionUser>) {
     next.accessToken === current.accessToken &&
     next.role === current.role &&
     next.profileComplete === current.profileComplete &&
+    next.expiresAt === current.expiresAt &&
     next.roles.length === current.roles.length &&
     next.roles.every((role, index) => role === current.roles[index]);
   if (unchanged) return;

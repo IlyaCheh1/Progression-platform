@@ -1,6 +1,9 @@
 package engines
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestAttendanceToLevelExactlyOnce(t *testing.T) {
 	p := NewPlatform()
@@ -75,9 +78,12 @@ func TestTemporaryLocalAuthRoles(t *testing.T) {
 		t.Fatalf("admin auth failed: ok=%v role=%q", ok, admin.NormalizedRole())
 	}
 
-	token, err := p.IssueAccessToken(admin.ID)
+	token, expiresAt, err := p.IssueAccessToken(admin.ID)
 	if err != nil || token == "" {
 		t.Fatalf("issue token: %v", err)
+	}
+	if expiresAt.Before(time.Now().Add(29 * 24 * time.Hour)) {
+		t.Fatalf("expected ~30d expiry, got %v", expiresAt)
 	}
 	resolved, ok := p.ResolveAccessToken(token)
 	if !ok || resolved.ID != "admin-temp" {

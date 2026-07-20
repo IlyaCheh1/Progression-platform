@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/masterofsword/contracts/envelope"
 	"github.com/masterofsword/contracts/mastery"
@@ -13,6 +14,15 @@ import (
 	"github.com/masterofsword/contracts/progression"
 	"github.com/masterofsword/contracts/rbac"
 )
+
+// AccessTokenTTL is how long a school login session remains valid.
+const AccessTokenTTL = 30 * 24 * time.Hour
+
+// AccessTokenSession is an opaque bearer session issued after password/OnlyID login.
+type AccessTokenSession struct {
+	StudentID string    `json:"studentId"`
+	ExpiresAt time.Time `json:"expiresAt"`
+}
 
 const (
 	TenantDemo = "tenant.school.fencing.demo"
@@ -87,7 +97,7 @@ type Platform struct {
 	characters map[string]*Character
 	students   map[string]*Student
 	users      map[string]*Student // login -> student
-	sessions   map[string]string   // opaque access token -> studentID
+	sessions   map[string]AccessTokenSession // opaque access token -> session
 	// holdings: studentID -> itemKey -> cosmetic holding (characters + backgrounds + titles)
 	holdings map[string]map[string]InventoryHolding
 	guardianLinks map[string][]string // guardianID -> dependant student IDs
@@ -105,7 +115,7 @@ func NewPlatform() *Platform {
 		characters: make(map[string]*Character),
 		students:   make(map[string]*Student),
 		users:      make(map[string]*Student),
-		sessions:   make(map[string]string),
+		sessions:   make(map[string]AccessTokenSession),
 		holdings:   make(map[string]map[string]InventoryHolding),
 		guardianLinks: make(map[string][]string),
 		supportCases:  make(map[string]*SupportCase),
@@ -176,33 +186,40 @@ func (p *Platform) FindStudentByLogin(login string) (*Student, bool) {
 }
 
 // IssueAccessToken creates a random opaque session token after successful login.
-func (p *Platform) IssueAccessToken(studentID string) (string, error) {
+// The session is valid for AccessTokenTTL (30 days).
+func (p *Platform) IssueAccessToken(studentID string) (token string, expiresAt time.Time, err error) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	if _, ok := p.students[studentID]; !ok {
-		return "", fmt.Errorf("student not found")
+		return "", time.Time{}, fmt.Errorf("student not found")
 	}
 	var buf [32]byte
 	if _, err := rand.Read(buf[:]); err != nil {
-		return "", err
+		return "", time.Time{}, err
 	}
-	token := hex.EncodeToString(buf[:])
-	p.sessions[token] = studentID
-	return token, nil
+	token = hex.EncodeToString(buf[:])
+	expiresAt = time.Now().UTC().Add(AccessTokenTTL)
+	p.sessions[token] = AccessTokenSession{StudentID: studentID, ExpiresAt: expiresAt}
+	return token, expiresAt, nil
 }
 
 // ResolveAccessToken maps opaque session tokens to a principal.
+// Expired sessions are removed and rejected.
 func (p *Platform) ResolveAccessToken(token string) (*Student, bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	if token == "" {
 		return nil, false
 	}
-	id, ok := p.sessions[token]
+	sess, ok := p.sessions[token]
 	if !ok {
 		return nil, false
 	}
-	s, ok := p.students[id]
+	if !sess.ExpiresAt.IsZero() && time.Now().UTC().After(sess.ExpiresAt) {
+		delete(p.sessions, token)
+		return nil, false
+	}
+	s, ok := p.students[sess.StudentID]
 	return s, ok
 }
 
