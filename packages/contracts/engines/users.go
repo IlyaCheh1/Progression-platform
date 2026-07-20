@@ -1,6 +1,8 @@
 package engines
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"strings"
 
@@ -15,6 +17,53 @@ type UserInput struct {
 	Role        string   `json:"role"`
 	Roles       []string `json:"roles,omitempty"`
 	CharacterID string   `json:"characterId"`
+}
+
+// EnsureUserFromOnlyID finds a school user by OnlyID email or creates a student.
+// Password login is disabled for provisioned users (random unusable password).
+// Returns (student, created, error).
+func (p *Platform) EnsureUserFromOnlyID(email, displayName, _sub string) (*Student, bool, error) {
+	email = strings.TrimSpace(email)
+	if email == "" {
+		return nil, false, fmt.Errorf("email_required")
+	}
+	if existing, ok := p.FindStudentByLogin(email); ok {
+		return existing, false, nil
+	}
+
+	name := strings.TrimSpace(displayName)
+	if name == "" {
+		if at := strings.IndexByte(email, '@'); at > 0 {
+			name = email[:at]
+		} else {
+			name = email
+		}
+	}
+
+	var buf [24]byte
+	if _, err := rand.Read(buf[:]); err != nil {
+		return nil, false, fmt.Errorf("password_entropy_failed")
+	}
+	// Prefix makes clear this account is OnlyID-backed if inspected in admin tools.
+	password := "onlyid:" + hex.EncodeToString(buf[:])
+
+	created, err := p.CreateUser(UserInput{
+		DisplayName: name,
+		Login:       email,
+		Password:    password,
+		Role:        RoleStudent,
+		Roles:       []string{RoleStudent},
+	})
+	if err != nil {
+		// Concurrent provision: another request may have created the same login.
+		if err.Error() == "login_taken" {
+			if existing, ok := p.FindStudentByLogin(email); ok {
+				return existing, false, nil
+			}
+		}
+		return nil, false, err
+	}
+	return created, true, nil
 }
 
 func (p *Platform) CreateUser(in UserInput) (*Student, error) {

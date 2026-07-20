@@ -79,7 +79,7 @@ SCHOOL_API_INTERNAL_URL=http://school-api:8082
 
 Для **school-api** добавь тот же `SSO_BRIDGE_SECRET`.
 
-Вход: email OnlyID должен совпадать с `login` ученика в ростере (например `maks-kiselev@mastersword.ru`). Новые пользователи автоматически не создаются.
+Вход: при первом OnlyID-логине, если email ещё нет в школе, создаётся ученик (`student`) с `login` = email и именем из OnlyID. Дальше пользователь проходит onboarding. Существующие логины в ростере матчятся без дублей (case-insensitive).
 
 После смены `NEXT_PUBLIC_*` сделай **Rebuild**.
 

@@ -44,6 +44,31 @@ func TestUserCRUD(t *testing.T) {
 	}
 }
 
+func TestEnsureUserFromOnlyIDCreatesStudent(t *testing.T) {
+	p := NewPlatform()
+	first, created, err := p.EnsureUserFromOnlyID("new.hero@example.com", "New Hero", "user_abc")
+	if err != nil || !created {
+		t.Fatalf("create: created=%v err=%v", created, err)
+	}
+	if first.Login != "new.hero@example.com" || first.DisplayName != "New Hero" {
+		t.Fatalf("unexpected user: %+v", first)
+	}
+	if first.NormalizedRole() != RoleStudent {
+		t.Fatalf("role=%q", first.NormalizedRole())
+	}
+	if first.ProfileComplete {
+		t.Fatal("new OnlyID users must start onboarding")
+	}
+
+	again, createdAgain, err := p.EnsureUserFromOnlyID("New.Hero@example.com", "Ignored", "user_abc")
+	if err != nil || createdAgain {
+		t.Fatalf("idempotent: created=%v err=%v", createdAgain, err)
+	}
+	if again.ID != first.ID {
+		t.Fatalf("expected same student id %q got %q", first.ID, again.ID)
+	}
+}
+
 func TestAdministratorCanManageUsers(t *testing.T) {
 	p := NewPlatform()
 	p.UpsertStudent(Student{

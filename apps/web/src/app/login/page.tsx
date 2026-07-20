@@ -43,8 +43,7 @@ const LOGIN_ERROR_MESSAGES: Record<string, string> = {
   invalid_callback: "Некорректный ответ OnlyID.",
   invalid_state: "Не удалось сохранить сессию входа (cookie). Попробуйте ещё раз в том же браузере, без инкогнито.",
   token_exchange_failed: "OnlyID не выдал токен. Проверьте redirect_uri и секреты.",
-  account_not_linked:
-    "Аккаунт OnlyID не связан со школой. Логин в ростере должен совпадать с email OnlyID.",
+  provision_failed: "Не удалось создать школьный аккаунт. Попробуйте снова.",
   user_blocked: "Аккаунт OnlyID заблокирован.",
   no_email: "У аккаунта OnlyID нет email.",
   school_session_failed: "Не удалось создать сессию школы.",

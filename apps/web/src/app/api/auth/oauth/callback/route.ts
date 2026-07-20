@@ -227,11 +227,11 @@ export async function GET(request: NextRequest) {
       }),
     });
 
-    if (schoolRes.status === 404) {
-      return redirectWithError(request, "account_not_linked");
-    }
     if (!schoolRes.ok) {
       console.error("[oauth/callback] school bridge failed", schoolRes.status);
+      if (schoolRes.status >= 500) {
+        return redirectWithError(request, "provision_failed");
+      }
       return redirectWithError(request, "school_session_failed");
     }
 

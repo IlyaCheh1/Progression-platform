@@ -392,7 +392,7 @@ func main() {
 	})
 
 	// OnlyID bridge: web BFF verifies OIDC, then exchanges identity for a school session.
-	// Protected by SSO_BRIDGE_SECRET (shared with apps/web). Does not auto-provision users.
+	// Protected by SSO_BRIDGE_SECRET (shared with apps/web). Auto-provisions student on first login.
 	bridgeSecret := strings.TrimSpace(env("SSO_BRIDGE_SECRET", ""))
 	mux.HandleFunc("POST /v1/auth/onlyid", func(w http.ResponseWriter, r *http.Request) {
 		if bridgeSecret == "" {
@@ -418,10 +418,15 @@ func main() {
 			http.Error(w, `{"error":"email_required"}`, http.StatusBadRequest)
 			return
 		}
-		s, ok := platform.FindStudentByLogin(email)
-		if !ok {
-			http.Error(w, `{"error":"account_not_linked"}`, http.StatusNotFound)
+		s, created, err := platform.EnsureUserFromOnlyID(email, body.DisplayName, body.Sub)
+		if err != nil {
+			log.Printf("onlyid provision: %v", err)
+			http.Error(w, `{"error":"provision_failed"}`, http.StatusInternalServerError)
 			return
+		}
+		if created {
+			log.Printf("onlyid provisioned student login=%s id=%s", s.Login, s.ID)
+			saveState()
 		}
 		writeAuthSession(w, s)
 	})
