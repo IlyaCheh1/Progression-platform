@@ -1,11 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import type { ReactNode } from "react";
-import CharacterAvatar from "@/components/character-avatar";
 import GradientLabel from "@/components/onboarding/gradient-label";
 import type { GenderId } from "@/lib/avatars";
 import { stageLayoutForBackground } from "@/lib/backgrounds";
-import { characterDisplayScale, type OgCharacterId } from "@/lib/characters";
+import { characterDisplayScale, characterFullPath, type OgCharacterId } from "@/lib/characters";
 import { cn } from "@/lib/utils";
 
 type CharacterStageProps = {
@@ -29,11 +29,12 @@ export default function CharacterStage({
 }: CharacterStageProps) {
   const layout = stageLayoutForBackground(backgroundKey);
   const displayScale = characterDisplayScale(selectedSkinId, gender);
+  const characterSrc = characterFullPath(selectedSkinId, gender);
 
   return (
     <section
       className={cn(
-        "relative flex min-h-full flex-1 flex-col overflow-hidden bg-cover",
+        "relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-cover bg-center",
         className,
       )}
       style={{
@@ -44,38 +45,33 @@ export default function CharacterStage({
       {children}
 
       <div
-        className="character-stage-stack relative z-10 flex min-h-0 w-full flex-1 select-none flex-col"
+        className="absolute bottom-0 left-1/2 z-10 flex -translate-x-1/2 flex-col select-none"
         onDragStart={(event) => event.preventDefault()}
       >
-        {/* Ник привязан к отступу от верхнего меню — не зависит от высоты стоячего/сидячего персонажа */}
-        <GradientLabel
-          color="amber"
-          className="character-stage-username relative z-20 mx-auto mt-8 max-w-[200px] shrink-0 xl:mt-[72px]"
-        >
+        <GradientLabel color="amber" className="mx-auto mb-5 max-w-[200px]">
           <p className="text-center font-unbounded text-xs font-medium leading-3 text-primaryText xl:text-lg xl:leading-6">
             {username}
           </p>
         </GradientLabel>
 
-        <div className="character-stage-gap flex-1" aria-hidden />
-
         <div
           className={cn(
-            "character-stage-figure relative mx-auto flex w-full shrink-0 items-end justify-center",
+            "relative mx-auto flex w-auto items-end justify-center",
             layout.figureClassName,
           )}
+          style={displayScale === 1 ? undefined : { transform: `scale(${displayScale})`, transformOrigin: "bottom center" }}
         >
-          <CharacterAvatar
-            selectedSkinId={selectedSkinId}
-            gender={gender}
-            variant="full"
-            className="relative mx-auto h-full w-auto max-w-full origin-bottom"
-            imageClassName="mx-auto h-full w-auto max-h-full object-contain object-bottom origin-bottom"
-            style={
-              displayScale === 1
-                ? undefined
-                : { transform: `scale(${displayScale})` }
-            }
+          <Image
+            src={characterSrc}
+            alt="Персонаж"
+            width={480}
+            height={720}
+            priority
+            draggable={false}
+            sizes="(max-width: 1279px) 65vh, 75vh"
+            className={cn(
+              "relative h-auto w-auto max-h-[65vh] min-h-[65vh] object-contain object-bottom xl:max-h-[75vh] xl:min-h-[75vh] xl:max-w-[75vh]",
+            )}
           />
         </div>
       </div>

@@ -1,0 +1,19 @@
+.rotate-proposal__gradient {
+  background-image: linear-gradient(180deg, rgba(212, 168, 75, 0.35) 0%, rgba(12, 12, 13, 0) 100%);
+}
+
+@keyframes rotate-proposal-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-90deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.rotate-proposal__icon {
+  animation: rotate-proposal-spin 4s ease-in-out infinite;
+}

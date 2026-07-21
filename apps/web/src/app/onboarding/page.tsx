@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import LandscapeLock from "@/components/landscape-lock";
 import CharacterCarousel from "@/components/onboarding/character-carousel";
 import GenderSelector from "@/components/onboarding/gender-selector";
 import OnboardingFooter from "@/components/onboarding/onboarding-footer";
+import RotateProposal from "@/components/rotate-proposal";
+import { useDevice } from "@/hooks/use-device";
 import { useOnboardingCharacters } from "@/hooks/use-onboarding-characters";
 import { fetchMyProfile, messageForProfileError, ProfileApiError, saveMyProfile } from "@/lib/profile-api";
 import { clearSession, loadSession, patchSession } from "@/lib/session";
@@ -19,6 +20,7 @@ const USERNAME_REGEX = /^[a-zA-Z0-9_-]{6,30}$/;
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { shouldRotate } = useDevice();
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -107,6 +109,10 @@ export default function OnboardingPage() {
   const stageBackgroundSrc = backgroundImagePath(defaultBackgroundId);
   const stageLayout = stageLayoutForBackground(defaultBackgroundId);
 
+  if (shouldRotate) {
+    return <RotateProposal />;
+  }
+
   return (
     <main
       className="relative flex h-full min-h-lvh flex-1 flex-col bg-cover bg-bottom xl:bg-center"
@@ -115,7 +121,6 @@ export default function OnboardingPage() {
         backgroundPosition: stageLayout.backgroundPosition,
       }}
     >
-      <LandscapeLock />
       <GenderSelector
         className="z-10 mt-4 xl:mt-[42px]"
         value={selectedGender}
