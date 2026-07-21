@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/button";
 import CourseFaqSection from "@/components/course-faq-section";
@@ -25,13 +26,14 @@ export default function CoursePage({ course }: CoursePageProps) {
         </h1>
 
         {course.heroImage ? (
-          <div className="relative mt-6 overflow-hidden rounded-2xl border border-mos-line/50">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div className="relative mt-6 aspect-[16/10] overflow-hidden rounded-2xl border border-mos-line/50">
+            <Image
               src={course.heroImage}
               alt={course.title}
-              className="aspect-[16/10] w-full object-cover"
-              loading="eager"
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="object-cover"
             />
             <div
               className="pointer-events-none absolute inset-0"

@@ -4,6 +4,7 @@ import GradientLabel from "@/components/onboarding/gradient-label";
 import ActiveSkills from "@/components/talents/active-skills";
 import SkillThree from "@/components/talents/skill-three";
 import { useTalents } from "@/components/talents/talents-provider";
+import PageBackground from "@/components/ui/page-background";
 import { TREE_GRADIENT, TREE_LABEL_CLASS } from "@/lib/talents-catalog";
 import { cn } from "@/lib/utils";
 
@@ -21,19 +22,13 @@ export default function TalentsPage() {
   } = useTalents();
 
   return (
-    <div className="relative flex min-h-full flex-1 flex-col overflow-x-hidden pb-8 md:pb-12">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url(/media/ui/talent-background.webp)",
-        }}
-      />
+    <div className="relative flex min-h-full flex-1 flex-col overflow-x-hidden pb-4 md:pb-12">
+      <PageBackground src="/media/ui/talent-background.webp" />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-black/65 min-[2400px]:bg-black/85"
       />
-      <div className="absolute left-0 top-3 z-10 flex w-full items-start justify-start gap-3 px-3 md:top-6 md:px-6">
+      <div className="pointer-events-none absolute left-0 top-3 z-30 flex w-fit max-w-full px-3 md:top-6 md:px-6 [&>*]:pointer-events-auto">
         <ActiveSkills
           skillPoints={points}
           skills={favoriteSkills}
@@ -53,12 +48,12 @@ export default function TalentsPage() {
         </div>
       ) : null}
 
-      <div className="relative z-0 flex flex-1 items-center justify-center overflow-x-auto px-2 md:px-4 min-[2400px]:px-10">
-        <div className="mx-auto flex w-full max-w-[1600px] flex-row items-start justify-center gap-2 md:gap-8 min-[2400px]:max-w-[2400px] min-[2400px]:gap-20">
+      <div className="relative z-0 flex flex-1 items-center justify-center overflow-x-hidden px-1 sm:px-2 md:overflow-x-auto md:px-4 min-[2400px]:px-10">
+        <div className="mx-auto flex w-full max-w-[1600px] flex-row items-start justify-center gap-0.5 sm:gap-1 md:gap-8 min-[2400px]:max-w-[2400px] min-[2400px]:gap-20">
           {trees.map((tree) => (
             <div
               key={tree.name}
-              className="relative flex min-w-[180px] flex-col items-center justify-start gap-2 md:min-w-0 md:gap-5 min-[2400px]:gap-8"
+              className="relative flex min-w-0 flex-1 max-w-[100px] flex-col items-center justify-start gap-1 sm:max-w-[115px] md:max-w-none md:gap-5 min-[2400px]:gap-8"
             >
               <SkillThree
                 {...tree}
@@ -70,7 +65,7 @@ export default function TalentsPage() {
               />
               <GradientLabel
                 color={TREE_GRADIENT[tree.type]}
-                className="max-w-[172px] items-center min-[2400px]:max-w-[258px]"
+                className="max-w-[96px] items-center sm:max-w-[110px] md:max-w-[172px] min-[2400px]:max-w-[258px]"
               >
                 <h5
                   className={cn(

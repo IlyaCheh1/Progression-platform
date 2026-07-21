@@ -42,7 +42,7 @@ export default function ProfilePage() {
         <WeaponMasteryPanel
           mastery={profile?.mastery}
           ranks={profile?.ranks}
-          className="absolute right-4 top-0 z-20 mt-[32px] xl:right-8 xl:mt-[100px]"
+          className="absolute right-4 top-0 z-20 mt-[32px] hidden xl:right-8 xl:mt-[100px] xl:block"
         />
 
         <div className="absolute bottom-3 right-3 z-20 flex flex-wrap justify-end gap-2">

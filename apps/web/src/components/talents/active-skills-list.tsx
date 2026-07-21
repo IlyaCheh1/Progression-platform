@@ -53,11 +53,11 @@ export default function ActiveSkillsList({
             key={skill.id}
             talent={skill}
             variant="primary"
-            placement="bottom-right"
+            placement="bottom"
             onActivate={() => onActivate(skill)}
             onFavourite={() => onFavourite(skill)}
             loading={loading}
-            className={compact ? "[&_img]:h-6 [&_img]:w-6 md:[&_img]:h-7 md:[&_img]:w-7" : undefined}
+            className={compact ? "[&>div]:h-6 [&>div]:w-6 md:[&>div]:h-7 md:[&>div]:w-7" : undefined}
           />
         ))}
       </div>

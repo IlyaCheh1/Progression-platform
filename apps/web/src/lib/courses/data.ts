@@ -105,7 +105,7 @@ export const COURSES: readonly CourseContent[] = [
     accentColor: getSchoolColor("east"),
     metaDescription:
       "Курс «Клинки Востока»: ушу, владение мечами, постановочные бои и культура восточных боевых искусств в Москве.",
-    heroImage: "/media/courses/east-hero.jpg",
+    heroImage: "/media/courses/east-hero.webp",
     intro: {
       heading: "О курсе",
       body: [
@@ -150,7 +150,7 @@ export const COURSES: readonly CourseContent[] = [
     accentColor: getSchoolColor("spanish_rapier"),
     metaDescription:
       "Курс испанской рапиры и дестрезы: геометрия, логика, расчёт дистанции и времени по трактатам Каррансы, Пачеко и других мастеров.",
-    heroImage: "/media/courses/spanish-rapier-hero.jpg",
+    heroImage: "/media/courses/spanish-rapier-hero.webp",
     intro: {
       heading: "Испанская дестреза",
       body: [
@@ -175,7 +175,7 @@ export const COURSES: readonly CourseContent[] = [
     accentColor: getSchoolColor("italian_rapier"),
     metaDescription:
       "Курс итальянской рапиры: школа Фабриса, Капоферро и Джиганти — дуэльная техника, ставшая эталоном для Европы.",
-    heroImage: "/media/courses/italian-rapier-hero.jpg",
+    heroImage: "/media/courses/italian-rapier-hero.webp",
     intro: {
       heading: "Рапира Фабриса",
       body: [
@@ -197,7 +197,7 @@ export const COURSES: readonly CourseContent[] = [
     accentColor: getSchoolColor("montante"),
     metaDescription:
       "Курс иберийского двуручного меча: монтанте, техника по испанским и португальским трактатам, подвижность и историческая практика.",
-    heroImage: "/media/courses/montante-hero.jpg",
+    heroImage: "/media/courses/montante-hero.webp",
     intro: {
       heading: "Монтанте",
       body: [
@@ -224,7 +224,7 @@ export const COURSES: readonly CourseContent[] = [
     accentColor: getSchoolColor("navaja"),
     metaDescription:
       "Курс «Наваха»: испанский складной нож, техника перемещения, атаки и защита, парная работа и спарринги.",
-    heroImage: "/media/courses/navaja-hero.jpg",
+    heroImage: "/media/courses/navaja-hero.webp",
     intro: {
       heading: "Наваха",
       body: [

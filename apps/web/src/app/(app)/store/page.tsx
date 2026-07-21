@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import GradientLabel from "@/components/onboarding/gradient-label";
 import GoldCoin from "@/components/ui/gold-coin";
+import PageBackground from "@/components/ui/page-background";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
 import { useProfileShellData } from "@/hooks/use-profile-shell";
 import { PROFILE_BACKGROUNDS, STORE_BACKGROUNDS } from "@/lib/backgrounds";
@@ -178,20 +180,14 @@ export default function StorePage() {
   }
 
   return (
-    <div className="relative flex min-h-full flex-1 flex-row items-start justify-center gap-4 px-3 py-3 md:gap-8 md:px-6 md:py-12 md:pt-16">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url(/media/ui/store-background.webp)",
-        }}
-      />
+    <div className="relative flex min-h-full flex-1 flex-row items-start justify-center overflow-x-hidden px-3 py-3 md:gap-8 md:overflow-visible md:px-6 md:py-12 md:pt-16">
+      <PageBackground src="/media/ui/store-background.webp" />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-black/50 min-[2400px]:bg-black/85"
       />
-      <div className="relative z-10 flex w-full flex-row items-start justify-center gap-4 md:gap-8">
-        <div className="flex flex-col gap-3">
+      <div className="relative z-10 mx-auto flex w-max max-w-full flex-row items-start justify-center gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-8 md:overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden">
+        <div className="flex shrink-0 flex-col gap-3">
           <GradientLabel color="amber">
             <h5 className="inline-flex items-center gap-2 font-unbounded text-xs font-medium leading-3.5 text-primaryText md:text-[17px] md:leading-6">
               {shell.username}
@@ -230,7 +226,7 @@ export default function StorePage() {
           />
         )}
 
-        <div className="flex flex-col gap-3">
+        <div className="flex shrink-0 flex-col gap-3">
           <GradientLabel color="orange">
             <h5 className="font-display text-xs font-medium text-[#ee4810] md:text-[17px]">
               Лавка мастера Хаттори
@@ -251,26 +247,42 @@ export default function StorePage() {
   );
 }
 
-const STORE_GRID_COLS_DESKTOP = 4;
-const STORE_GRID_MIN_ROWS = 3;
-const STORE_GRID_MIN_ROWS_WIDE = 5;
+const STORE_MOBILE_COLUMNS = 3;
+const STORE_DESKTOP_COLUMNS = 4;
+const STORE_MIN_ROWS_MOBILE = 2;
+const STORE_MIN_ROWS_DESKTOP = 3;
+const STORE_MIN_ROWS_WIDE = 5;
 
-function useStoreGridMinCells() {
-  const [minCells, setMinCells] = useState(STORE_GRID_COLS_DESKTOP * STORE_GRID_MIN_ROWS);
+function useStoreGridLayout() {
+  const [layout, setLayout] = useState({
+    columns: STORE_DESKTOP_COLUMNS,
+    minRows: STORE_MIN_ROWS_DESKTOP,
+  });
 
   useEffect(() => {
-    const media = window.matchMedia("(min-width: 2400px)");
-    const sync = () =>
-      setMinCells(
-        STORE_GRID_COLS_DESKTOP *
-          (media.matches ? STORE_GRID_MIN_ROWS_WIDE : STORE_GRID_MIN_ROWS),
-      );
+    const mobile = window.matchMedia("(max-width: 767px)");
+    const wide = window.matchMedia("(min-width: 2400px)");
+    const sync = () => {
+      const isMobile = mobile.matches;
+      setLayout({
+        columns: isMobile ? STORE_MOBILE_COLUMNS : STORE_DESKTOP_COLUMNS,
+        minRows: isMobile
+          ? STORE_MIN_ROWS_MOBILE
+          : wide.matches
+            ? STORE_MIN_ROWS_WIDE
+            : STORE_MIN_ROWS_DESKTOP,
+      });
+    };
     sync();
-    media.addEventListener("change", sync);
-    return () => media.removeEventListener("change", sync);
+    mobile.addEventListener("change", sync);
+    wide.addEventListener("change", sync);
+    return () => {
+      mobile.removeEventListener("change", sync);
+      wide.removeEventListener("change", sync);
+    };
   }, []);
 
-  return minCells;
+  return layout;
 }
 
 function OfferGrid({
@@ -284,41 +296,64 @@ function OfferGrid({
   onSelect: (item: Offer) => void;
   showPrice?: boolean;
 }) {
-  const minCells = useStoreGridMinCells();
+  const { columns, minRows } = useStoreGridLayout();
+  const totalRows = Math.max(minRows, Math.ceil(items.length / columns));
+  const totalSlots = totalRows * columns;
   const cells: Array<Offer | null> = [...items];
-  while (cells.length < minCells) cells.push(null);
+  while (cells.length < totalSlots) cells.push(null);
+
+  const rows = Array.from({ length: totalRows }, (_, rowIndex) =>
+    cells.slice(rowIndex * columns, rowIndex * columns + columns),
+  );
 
   return (
-    <div className="og-inventory-grid-shell min-[2400px]:max-h-[760px]">
-      <div className="grid grid-cols-3 gap-[5px] md:grid-cols-4">
-        {cells.map((item, index) => {
-          if (!item) {
-            return <div key={`e-${index}`} className="og-inventory-slot bg-mos-stone/30" />;
-          }
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => onSelect(item)}
-              className={cn(
-                "og-inventory-slot",
-                item.equipped && "og-inventory-slot--equipped",
-                selectedId === item.id && "og-inventory-slot--selected",
-              )}
-            >
-              <span className="og-inventory-slot-inner">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={item.imageSrc} alt={item.title} />
-              </span>
-              {showPrice ? (
-                <span className="absolute bottom-1 left-1/2 z-[3] flex -translate-x-1/2 items-center gap-0.5 rounded bg-black/55 px-1.5 py-0.5 font-display text-[12px] leading-none text-mos-text md:text-[13.5px]">
-                  {item.price}
-                  <GoldCoin className="h-[15px] w-[15px]" />
-                </span>
-              ) : null}
-            </button>
-          );
-        })}
+    <div className="mobile-game-scroll og-inventory-grid-shell min-[2400px]:max-h-[760px]">
+      <div className="og-inventory-list">
+        {rows.map((row, rowIndex) => (
+          <div key={`row-${rowIndex}`} className="og-inventory-row">
+            {row.map((item, index) => {
+              const slotIndex = rowIndex * columns + index;
+              if (!item) {
+                return (
+                  <div
+                    key={`empty-${slotIndex}`}
+                    className="og-inventory-slot bg-mos-stone/30"
+                    aria-hidden
+                  />
+                );
+              }
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onSelect(item)}
+                  className={cn(
+                    "og-inventory-slot",
+                    item.equipped && "og-inventory-slot--equipped",
+                    selectedId === item.id && "og-inventory-slot--selected",
+                  )}
+                >
+                  <span className="og-inventory-slot-inner relative">
+                    <Image
+                      src={item.imageSrc}
+                      alt={item.title}
+                      fill
+                      sizes="(max-width: 767px) 72px, 112px"
+                      className="object-contain"
+                      loading="lazy"
+                    />
+                  </span>
+                  {showPrice ? (
+                    <span className="absolute bottom-1 left-1/2 z-[3] flex -translate-x-1/2 items-center gap-0.5 rounded bg-black/55 px-1.5 py-0.5 font-display text-[10px] leading-none text-mos-text md:text-[13.5px]">
+                      {item.price}
+                      <GoldCoin className="h-[15px] w-[15px]" />
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -341,17 +376,23 @@ function SelectedPanel({
   onEquip: () => void;
   onInventory: () => void;
 }) {
-  if (!item) return <div className="w-[192px] md:w-[280px]" />;
+  if (!item) return <div className="w-[192px] shrink-0 md:w-[280px]" />;
 
   return (
-    <div className="flex w-[192px] flex-col items-center justify-center rounded-[24px] pt-6 md:w-[280px] md:py-16">
+    <div className="flex w-[192px] shrink-0 flex-col items-center justify-center rounded-[24px] pt-6 md:w-[280px] md:py-16">
       <p className="w-full text-center font-display text-xs font-medium text-mos-text md:text-[17px]">
         {item.title}
       </p>
-      <div
-        className="relative mt-2 h-[180px] w-full rounded-2xl bg-cover bg-center drop-shadow-[0_12px_28px_rgba(212,168,75,0.25)] md:mt-4 md:h-[320px] md:rounded-[24px] xl:h-[380px]"
-        style={{ backgroundImage: `url('${item.imageSrc}')` }}
-      />
+      <div className="relative mt-2 h-[180px] w-full overflow-hidden rounded-2xl drop-shadow-[0_12px_28px_rgba(212,168,75,0.25)] md:mt-4 md:h-[320px] md:rounded-[24px] xl:h-[380px]">
+        <Image
+          src={item.imageSrc}
+          alt={item.title}
+          fill
+          sizes="(max-width: 767px) 192px, 280px"
+          className="object-cover object-center"
+          priority
+        />
+      </div>
       {error ? <p className="mt-2 text-center text-xs text-mos-danger">{error}</p> : null}
       {source === "store" ? (
         <button
@@ -388,7 +429,7 @@ function SelectedPanel({
 
 function Notification({ notify, onClick }: { notify: "buy" | "error"; onClick: () => void }) {
   return (
-    <div className="og-panel mt-10 inline-flex w-[192px] flex-col items-center gap-3 p-3 md:mt-48 md:w-[280px] md:gap-4 md:p-6">
+    <div className="og-panel mt-10 inline-flex w-[192px] shrink-0 flex-col items-center gap-3 p-3 md:mt-48 md:w-[280px] md:gap-4 md:p-6">
       <h5 className="text-center font-display text-[15px] font-medium text-mos-text">
         {notify === "buy" ? "Залутано" : "Нужно больше монет"}
       </h5>

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
@@ -137,12 +138,13 @@ function CustomizationField({
             previewAspect === "portrait" ? "h-16 w-12" : "h-14 w-24",
           )}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={previewSrc}
             alt={previewAlt}
+            fill
+            sizes={previewAspect === "portrait" ? "48px" : "96px"}
             className={cn(
-              "h-full w-full object-cover",
+              "object-cover",
               previewAspect === "portrait" ? "object-top" : "object-center",
             )}
           />
@@ -277,15 +279,19 @@ function OptionGrid({
               busy && "opacity-70",
             )}
           >
-            <span className="relative overflow-hidden rounded-xl bg-mos-bg/50">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+            <span
+              className={cn(
+                "relative block w-full overflow-hidden rounded-xl bg-mos-bg/50",
+                aspect === "portrait" ? "aspect-[3/4]" : "aspect-video",
+              )}
+            >
+              <Image
                 src={option.src}
                 alt={option.label}
-                className={cn(
-                  "w-full object-cover",
-                  aspect === "portrait" ? "aspect-[3/4] object-top" : "aspect-video",
-                )}
+                fill
+                sizes="(max-width: 767px) 45vw, 180px"
+                loading="lazy"
+                className={cn("object-cover", aspect === "portrait" ? "object-top" : "object-center")}
               />
               {equipped ? <ActiveBadge /> : null}
               {!owned ? <LockBadge /> : null}

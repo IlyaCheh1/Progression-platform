@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import PopupMenu from "@/components/ui/popup-menu";
+import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import type { MosTalent } from "@/lib/talents-catalog";
 
 function StopwatchIcon({ className }: { className?: string }) {
@@ -33,6 +34,7 @@ export default function ActiveTalentPopup({
   loading,
   placement = "bottom",
 }: Props) {
+  const isMobile = useMobileMedia();
   const [timeLeft, setTimeLeft] = useState("");
 
   useEffect(() => {
@@ -65,7 +67,13 @@ export default function ActiveTalentPopup({
   const isOnCooldown = Boolean(talent.cooldownUntil && timeLeft);
 
   return (
-    <PopupMenu trigger={children} placement={placement} margin={10} hover>
+    <PopupMenu
+      trigger={children}
+      placement={placement}
+      margin={10}
+      hover={!isMobile}
+      isOverlay={isMobile}
+    >
       <div className="flex w-fit max-w-[250px] flex-col gap-4 rounded-2xl bg-mos-stone p-3 backdrop-blur-md md:rounded-[20px] md:p-4">
         <div className="flex flex-col gap-2">
           <div className="flex h-5 w-fit items-center rounded-md bg-white/10 px-1">

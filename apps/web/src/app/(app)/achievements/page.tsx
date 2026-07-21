@@ -254,7 +254,7 @@ export default function AchievementsPage() {
   });
 
   return (
-    <main className="mx-auto flex min-w-full flex-col items-center gap-0 p-3 md:p-4">
+    <main className="mx-auto flex w-full max-w-[1100px] flex-col items-center gap-0 p-3 md:p-4">
       <Selector
         options={[
           { id: "achievements", label: "Достижения" },

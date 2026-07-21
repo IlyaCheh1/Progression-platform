@@ -93,7 +93,7 @@ function TreeConnectors({ matrix, type }: { matrix: string[][]; type: TalentTree
           strokeLinecap="round"
           opacity={0.4}
           vectorEffect="non-scaling-stroke"
-          className="[stroke-width:6px] md:[stroke-width:10px] min-[2400px]:[stroke-width:14px]"
+          className="[stroke-width:4px] md:[stroke-width:10px] min-[2400px]:[stroke-width:14px]"
         />
       ))}
     </svg>
@@ -123,7 +123,7 @@ export default function SkillThree({
   return (
     <div
       className={cn(
-        "relative h-[250px] w-full max-w-[350px] max-xl:max-w-[200px] md:h-[650px] min-[2400px]:h-[878px] min-[2400px]:max-w-[560px]",
+        "relative h-[min(40dvh,190px)] w-full max-w-[100px] sm:max-w-[115px] md:h-[650px] md:max-w-[350px] min-[2400px]:h-[878px] min-[2400px]:max-w-[560px]",
         className,
       )}
     >

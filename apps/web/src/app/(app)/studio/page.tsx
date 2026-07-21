@@ -116,7 +116,7 @@ export default function StudioPage() {
   }
 
   return (
-    <main className="mx-auto mb-20 mt-3 flex w-full max-w-[960px] flex-col items-center gap-3 px-3 md:mt-11 md:mb-40 md:gap-6 md:px-4">
+    <main className="mx-auto mb-20 mt-0 flex w-full max-w-[960px] flex-col items-center gap-3 px-3 md:mt-11 md:mb-40 md:gap-6 md:px-4">
       <header className="bg-secondaryBg flex w-full flex-col gap-4 rounded-2xl p-4 backdrop-blur-[20px] md:flex-row md:items-end md:justify-between md:rounded-[32px] md:p-8">
         <div className="space-y-2">
           <p className="font-golos text-[10px] uppercase tracking-[0.18em] text-mos-amber md:text-xs">

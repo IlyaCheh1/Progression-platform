@@ -252,7 +252,7 @@ export function normalizeBackgroundId(value?: string | null): BackgroundId {
 
 export function backgroundImagePath(value?: string | null): string {
   const id = normalizeBackgroundId(value);
-  return BACKGROUND_BY_ID.get(id)?.src ?? "/media/backgrounds/default.png";
+  return BACKGROUND_BY_ID.get(id)?.src ?? "/media/backgrounds/mountain_terrace.webp";
 }
 
 export function onboardingBackgroundPath(): string {

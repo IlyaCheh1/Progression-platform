@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Progress from "@/components/ui/progress";
+import { canOptimizeImageSrc } from "@/lib/image-src";
 import {
   clampMasteryRank,
   masteryRankProgress,
@@ -77,16 +79,16 @@ function WeaponRow({
     <div className="flex w-full flex-col gap-1 transition-opacity duration-200 hover:opacity-80">
       <div className="flex w-full items-center justify-between gap-2 text-[8px] leading-3 xl:text-xs xl:leading-4">
         <div className="flex min-w-0 items-center gap-2">
-          {/* eslint-disable-next-line @next/next/no-img-element -- content icons from public/CDN */}
-          <img
+          <Image
             src={iconSrc}
             alt=""
             width={32}
             height={32}
+            sizes="32px"
             className="h-6 w-6 shrink-0 rounded-full bg-mos-stone object-cover xl:h-8 xl:w-8"
-            // Native lazy-load can stall inside overflow-hidden/auto ancestors (CharacterStage).
+            // Lazy-load can stall inside overflow-hidden/auto ancestors (CharacterStage).
             loading="eager"
-            decoding="async"
+            unoptimized={!canOptimizeImageSrc(iconSrc)}
             aria-hidden
           />
           <p className="truncate font-normal text-mos-text">{label}</p>

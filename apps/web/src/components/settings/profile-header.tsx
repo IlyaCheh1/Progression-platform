@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import AppearanceEditBadge from "@/components/appearance/appearance-edit-badge";
 import ActiveSkillsList from "@/components/talents/active-skills-list";
 import { useTalents } from "@/components/talents/talents-provider";
@@ -19,6 +20,8 @@ type SettingsProfileHeaderProps = {
   gender: GenderId;
   avatarUrl?: string;
   backgroundSrc: string;
+  /** When false, header reuses a page-level preload of the same asset. */
+  backgroundPriority?: boolean;
   online?: boolean;
   onEditAvatar?: () => void;
   onEditBackground?: () => void;
@@ -35,6 +38,7 @@ export default function SettingsProfileHeader({
   gender,
   avatarUrl,
   backgroundSrc,
+  backgroundPriority = true,
   online = true,
   onEditAvatar,
   onEditBackground,
@@ -44,11 +48,17 @@ export default function SettingsProfileHeader({
   const { favoriteSkills, handleActivate, handleFavourite, loading } = useTalents();
 
   return (
-    <div className="relative mx-auto w-full overflow-hidden rounded-2xl md:rounded-[32px]">
+    <div className="relative mx-auto w-full overflow-hidden rounded-none md:rounded-[32px]">
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={backgroundSrc} alt="" className="h-full w-full object-cover object-top" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/70 to-[#070708]" />
+        <Image
+          src={backgroundSrc}
+          alt=""
+          fill
+          sizes="(max-width: 840px) 100vw, 840px"
+          className="object-cover object-top"
+          priority={backgroundPriority}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/70 to-black/80" />
       </div>
 
       <button

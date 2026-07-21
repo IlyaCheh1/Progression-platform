@@ -7,6 +7,15 @@ import { isHeroVideoReady } from "@/lib/hero-video-ready";
 
 const VIDEOS = ["1.mp4", "6.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4"];
 
+/** Mobile hero uses WebP posters — landscape crops need explicit focus points. */
+const MOBILE_IMAGES = [
+  { file: "1.webp", position: "object-[72%_center]" },
+  { file: "6.webp", position: "object-center" },
+  { file: "2.webp", position: "object-[45%_center]" },
+  { file: "3.webp", position: "object-[58%_center]" },
+  { file: "4.webp", position: "object-[55%_center]" },
+] as const;
+
 /** Same-origin files from the Next.js public/ folder (always deployed with the web app). */
 const LOCAL_MEDIA_BASE = "/media/hero";
 
@@ -55,13 +64,38 @@ type Particle = {
   delay: number;
 };
 
+function HeroImageSlide({
+  file,
+  positionClass,
+  isMounted,
+  fetchPriority,
+}: {
+  file: string;
+  positionClass: string;
+  isMounted: boolean;
+  fetchPriority: "high" | "low";
+}) {
+  if (!isMounted) return null;
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={mediaUrl(file, true)}
+      alt=""
+      className={`h-full w-full object-cover ${positionClass}`}
+      style={{ filter: "saturate(1.8) brightness(0.35)" }}
+      decoding="async"
+      fetchPriority={fetchPriority}
+    />
+  );
+}
+
 function HeroVideoSlide({
   index,
   file,
   isActive,
   isNext,
   isMounted,
-  isMobile,
   reduceMotion,
   registerVideo,
 }: {
@@ -70,7 +104,6 @@ function HeroVideoSlide({
   isActive: boolean;
   isNext: boolean;
   isMounted: boolean;
-  isMobile: boolean;
   reduceMotion: boolean;
   registerVideo: (index: number, node: HTMLVideoElement | null) => void;
 }) {
@@ -79,8 +112,7 @@ function HeroVideoSlide({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const poster = posterUrl(file, useLocalFallback);
   const videoSrc = mediaUrl(file, useLocalFallback);
-  const mobilePosition = index === 0 || index === 2 ? "object-left" : "object-right";
-  const mediaClassName = `h-full w-full object-cover ${isMobile ? mobilePosition : "object-center"}`;
+  const mediaClassName = "h-full w-full object-cover object-center";
 
   const syncVideoReady = useCallback(() => {
     const video = videoRef.current;
@@ -189,6 +221,7 @@ function HeroVideoSlide({
 
 export default function Hero() {
   const isMobile = useMobileMedia();
+  const slideCount = isMobile ? MOBILE_IMAGES.length : VIDEOS.length;
   const [idx, setIdx] = useState(0);
   const [mountedSlides, setMountedSlides] = useState(() => new Set([0, 1]));
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -209,30 +242,35 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    if (reduceMotion) return;
-    const interval = setInterval(() => {
-      setIdx((i) => (i + 1) % VIDEOS.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [reduceMotion]);
+    setIdx(0);
+    setMountedSlides(new Set([0, 1]));
+  }, [isMobile]);
 
   useEffect(() => {
-    const next = (idx + 1) % VIDEOS.length;
+    if (reduceMotion) return;
+    const interval = setInterval(() => {
+      setIdx((i) => (i + 1) % slideCount);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [reduceMotion, slideCount]);
+
+  useEffect(() => {
+    const next = (idx + 1) % slideCount;
     setMountedSlides((prev) => {
       const nextSet = new Set(prev);
       nextSet.add(idx);
       nextSet.add(next);
       if (isMobile && nextSet.size > 3) {
-        return new Set([idx, next, (idx + VIDEOS.length - 1) % VIDEOS.length]);
+        return new Set([idx, next, (idx + slideCount - 1) % slideCount]);
       }
       return nextSet;
     });
-  }, [idx, isMobile]);
+  }, [idx, isMobile, slideCount]);
 
   useEffect(() => {
-    if (reduceMotion) return;
+    if (isMobile || reduceMotion) return;
 
-    const next = (idx + 1) % VIDEOS.length;
+    const next = (idx + 1) % slideCount;
     videoRefs.current.forEach((video, index) => {
       if (index === idx || index === next) {
         void video.play().catch(() => {});
@@ -240,7 +278,7 @@ export default function Hero() {
       }
       video.pause();
     });
-  }, [idx, mountedSlides, reduceMotion]);
+  }, [idx, mountedSlides, reduceMotion, isMobile, slideCount]);
 
   useEffect(() => {
     if (isMobile || reduceMotion) {
@@ -262,35 +300,59 @@ export default function Hero() {
 
   return (
     <section id="hero" className="relative h-screen w-full overflow-hidden" style={{ background: "var(--void)" }}>
-      {VIDEOS.map((file, i) => {
-        const isActive = i === idx;
-        const isNext = i === (idx + 1) % VIDEOS.length;
-        const isMounted = mountedSlides.has(i);
-        return (
-          <div
-            key={file}
-            className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
-            style={{
-              opacity: isActive ? 1 : 0,
-              zIndex: isActive ? 1 : 0,
-              pointerEvents: "none",
-              willChange: "opacity",
-            }}
-            aria-hidden={!isActive}
-          >
-            <HeroVideoSlide
-              index={i}
-              file={file}
-              isActive={isActive}
-              isNext={isNext}
-              isMounted={isMounted}
-              isMobile={isMobile}
-              reduceMotion={reduceMotion}
-              registerVideo={registerVideo}
-            />
-          </div>
-        );
-      })}
+      {isMobile
+        ? MOBILE_IMAGES.map((slide, i) => {
+            const isActive = i === idx;
+            const isMounted = mountedSlides.has(i);
+            return (
+              <div
+                key={slide.file}
+                className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+                style={{
+                  opacity: isActive ? 1 : 0,
+                  zIndex: isActive ? 1 : 0,
+                  pointerEvents: "none",
+                  willChange: "opacity",
+                }}
+                aria-hidden={!isActive}
+              >
+                <HeroImageSlide
+                  file={slide.file}
+                  positionClass={slide.position}
+                  isMounted={isMounted}
+                  fetchPriority={i === 0 ? "high" : "low"}
+                />
+              </div>
+            );
+          })
+        : VIDEOS.map((file, i) => {
+            const isActive = i === idx;
+            const isNext = i === (idx + 1) % VIDEOS.length;
+            const isMounted = mountedSlides.has(i);
+            return (
+              <div
+                key={file}
+                className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+                style={{
+                  opacity: isActive ? 1 : 0,
+                  zIndex: isActive ? 1 : 0,
+                  pointerEvents: "none",
+                  willChange: "opacity",
+                }}
+                aria-hidden={!isActive}
+              >
+                <HeroVideoSlide
+                  index={i}
+                  file={file}
+                  isActive={isActive}
+                  isNext={isNext}
+                  isMounted={isMounted}
+                  reduceMotion={reduceMotion}
+                  registerVideo={registerVideo}
+                />
+              </div>
+            );
+          })}
 
       <div className="video-overlay pointer-events-none absolute inset-0" style={{ zIndex: 2 }} />
       <div

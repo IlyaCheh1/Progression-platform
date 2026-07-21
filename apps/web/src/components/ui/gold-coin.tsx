@@ -1,4 +1,7 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
+
+export const COIN_SRC = "/media/ui/coin.webp";
 
 type GoldCoinProps = {
   className?: string;
@@ -8,14 +11,15 @@ type GoldCoinProps = {
 /** Иконка внутренней валюты — золотые монеты. */
 export default function GoldCoin({ className, alt = "" }: GoldCoinProps) {
   return (
-    // Decorative currency glyph; parent provides the accessible name when needed.
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src="/media/ui/coin.png"
+    <Image
+      src={COIN_SRC}
       alt={alt}
+      width={64}
+      height={64}
+      sizes="20px"
+      className={cn("inline-block h-4 w-4 shrink-0 object-contain", className)}
       aria-hidden={alt === "" ? true : undefined}
       draggable={false}
-      className={cn("inline-block shrink-0 object-contain", className)}
     />
   );
 }

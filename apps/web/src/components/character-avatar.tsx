@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import type { CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import {
   characterAvatarPath,
   characterFullPath,
@@ -10,6 +12,7 @@ import {
 } from "@/lib/characters";
 import type { GenderId } from "@/lib/avatars";
 import { backgroundImagePath } from "@/lib/backgrounds";
+import { canOptimizeImageSrc } from "@/lib/image-src";
 import { cn } from "@/lib/utils";
 
 type CharacterAvatarProps = {
@@ -42,7 +45,7 @@ export default function CharacterAvatar({
 }: CharacterAvatarProps) {
   const customSrc = imageSrc?.trim() ? imageSrc.trim() : "";
   const useLetterOnly = variant === "head" && preferUploadedAvatar && !customSrc;
-  const src =
+  const resolvedSrc =
     customSrc ||
     (useLetterOnly
       ? ""
@@ -52,6 +55,12 @@ export default function CharacterAvatar({
   const character = getCharacterById(normalizeSelectedSkinId(selectedSkinId, gender));
   const alt = customSrc ? "Аватар" : (character?.name ?? "Персонаж");
   const letter = (fallbackLetter?.trim() || characterInitial(selectedSkinId, gender)).slice(0, 1).toUpperCase();
+  const [failed, setFailed] = useState(false);
+  const src = failed ? "" : resolvedSrc;
+
+  useEffect(() => {
+    setFailed(false);
+  }, [resolvedSrc]);
 
   return (
     <div
@@ -63,30 +72,18 @@ export default function CharacterAvatar({
       style={style}
     >
       {src ? (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={src}
-            alt={alt}
-            className={cn(
-              "h-full w-full",
-              customSrc ? "object-cover object-center" : "object-contain",
-              imageClassName,
-            )}
-            onError={(event) => {
-              const target = event.currentTarget;
-              target.style.display = "none";
-              const fallback = target.nextElementSibling as HTMLElement | null;
-              if (fallback) fallback.style.display = "grid";
-            }}
-          />
-          <div
-            className="hidden h-full w-full place-items-center bg-mos-stone/70 font-display text-2xl text-mos-amber"
-            aria-hidden
-          >
-            {letter}
-          </div>
-        </>
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes="(max-width: 767px) 96px, 128px"
+          unoptimized={!canOptimizeImageSrc(src)}
+          className={cn(
+            customSrc ? "object-cover object-center" : "object-contain",
+            imageClassName,
+          )}
+          onError={() => setFailed(true)}
+        />
       ) : (
         <div
           className="grid h-full w-full place-items-center bg-mos-stone/70 font-display text-2xl text-mos-amber"

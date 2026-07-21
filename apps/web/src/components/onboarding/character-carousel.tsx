@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { OgCharacter } from "@/lib/characters";
 import { CENTER_CAROUSEL_INDEX } from "@/lib/characters";
@@ -118,16 +119,19 @@ function CarouselItem({
   const positions = slotStyles(compact);
   const position = positions[positionIndex] ?? positions[CENTER_CAROUSEL_INDEX];
 
+  const isCenter = positionIndex === CENTER_CAROUSEL_INDEX;
+  const imageSrc = isCenter ? character.fullSrc : character.thumbnailSrc;
+
   useEffect(() => {
     setLoaded(false);
-    const minimumLoadTime = 800;
+    const minimumLoadTime = isCenter ? 800 : 200;
     let cancelled = false;
 
     const imageReady = new Promise<void>((resolve) => {
-      const img = new Image();
+      const img = new window.Image();
       img.onload = () => resolve();
       img.onerror = () => resolve();
-      img.src = character.fullSrc;
+      img.src = imageSrc;
     });
 
     void Promise.all([imageReady, new Promise<void>((resolve) => setTimeout(resolve, minimumLoadTime))]).then(() => {
@@ -137,7 +141,7 @@ function CarouselItem({
     return () => {
       cancelled = true;
     };
-  }, [character.fullSrc]);
+  }, [imageSrc, isCenter]);
 
   const displayScale = character.displayScale ?? 1;
 
@@ -170,13 +174,15 @@ function CarouselItem({
             <div className="h-10 w-10 animate-spin rounded-full border-2 border-mos-amber/30 border-t-mos-amber" />
           </div>
         )}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={character.fullSrc}
+        <Image
+          src={imageSrc}
           alt={character.name}
+          fill
+          sizes={isCenter ? "(max-width: 1279px) 70vw, 40vw" : "(max-width: 1279px) 40vw, 24vw"}
+          priority={isCenter}
           draggable={false}
           className={cn(
-            "h-full w-full object-contain object-bottom transition-opacity duration-300",
+            "object-contain object-bottom transition-opacity duration-300",
             loaded ? "opacity-100" : "opacity-0",
           )}
           style={

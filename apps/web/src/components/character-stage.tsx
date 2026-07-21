@@ -3,6 +3,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import GradientLabel from "@/components/onboarding/gradient-label";
+import PageBackground from "@/components/ui/page-background";
 import type { GenderId } from "@/lib/avatars";
 import { stageLayoutForBackground } from "@/lib/backgrounds";
 import { characterDisplayScale, characterFullPath, type OgCharacterId } from "@/lib/characters";
@@ -34,14 +35,15 @@ export default function CharacterStage({
   return (
     <section
       className={cn(
-        "relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-cover bg-center",
+        "relative flex h-full min-h-0 flex-1 flex-col overflow-hidden",
         className,
       )}
-      style={{
-        backgroundImage: `url(${backgroundSrc})`,
-        backgroundPosition: layout.backgroundPosition,
-      }}
     >
+      <PageBackground
+        src={backgroundSrc}
+        objectPosition={layout.backgroundPosition}
+        imageClassName="object-center"
+      />
       {children}
 
       <div
@@ -68,7 +70,7 @@ export default function CharacterStage({
             height={720}
             priority
             draggable={false}
-            sizes="(max-width: 1279px) 65vh, 75vh"
+            sizes="(max-width: 1279px) 70vw, 40vw"
             className={cn(
               "relative h-auto w-auto max-h-[65vh] min-h-[65vh] object-contain object-bottom xl:max-h-[75vh] xl:min-h-[75vh] xl:max-w-[75vh]",
             )}

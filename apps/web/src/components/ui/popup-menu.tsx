@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -23,6 +24,41 @@ export type PopupMenuProps = {
   hover?: boolean;
 };
 
+function computeMenuPosition(
+  triggerRect: DOMRect,
+  menuRect: DOMRect,
+  placement: PopupMenuProps["placement"],
+  margin: number,
+) {
+  let top = triggerRect.bottom + margin;
+  let left = triggerRect.left;
+
+  if (placement === "bottom-left" || placement === "left") {
+    left = triggerRect.right - menuRect.width;
+  }
+  if (placement === "bottom-right" || placement === "right" || placement === "bottom" || placement === "top") {
+    left = triggerRect.left + triggerRect.width / 2 - menuRect.width / 2;
+  }
+  if (placement === "top" || placement === "top-left" || placement === "top-right") {
+    top = triggerRect.top - menuRect.height - margin;
+  }
+
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  if (
+    top + menuRect.height > viewportHeight - 8 &&
+    triggerRect.top - menuRect.height - margin >= 8
+  ) {
+    top = triggerRect.top - menuRect.height - margin;
+  }
+
+  left = Math.max(8, Math.min(left, viewportWidth - menuRect.width - 8));
+  top = Math.max(8, Math.min(top, viewportHeight - menuRect.height - 8));
+
+  return { top, left };
+}
+
 export default function PopupMenu({
   trigger,
   children,
@@ -36,7 +72,16 @@ export default function PopupMenu({
 }: PopupMenuProps) {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = controlledIsOpen ?? internalIsOpen;
-  const setIsOpen = onOpenChange ?? setInternalIsOpen;
+  const setIsOpen = useCallback(
+    (open: boolean) => {
+      if (onOpenChange) {
+        onOpenChange(open);
+      } else {
+        setInternalIsOpen(open);
+      }
+    },
+    [onOpenChange],
+  );
 
   const triggerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -45,25 +90,29 @@ export default function PopupMenu({
   const [hasPosition, setHasPosition] = useState(false);
   const [portalMounted, setPortalMounted] = useState(false);
 
-  const clearCloseTimer = () => {
+  const clearCloseTimer = useCallback(() => {
     if (closeTimer.current) {
       clearTimeout(closeTimer.current);
       closeTimer.current = null;
     }
-  };
+  }, []);
 
-  const scheduleClose = () => {
+  const scheduleClose = useCallback(() => {
     if (!hover) return;
     clearCloseTimer();
-    closeTimer.current = setTimeout(() => setIsOpen(false), 120);
-  };
+    closeTimer.current = setTimeout(() => setIsOpen(false), 180);
+  }, [clearCloseTimer, hover, setIsOpen]);
 
   useEffect(() => {
     setPortalMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!isOpen) return;
+    return () => clearCloseTimer();
+  }, [clearCloseTimer]);
+
+  useEffect(() => {
+    if (!isOpen || hover) return;
 
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
@@ -81,7 +130,7 @@ export default function PopupMenu({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen, setIsOpen]);
+  }, [hover, isOpen, setIsOpen]);
 
   useLayoutEffect(() => {
     if (!isOpen || !triggerRef.current) {
@@ -89,43 +138,29 @@ export default function PopupMenu({
       return;
     }
 
+    let frame = 0;
+
     const measure = () => {
       if (!triggerRef.current || !menuRef.current) {
-        requestAnimationFrame(measure);
+        frame = requestAnimationFrame(measure);
         return;
       }
 
       const triggerRect = triggerRef.current.getBoundingClientRect();
       const menuRect = menuRef.current.getBoundingClientRect();
       if (menuRect.width === 0 || menuRect.height === 0) {
-        requestAnimationFrame(measure);
+        frame = requestAnimationFrame(measure);
         return;
       }
 
-      let top = triggerRect.bottom + margin;
-      let left = triggerRect.left;
-
-      if (placement === "bottom-left" || placement === "left") {
-        left = triggerRect.right - menuRect.width;
-      }
-      if (placement === "bottom-right" || placement === "right" || placement === "bottom" || placement === "top") {
-        left = triggerRect.left + triggerRect.width / 2 - menuRect.width / 2;
-      }
-      if (placement === "top") {
-        top = triggerRect.top - menuRect.height - margin;
-      }
-
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      left = Math.max(8, Math.min(left, viewportWidth - menuRect.width - 8));
-      top = Math.max(8, Math.min(top, viewportHeight - menuRect.height - 8));
-
-      setMenuPosition({ top, left });
+      setMenuPosition(computeMenuPosition(triggerRect, menuRect, placement, margin));
       setHasPosition(true);
     };
 
-    requestAnimationFrame(measure);
-  }, [isOpen, margin, placement, portalMounted]);
+    frame = requestAnimationFrame(measure);
+
+    return () => cancelAnimationFrame(frame);
+  }, [isOpen, margin, placement, portalMounted, children]);
 
   const toggleMenu = () => {
     if (!isOpen) {
@@ -146,7 +181,10 @@ export default function PopupMenu({
   return (
     <>
       <div
-        className="relative inline-flex h-full items-center"
+        ref={triggerRef}
+        role={hover ? undefined : "button"}
+        tabIndex={hover ? undefined : 0}
+        className="relative inline-flex shrink-0 cursor-pointer items-center"
         onMouseEnter={
           hover
             ? () => {
@@ -156,22 +194,19 @@ export default function PopupMenu({
             : undefined
         }
         onMouseLeave={hover ? scheduleClose : undefined}
+        onClick={hover ? undefined : toggleMenu}
+        onKeyDown={
+          hover
+            ? undefined
+            : (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  toggleMenu();
+                }
+              }
+        }
       >
-        <div
-          ref={triggerRef}
-          role="button"
-          tabIndex={0}
-          className="inline-flex h-full cursor-pointer items-center"
-          onClick={hover ? undefined : toggleMenu}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault();
-              toggleMenu();
-            }
-          }}
-        >
-          {trigger}
-        </div>
+        {trigger}
       </div>
 
       {isOpen &&

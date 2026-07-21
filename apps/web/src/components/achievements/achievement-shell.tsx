@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import GoldCoin from "@/components/ui/gold-coin";
 import { cn } from "@/lib/utils";
 
 export type AchievementState = "ongoing" | "claimable" | "completed";
@@ -163,8 +164,7 @@ export function RewardBadge({
         )}
       >
         {kind === "coins" ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src="/media/ui/coin.png" alt="" className="h-3 w-3 object-contain md:h-3.5 md:w-3.5" />
+          <GoldCoin className="h-3 w-3 md:h-3.5 md:w-3.5" />
         ) : (
           label
         )}

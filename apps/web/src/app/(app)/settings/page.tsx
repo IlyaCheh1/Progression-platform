@@ -15,6 +15,7 @@ import RolePanel, { RoleLink } from "@/components/settings/tabs/role-panel";
 import SecurityTab from "@/components/settings/tabs/security";
 import SideBar from "@/components/side-bar";
 import { useAvatarPresentation } from "@/components/character-avatar";
+import PageBackground from "@/components/ui/page-background";
 import { useAppearanceInventory } from "@/hooks/use-appearance-inventory";
 import { usePlayerProfile } from "@/hooks/use-player-profile";
 import { AvatarUploadError, uploadAvatarToS3, validateAvatarFile } from "@/lib/avatar-upload";
@@ -305,20 +306,16 @@ export default function SettingsPage() {
   }
 
   const displayName = profileDisplayName(profile, session);
-  const settingsBackdropClass =
-    "pointer-events-none fixed inset-x-0 bottom-0 top-14 z-0 md:top-[72px]";
+  const settingsBackdropClass = "pointer-events-none absolute inset-0 z-0";
+  const sameSettingsBackground = settingsPageBackgroundSrc === settingsHeaderBackgroundSrc;
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col">
       <div aria-hidden className={cn(settingsBackdropClass, "bg-mos-bg")} />
-      <div
-        aria-hidden
-        className={cn(settingsBackdropClass, "bg-cover bg-center bg-no-repeat")}
-        style={{ backgroundImage: `url(${settingsPageBackgroundSrc})` }}
-      />
+      <PageBackground src={settingsPageBackgroundSrc} className={settingsBackdropClass} />
       <div aria-hidden className={cn(settingsBackdropClass, "bg-black/55")} />
 
-      <main className="relative z-10 mx-auto mb-20 mt-3 flex w-full max-w-[840px] flex-col items-center gap-3 px-3 md:mt-11 md:mb-40 md:gap-6 md:px-4">
+      <main className="relative z-10 mx-auto mb-20 flex w-full max-w-[840px] flex-col items-center gap-0 px-3 md:mt-11 md:mb-40 md:gap-6 md:px-4">
         <input
           ref={avatarInputRef}
           type="file"
@@ -337,6 +334,7 @@ export default function SettingsPage() {
           gender={presentation.gender}
           avatarUrl={profile?.avatarUrl}
           backgroundSrc={settingsHeaderBackgroundSrc}
+          backgroundPriority={!sameSettingsBackground}
           avatarBusy={avatarBusy}
           onEditAvatar={() => avatarInputRef.current?.click()}
           onEditBackground={() => {
@@ -351,12 +349,13 @@ export default function SettingsPage() {
         {avatarError ? <p className="w-full text-center text-sm text-red-400">{avatarError}</p> : null}
 
         <div className="flex w-full flex-col items-start gap-3 md:flex-row md:gap-6">
-          <div className="flex w-full flex-col gap-6 md:w-auto md:gap-12">
+          <div className="flex w-full flex-col gap-0 md:w-auto md:gap-12">
             <SideBar
               items={tabs}
               activeId={tab}
               onChange={setTab}
               syncUrlParam="tab"
+              className="rounded-none md:rounded-[28px]"
               footer={
                 <button
                   type="button"
@@ -372,7 +371,7 @@ export default function SettingsPage() {
             />
           </div>
 
-          <section className="flex min-h-[320px] w-full flex-col gap-3 rounded-2xl bg-[rgba(26,26,29,0.3)] p-4 backdrop-blur-[20px] md:gap-6 md:rounded-[32px] md:p-8">
+          <section className="flex min-h-[320px] w-full flex-col gap-3 rounded-none bg-[rgba(26,26,29,0.3)] p-4 backdrop-blur-[20px] md:gap-6 md:rounded-[32px] md:p-8">
             {tab === "personal" ? (
               <PersonalInfoTab
                 username={username}

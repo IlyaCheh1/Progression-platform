@@ -6,6 +6,7 @@ import CharacterCarousel from "@/components/onboarding/character-carousel";
 import GenderSelector from "@/components/onboarding/gender-selector";
 import OnboardingFooter from "@/components/onboarding/onboarding-footer";
 import RotateProposal from "@/components/rotate-proposal";
+import PageBackground from "@/components/ui/page-background";
 import { useDevice } from "@/hooks/use-device";
 import { useOnboardingCharacters } from "@/hooks/use-onboarding-characters";
 import { fetchMyProfile, messageForProfileError, ProfileApiError, saveMyProfile } from "@/lib/profile-api";
@@ -114,13 +115,12 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main
-      className="relative flex h-full min-h-lvh flex-1 flex-col bg-cover bg-bottom xl:bg-center"
-      style={{
-        backgroundImage: `url(${stageBackgroundSrc})`,
-        backgroundPosition: stageLayout.backgroundPosition,
-      }}
-    >
+    <main className="relative flex h-full min-h-lvh flex-1 flex-col overflow-hidden">
+      <PageBackground
+        src={stageBackgroundSrc}
+        objectPosition={stageLayout.backgroundPosition}
+        imageClassName="object-bottom xl:object-center"
+      />
       <GenderSelector
         className="z-10 mt-4 xl:mt-[42px]"
         value={selectedGender}
