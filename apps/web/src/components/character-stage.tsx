@@ -50,9 +50,9 @@ export default function CharacterStage({
         {/* Ник привязан к отступу от верхнего меню — не зависит от высоты стоячего/сидячего персонажа */}
         <GradientLabel
           color="amber"
-          className="character-stage-username relative z-20 mx-auto mt-8 max-w-[200px] shrink-0 md:mt-[72px]"
+          className="character-stage-username relative z-20 mx-auto mt-8 max-w-[200px] shrink-0 xl:mt-[72px]"
         >
-          <p className="text-center font-unbounded text-xs font-medium leading-3 text-primaryText md:text-lg md:leading-6">
+          <p className="text-center font-unbounded text-xs font-medium leading-3 text-primaryText xl:text-lg xl:leading-6">
             {username}
           </p>
         </GradientLabel>

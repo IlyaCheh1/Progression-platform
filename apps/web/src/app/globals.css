@@ -252,46 +252,43 @@ body {
 }
 
 .character-stage-stack {
-  min-height: calc(100vh - 72px);
+  min-height: calc(100vh - 56px);
+}
+
+@media (min-width: 1280px) {
+  .character-stage-stack {
+    min-height: calc(100vh - 72px);
+  }
 }
 
 .character-stage-gap {
   min-height: 1.5rem;
 }
 
+/* Mobile / < xl: ~65vh like OnlyGames home character */
 .character-stage-figure {
-  height: clamp(219px, 41vh, 53vh);
-  max-height: min(53vh, calc(100vh - 72px - 180px));
+  height: clamp(260px, 65vh, 65vh);
+  max-height: min(65vh, calc(100vh - 56px - 120px));
   width: 100%;
 }
 
 /* Стоячий персонаж на горной террасе: чуть компактнее, ноги на каменной площадке */
 .character-stage-figure--terrace {
-  height: clamp(230px, 44vh, 55vh);
-  max-height: min(55vh, calc(100vh - 72px - 200px));
-}
-
-@media (min-width: 768px) {
-  .character-stage-figure {
-    height: clamp(322px, 55vh, 67vh);
-    max-height: min(67vh, calc(100vh - 72px - 200px));
-  }
-
-  .character-stage-figure--terrace {
-    height: clamp(345px, 58vh, 64vh);
-    max-height: min(64vh, calc(100vh - 72px - 220px));
-  }
+  height: clamp(250px, 62vh, 62vh);
+  max-height: min(62vh, calc(100vh - 56px - 140px));
 }
 
 @media (min-width: 1280px) {
   .character-stage-figure {
-    height: clamp(414px, 62vh, 74vh);
-    max-height: min(74vh, calc(100vh - 72px - 220px));
+    height: clamp(414px, 75vh, 75vh);
+    max-height: min(75vh, calc(100vh - 72px - 220px));
+    max-width: 75vh;
   }
 
   .character-stage-figure--terrace {
-    height: clamp(437px, 60vh, 69vh);
-    max-height: min(69vh, calc(100vh - 72px - 240px));
+    height: clamp(400px, 70vh, 70vh);
+    max-height: min(70vh, calc(100vh - 72px - 240px));
+    max-width: 70vh;
   }
 }
 

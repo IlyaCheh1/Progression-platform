@@ -37,7 +37,7 @@ export function NavRasterIcon({
       alt=""
       aria-hidden
       draggable={false}
-      className={cn("h-6 w-6 object-contain md:h-7 md:w-7", className)}
+      className={cn("h-6 w-6 object-contain xl:h-7 xl:w-7", className)}
     />
   );
 }

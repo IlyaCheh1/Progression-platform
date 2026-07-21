@@ -91,31 +91,31 @@ export default function UserMenu({
   }
 
   return (
-    <div className="min-w-[220px] rounded-2xl bg-[var(--color-tertiaryBg)] p-4 shadow-2xl md:min-w-[290px] md:rounded-[32px] md:p-6">
-      <div className="flex flex-col items-center gap-2 md:gap-4">
+    <div className="min-w-[220px] rounded-2xl bg-[var(--color-tertiaryBg)] p-4 shadow-2xl xl:min-w-[290px] xl:rounded-[32px] xl:p-6">
+      <div className="flex flex-col items-center gap-2 xl:gap-4">
         <CharacterAvatar
           selectedSkinId={selectedSkinId}
           gender={gender}
           imageSrc={avatarUrl}
           fallbackLetter={username}
           variant="head"
-          className="h-16 w-16 rounded-2xl md:h-20 md:w-20"
+          className="h-16 w-16 rounded-2xl xl:h-20 xl:w-20"
         />
-        <h3 className="font-unbounded text-sm font-medium leading-4 text-primaryText md:text-base md:leading-6">
+        <h3 className="font-unbounded text-sm font-medium leading-4 text-primaryText xl:text-base xl:leading-6">
           {username}
         </h3>
       </div>
 
-      <div className="mt-3 flex flex-col gap-2 md:mt-4 md:gap-4">
+      <div className="mt-3 flex flex-col gap-2 xl:mt-4 xl:gap-4">
         {BASE_ITEMS.map((item) => (
           <button
             key={item.id}
             type="button"
-            className="group flex w-full items-center gap-2 md:gap-3"
+            className="group flex w-full items-center gap-2 xl:gap-3"
             onClick={() => navigate(item.href)}
           >
-            <item.Icon className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-mos-amber md:h-6 md:w-6" />
-            <span className="font-golos text-xs font-normal leading-4 text-primaryText transition-colors duration-100 group-hover:text-mos-amber md:text-sm md:leading-5">
+            <item.Icon className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-mos-amber xl:h-6 xl:w-6" />
+            <span className="font-golos text-xs font-normal leading-4 text-primaryText transition-colors duration-100 group-hover:text-mos-amber xl:text-sm xl:leading-5">
               {item.label}
             </span>
           </button>
@@ -127,13 +127,13 @@ export default function UserMenu({
             <button
               key={item.id}
               type="button"
-              className="group flex w-full items-center gap-2 md:gap-3"
+              className="group flex w-full items-center gap-2 xl:gap-3"
               onClick={() => navigate(item.href)}
             >
-              <Icon className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-mos-amber md:h-6 md:w-6" />
+              <Icon className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-mos-amber xl:h-6 xl:w-6" />
               <span
                 className={cn(
-                  "font-golos text-xs font-normal leading-4 transition-colors duration-100 md:text-sm md:leading-5",
+                  "font-golos text-xs font-normal leading-4 transition-colors duration-100 xl:text-sm xl:leading-5",
                   item.highlight
                     ? "bg-gradient-premium bg-clip-text font-medium text-transparent"
                     : "text-primaryText group-hover:text-mos-amber",
@@ -146,19 +146,19 @@ export default function UserMenu({
         })}
       </div>
 
-      <div className="my-3 h-px bg-[var(--color-strokeBg)] md:my-4" />
+      <div className="my-3 h-px bg-[var(--color-strokeBg)] xl:my-4" />
 
-      <div className="flex flex-col gap-2 md:gap-4">
-        <button type="button" className="group flex w-full items-center gap-2 md:gap-3" onClick={switchAccount}>
-          <IconProfilePeople className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-mos-amber md:h-6 md:w-6" />
-          <span className="font-golos text-xs font-normal leading-4 text-primaryText transition-colors duration-100 group-hover:text-mos-amber md:text-sm md:leading-5">
+      <div className="flex flex-col gap-2 xl:gap-4">
+        <button type="button" className="group flex w-full items-center gap-2 xl:gap-3" onClick={switchAccount}>
+          <IconProfilePeople className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-mos-amber xl:h-6 xl:w-6" />
+          <span className="font-golos text-xs font-normal leading-4 text-primaryText transition-colors duration-100 group-hover:text-mos-amber xl:text-sm xl:leading-5">
             Сменить аккаунт
           </span>
         </button>
 
-        <button type="button" className="group flex w-full items-center gap-2 md:gap-3" onClick={logout}>
-          <IconProfileLogout className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-primaryText md:h-6 md:w-6" />
-          <span className="font-golos text-xs font-normal leading-4 text-secondaryText transition-colors duration-100 group-hover:text-primaryText md:text-sm md:leading-5">
+        <button type="button" className="group flex w-full items-center gap-2 xl:gap-3" onClick={logout}>
+          <IconProfileLogout className="h-5 w-5 text-mos-muted transition-colors duration-100 group-hover:text-primaryText xl:h-6 xl:w-6" />
+          <span className="font-golos text-xs font-normal leading-4 text-secondaryText transition-colors duration-100 group-hover:text-primaryText xl:text-sm xl:leading-5">
             Выход
           </span>
         </button>

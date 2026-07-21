@@ -37,13 +37,13 @@ export default function ProfileMiniCard({
         showPercentage
       />
 
-      <div className="flex flex-1 flex-col items-end gap-3 md:gap-4">
-        <div className="flex w-full items-center justify-end gap-2 md:gap-3">
-          <p className="font-display text-[10px] font-medium leading-4 text-mos-text md:text-[15px] md:leading-6">
+      <div className="flex flex-1 flex-col items-end gap-3 xl:gap-4">
+        <div className="flex w-full items-center justify-end gap-2 xl:gap-3">
+          <p className="font-display text-[10px] font-medium leading-4 text-mos-text xl:text-[15px] xl:leading-6">
             Уровень
           </p>
-          <div className="flex min-w-[32px] items-center justify-center rounded-lg bg-white/10 px-1 py-0.5 md:min-w-[42px] md:rounded-xl md:px-2">
-            <p className="font-display text-[10px] font-medium leading-4 text-mos-text md:text-[15px] md:leading-6">
+          <div className="flex min-w-[32px] items-center justify-center rounded-lg bg-white/10 px-1 py-0.5 xl:min-w-[42px] xl:rounded-xl xl:px-2">
+            <p className="font-display text-[10px] font-medium leading-4 text-mos-text xl:text-[15px] xl:leading-6">
               {userLevel}
             </p>
           </div>

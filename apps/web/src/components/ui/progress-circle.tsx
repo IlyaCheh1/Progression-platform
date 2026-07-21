@@ -46,8 +46,8 @@ export default function ProgressCircle({
   const avatarClassName = cn(
     "rounded-full transition-transform duration-200",
     size === "sm"
-      ? "h-[41px] w-[41px] md:h-[57px] md:w-[57px]"
-      : "h-[118px] w-[118px] md:h-[143px] md:w-[143px]",
+      ? "h-[41px] w-[41px] xl:h-[57px] xl:w-[57px]"
+      : "h-[118px] w-[118px] xl:h-[143px] xl:w-[143px]",
     canChangeAvatar && "group-hover/avatar:scale-[1.03]",
   );
 
@@ -68,7 +68,7 @@ export default function ProgressCircle({
     <div
       className={cn(
         "group/avatar relative shrink-0",
-        size === "sm" ? "h-[50px] w-[50px] md:h-[70px] md:w-[70px]" : "h-[134px] w-[134px] md:h-[162px] md:w-[162px]",
+        size === "sm" ? "h-[50px] w-[50px] xl:h-[70px] xl:w-[70px]" : "h-[134px] w-[134px] xl:h-[162px] xl:w-[162px]",
         className,
       )}
     >
@@ -123,7 +123,7 @@ export default function ProgressCircle({
           <span
             className={cn(
               "animate-spin rounded-full border-2 border-white/30 border-t-white",
-              size === "sm" ? "h-6 w-6" : "h-9 w-9 md:h-11 md:w-11",
+              size === "sm" ? "h-6 w-6" : "h-9 w-9 xl:h-11 xl:w-11",
             )}
           />
         </div>
@@ -132,13 +132,13 @@ export default function ProgressCircle({
       {showPercentage && !isUploading ? (
         <div
           className={cn(
-            "absolute bottom-0 left-1/2 z-[6] flex -translate-x-1/2 items-center justify-center border border-mos-line bg-gradient-controls-primary-active px-1.5 md:px-2",
+            "absolute bottom-0 left-1/2 z-[6] flex -translate-x-1/2 items-center justify-center border border-mos-line bg-gradient-controls-primary-active px-1.5 xl:px-2",
             size === "sm"
-              ? "min-w-[30px] translate-y-0.5 rounded-sm md:min-w-[42px]"
-              : "h-5 min-w-[34px] translate-y-1.5 rounded-2xl md:w-[42px]",
+              ? "min-w-[30px] translate-y-0.5 rounded-sm xl:min-w-[42px]"
+              : "h-5 min-w-[34px] translate-y-1.5 rounded-2xl xl:w-[42px]",
           )}
         >
-          <p className="font-display text-[7px] font-bold leading-none text-mos-bg md:text-[10px]">
+          <p className="font-display text-[7px] font-bold leading-none text-mos-bg xl:text-[10px]">
             {Math.round(clamped)}%
           </p>
         </div>
@@ -160,7 +160,7 @@ function ChangeAvatarOverlay({ size, label }: { size: "sm" | "lg"; label: string
     >
       <svg
         viewBox="0 0 24 24"
-        className={cn("text-mos-text", size === "sm" ? "h-4 w-4" : "h-6 w-6 md:h-7 md:w-7")}
+        className={cn("text-mos-text", size === "sm" ? "h-4 w-4" : "h-6 w-6 xl:h-7 xl:w-7")}
         fill="none"
         stroke="currentColor"
         strokeWidth="1.75"
@@ -172,7 +172,7 @@ function ChangeAvatarOverlay({ size, label }: { size: "sm" | "lg"; label: string
         <circle cx="12" cy="13" r="3.5" />
       </svg>
       {size === "lg" ? (
-        <span className="max-w-[80%] text-center font-golos text-[10px] font-medium leading-3 text-mos-text md:text-xs md:leading-4">
+        <span className="max-w-[80%] text-center font-golos text-[10px] font-medium leading-3 text-mos-text xl:text-xs xl:leading-4">
           {label}
         </span>
       ) : null}

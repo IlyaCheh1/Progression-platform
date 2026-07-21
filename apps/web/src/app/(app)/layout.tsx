@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import LandscapeLock from "@/components/landscape-lock";
 import ProfileHeader from "@/components/profile-header";
 import { TalentsProvider } from "@/components/talents/talents-provider";
 import SupportChatRoot from "@/components/support-chat-root";
@@ -47,6 +48,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <TalentsProvider>
+      <LandscapeLock />
       <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-mos-bg">
         <div className="sticky top-0 z-40 shrink-0">
           <ProfileHeader user={user} {...shell} />

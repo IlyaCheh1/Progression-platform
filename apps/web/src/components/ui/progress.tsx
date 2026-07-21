@@ -3,27 +3,27 @@ import { cn } from "@/lib/utils";
 type ProgressSize = "sm" | "md" | "lg" | "xl" | "achievement";
 
 const sizeTrack: Record<ProgressSize, string> = {
-  sm: "h-0.5 px-0.5 md:h-1 md:px-1",
-  md: "h-1.5 px-1 md:h-2 md:px-1.5",
-  lg: "h-2.5 px-1.5 md:h-3 md:px-2",
-  xl: "h-3 px-2 md:h-4 md:px-2.5",
-  achievement: "h-2 px-1 md:h-2.5 md:px-1.5",
+  sm: "h-0.5 px-0.5 xl:h-1 xl:px-1",
+  md: "h-1.5 px-1 xl:h-2 xl:px-1.5",
+  lg: "h-2.5 px-1.5 xl:h-3 xl:px-2",
+  xl: "h-3 px-2 xl:h-4 xl:px-2.5",
+  achievement: "h-2 px-1 xl:h-2.5 xl:px-1.5",
 };
 
 const sizeBar: Record<ProgressSize, string> = {
-  sm: "h-0.5 rounded md:h-1",
-  md: "h-1.5 rounded-[10px] md:h-2 md:rounded-xl",
-  lg: "h-2.5 rounded-2xl md:h-3",
-  xl: "h-3 rounded-[20px] md:h-4 md:rounded-3xl",
-  achievement: "h-2 rounded-xl md:h-2.5 md:rounded-3xl",
+  sm: "h-0.5 rounded xl:h-1",
+  md: "h-1.5 rounded-[10px] xl:h-2 xl:rounded-xl",
+  lg: "h-2.5 rounded-2xl xl:h-3",
+  xl: "h-3 rounded-[20px] xl:h-4 xl:rounded-3xl",
+  achievement: "h-2 rounded-xl xl:h-2.5 xl:rounded-3xl",
 };
 
 const sizeText: Record<ProgressSize, string> = {
-  sm: "text-[4px] md:text-[8px] font-display",
-  md: "text-[6px] md:text-[10px] font-display",
-  lg: "text-[8px] md:text-xs font-display",
-  xl: "text-[10px] md:text-xs font-golos",
-  achievement: "text-[8px] md:text-[10px] font-display",
+  sm: "text-[4px] xl:text-[8px] font-display",
+  md: "text-[6px] xl:text-[10px] font-display",
+  lg: "text-[8px] xl:text-xs font-display",
+  xl: "text-[10px] xl:text-xs font-golos",
+  achievement: "text-[8px] xl:text-[10px] font-display",
 };
 
 export type ProgressProps = {
