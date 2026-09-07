@@ -9,7 +9,9 @@ describe("landing FAQ", () => {
     const adults = faqForAudience(false);
 
     assert.ok(kids.some((item) => item.id === "kids-age"));
+    assert.ok(kids.some((item) => item.id === "kids-free"));
     assert.ok(!kids.some((item) => item.id === "rpg"));
+    assert.ok(!kids.some((item) => item.id === "start"));
     assert.ok(adults.some((item) => item.id === "formats"));
     assert.ok(!adults.some((item) => item.id === "kids-age"));
     assert.ok(LANDING_FAQ.every((item) => kids.includes(item) || adults.includes(item)));

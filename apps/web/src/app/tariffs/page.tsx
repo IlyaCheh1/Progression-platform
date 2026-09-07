@@ -47,7 +47,7 @@ export default function TariffsPage() {
         <h1 className="mt-3 font-unbounded text-4xl text-white md:text-6xl">Тарифы</h1>
         <p className="mt-4 max-w-2xl text-white/50">
           Четыре формата. Живые цены — у групповых и индивидуальных. Сплиты и парный онлайн пока помечены как макеты.
-          Детская группа ушу идёт в тех же блоках; отдельный детский прайс подтвердим при записи.
+          Детская секция ушу: первое занятие бесплатно, набор от 6 лет. Дальше — те же форматы зала.
         </p>
 
         <div className="mt-12 grid gap-5 md:grid-cols-2">

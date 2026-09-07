@@ -8,8 +8,12 @@ describe("journal articles", () => {
     assert.ok(JOURNAL_ARTICLES.length >= 3);
     for (const article of JOURNAL_ARTICLES) {
       assert.equal(article.mock, true);
-      assert.match(article.teaser, /заглушка/i);
       assert.ok(getJournalArticle(article.slug));
+      if (article.slug === "detskoe-ushu-s-6-let") {
+        assert.match(article.teaser, /характер, волю и уверенность/);
+        continue;
+      }
+      assert.match(article.teaser, /заглушка/i);
     }
   });
 

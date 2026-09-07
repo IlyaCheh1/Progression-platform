@@ -5,6 +5,7 @@ import Button from "@/components/ui/button";
 import { useAudience } from "@/hooks/landing/useAudience";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
 import { faqForAudience } from "@/lib/landing/faq";
+import { KIDS_WUSHU, kidsPhoneHref } from "@/lib/landing/kids-wushu";
 import { LEGAL_ENTITY } from "@/lib/legal/content";
 import { withAudience } from "@/lib/audience";
 
@@ -27,7 +28,7 @@ export default function Questions() {
           </h2>
           <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/50">
             {isKids
-              ? "Родителям отвечаем по детской группе ушу. Заявка уходит в контакты — отдельная регистрация после оплаты будет в следующей фазе."
+              ? `${KIDS_WUSHU.enroll}: ${KIDS_WUSHU.phoneDisplay} · ${KIDS_WUSHU.trainerShort}. ${KIDS_WUSHU.cta} ${KIDS_WUSHU.places}.`
               : "Как в клубном фитнесе: сначала вопрос и заявка, потом зал. Реквизиты и сообщество — на странице контактов."}
           </p>
           <p className="mt-3 text-sm text-white/40">
@@ -37,8 +38,13 @@ export default function Questions() {
             </a>
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button href={withAudience("/contact", mode)} variant="primary" size="md" className="uppercase">
-              Контакты
+            <Button
+              href={isKids ? kidsPhoneHref() : withAudience("/contact", mode)}
+              variant="primary"
+              size="md"
+              className="uppercase"
+            >
+              {isKids ? KIDS_WUSHU.enroll : "Контакты"}
             </Button>
             <Button href={withAudience("/faq", mode)} variant="stroke" size="md" className="uppercase">
               Открыть FAQ

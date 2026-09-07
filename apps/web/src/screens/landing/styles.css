@@ -1124,6 +1124,46 @@ a.experience-item {
   backdrop-filter: blur(18px);
 }
 
+.kids-hero-mark {
+  width: 3.25rem;
+  height: auto;
+  margin-bottom: 0.25rem;
+  filter: drop-shadow(0 0 18px rgba(212, 168, 75, 0.35));
+}
+
+.kids-hero-kicker {
+  display: block;
+  font-family: var(--mos-font-body);
+  font-size: clamp(0.7rem, 1.4vw, 0.85rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.kids-slogan {
+  max-width: 36rem;
+  font-family: var(--mos-font-display);
+  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mos-amber);
+}
+
+.kids-age-ribbon {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #e8f2ed;
+  background: #5a8f7b;
+}
+
 .hero-audience-toggle {
   display: inline-flex;
   align-items: center;

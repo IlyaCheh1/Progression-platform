@@ -3,12 +3,20 @@
 import { useRef } from "react";
 import { useAudience } from "@/hooks/landing/useAudience";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
+import { KIDS_SAGE, KIDS_WUSHU } from "@/lib/landing/kids-wushu";
 import { LANDING_TRAINERS } from "@/screens/landing/landing-trainers";
 
 export default function Trainers() {
   const sectionRef = useRef<HTMLElement>(null);
   const { isKids } = useAudience();
-  const trainers = isKids ? LANDING_TRAINERS.filter((trainer) => trainer.id === "tatyana-gribanova") : LANDING_TRAINERS;
+  const trainers = isKids
+    ? LANDING_TRAINERS.filter((trainer) => trainer.id === "tatyana-gribanova").map((trainer) => ({
+        ...trainer,
+        role: KIDS_WUSHU.section,
+        bio: [KIDS_WUSHU.body, KIDS_WUSHU.age],
+        accent: KIDS_SAGE,
+      }))
+    : LANDING_TRAINERS;
   useRevealFade(sectionRef, 0.12, isKids);
 
   return (
@@ -25,12 +33,12 @@ export default function Trainers() {
             className="mb-3 block font-golos text-xs font-semibold uppercase tracking-[0.12em]"
             style={{ color: "var(--mos-amber)" }}
           >
-            {isKids ? "Детская группа" : "Команда школы"}
+            {isKids ? KIDS_WUSHU.section : "Команда школы"}
           </span>
           <h2 className="font-unbounded text-[calc(2.25rem-2pt)] font-medium tracking-[0.06em] text-white md:text-5xl">
             {isKids ? (
               <>
-                Тренер <span style={{ color: "#f0c35a" }}>детей</span>
+                Тренер <span style={{ color: KIDS_SAGE }}>{KIDS_WUSHU.trainerShort}</span>
               </>
             ) : (
               <>

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { directions } from "@/lib/content";
 import { SCHOOL_COURSE_PAGES } from "@/lib/courses/data";
+import { KIDS_SAGE, KIDS_WUSHU, kidsPhoneHref } from "@/lib/landing/kids-wushu";
 import { RECONSTRUCTION_TRACKS } from "@/lib/landing/reconstruction";
 import { getSchoolColor } from "@/lib/school-colors";
 import { buildServiceButtonTheme } from "@/lib/service-button-theme";
@@ -49,32 +50,32 @@ type DirectionSlide = {
   gradientMobile: string;
   personaHref?: string;
   reconstruction?: boolean;
+  tracks?: ReadonlyArray<{ id: string; title: string }>;
 };
 
 const KIDS_SLIDES: Omit<DirectionSlide, "id" | "color" | "glow" | "gradient" | "gradientMobile">[] = [
   {
     key: "kids-east",
-    title: "Клинки Востока",
-    description:
-      "Детская группа ушу примерно с 6 лет. Тренер — Татьяна Грибанова. Макет: точное расписание и набор подтвердим при записи.",
-    image: "/media/directions/2.webp",
-    tag: "Дети",
-    tagline: "Ушу, координация, дисциплина без взрослого спарринга",
-    stat: "с 6 лет",
-    href: "/contact",
-    cta: "Записать ребёнка",
+    title: KIDS_WUSHU.section,
+    description: KIDS_WUSHU.body,
+    image: KIDS_WUSHU.media.hero,
+    tag: KIDS_WUSHU.age,
+    tagline: KIDS_WUSHU.slogan,
+    stat: KIDS_WUSHU.cta,
+    href: kidsPhoneHref(),
+    cta: KIDS_WUSHU.enroll,
   },
   {
-    key: "kids-flow",
-    title: "Как проходят занятия",
-    description:
-      "Разминка, базовые формы, игры на внимание и безопасная работа с учебным оружием. Текст-заглушка до постера от дизайн-команды.",
-    image: "/media/trainers/tatyana-gribanova.webp",
-    tag: "Заглушка",
-    tagline: "Ковёр, а не дуэль взрослых школ",
-    stat: "группа",
-    href: "/tariffs",
-    cta: "Тарифы для детей",
+    key: "kids-program",
+    title: "Путь чемпиона",
+    description: `${KIDS_WUSHU.places}. Тренер — ${KIDS_WUSHU.trainerFull}.`,
+    image: KIDS_WUSHU.media.trainer,
+    tag: KIDS_WUSHU.school,
+    tagline: KIDS_WUSHU.slogan,
+    stat: KIDS_WUSHU.age,
+    href: kidsPhoneHref(),
+    cta: KIDS_WUSHU.cta,
+    tracks: KIDS_WUSHU.bullets,
   },
 ];
 
@@ -114,7 +115,7 @@ export default function Directions() {
       return KIDS_SLIDES.map((slide, index) => ({
         id: index + 1,
         ...slide,
-        ...buildDirectionTheme(index === 0 ? "#5a8f7b" : "#d4a84b"),
+        ...buildDirectionTheme(index === 0 ? KIDS_SAGE : "#d4a84b"),
       }));
     }
 
@@ -343,7 +344,15 @@ function DirectionPanel({
         <div className="room-panel-middle">
           <p className="room-panel-tagline mb-4 max-w-lg font-light italic text-white/60">{slide.tagline}</p>
           <p className="room-panel-description mb-6 max-w-md leading-relaxed text-white/50">{slide.description}</p>
-          {slide.reconstruction ? (
+          {slide.tracks ? (
+            <ul className="recon-tracks mb-8">
+              {slide.tracks.map((track) => (
+                <li key={track.id} className="recon-track">
+                  <strong>{track.title}</strong>
+                </li>
+              ))}
+            </ul>
+          ) : slide.reconstruction ? (
             <ul className="recon-tracks mb-8">
               {RECONSTRUCTION_TRACKS.map((track) => (
                 <li key={track.id} className="recon-track">

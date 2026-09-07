@@ -450,7 +450,7 @@ export default function Tariffs() {
           <h2 className="font-unbounded text-3xl tracking-[0.12em] text-mos-amber md:text-5xl">Тарифы</h2>
           <p className="mx-auto mt-3 max-w-2xl font-golos text-mos-muted">
             {isKids
-              ? "Для детской группы ушу пока те же форматы зала. Отдельный детский прайс — макет, подтвердим при записи."
+              ? "Первое занятие в детской секции ушу бесплатно. Набор от 6 лет, места ограничены. Дальше — те же форматы зала."
               : "Групповые и персональные в зале. Сплиты и парный онлайн — на полной странице тарифов."}
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-3">

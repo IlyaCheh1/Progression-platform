@@ -5,6 +5,7 @@ import { useAudience } from "@/hooks/landing/useAudience";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { isHeroVideoReady } from "@/lib/hero-video-ready";
 import type { AudienceMode } from "@/lib/audience";
+import { KIDS_AMBER, KIDS_SAGE, KIDS_WUSHU } from "@/lib/landing/kids-wushu";
 
 const VIDEOS = ["1.mp4", "6.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4"];
 
@@ -311,7 +312,7 @@ export default function Hero() {
       setParticles([]);
       return;
     }
-    const colors = ["#d4a84b", "#f0c35a", "#c8c6c2"];
+    const colors = isKids ? [KIDS_AMBER, KIDS_SAGE, "#f0c35a"] : ["#d4a84b", "#f0c35a", "#c8c6c2"];
     setParticles(
       Array.from({ length: 12 }, (_, i) => ({
         id: i,
@@ -322,11 +323,23 @@ export default function Hero() {
         delay: Math.random() * 6,
       })),
     );
-  }, [isMobile, reduceMotion]);
+  }, [isMobile, reduceMotion, isKids]);
 
   return (
-    <section id="hero" className="relative h-screen w-full overflow-hidden" style={{ background: "var(--void)" }}>
-      {isMobile
+    <section id="hero" className={`relative h-screen w-full overflow-hidden${isKids ? " kids-hero" : ""}`} style={{ background: "var(--void)" }}>
+      {isKids ? (
+        <div className="absolute inset-0" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={KIDS_WUSHU.media.hero}
+            alt=""
+            className="h-full w-full object-cover object-[62%_center]"
+            style={{ filter: "saturate(1.2) brightness(0.38)" }}
+            decoding="async"
+            fetchPriority="high"
+          />
+        </div>
+      ) : isMobile
         ? MOBILE_IMAGES.map((slide, i) => {
             const isActive = i === idx;
             const isMounted = mountedSlides.has(i);
@@ -385,8 +398,9 @@ export default function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           zIndex: 2,
-          background:
-            "radial-gradient(ellipse at 20% 50%, rgba(196,92,42,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(212,168,75,0.16) 0%, transparent 60%)",
+          background: isKids
+            ? "radial-gradient(ellipse at 18% 40%, rgba(90,143,123,0.28) 0%, transparent 58%), radial-gradient(ellipse at 82% 48%, rgba(212,168,75,0.22) 0%, transparent 60%)"
+            : "radial-gradient(ellipse at 20% 50%, rgba(196,92,42,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(212,168,75,0.16) 0%, transparent 60%)",
         }}
       />
 
@@ -417,9 +431,12 @@ export default function Hero() {
           >
             {isKids ? (
               <>
-                <span className="block text-white leading-tight">Ушу для детей</span>
-                <span className="block leading-tight" style={{ color: "var(--color-controlsPrimaryActive)" }}>
-                  с 6 лет. Клинки Востока.
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={KIDS_WUSHU.media.logo} alt="" className="kids-hero-mark" />
+                <span className="kids-hero-kicker">{KIDS_WUSHU.school}</span>
+                <span className="block text-white leading-tight">{KIDS_WUSHU.brand}</span>
+                <span className="block leading-tight" style={{ color: KIDS_SAGE }}>
+                  {KIDS_WUSHU.section}
                 </span>
               </>
             ) : (
@@ -431,6 +448,9 @@ export default function Hero() {
               </>
             )}
           </h1>
+
+          {isKids ? <p className="kids-slogan">{KIDS_WUSHU.slogan}</p> : null}
+          {isKids ? <span className="kids-age-ribbon">{KIDS_WUSHU.age}</span> : null}
 
           <div className="hero-audience-toggle" role="group" aria-label="Режим сайта">
             <AudienceBadge value="kids" active={mode === "kids"} onSelect={setMode}>
@@ -447,9 +467,9 @@ export default function Hero() {
         <p className="font-golos text-[calc(0.875rem+2pt)] font-medium leading-relaxed text-white/60 md:text-[calc(0.875rem+4pt)]">
           {isKids ? (
             <>
-              Детская группа ушу «Клинки Востока». Тренер — Татьяна Грибанова.
+              {KIDS_WUSHU.body}
               <br />
-              Расписание и набор уточняются — это рабочий макет раздела.
+              {KIDS_WUSHU.cta}
             </>
           ) : (
             <>

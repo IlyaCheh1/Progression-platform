@@ -12,7 +12,9 @@ export default function Promos() {
   const sectionRef = useRef<HTMLElement>(null);
   const { mode, isKids } = useAudience();
   useRevealFade(sectionRef);
-  const items = isKids ? LANDING_PROMOS.filter((item) => item.id !== "family") : LANDING_PROMOS;
+  const items = isKids
+    ? LANDING_PROMOS.filter((item) => item.id === "kids-wushu" || item.id === "family")
+    : LANDING_PROMOS;
 
   return (
     <section id="akcii" ref={sectionRef} className="relative py-24" style={{ background: "var(--void)" }}>
