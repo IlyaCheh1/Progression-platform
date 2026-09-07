@@ -10,8 +10,8 @@ const landing = readFileSync(fileURLToPath(new URL("../index.tsx", import.meta.u
 
 describe("team-board OG layout contract", () => {
   it("keeps adults-only mount and hides the board for kids", () => {
-    assert.match(landing, /!isKids \? <TeamBoard/);
-    assert.doesNotMatch(landing, /isKids \? <TeamBoard/);
+    assert.match(landing, /\{!isKids \? <TeamBoard \/> : null\}/);
+    assert.doesNotMatch(landing, /isKids && <TeamBoard/);
   });
 
   it("exposes MobileSideSwitcher with aria-pressed", () => {
