@@ -23,9 +23,9 @@ export const KIDS_WUSHU = {
   trainerFull: "Татьяна Грибанова",
   places: "Количество мест ограничено",
   media: {
-    // Pexels #7988769 — Photo by cottonbro studio, free stock.
-    // https://www.pexels.com/photo/kids-practicing-martial-arts-7988769/
-    hero: "/media/hero/kids-wushu-child.webp",
+    // Official text-free poster A collage (Шагал). Do not use Pexels or owner-cropped halves.
+    heroDesktop: "/media/hero/kids-wushu-hero-16x9.webp",
+    heroMobile: "/media/hero/kids-wushu-hero-9x16.webp",
     trainer: "/media/trainers/tatyana-gribanova.webp",
     logo: "/media/logo-mark.png",
   },
