@@ -13,6 +13,8 @@ describe("landing FAQ", () => {
     assert.ok(!kids.some((item) => item.id === "rpg"));
     assert.ok(!kids.some((item) => item.id === "start"));
     assert.ok(adults.some((item) => item.id === "formats"));
+    assert.ok(kids.some((item) => item.id === "arenda"));
+    assert.ok(adults.some((item) => item.id === "arenda"));
     assert.ok(!adults.some((item) => item.id === "kids-age"));
     assert.ok(LANDING_FAQ.every((item) => kids.includes(item) || adults.includes(item)));
   });

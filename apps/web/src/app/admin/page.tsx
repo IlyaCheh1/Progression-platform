@@ -31,6 +31,10 @@ export default function AdminHomePage() {
           <h2 className="font-display text-xl text-mos-amber">Import</h2>
           <p className="mt-2 text-sm text-mos-muted">Staging, preview и commit Excel/JSON.</p>
         </Link>
+        <Link href="/admin/arenda" className="border border-mos-line/40 bg-mos-stone/30 p-5 hover:border-mos-amber">
+          <h2 className="font-display text-xl text-mos-amber">Аренда зала</h2>
+          <p className="mt-2 text-sm text-mos-muted">Публичные заявки. Inbox ЛК — фаза 2.</p>
+        </Link>
       </div>
     </main>
   );

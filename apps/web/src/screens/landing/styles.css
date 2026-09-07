@@ -1153,7 +1153,9 @@ a.experience-item {
 #journal,
 #faq,
 #rpg,
-#join {
+#join,
+#arenda,
+#zayavka {
   scroll-margin-top: var(--landing-header-offset);
 }
 
@@ -1353,6 +1355,64 @@ a.experience-item {
   background: rgba(212, 168, 75, 0.12);
 }
 
+.hall-photo-card {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--void-mid) 88%, transparent);
+}
+
+.hall-photo-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 8 / 5;
+  object-fit: cover;
+}
+
+.hall-photo-card figcaption {
+  padding: 0.55rem 0.75rem 0.7rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.hall-day-chip {
+  display: inline-flex;
+  min-height: 44px;
+  min-width: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.75);
+  background: transparent;
+  font-size: 0.85rem;
+}
+
+.hall-day-chip.is-active {
+  border-color: var(--mos-amber);
+  color: var(--void);
+  background: var(--mos-amber);
+}
+
+.hall-rental-input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--void) 70%, transparent);
+  padding: 0 0.9rem;
+  color: white;
+  color-scheme: dark;
+}
+
+.hall-rental-input:focus {
+  outline: 2px solid color-mix(in srgb, var(--mos-amber) 55%, transparent);
+  outline-offset: 1px;
+}
+
 .article-card {
   display: flex;
   flex-direction: column;
@@ -1530,7 +1590,9 @@ a.experience-item {
   .questions-section .og-btn,
   #tariffs .og-btn,
   #akcii .og-btn,
-  #journal .og-btn {
+  #journal .og-btn,
+  #arenda .og-btn,
+  .hall-rental-form .og-btn {
     min-height: 44px;
     padding-left: 1rem;
     padding-right: 1rem;

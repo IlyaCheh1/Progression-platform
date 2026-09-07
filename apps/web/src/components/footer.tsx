@@ -19,6 +19,7 @@ const FOOTER_LINKS = [
   { title: "О нас", href: "/about" },
   { title: "Тарифы", href: "/tariffs" },
   { title: "Акции", href: "/akcii" },
+  { title: "Аренда зала", href: "/arenda" },
   { title: "FAQ", href: "/faq" },
   { title: "Журнал", href: "/journal" },
   { title: "Контакты", href: "/contact" },

@@ -13,6 +13,7 @@ const NAV = [
   { title: "Направления", href: "/#directions" },
   { title: "Тарифы", href: "/tariffs" },
   { title: "Акции", href: "/akcii" },
+  { title: "Аренда зала", href: "/#arenda" },
   { title: "Контакты", href: "/contact" },
   { title: "FAQ", href: "/faq" },
 ] as const;
@@ -82,7 +83,7 @@ export default function Header() {
         </Link>
 
         <nav
-          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 text-sm font-medium text-white/70 md:flex lg:gap-8"
+          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-5 text-sm font-medium text-white/70 lg:flex xl:gap-7"
           aria-label="Основное меню"
         >
           {NAV.map((link) => (
@@ -97,7 +98,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="relative ml-auto flex items-center md:hidden">
+        <div className="relative ml-auto flex items-center lg:hidden">
           <button
             type="button"
             aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
@@ -111,7 +112,7 @@ export default function Header() {
       </header>
 
       {menuOpen && (
-        <div id="mobile-public-menu" className="mobile-public-menu fixed inset-0 z-40 bg-void/95 backdrop-blur-md md:hidden">
+        <div id="mobile-public-menu" className="mobile-public-menu fixed inset-0 z-40 bg-void/95 backdrop-blur-md lg:hidden">
           <nav className="flex flex-col gap-2" aria-label="Мобильное меню">
             {NAV.map((link) => (
               <Link

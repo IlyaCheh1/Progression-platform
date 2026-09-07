@@ -12,6 +12,7 @@ const NAV = [
   { href: "/admin/school", label: "Школа" },
   { href: "/admin/users", label: "Пользователи" },
   { href: "/admin/content", label: "Контент" },
+  { href: "/admin/arenda", label: "Аренда" },
   { href: "/coach", label: "Тренер", coachOnly: true },
 ] as const;
 

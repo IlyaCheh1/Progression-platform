@@ -14,6 +14,7 @@ const Trainers = dynamic(() => import("@/screens/landing/trainers"));
 const TeamBoard = dynamic(() => import("@/screens/landing/team-board"));
 const Services = dynamic(() => import("@/screens/landing/services"));
 const Promos = dynamic(() => import("@/screens/landing/promos"));
+const Arenda = dynamic(() => import("@/screens/landing/arenda"));
 const Tariffs = dynamic(() => import("@/screens/landing/tariffs"));
 const Articles = dynamic(() => import("@/screens/landing/articles"));
 const Questions = dynamic(() => import("@/screens/landing/questions"));
@@ -37,6 +38,7 @@ function LandingBody() {
         {!isKids ? <TeamBoard /> : null}
         <Services />
         <Promos />
+        <Arenda />
         <Tariffs />
         <Articles />
         <Questions />
