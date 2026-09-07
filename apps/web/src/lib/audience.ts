@@ -57,3 +57,13 @@ export function withAudience(href: string, mode: AudienceMode): string {
 }
 
 export const AUDIENCE_CHANGED_EVENT = "mos:audience-changed";
+
+const KIDS_HIDDEN_HREFS = new Set(["/#directions"]);
+
+export function publicNavForAudience<T extends { href: string }>(
+  items: readonly T[],
+  mode: AudienceMode,
+): T[] {
+  if (mode !== "kids") return [...items];
+  return items.filter((item) => !KIDS_HIDDEN_HREFS.has(item.href));
+}

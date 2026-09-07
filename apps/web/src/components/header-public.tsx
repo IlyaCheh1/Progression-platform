@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import AppLogo from "@/components/app-logo";
 import { useAudience } from "@/hooks/landing/useAudience";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
-import { withAudience } from "@/lib/audience";
+import { publicNavForAudience, withAudience } from "@/lib/audience";
 
 const NAV = [
   { title: "О нас", href: "/about" },
@@ -41,6 +41,7 @@ export default function Header() {
   const { mode } = useAudience();
   const [menuOpen, setMenuOpen] = useState(false);
   const homeHref = withAudience("/", mode);
+  const nav = publicNavForAudience(NAV, mode);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -86,7 +87,7 @@ export default function Header() {
           className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-5 text-sm font-medium text-white/70 lg:flex xl:gap-7"
           aria-label="Основное меню"
         >
-          {NAV.map((link) => (
+          {nav.map((link) => (
             <Link
               key={link.href}
               href={withAudience(link.href, mode)}
@@ -114,7 +115,7 @@ export default function Header() {
       {menuOpen && (
         <div id="mobile-public-menu" className="mobile-public-menu fixed inset-0 z-40 bg-void/95 backdrop-blur-md lg:hidden">
           <nav className="flex flex-col gap-2" aria-label="Мобильное меню">
-            {NAV.map((link) => (
+            {nav.map((link) => (
               <Link
                 key={link.href}
                 href={withAudience(link.href, mode)}

@@ -24,7 +24,7 @@ export const KIDS_WUSHU = {
   trainerFull: "Татьяна Грибанова",
   places: "Количество мест ограничено",
   media: {
-    hero: "/media/courses/east-hero.webp",
+    hero: "/media/hero/kids-wushu-child.webp",
     trainer: "/media/trainers/tatyana-gribanova.webp",
     logo: "/media/logo-mark.png",
   },

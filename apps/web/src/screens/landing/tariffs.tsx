@@ -171,7 +171,7 @@ function SubscriptionPrice({
   const monthly = Math.round(total / term.months);
 
   return (
-    <div className="mt-6">
+    <div className="pricing-card-price mt-6">
       <p className="font-unbounded text-3xl text-mos-text">{formatRubles(total)}</p>
       <p className="mt-1 text-sm text-mos-muted">
         {term.months === 1
@@ -248,9 +248,9 @@ function PricingCardView({
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col p-6 md:p-7">
+      <div className="pricing-card-body flex flex-1 flex-col p-6 md:p-7">
         <h3 className="font-unbounded text-2xl text-mos-text">{card.title}</h3>
-        <p className="mt-3 min-h-[72px] text-sm leading-relaxed text-mos-muted">{card.description}</p>
+        <p className="pricing-card-desc mt-3 min-h-[72px] text-sm leading-relaxed text-mos-muted">{card.description}</p>
 
         {isSubscriptionCard(card.id) ? (
           <>
@@ -258,13 +258,13 @@ function PricingCardView({
             <SubscriptionPrice months={subscriptionMonths} monthlyBase={subscriptionMonthlyBase(card.id)} />
           </>
         ) : (
-          <div className="mt-6">
+          <div className="pricing-card-price mt-6">
             <p className="font-unbounded text-3xl text-mos-text">{card.price}</p>
             {card.priceSuffix && <p className="mt-1 text-sm text-mos-muted">{card.priceSuffix}</p>}
           </div>
         )}
 
-        <div className="mt-6">
+        <div className="pricing-card-cta mt-6">
           <Button
             href="/contact"
             variant={card.ctaVariant}
@@ -275,7 +275,7 @@ function PricingCardView({
           </Button>
         </div>
 
-        <div className="mt-8 space-y-3">
+        <div className="pricing-card-features mt-8 space-y-3">
           {card.features.map((feature) => (
             <div key={feature} className="flex items-start gap-3 text-sm text-mos-text/80">
               <CheckIcon />
@@ -444,7 +444,7 @@ export default function Tariffs() {
   const cards = tab === "group" ? GROUP_CARDS : SOLO_CARDS;
 
   return (
-    <section id="tariffs" ref={sectionRef} className="relative py-24" style={{ background: "var(--mos-bg)" }}>
+    <section id="tariffs" ref={sectionRef} className="pricing-section relative py-24" style={{ background: "var(--mos-bg)" }}>
       <div className="mx-auto max-w-6xl">
         <div className="reveal-fade px-6 text-center">
           <h2 className="font-unbounded text-3xl tracking-[0.12em] text-mos-amber md:text-5xl">Тарифы</h2>
