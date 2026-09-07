@@ -4,7 +4,6 @@ import { labelForCadence, labelForDay } from "@/lib/landing/hall-rental";
 
 export type HallRentalNotifyResult = {
   logged: true;
-  emailTarget: string | null;
   crmLeadId: string | null;
 };
 
@@ -49,5 +48,5 @@ export async function notifyHallRentalAdmins(request: HallRentalRequest): Promis
     // school-api is optional for the public form
   }
 
-  return { logged: true, emailTarget, crmLeadId };
+  return { logged: true, crmLeadId };
 }

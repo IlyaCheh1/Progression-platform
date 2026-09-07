@@ -10,10 +10,18 @@ export const dynamic = "force-dynamic";
 
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_MAX = 8;
+const STORE_CAP = 2000;
 const hits = new Map<string, number[]>();
 
 function clientKey(request: NextRequest): string {
-  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "local";
+  const realIp = request.headers.get("x-real-ip")?.trim();
+  if (realIp) return realIp;
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    const hops = forwarded.split(",").map((part) => part.trim()).filter(Boolean);
+    if (hops.length > 0) return hops[hops.length - 1] ?? "local";
+  }
+  return "local";
 }
 
 function rateLimited(key: string): boolean {
@@ -45,6 +53,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "validation_failed", errors: parsed.errors }, { status: 400 });
   }
 
+  const existing = await listHallRentalRequests();
+  if (existing.length >= STORE_CAP) {
+    return NextResponse.json({ error: "store_full" }, { status: 503 });
+  }
+
   const record: HallRentalRequest = {
     ...parsed.value,
     id: createHallRentalId(),
@@ -58,12 +71,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "store_failed" }, { status: 500 });
   }
 
-  const notify = await notifyHallRentalAdmins(record);
+  await notifyHallRentalAdmins(record);
   return NextResponse.json({
     id: record.id,
     createdAt: record.createdAt,
-    destinedRoles: record.destinedRoles,
-    notify,
   });
 }
 
