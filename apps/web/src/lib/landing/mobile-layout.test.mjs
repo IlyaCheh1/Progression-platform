@@ -15,7 +15,7 @@ describe("landing mobile layout guards", () => {
     assert.match(css, /\.recon-tracks[\s\S]*grid-template-columns:\s*1fr 1fr/);
     assert.match(css, /kids-hero \.hero-bottom-copy[\s\S]*display:\s*none/);
     assert.match(css, /max-width:\s*1023px[\s\S]*\.pricing-card-hero[\s\S]*height:\s*6\.65rem/);
-    assert.match(css, /\.tariffs-format-card[\s\S]*padding:\s*1rem 1\.1rem/);
+    assert.match(css, /\.tariffs-format-card[\s\S]*padding:\s*0\.7rem 0\.85rem 0\.8rem/);
   });
 
   it("does not reintroduce wheel trapping on direction slides", () => {

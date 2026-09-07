@@ -264,7 +264,7 @@ function PricingCardView({
           </div>
         )}
 
-        <div className="mt-6">
+        <div className="pricing-card-cta mt-6">
           <Button
             href="/contact"
             variant={card.ctaVariant}

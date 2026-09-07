@@ -57,7 +57,7 @@ export default function TariffsPage() {
               <h2 className="mt-4 font-unbounded text-2xl text-white">{block.title}</h2>
               <p className="mt-2 font-unbounded text-mos-amber">{block.price}</p>
               <p className="mt-3 text-sm leading-relaxed text-white/55">{block.text}</p>
-              <ul className="mt-4 space-y-2 text-sm text-white/70">
+              <ul className="mt-4 space-y-1 text-sm text-white/70 md:space-y-2">
                 {block.points.map((point) => (
                   <li key={point}>◆ {point}</li>
                 ))}
