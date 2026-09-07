@@ -1,12 +1,15 @@
 "use client";
 
 import { useRef } from "react";
+import { useAudience } from "@/hooks/landing/useAudience";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
 import { LANDING_TRAINERS } from "@/screens/landing/landing-trainers";
 
 export default function Trainers() {
   const sectionRef = useRef<HTMLElement>(null);
-  useRevealFade(sectionRef);
+  const { isKids } = useAudience();
+  const trainers = isKids ? LANDING_TRAINERS.filter((trainer) => trainer.id === "tatyana-gribanova") : LANDING_TRAINERS;
+  useRevealFade(sectionRef, 0.12, isKids);
 
   return (
     <section id="trainers" ref={sectionRef} className="relative overflow-x-clip py-24" style={{ background: "var(--void)" }}>
@@ -22,15 +25,23 @@ export default function Trainers() {
             className="mb-3 block font-golos text-xs font-semibold uppercase tracking-[0.12em]"
             style={{ color: "var(--mos-amber)" }}
           >
-            Команда школы
+            {isKids ? "Детская группа" : "Команда школы"}
           </span>
           <h2 className="font-unbounded text-[calc(2.25rem-2pt)] font-medium tracking-[0.06em] text-white md:text-5xl">
-            Наши <span style={{ color: "#f0c35a" }}>мастера</span>
+            {isKids ? (
+              <>
+                Тренер <span style={{ color: "#f0c35a" }}>детей</span>
+              </>
+            ) : (
+              <>
+                Наши <span style={{ color: "#f0c35a" }}>мастера</span>
+              </>
+            )}
           </h2>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {LANDING_TRAINERS.map((trainer, index) => (
+          {trainers.map((trainer, index) => (
             <article
               key={trainer.id}
               className="trainer-card reveal-fade group overflow-hidden rounded-[28px] bg-white/[0.03] backdrop-blur-xl"

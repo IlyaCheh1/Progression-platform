@@ -17,7 +17,12 @@ const SOCIAL_ICONS = {
 
 const FOOTER_LINKS = [
   { title: "О нас", href: "/about" },
+  { title: "Тарифы", href: "/tariffs" },
+  { title: "Акции", href: "/akcii" },
+  { title: "FAQ", href: "/faq" },
+  { title: "Журнал", href: "/journal" },
   { title: "Контакты", href: "/contact" },
+  { title: "Войти", href: "/login" },
   { title: "Публичная оферта", href: "/legal/offer" },
   { title: "Пользовательское соглашение", href: "/legal/terms" },
   { title: "Политика конфиденциальности", href: "/legal/privacy" },

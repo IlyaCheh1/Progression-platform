@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import Button from "@/components/ui/button";
+import { useAudience } from "@/hooks/landing/useAudience";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
 import { cn } from "@/lib/utils";
 
@@ -265,7 +266,7 @@ function PricingCardView({
 
         <div className="mt-6">
           <Button
-            href="/login"
+            href="/contact"
             variant={card.ctaVariant}
             size="lg"
             className={cn("w-full uppercase", card.popular && "cta-pulse")}
@@ -436,6 +437,7 @@ function TariffsCarousel({
 
 export default function Tariffs() {
   const sectionRef = useRef<HTMLElement>(null);
+  const { isKids } = useAudience();
   const [tab, setTab] = useState<"group" | "solo">("group");
   const [subscriptionMonths, setSubscriptionMonths] = useState<SubscriptionMonths>(1);
   useRevealFade(sectionRef, 0.12, tab);
@@ -447,8 +449,18 @@ export default function Tariffs() {
         <div className="reveal-fade px-6 text-center">
           <h2 className="font-unbounded text-3xl tracking-[0.12em] text-mos-amber md:text-5xl">Тарифы</h2>
           <p className="mx-auto mt-3 max-w-2xl font-golos text-mos-muted">
-            Два раздела: групповые и персональные тренировки.
+            {isKids
+              ? "Для детской группы ушу пока те же форматы зала. Отдельный детский прайс — макет, подтвердим при записи."
+              : "Групповые и персональные в зале. Сплиты и парный онлайн — на полной странице тарифов."}
           </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-3">
+            <Button href="/tariffs" variant="stroke" size="md" className="uppercase">
+              Все форматы
+            </Button>
+            <Button href="/contact" variant="primary" size="md" className="uppercase">
+              Заявка в контакты
+            </Button>
+          </div>
           <div className="mt-6 inline-flex rounded-2xl border border-mos-line/40 bg-mos-stone/60 p-1">
             {(
               [

@@ -6,6 +6,7 @@ import { directions } from "@/lib/content";
 import { SCHOOL_COURSE_PAGES } from "@/lib/courses/data";
 import { getSchoolColor } from "@/lib/school-colors";
 import { getSchoolIconSrc } from "@/lib/school-icons";
+import { useAudience } from "@/hooks/landing/useAudience";
 import { useCenteredListItem } from "@/hooks/landing/useCenteredListItem";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { useScrollDirection } from "@/hooks/landing/useScrollDirection";
@@ -46,7 +47,7 @@ function buildExperiences(mode: TrainingMode): TrainingExperience[] {
     category: MODE_CATEGORY[mode],
     description:
       mode === "group"
-        ? `${direction.description} Формат зала: совместные упражнения, спarring и общий RPG-прогресс.`
+        ? `${direction.description} Формат зала: совместные упражнения, спарринг и общий RPG-прогресс.`
         : `${direction.description} Персональный трек с тренером, гибкий график и точечная коррекция.`,
     color: getSchoolColor(direction.key, index),
     icon: getSchoolIconSrc(direction.key),
@@ -92,13 +93,28 @@ export default function Services() {
   const [tappedIndex, setTappedIndex] = useState<number | null>(null);
   const centeredIndexRef = useRef<number | null>(null);
   const isMobile = useMobileMedia();
+  const { isKids } = useAudience();
   const scrollDirection = useScrollDirection(isMobile);
   const centeredIndex = useCenteredListItem(listRef, ".experience-item", isMobile, mode, {
     measureSelector: "[data-exp-header]",
     scrollDirection,
   });
   const mobileActiveIndex = tappedIndex ?? centeredIndex;
-  const experiences = buildExperiences(mode);
+  const experiences = buildExperiences(mode)
+    .filter((item) => !isKids || item.key === "east")
+    .map((item) =>
+      isKids
+        ? {
+            ...item,
+            name: "Клинки Востока · дети",
+            category: mode === "group" ? "Дети · группа" : "Дети · лично",
+            description:
+              mode === "group"
+                ? "Детская группа ушу примерно с 6 лет. Ковёр, формы и игры на внимание. Макет: расписание уточним при записи."
+                : "Индивидуально с Татьяной Грибановой. Макет слотов — подтвердим в контактах.",
+          }
+        : item,
+    );
 
   useEffect(() => {
     if (!isMobile) return;
@@ -175,7 +191,11 @@ export default function Services() {
               key={mode}
               className="experiences-mode-intro max-w-xl text-sm leading-relaxed text-white/50 md:text-base"
             >
-              {MODE_INTRO[mode]}
+              {isKids
+                ? mode === "group"
+                  ? "Детская группа ушу «Клинки Востока»: ковёр, координация и безопасная работа с учебным оружием."
+                  : "Персональное ушу с тренером детской группы. Слоты — макет до подтверждения записи."
+                : MODE_INTRO[mode]}
             </p>
           </div>
         </div>

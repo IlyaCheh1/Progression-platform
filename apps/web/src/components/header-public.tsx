@@ -1,22 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AppLogo from "@/components/app-logo";
-import Button from "@/components/ui/button";
-import { useHeroVisible } from "@/hooks/landing/useHeroVisible";
+import { useAudience } from "@/hooks/landing/useAudience";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
-import { cn } from "@/lib/utils";
+import { withAudience } from "@/lib/audience";
 
 const NAV = [
-  { title: "Направления", href: "#directions" },
-  { title: "Команда", href: "#team" },
-  { title: "Тренировки", href: "#services" },
-  { title: "Тарифы", href: "#tariffs" },
-  { title: "Персонаж", href: "#rpg" },
+  { title: "О нас", href: "/about" },
+  { title: "Направления", href: "/#directions" },
+  { title: "Тарифы", href: "/tariffs" },
+  { title: "Акции", href: "/akcii" },
+  { title: "Контакты", href: "/contact" },
+  { title: "FAQ", href: "/faq" },
 ] as const;
-
-const mobileActionTransition = "transition-all duration-300 ease-out motion-reduce:transition-none";
 
 function MenuIcon({ open }: { open: boolean }) {
   return (
@@ -36,17 +35,11 @@ function MenuIcon({ open }: { open: boolean }) {
 
 export default function Header() {
   const isMobile = useMobileMedia();
-  const isHeroVisible = useHeroVisible();
+  const pathname = usePathname();
+  const router = useRouter();
+  const { mode } = useAudience();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const showDesktopNav = isHeroVisible;
-  const showMobileMenuButton = isMobile && isHeroVisible;
-  const showLoginButton = !isMobile || !isHeroVisible;
-  const showMobileOverlay = isMobile && menuOpen && isHeroVisible;
-
-  useEffect(() => {
-    if (!isHeroVisible) setMenuOpen(false);
-  }, [isHeroVisible]);
+  const homeHref = withAudience("/", mode);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -57,103 +50,79 @@ export default function Header() {
     };
   }, [menuOpen]);
 
-  const navigateToSection = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    event.preventDefault();
-    const target = document.querySelector<HTMLElement>(href);
-    if (!target) return;
-    const jump = () => {
-      const root = document.documentElement;
-      const previousScrollBehavior = root.style.scrollBehavior;
-      root.style.scrollBehavior = "auto";
-      target.scrollIntoView({ behavior: "auto", block: "start" });
-      window.history.pushState(null, "", href);
-      window.requestAnimationFrame(() => {
-        root.style.scrollBehavior = previousScrollBehavior;
-      });
-    };
-    if (menuOpen) {
+  const go = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    const resolved = withAudience(href, mode);
+    const hashIndex = resolved.indexOf("#");
+    const hash = hashIndex >= 0 ? resolved.slice(hashIndex) : "";
+    const path = hashIndex >= 0 ? resolved.slice(0, hashIndex) : resolved;
+    const isHomeHash = hash && (path === "" || path === "/" || path.startsWith("/?"));
+
+    if (isHomeHash && pathname === "/") {
+      event.preventDefault();
+      const target = document.querySelector<HTMLElement>(hash);
+      if (!target) return;
       setMenuOpen(false);
-      window.requestAnimationFrame(jump);
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.pushState(null, "", resolved);
       return;
     }
-    jump();
+
+    if (menuOpen) setMenuOpen(false);
+    if (isHomeHash && pathname !== "/") {
+      event.preventDefault();
+      router.push(resolved);
+    }
   };
 
   return (
     <>
-      <header
-        className="fixed left-0 right-0 top-0 z-50 flex min-h-[4.5rem] items-center py-3 pl-6 pr-4 md:min-h-[5.25rem] md:px-6 md:py-4"
-        style={{ background: "linear-gradient(to bottom, rgba(11,11,12,0.95), transparent)" }}
-      >
-        <Link href="/" className="flex shrink-0 items-center" aria-label="Мастер меча — главная">
+      <header className="landing-header fixed left-0 right-0 top-0 z-50 flex min-h-[4.5rem] items-center py-3 pl-6 pr-4 md:min-h-[5.25rem] md:px-6 md:py-4">
+        <Link href={homeHref} className="flex shrink-0 items-center" aria-label="Мастер меча — главная">
           <AppLogo size={isMobile ? 44 : 52} priority />
         </Link>
 
         <nav
-          className={cn(
-            "absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 text-sm font-medium text-white/60 transition-all duration-300 md:flex",
-            showDesktopNav ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0",
-          )}
-          aria-hidden={!showDesktopNav}
+          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 text-sm font-medium text-white/70 md:flex lg:gap-8"
+          aria-label="Основное меню"
         >
           {NAV.map((link) => (
-            <a
+            <Link
               key={link.href}
-              href={link.href}
+              href={withAudience(link.href, mode)}
               className="uppercase transition-colors duration-200 hover:text-mos-amber"
-              onClick={(event) => navigateToSection(event, link.href)}
+              onClick={(event) => go(event, link.href)}
             >
               {link.title}
-            </a>
+            </Link>
           ))}
         </nav>
 
-        <div className="relative ml-auto flex items-center gap-2">
-          <div className="relative h-11 min-w-11 md:min-w-[100px]">
-            <button
-              type="button"
-              aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
-              aria-expanded={menuOpen}
-              onClick={() => setMenuOpen((open) => !open)}
-              className={cn(
-                "absolute inset-0 flex items-center justify-center md:hidden",
-                mobileActionTransition,
-                showMobileMenuButton ? "pointer-events-auto scale-100 opacity-100" : "pointer-events-none scale-90 opacity-0",
-              )}
-            >
-              <MenuIcon open={menuOpen} />
-            </button>
-            <div
-              className={cn(
-                "absolute inset-0 flex items-center justify-end",
-                mobileActionTransition,
-                showLoginButton ? "pointer-events-auto scale-100 opacity-100" : "pointer-events-none scale-90 opacity-0",
-              )}
-            >
-              <Button href="/login" variant="primary" size="md" className="uppercase">
-                Войти
-              </Button>
-            </div>
-          </div>
+        <div className="relative ml-auto flex items-center md:hidden">
+          <button
+            type="button"
+            aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
+            className="flex h-11 w-11 items-center justify-center"
+          >
+            <MenuIcon open={menuOpen} />
+          </button>
         </div>
       </header>
 
-      {showMobileOverlay && (
-        <div id="mobile-hero-menu" className="fixed inset-0 z-40 bg-void/95 px-6 pt-28 backdrop-blur-md md:hidden">
-          <nav className="flex flex-col gap-2">
+      {menuOpen && (
+        <div id="mobile-public-menu" className="fixed inset-0 z-40 bg-void/95 px-6 pt-28 backdrop-blur-md md:hidden">
+          <nav className="flex flex-col gap-2" aria-label="Мобильное меню">
             {NAV.map((link) => (
-              <a
+              <Link
                 key={link.href}
-                href={link.href}
+                href={withAudience(link.href, mode)}
                 className="block py-3 text-base font-medium uppercase text-white/80 transition-colors duration-200 hover:text-mos-amber"
-                onClick={(event) => navigateToSection(event, link.href)}
+                onClick={(event) => go(event, link.href)}
               >
                 {link.title}
-              </a>
+              </Link>
             ))}
-            <Button href="/login" variant="magenta" size="lg" className="mt-4 uppercase">
-              Войти
-            </Button>
           </nav>
         </div>
       )}
