@@ -32,6 +32,7 @@ export type TeamCard = {
   image: {
     src?: string;
     alt: string;
+    objectPosition?: string;
   };
   visual: {
     accent: string;

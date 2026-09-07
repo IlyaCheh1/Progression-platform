@@ -17,6 +17,7 @@ export const TEAM_COPY = {
   rowEmpty: "Пусто",
   resetBoard: "Сбросить расклад",
   swipeBoardHint: "Смахните влево или вправо, чтобы сменить сторону",
+  switchSides: "Сторона доски",
   mockBadge: "Заглушка",
   mockHint: "Карта-заглушка. Данные появятся позже — это не сотрудник школы.",
   sides: {

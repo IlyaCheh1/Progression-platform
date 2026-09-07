@@ -6,7 +6,7 @@ import Button from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 import { TEAM_COPY } from "./copy.ts";
-import { ROW_SIGILS, SYMBOL_PATHS } from "./symbols.ts";
+import { basePowerOf, ROW_SIGILS, SYMBOL_PATHS } from "./symbols.ts";
 import type { CardScore, CardSymbol, RowDef, SideId, TeamCard } from "./types.ts";
 
 export function SymbolIcon({ name, className }: { name?: CardSymbol | (typeof ROW_SIGILS)[number]; className?: string }) {
@@ -18,7 +18,7 @@ export function SymbolIcon({ name, className }: { name?: CardSymbol | (typeof RO
   );
 }
 
-export function CardFace({
+export function TeamCardFace({
   card,
   power,
   powerBonus,
@@ -29,35 +29,51 @@ export function CardFace({
   powerBonus?: number;
   className?: string;
 }) {
+  const shownPower = power ?? basePowerOf(card);
+  const plateHint = card.badge ?? card.role;
   return (
-    <span className={cn("team-card-face", className)} style={{ "--card-accent": card.visual.accent } as CSSProperties}>
+    <span
+      className={cn("team-card-face", className)}
+      data-rarity={card.mock ? "bronze" : "gold"}
+      style={
+        {
+          "--card-accent": card.visual.accent,
+          "--card-object-position": card.image.objectPosition ?? "top center",
+        } as CSSProperties
+      }
+    >
       <span className="team-card-artwork">
         {card.image.src ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={card.image.src} alt={card.image.alt} className="team-card-photo" draggable={false} />
         ) : (
           <span className="team-card-fallback" aria-hidden>
-            {card.initials}
+            <span className="team-card-bust" />
+            <span className="team-card-initials">{card.initials}</span>
           </span>
         )}
       </span>
-      {power !== undefined ? (
-        <span className="team-card-power" data-boosted={!!powerBonus && powerBonus > 0 || undefined}>
-          <span className="team-card-power-value">{power}</span>
-          {powerBonus && powerBonus > 0 ? <span className="team-card-power-bonus">+{powerBonus}</span> : null}
+      <span className="team-card-vignette" aria-hidden />
+      <span className="team-card-frame" aria-hidden />
+      <span className="team-card-power" data-boosted={Boolean(powerBonus && powerBonus > 0) || undefined}>
+        <span className="team-card-power-gem">
+          <span className="team-card-power-value">{shownPower}</span>
         </span>
-      ) : null}
-      <span className="team-card-sigil">
+        {powerBonus && powerBonus > 0 ? <span className="team-card-power-bonus">+{powerBonus}</span> : null}
+      </span>
+      <span className="team-card-faction" title={plateHint}>
         <SymbolIcon name={card.visual.symbol} />
       </span>
       {card.mock ? <span className="team-card-mock">{TEAM_COPY.mockBadge}</span> : null}
       <span className="team-card-plate">
         <span className="team-card-name">{card.name}</span>
-        <span className="team-card-role">{card.role}</span>
+        {plateHint ? <span className="team-card-role">{plateHint}</span> : null}
       </span>
     </span>
   );
 }
+
+export const CardFace = TeamCardFace;
 
 export function TeamCardButton({
   card,
@@ -100,11 +116,42 @@ export function TeamCardButton({
       data-dragging={isDragging || undefined}
       data-selected={isSelected || undefined}
       data-card-id={card.id}
+      data-rarity={card.mock ? "bronze" : "gold"}
+      data-side={card.side}
       onClick={() => onActivate(card.id)}
       onPointerDown={(event) => onPointerDown?.(event, card.id)}
     >
-      <CardFace card={card} power={power} powerBonus={powerBonus} />
+      <TeamCardFace card={card} power={power} powerBonus={powerBonus} />
     </button>
+  );
+}
+
+export function MobileSideSwitcher({
+  sides,
+  activeSide,
+  labelOf,
+  onChange,
+}: {
+  sides: SideId[];
+  activeSide: SideId;
+  labelOf: (side: SideId) => string;
+  onChange: (side: SideId) => void;
+}) {
+  return (
+    <div className="team-side-switch" role="group" aria-label={TEAM_COPY.switchSides}>
+      {sides.map((side) => (
+        <button
+          key={side}
+          type="button"
+          className="team-side-switch-button"
+          data-active={activeSide === side || undefined}
+          aria-pressed={activeSide === side}
+          onClick={() => onChange(side)}
+        >
+          {labelOf(side)}
+        </button>
+      ))}
+    </div>
   );
 }
 
