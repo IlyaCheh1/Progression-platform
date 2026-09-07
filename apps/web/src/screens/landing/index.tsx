@@ -9,6 +9,7 @@ const Directions = dynamic(() => import("@/screens/landing/directions"), {
   loading: () => <section id="directions" className="min-h-screen" style={{ background: "var(--void)" }} aria-hidden />,
 });
 const Trainers = dynamic(() => import("@/screens/landing/trainers"));
+const TeamBoard = dynamic(() => import("@/screens/landing/team-board"));
 const Services = dynamic(() => import("@/screens/landing/services"));
 const Tariffs = dynamic(() => import("@/screens/landing/tariffs"));
 const RpgBlock = dynamic(() => import("@/screens/landing/rpg"));
@@ -26,6 +27,7 @@ export default function LandingScreen() {
         <Hero />
         <Directions />
         <Trainers />
+        <TeamBoard />
         <Services />
         <Tariffs />
         <div className="landing-end-zone relative">

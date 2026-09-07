@@ -132,7 +132,14 @@ function LoginForm() {
       </Link>
       <h1 className="font-display text-3xl text-mos-text">Вход</h1>
 
-      <a href="/api/auth/login" className="mos-btn mt-6 w-full no-underline">
+      <a
+        href={
+          searchParams.get("returnUrl")
+            ? `/api/auth/login?returnUrl=${encodeURIComponent(searchParams.get("returnUrl") ?? "")}`
+            : "/api/auth/login"
+        }
+        className="mos-btn mt-6 w-full no-underline"
+      >
         Войти через OnlyID
       </a>
 

@@ -3,13 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   buildCallbackUrl,
   cookieOptions,
-  isSafeReturnPath,
   PKCE_COOKIE,
   PKCE_MAX_AGE,
   randomBase64Url,
   REDIRECT_COOKIE,
+  resolvePostLoginPath,
+  resolveSsoApiBase,
   sha256Base64Url,
   signPkceCookieValue,
+  ssoEndpoint,
   SSO_PATHS,
 } from "@/lib/onlyid/sso";
 
@@ -17,7 +19,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const authSecret = process.env.AUTH_SECRET?.trim();
-  const ssoBase = process.env.SSO_BASE_URL?.trim().replace(/\/$/, "");
+  const ssoBase = resolveSsoApiBase();
   const clientId = process.env.SSO_CLIENT_ID?.trim();
   const clientSecret = process.env.SSO_CLIENT_SECRET?.trim();
 
@@ -34,19 +36,14 @@ export async function GET(request: NextRequest) {
     const codeChallenge = await sha256Base64Url(codeVerifier);
     const options = cookieOptions(request, PKCE_MAX_AGE);
 
-    const pkceValue = await signPkceCookieValue(
-      { state, codeVerifier, nonce },
-      authSecret,
-    );
+    const pkceValue = await signPkceCookieValue({ state, codeVerifier, nonce }, authSecret);
 
     const callbackUrl = buildCallbackUrl(request.url);
     const rawReturn =
       request.nextUrl.searchParams.get("returnUrl") ||
       request.nextUrl.searchParams.get("redirect") ||
       "/profile";
-    // "/" is the marketing landing — after OnlyID always send users to the profile cabinet.
-    const returnUrl =
-      isSafeReturnPath(rawReturn) && rawReturn !== "/" ? rawReturn : "/profile";
+    const returnUrl = resolvePostLoginPath(rawReturn);
 
     const params = new URLSearchParams({
       redirect_uri: callbackUrl,
@@ -64,7 +61,7 @@ export async function GET(request: NextRequest) {
       params.set("prompt", prompt);
     }
 
-    const authorizeUrl = `${ssoBase}${SSO_PATHS.authorize}?${params.toString()}`;
+    const authorizeUrl = `${ssoEndpoint(SSO_PATHS.authorize)}?${params.toString()}`;
     const res = NextResponse.redirect(authorizeUrl);
     res.cookies.set(PKCE_COOKIE, pkceValue, options);
     res.cookies.set(REDIRECT_COOKIE, returnUrl, options);

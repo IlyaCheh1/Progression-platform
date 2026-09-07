@@ -12,11 +12,16 @@ import {
   cookieOptions,
   extractDisplayName,
   getPublicOrigin,
-  isSafeReturnPath,
+  ID_TOKEN_COOKIE,
+  ID_TOKEN_MAX_AGE,
   PKCE_COOKIE,
   readPkceCookieValue,
   REDIRECT_COOKIE,
+  resolvePostLoginPath,
+  resolveSsoApiBase,
+  resolveSsoIssuer,
   schoolApiBaseUrl,
+  ssoEndpoint,
   SSO_PATHS,
   type SsoUserInfo,
 } from "@/lib/onlyid/sso";
@@ -88,7 +93,7 @@ function sessionFromSchool(data: SchoolAuthResponse, email: string): SessionUser
 
 export async function GET(request: NextRequest) {
   const authSecret = process.env.AUTH_SECRET?.trim();
-  const ssoBase = process.env.SSO_BASE_URL?.trim().replace(/\/$/, "");
+  const ssoBase = resolveSsoApiBase();
   const clientId = process.env.SSO_CLIENT_ID?.trim();
   const clientSecret = process.env.SSO_CLIENT_SECRET?.trim();
   const bridgeSecret = process.env.SSO_BRIDGE_SECRET?.trim();
@@ -127,7 +132,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
-    const tokenRes = await fetch(`${ssoBase}${SSO_PATHS.token}`, {
+    const tokenRes = await fetch(ssoEndpoint(SSO_PATHS.token), {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -152,8 +157,7 @@ export async function GET(request: NextRequest) {
       return redirectWithError(request, "no_id_token");
     }
 
-    const issuer =
-      process.env.SSO_ISSUER?.replace(/\/$/, "") || `${ssoBase}${SSO_PATHS.issuerSuffix}`;
+    const issuer = resolveSsoIssuer();
 
     const jwksFromBase = `${ssoBase}${SSO_PATHS.jwks}`;
     let jwksUrlToTry = jwksFromBase;
@@ -199,7 +203,7 @@ export async function GET(request: NextRequest) {
       return redirectWithError(request, "nonce_mismatch");
     }
 
-    const userinfoRes = await fetch(`${ssoBase}${SSO_PATHS.userinfo}`, {
+    const userinfoRes = await fetch(ssoEndpoint(SSO_PATHS.userinfo), {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
     if (!userinfoRes.ok) {
@@ -255,11 +259,7 @@ export async function GET(request: NextRequest) {
     } catch {
       return redirectWithError(request, "sso_not_configured");
     }
-    const redirectTo = request.cookies.get(REDIRECT_COOKIE)?.value || "/profile";
-    const safeRedirect =
-      isSafeReturnPath(redirectTo) && redirectTo !== "/" && redirectTo !== "/auth/callback"
-        ? redirectTo
-        : "/profile";
+    const safeRedirect = resolvePostLoginPath(request.cookies.get(REDIRECT_COOKIE)?.value);
 
     const landing = new URL("/auth/callback", origin);
     if (safeRedirect !== "/profile") {
@@ -269,8 +269,10 @@ export async function GET(request: NextRequest) {
     const bridgeValue = await signBridgeCookieValue(session, authSecret);
     const res = NextResponse.redirect(landing);
     const bridgeOpts = cookieOptions(request, BRIDGE_MAX_AGE);
+    const idTokenOpts = cookieOptions(request, ID_TOKEN_MAX_AGE);
     const clearOpts = cookieOptions(request, 0);
     res.cookies.set(BRIDGE_COOKIE, bridgeValue, bridgeOpts);
+    res.cookies.set(ID_TOKEN_COOKIE, tokens.id_token, idTokenOpts);
     res.cookies.set(PKCE_COOKIE, "", { ...clearOpts, maxAge: 0 });
     res.cookies.set(REDIRECT_COOKIE, "", { ...clearOpts, maxAge: 0 });
     return res;
