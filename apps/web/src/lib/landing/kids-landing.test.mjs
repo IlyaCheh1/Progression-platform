@@ -19,5 +19,8 @@ describe("kids landing hotfix", () => {
   it("commits a local child wushu hero image", () => {
     const image = fileURLToPath(new URL("../../../public/media/hero/kids-wushu-child.webp", import.meta.url));
     assert.equal(existsSync(image), true);
+    const credit = readFileSync(fileURLToPath(new URL("../../../public/media/hero/ATTRIBUTION.md", import.meta.url)), "utf8");
+    assert.match(credit, /7988769/);
+    assert.match(credit, /Pexels/i);
   });
 });

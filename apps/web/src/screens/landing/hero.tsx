@@ -333,7 +333,7 @@ export default function Hero() {
           <img
             src={KIDS_WUSHU.media.hero}
             alt=""
-            className="h-full w-full object-cover object-[62%_center]"
+            className="h-full w-full object-cover object-[center_40%]"
             style={{ filter: "saturate(1.2) brightness(0.38)" }}
             decoding="async"
             fetchPriority="high"
