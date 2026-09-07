@@ -38,5 +38,7 @@ describe("kids landing hotfix", () => {
     const credit = readFileSync(fileURLToPath(new URL("../../../public/media/hero/ATTRIBUTION.md", import.meta.url)), "utf8");
     assert.match(credit, /7988769/);
     assert.match(credit, /Pexels/i);
+    assert.match(credit, /Шагал/);
+    assert.match(credit, /text-free poster A/);
   });
 });
