@@ -11,7 +11,7 @@ import { pickBotMove, randomSide } from "./bot.ts";
 import { TEAM_COPY, outcomeLabel, rowCountLabel, sideTitle } from "./copy.ts";
 import { createExploreState, exploreReducer } from "./explore-reducer.ts";
 import { canSelectPlayerCard, createSetupState, gameReducer } from "./game-reducer.ts";
-import { BoardRow, CardDialog, DragOverlay, Hand, ModeSwitch, SidePanel } from "./pieces.tsx";
+import { BoardRow, CardDialog, DragOverlay, Hand, MobileSideSwitcher, ModeSwitch, SidePanel } from "./pieces.tsx";
 import { TEAM_BOARD_CARDS, buildRows } from "./roster.ts";
 import {
   canPlaceOnRow,
@@ -301,7 +301,7 @@ export default function TeamBoard() {
         selectedCardId={board.selectedCardId}
         expandedCardId={board.expandedCardId}
         draggedCardId={board.dragging?.cardId}
-        basePowerByCardId={playing ? Object.fromEntries(TEAM_BOARD_CARDS.map((card) => [card.id, basePowerOf(card)])) : undefined}
+        basePowerByCardId={Object.fromEntries(TEAM_BOARD_CARDS.map((card) => [card.id, basePowerOf(card)]))}
         cardLabel={(card) => `${card.name} — ${card.role}`}
         onActivate={openCard}
         onPointerDown={onPointerDown}
@@ -439,19 +439,12 @@ export default function TeamBoard() {
 
         {showBoard ? (
           <>
-            <div className="team-side-switch" role="group">
-              {visibleSides.map((side) => (
-                <button
-                  key={side}
-                  type="button"
-                  className="team-side-switch-button"
-                  data-active={board.activeSide === side || undefined}
-                  onClick={() => setActiveSide(side)}
-                >
-                  {sideTitle(side)}
-                </button>
-              ))}
-            </div>
+            <MobileSideSwitcher
+              sides={visibleSides}
+              activeSide={board.activeSide}
+              labelOf={sideTitle}
+              onChange={setActiveSide}
+            />
             {playing ? <p className="team-board-swipe-hint">{TEAM_COPY.swipeBoardHint}</p> : null}
             <div
               className="team-board reveal-fade"

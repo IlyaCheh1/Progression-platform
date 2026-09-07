@@ -3,11 +3,11 @@ import { LANDING_TRAINERS } from "../landing-trainers.ts";
 import { cardImageAlt } from "./copy.ts";
 import type { CardSymbol, SideId, TeamCard } from "./types.ts";
 
-const TRAINER_SYMBOLS: Record<string, { symbol: CardSymbol; badge: string }> = {
-  "max-kiselev": { symbol: "star", badge: "Автор школы" },
-  "nikolay-lobanov": { symbol: "triangle", badge: "Рапира" },
-  "tatyana-gribanova": { symbol: "hexagon", badge: "Ушу" },
-  "ivan-bobrovsky": { symbol: "rhombus", badge: "Иберия" },
+const TRAINER_SYMBOLS: Record<string, { symbol: CardSymbol; badge: string; objectPosition: string }> = {
+  "max-kiselev": { symbol: "star", badge: "Автор школы", objectPosition: "38% 12%" },
+  "nikolay-lobanov": { symbol: "triangle", badge: "Рапира", objectPosition: "45% 18%" },
+  "tatyana-gribanova": { symbol: "hexagon", badge: "Ушу", objectPosition: "48% 15%" },
+  "ivan-bobrovsky": { symbol: "rhombus", badge: "Иберия", objectPosition: "50% 12%" },
 };
 
 type MockSpec = {
@@ -30,7 +30,11 @@ function initialsOf(name: string): string {
 
 function trainerCards(): TeamCard[] {
   return LANDING_TRAINERS.map((trainer) => {
-    const meta = TRAINER_SYMBOLS[trainer.id] ?? { symbol: "rhombus" as const, badge: "Мастер" };
+    const meta = TRAINER_SYMBOLS[trainer.id] ?? {
+      symbol: "rhombus" as const,
+      badge: "Мастер",
+      objectPosition: "50% 12%",
+    };
     return {
       id: trainer.id,
       side: "sideA" as const,
@@ -42,7 +46,11 @@ function trainerCards(): TeamCard[] {
       badge: meta.badge,
       mock: false,
       initials: initialsOf(trainer.name),
-      image: { src: trainer.photo, alt: cardImageAlt(trainer.name, trainer.role) },
+      image: {
+        src: trainer.photo,
+        alt: cardImageAlt(trainer.name, trainer.role),
+        objectPosition: meta.objectPosition,
+      },
       visual: { accent: trainer.accent, symbol: meta.symbol },
     };
   });
