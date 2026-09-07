@@ -76,7 +76,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="landing-header fixed left-0 right-0 top-0 z-50 flex min-h-[4.5rem] items-center py-3 pl-6 pr-4 md:min-h-[5.25rem] md:px-6 md:py-4">
+      <header className="landing-header fixed left-0 right-0 top-0 z-50 flex min-h-[4.5rem] items-center md:min-h-[5.25rem]">
         <Link href={homeHref} className="flex shrink-0 items-center" aria-label="Мастер меча — главная">
           <AppLogo size={isMobile ? 44 : 52} priority />
         </Link>
@@ -111,7 +111,7 @@ export default function Header() {
       </header>
 
       {menuOpen && (
-        <div id="mobile-public-menu" className="fixed inset-0 z-40 bg-void/95 px-6 pt-28 backdrop-blur-md md:hidden">
+        <div id="mobile-public-menu" className="mobile-public-menu fixed inset-0 z-40 bg-void/95 backdrop-blur-md md:hidden">
           <nav className="flex flex-col gap-2" aria-label="Мобильное меню">
             {NAV.map((link) => (
               <Link

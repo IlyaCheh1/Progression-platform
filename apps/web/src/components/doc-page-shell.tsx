@@ -15,8 +15,8 @@ export function DocPageShell({ children }: DocPageShellProps) {
         style={{ background: "var(--void)", color: "white" }}
       >
         <Header />
-        <main className="flex-1 pt-24">
-          <article className="og-doc-prose mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-24">{children}</article>
+        <main className="public-main flex-1">
+          <article className="og-doc-prose mx-auto max-w-3xl px-4 pb-16 pt-4 md:px-6 md:pb-24">{children}</article>
         </main>
         <Footer />
       </div>

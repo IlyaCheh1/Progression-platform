@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Golos_Text, Unbounded } from "next/font/google";
 import SupportChatRoot from "@/components/support-chat-root";
 import "./globals.css";
@@ -22,6 +22,12 @@ const unbounded = Unbounded({
 export const metadata: Metadata = {
   title: "Мастер меча",
   description: "Играй. Тренируйся. Прокачивай персонажа.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

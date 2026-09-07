@@ -104,7 +104,7 @@
 .room-panel {
   flex: 0 0 var(--room-slide-width, 100vw);
   width: var(--room-slide-width, 100vw);
-  height: 100vh;
+  height: 100%;
   position: relative;
   flex-shrink: 0;
   overflow: hidden;
@@ -1118,10 +1118,68 @@ a.experience-item {
   box-shadow: 0 24px 64px color-mix(in srgb, var(--trainer-accent) 12%, transparent);
 }
 
+:root {
+  --landing-header-offset: calc(4.5rem + env(safe-area-inset-top, 0px));
+}
+
 .landing-header {
   background: color-mix(in srgb, var(--void) 78%, transparent);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(18px);
+  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+  padding-bottom: 0.75rem;
+  padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+  padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+}
+
+.public-main {
+  padding-top: calc(var(--landing-header-offset) + 1.5rem);
+}
+
+.mobile-public-menu {
+  padding-top: calc(var(--landing-header-offset) + 1.25rem);
+  padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+  padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+}
+
+#hero,
+#directions,
+#trainers,
+#team,
+#services,
+#akcii,
+#tariffs,
+#journal,
+#faq,
+#rpg,
+#join {
+  scroll-margin-top: var(--landing-header-offset);
+}
+
+.hero-main {
+  padding-top: var(--landing-header-offset);
+}
+
+.hero-bottom-copy {
+  bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+}
+
+.rooms-dots {
+  bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --landing-header-offset: calc(5.25rem + env(safe-area-inset-top, 0px));
+  }
+
+  .landing-header {
+    padding-top: max(1rem, env(safe-area-inset-top, 0px));
+    padding-bottom: 1rem;
+    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+  }
 }
 
 .kids-hero-mark {
@@ -1367,13 +1425,124 @@ a.experience-item {
 }
 
 @media (max-width: 767px) {
+  :root {
+    --landing-header-offset: calc(4.25rem + env(safe-area-inset-top, 0px));
+  }
+
+  .hero-audience-toggle {
+    max-width: 100%;
+  }
+
+  .hero-audience-badge {
+    min-height: 44px;
+    min-width: 7.5rem;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.62rem;
+  }
+
+  .kids-hero-mark {
+    width: 2.5rem;
+  }
+
+  .kids-slogan {
+    max-width: 20rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    line-height: 1.35;
+  }
+
+  .kids-hero .hero-main {
+    gap: 1.25rem;
+    padding-bottom: 2.5rem;
+    justify-content: flex-start;
+    padding-top: calc(var(--landing-header-offset) + 1.25rem);
+  }
+
+  .kids-hero .hero-bottom-copy {
+    display: none;
+  }
+
+  .hero-bottom-copy {
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .room-panel-text {
+    padding-top: var(--landing-header-offset);
+    padding-bottom: 7.25rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .room-panel-text--tracks .room-panel-tagline,
+  .room-panel-text--tracks .room-panel-description {
+    margin-bottom: 0.5rem;
+  }
+
+  .recon-tracks {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    max-width: none;
+    margin-bottom: 0.75rem;
+  }
+
+  .recon-track {
+    padding: 0.45rem 0.5rem;
+  }
+
+  .recon-track strong {
+    font-size: 0.72rem;
+    line-height: 1.25;
+  }
+
+  .recon-track span:last-child {
+    display: none;
+  }
+
   .rooms-arrow {
     top: auto;
-    bottom: 5.5rem;
+    bottom: calc(3.1rem + env(safe-area-inset-bottom, 0px));
     transform: none;
+    height: 2.75rem;
+    width: 2.75rem;
+    font-size: 1.4rem;
+  }
+
+  .rooms-arrow[data-direction="prev"] {
+    left: 0.5rem;
+  }
+
+  .rooms-arrow[data-direction="next"] {
+    right: 0.5rem;
+  }
+
+  .rooms-dots {
+    bottom: max(0.65rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .rooms-dots button {
     height: 2.5rem;
     width: 2.5rem;
-    font-size: 1.4rem;
+  }
+
+  .landing-cta .og-btn,
+  #join .og-btn,
+  .room-panel .og-btn,
+  .questions-section .og-btn,
+  #tariffs .og-btn,
+  #akcii .og-btn,
+  #journal .og-btn {
+    min-height: 44px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .faq-item-q {
+    min-height: 44px;
+  }
+
+  .promo-card,
+  .article-card {
+    max-width: 100%;
   }
 }
 

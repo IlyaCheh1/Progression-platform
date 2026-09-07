@@ -185,8 +185,8 @@ export default function Directions() {
   }, [slides.length]);
 
   return (
-    <section id="directions" ref={containerRef} className="relative h-screen">
-      <div className="rooms-sticky sticky top-0 h-screen w-full overflow-hidden">
+    <section id="directions" ref={containerRef} className="relative h-dvh min-h-[32rem]">
+      <div className="rooms-sticky sticky top-0 h-dvh min-h-[32rem] w-full overflow-hidden">
         <div className="absolute left-1/2 top-8 z-20 hidden -translate-x-1/2 items-center gap-3 text-xs font-semibold uppercase tracking-widest text-white/40 md:flex">
           <span>Направления</span>
           <span className="h-px w-8 bg-white/20" />
@@ -222,7 +222,7 @@ export default function Directions() {
         />
 
         <div
-          className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-1"
+          className="rooms-dots absolute left-1/2 z-20 flex -translate-x-1/2 gap-1"
           role="tablist"
           aria-label="Направления"
         >
@@ -234,7 +234,7 @@ export default function Directions() {
               aria-label={slide.title}
               aria-selected={i === activeRoom}
               onClick={() => goToRoom(i)}
-              className="flex h-6 w-6 cursor-pointer items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+              className="flex h-10 w-10 cursor-pointer items-center justify-center md:h-6 md:w-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
             >
               <span
                 className="block h-2 w-2 rounded-full transition-transform duration-300 hover:scale-125"
@@ -317,7 +317,7 @@ function DirectionPanel({
       <div
         className={`room-panel-text relative z-10 flex h-full flex-col justify-end px-6 pb-24 md:px-24${
           isMontante ? " room-panel-text--montante" : " max-w-3xl"
-        }`}
+        }${slide.reconstruction || slide.tracks ? " room-panel-text--tracks" : ""}`}
       >
         <div
           className="mb-6 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest"

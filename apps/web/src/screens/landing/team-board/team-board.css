@@ -638,6 +638,31 @@
     display: flex;
   }
 
+  .team-side-switch-button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.65rem 1rem;
+  }
+
+  .team-dialog-backdrop {
+    padding: max(0.75rem, env(safe-area-inset-top, 0px)) max(0.75rem, env(safe-area-inset-right, 0px))
+      max(0.75rem, env(safe-area-inset-bottom, 0px)) max(0.75rem, env(safe-area-inset-left, 0px));
+    align-items: end;
+  }
+
+  .team-dialog {
+    max-height: min(86dvh, 52rem);
+  }
+
+  .team-dialog-close {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .team-dialog-row-button {
+    min-height: 44px;
+  }
+
   .team-board .team-side-panel,
   .team-board[data-active-side="sideA"] [data-side="sideB"],
   .team-board[data-active-side="sideB"] [data-side="sideA"],

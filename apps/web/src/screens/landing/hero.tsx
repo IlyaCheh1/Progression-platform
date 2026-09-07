@@ -326,7 +326,7 @@ export default function Hero() {
   }, [isMobile, reduceMotion, isKids]);
 
   return (
-    <section id="hero" className={`relative h-screen w-full overflow-hidden${isKids ? " kids-hero" : ""}`} style={{ background: "var(--void)" }}>
+    <section id="hero" className={`relative h-dvh min-h-[32rem] w-full overflow-hidden${isKids ? " kids-hero" : ""}`} style={{ background: "var(--void)" }}>
       {isKids ? (
         <div className="absolute inset-0" aria-hidden>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -423,7 +423,7 @@ export default function Hero() {
         />
       ))}
 
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pb-28 text-center">
+      <div className="hero-main relative z-10 flex h-full flex-col items-center justify-center px-6 pb-28 text-center">
         <div className="flex w-full flex-col items-center gap-8 md:gap-10">
           <h1
             className="mobile-fluid-hero-title flex max-w-4xl flex-col items-center gap-4 font-unbounded font-medium tracking-tight md:gap-6 lg:gap-7"
@@ -463,7 +463,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 z-10 flex w-[calc(100%-1.5rem)] max-w-xl -translate-x-1/2 flex-col items-center gap-2 px-3 text-center sm:w-auto sm:px-6">
+      <div className="hero-bottom-copy absolute left-1/2 z-10 flex w-[calc(100%-1.5rem)] max-w-xl -translate-x-1/2 flex-col items-center gap-2 px-3 text-center sm:w-auto sm:px-6">
         <p className="font-golos text-[calc(0.875rem+2pt)] font-medium leading-relaxed text-white/60 md:text-[calc(0.875rem+4pt)]">
           {isKids ? (
             <>
