@@ -27,7 +27,7 @@ describe("kids wushu canon (poster A)", () => {
     assert.equal(kidsPhoneHref(), "tel:+79150486160");
     assert.equal(KIDS_SAGE, "#5a8f7b");
     assert.equal(KIDS_AMBER, "#d4a84b");
-    assert.equal(KIDS_WUSHU.media.hero, "/media/courses/east-hero.webp");
+    assert.equal(KIDS_WUSHU.media.hero, "/media/hero/kids-wushu-child.webp");
     assert.equal(KIDS_WUSHU.media.trainer, "/media/trainers/tatyana-gribanova.webp");
     assert.equal(KIDS_WUSHU.media.logo, "/media/logo-mark.png");
   });

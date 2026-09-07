@@ -50,9 +50,9 @@ export default function TariffsPage() {
           Детская секция ушу: первое занятие бесплатно, набор от 6 лет. Дальше — те же форматы зала.
         </p>
 
-        <div className="mt-12 grid gap-5 md:grid-cols-2">
+        <div className="tariffs-page-grid mt-12 grid gap-5 md:grid-cols-2">
           {BLOCKS.map((block) => (
-            <article key={block.id} className="promo-card">
+            <article key={block.id} className="promo-card tariffs-format-card">
               <span className="promo-card-badge">{block.id === "split" || block.id === "online" ? "Макет" : "Зал"}</span>
               <h2 className="mt-4 font-unbounded text-2xl text-white">{block.title}</h2>
               <p className="mt-2 font-unbounded text-mos-amber">{block.price}</p>

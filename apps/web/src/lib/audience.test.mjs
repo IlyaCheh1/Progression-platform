@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { audienceFromSearch, isAudienceMode, parseAudience, withAudience } from "./audience.ts";
+import { audienceFromSearch, isAudienceMode, parseAudience, publicNavForAudience, withAudience } from "./audience.ts";
 
 describe("audience mode", () => {
   it("parses kids aliases and rejects junk", () => {
@@ -18,6 +18,22 @@ describe("audience mode", () => {
     assert.equal(withAudience("/tariffs", "kids"), "/tariffs?audience=kids");
     assert.equal(withAudience("/#directions", "kids"), "/?audience=kids#directions");
     assert.equal(withAudience("/akcii?ref=nav", "kids"), "/akcii?ref=nav&audience=kids");
+  });
+
+  it("hides the rooms slider link in kids public nav", () => {
+    const items = [
+      { title: "О нас", href: "/about" },
+      { title: "Направления", href: "/#directions" },
+      { title: "Тарифы", href: "/tariffs" },
+    ];
+    assert.deepEqual(
+      publicNavForAudience(items, "adults").map((item) => item.href),
+      ["/about", "/#directions", "/tariffs"],
+    );
+    assert.deepEqual(
+      publicNavForAudience(items, "kids").map((item) => item.href),
+      ["/about", "/tariffs"],
+    );
   });
 
   it("reads the first audience query value for the homepage", () => {

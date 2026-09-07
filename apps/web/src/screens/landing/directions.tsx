@@ -3,11 +3,9 @@
 import { useEffect, useMemo, useRef } from "react";
 import { directions } from "@/lib/content";
 import { SCHOOL_COURSE_PAGES } from "@/lib/courses/data";
-import { KIDS_SAGE, KIDS_WUSHU, kidsPhoneHref } from "@/lib/landing/kids-wushu";
 import { RECONSTRUCTION_TRACKS } from "@/lib/landing/reconstruction";
 import { getSchoolColor } from "@/lib/school-colors";
 import { buildServiceButtonTheme } from "@/lib/service-button-theme";
-import { useAudience } from "@/hooks/landing/useAudience";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { useRoomsScroll } from "@/hooks/landing/useRoomsScroll";
 import Button from "@/components/ui/button";
@@ -53,32 +51,6 @@ type DirectionSlide = {
   tracks?: ReadonlyArray<{ id: string; title: string }>;
 };
 
-const KIDS_SLIDES: Omit<DirectionSlide, "id" | "color" | "glow" | "gradient" | "gradientMobile">[] = [
-  {
-    key: "kids-east",
-    title: KIDS_WUSHU.section,
-    description: KIDS_WUSHU.body,
-    image: KIDS_WUSHU.media.hero,
-    tag: KIDS_WUSHU.age,
-    tagline: KIDS_WUSHU.slogan,
-    stat: KIDS_WUSHU.cta,
-    href: kidsPhoneHref(),
-    cta: KIDS_WUSHU.enroll,
-  },
-  {
-    key: "kids-program",
-    title: "Путь чемпиона",
-    description: `${KIDS_WUSHU.places}. Тренер — ${KIDS_WUSHU.trainerFull}.`,
-    image: KIDS_WUSHU.media.trainer,
-    tag: KIDS_WUSHU.school,
-    tagline: KIDS_WUSHU.slogan,
-    stat: KIDS_WUSHU.age,
-    href: kidsPhoneHref(),
-    cta: KIDS_WUSHU.cta,
-    tracks: KIDS_WUSHU.bullets,
-  },
-];
-
 function ArrowButton({
   label,
   direction,
@@ -108,17 +80,8 @@ export default function Directions() {
   const containerRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileMedia();
-  const { isKids } = useAudience();
 
   const slides = useMemo<DirectionSlide[]>(() => {
-    if (isKids) {
-      return KIDS_SLIDES.map((slide, index) => ({
-        id: index + 1,
-        ...slide,
-        ...buildDirectionTheme(index === 0 ? KIDS_SAGE : "#d4a84b"),
-      }));
-    }
-
     const schoolSlides: DirectionSlide[] = directions.map((direction, index) => {
       const theme = buildDirectionTheme(getSchoolColor(direction.key, index));
       const course = SCHOOL_COURSE_PAGES[direction.key];
@@ -157,13 +120,9 @@ export default function Directions() {
         ...reconTheme,
       },
     ];
-  }, [isKids]);
+  }, []);
 
   const { activeRoom, goToRoom } = useRoomsScroll(containerRef, trackRef, slides.length, undefined, isMobile);
-
-  useEffect(() => {
-    goToRoom(0);
-  }, [isKids, goToRoom]);
 
   useEffect(() => {
     const container = containerRef.current;

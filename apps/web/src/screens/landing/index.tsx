@@ -33,7 +33,7 @@ function LandingBody() {
       <Header />
       <main>
         <Hero />
-        <Directions />
+        {!isKids ? <Directions /> : null}
         <Trainers />
         {!isKids ? <TeamBoard /> : null}
         <Services />
