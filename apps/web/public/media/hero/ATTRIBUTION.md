@@ -1,5 +1,4 @@
 # Hero media attribution
 
-- `kids-wushu-child.webp` — kids practicing martial arts.
-  Photo by [cottonbro studio](https://www.pexels.com/@cottonbro/) on [Pexels](https://www.pexels.com/photo/kids-practicing-martial-arts-7988769/).
-  License: [Pexels License](https://www.pexels.com/license/) (free to use).
+- `kids-wushu-hero-16x9.webp` / `kids-wushu-hero-9x16.webp` — official text-free collage from kids wushu poster A (Шагал).
+  Photos: `east-hero` / Tatyana from the repo (FECHTOGRAPHY). No text overlays.

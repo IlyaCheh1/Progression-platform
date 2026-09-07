@@ -1308,6 +1308,17 @@ a.experience-item {
   filter: drop-shadow(0 0 18px rgba(212, 168, 75, 0.35));
 }
 
+.kids-hero-art {
+  object-position: 78% center;
+  filter: saturate(1.08) brightness(0.72);
+}
+
+@media (max-width: 767px) {
+  .kids-hero-art {
+    object-position: 82% 28%;
+  }
+}
+
 .kids-slogan {
   max-width: 36rem;
   font-family: var(--mos-font-display);
