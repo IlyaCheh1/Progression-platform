@@ -30,7 +30,7 @@ export default function Arenda() {
             Зал на час — под вашу группу
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-white/50">
-            80 м², зеркала и покрытие «ласточкин хвост». Фото ниже — макеты, живые снимки появятся позже.
+            80 м², зеркала и покрытие «ласточкин хвост». Ниже — виды зала: зеркала, окна в пол и пространство под тренировку.
           </p>
         </div>
 
@@ -47,7 +47,7 @@ export default function Arenda() {
           {HALL_RENTAL_PHOTOS.map((photo) => (
             <figure key={photo.src} className="hall-photo-card">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={photo.src} alt={photo.alt} />
+              <img src={photo.src} alt={photo.alt} className="h-full w-full object-cover object-center" />
               <figcaption>{photo.caption}</figcaption>
             </figure>
           ))}

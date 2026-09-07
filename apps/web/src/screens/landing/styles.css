@@ -1483,8 +1483,11 @@ a.experience-item {
 .hall-photo-card img {
   display: block;
   width: 100%;
+  max-width: 100%;
+  height: auto;
   aspect-ratio: 8 / 5;
   object-fit: cover;
+  object-position: center;
 }
 
 .hall-photo-card figcaption {

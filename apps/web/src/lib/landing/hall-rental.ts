@@ -29,10 +29,10 @@ export const HALL_RENTAL_CADENCE = [
 export type HallRentalCadence = (typeof HALL_RENTAL_CADENCE)[number]["id"];
 
 export const HALL_RENTAL_PHOTOS = [
-  { src: "/media/arenda/hall-area.svg", alt: "Макет зала: площадь 80 м²", caption: "Макет · 80 м²" },
-  { src: "/media/arenda/hall-mirrors.svg", alt: "Макет зала: зеркала", caption: "Макет · зеркала" },
-  { src: "/media/arenda/hall-floor.svg", alt: "Макет зала: покрытие ласточкин хвост", caption: "Макет · покрытие" },
-  { src: "/media/arenda/hall-light.svg", alt: "Макет зала: свет и пространство", caption: "Макет · зал" },
+  { src: "/media/arenda/hall-overview.webp", alt: "Зал ушу: общий вид, зеркала и окна в пол", caption: "Обзор зала" },
+  { src: "/media/arenda/hall-mirrors.webp", alt: "Зал ушу: стена зеркал", caption: "Зеркала" },
+  { src: "/media/arenda/hall-windows.webp", alt: "Зал ушу: окна в пол", caption: "Окна" },
+  { src: "/media/arenda/hall-corner.webp", alt: "Зал ушу: угол зала", caption: "Угол зала" },
 ] as const;
 
 export const HALL_RENTAL_HOURS_MIN = 1;

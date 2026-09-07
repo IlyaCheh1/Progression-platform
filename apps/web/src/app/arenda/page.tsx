@@ -24,7 +24,7 @@ export default function ArendaPage() {
         <h1 className="mt-3 font-unbounded text-4xl text-white md:text-6xl">Зал на час</h1>
         <p className="mt-4 max-w-2xl text-white/50">
           {HALL_RENTAL_FACTS.price}. {HALL_RENTAL_FACTS.area}, {HALL_RENTAL_FACTS.mirrors.toLowerCase()}, покрытие —{" "}
-          {HALL_RENTAL_FACTS.floor}. Фото — макеты, не сток из интернета.
+          {HALL_RENTAL_FACTS.floor}. Фото — фотореалистичные макеты зала.
         </p>
 
         <ul className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -40,7 +40,7 @@ export default function ArendaPage() {
           {HALL_RENTAL_PHOTOS.map((photo) => (
             <figure key={photo.src} className="hall-photo-card">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={photo.src} alt={photo.alt} />
+              <img src={photo.src} alt={photo.alt} className="h-full w-full object-cover object-center" />
               <figcaption>{photo.caption}</figcaption>
             </figure>
           ))}
