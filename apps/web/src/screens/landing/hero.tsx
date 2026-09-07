@@ -433,8 +433,7 @@ export default function Hero() {
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={KIDS_WUSHU.media.logo} alt="" className="kids-hero-mark" />
-                <span className="kids-hero-kicker">{KIDS_WUSHU.school}</span>
-                <span className="block text-white leading-tight">{KIDS_WUSHU.brand}</span>
+                <span className="block text-white leading-tight">{KIDS_WUSHU.school}</span>
                 <span className="block leading-tight" style={{ color: KIDS_SAGE }}>
                   {KIDS_WUSHU.section}
                 </span>

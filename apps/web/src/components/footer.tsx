@@ -1,5 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import AppLogo from "@/components/app-logo";
+import { useAudience } from "@/hooks/landing/useAudience";
+import { withAudience } from "@/lib/audience";
+import { KIDS_WUSHU } from "@/lib/landing/kids-wushu";
 import { LEGAL_ENTITY } from "@/lib/legal/content";
 
 const SOCIAL_ICONS = {
@@ -47,29 +52,52 @@ function AccentBar() {
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const { mode, isKids } = useAudience();
+  const homeHref = withAudience("/", mode);
 
   return (
     <footer className="landing-footer relative z-10 text-white">
       <div className="mx-auto max-w-6xl px-6 pb-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-10">
-          <Link href="/" aria-label="Мастер меча — главная" className="flex shrink-0 items-center">
+          <Link
+            href={homeHref}
+            aria-label={isKids ? `${KIDS_WUSHU.school} — главная` : "Мастер меча — главная"}
+            className="flex shrink-0 items-center"
+          >
             <AppLogo size={84} />
           </Link>
 
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-sm text-white/70">
               <AccentBar />
-              <span>Мастер меча — школа исторического фехтования</span>
+              <span>
+                {isKids
+                  ? `${KIDS_WUSHU.school} — ${KIDS_WUSHU.section}`
+                  : "Мастер меча — школа исторического фехтования"}
+              </span>
             </div>
             <div className="flex max-w-3xl flex-col gap-3 text-[calc(0.875rem-2pt)] text-white/55 md:text-sm">
-              <p>
-                Мастер меча объединяет тренировки по историческому фехтованию и Progression Platform: групповые и
-                индивидуальные занятия, несколько школ оружия и единый RPG-профиль ученика.
-              </p>
-              <p>
-                Записывайся на пробное занятие, выбирай направление и абонемент, прокачивай персонажа через тренировки
-                и достижения. Развивай мастерство клинка в сообществе единомышленников!
-              </p>
+              {isKids ? (
+                <>
+                  <p>
+                    {KIDS_WUSHU.school}: {KIDS_WUSHU.body} {KIDS_WUSHU.age}. {KIDS_WUSHU.cta}
+                  </p>
+                  <p>
+                    {KIDS_WUSHU.enroll}: {KIDS_WUSHU.phoneDisplay} · {KIDS_WUSHU.trainerShort}. {KIDS_WUSHU.places}.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>
+                    Мастер меча объединяет тренировки по историческому фехтованию и Progression Platform: групповые и
+                    индивидуальные занятия, несколько школ оружия и единый RPG-профиль ученика.
+                  </p>
+                  <p>
+                    Записывайся на пробное занятие, выбирай направление и абонемент, прокачивай персонажа через
+                    тренировки и достижения. Развивай мастерство клинка в сообществе единомышленников!
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -81,7 +109,7 @@ export default function Footer() {
           {FOOTER_LINKS.map((item) => (
             <Link
               key={item.title}
-              href={item.href}
+              href={withAudience(item.href, mode)}
               className="flex items-center gap-2 text-sm text-white/55 underline-offset-4 transition-colors duration-150 hover:text-white hover:underline"
             >
               <AccentBar />

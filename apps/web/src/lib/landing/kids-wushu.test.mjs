@@ -5,8 +5,9 @@ import { KIDS_AMBER, KIDS_SAGE, KIDS_WUSHU, kidsPhoneHref } from "./kids-wushu.t
 
 describe("kids wushu canon (poster A)", () => {
   it("keeps poster A copy, palette and media wiring", () => {
-    assert.equal(KIDS_WUSHU.school, "Школа фехтования");
-    assert.equal(KIDS_WUSHU.brand, "Мастер меча");
+    assert.equal(KIDS_WUSHU.school, "Детская школа ушу");
+    assert.equal("brand" in KIDS_WUSHU, false);
+    assert.doesNotMatch(JSON.stringify(KIDS_WUSHU), /Школа фехтования|Мастер меча/);
     assert.equal(KIDS_WUSHU.section, "Детская секция ушу");
     assert.equal(KIDS_WUSHU.slogan, "Сила тела. Дух дракона. Путь чемпиона.");
     assert.match(KIDS_WUSHU.body, /характер, волю и уверенность/);

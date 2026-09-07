@@ -6,6 +6,7 @@ import Button from "@/components/ui/button";
 import { useAudience } from "@/hooks/landing/useAudience";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
 import { articlesForAudience } from "@/lib/landing/articles";
+import { KIDS_WUSHU } from "@/lib/landing/kids-wushu";
 import { withAudience } from "@/lib/audience";
 
 export default function Articles() {
@@ -18,12 +19,16 @@ export default function Articles() {
     <section id="journal" ref={sectionRef} className="relative py-24" style={{ background: "var(--mos-bg)" }}>
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         <div className="reveal-fade mb-12 text-center">
-          <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.12em] text-mos-amber">Мастер меча</span>
+          <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.12em] text-mos-amber">
+            {isKids ? KIDS_WUSHU.school : "Мастер меча"}
+          </span>
           <h2 className="font-unbounded text-[calc(2.25rem-2pt)] font-medium text-white md:text-5xl">
             Журнал школы
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-white/45">
-            Черновые материалы о фехтовании. Обложки из существующих медиа, тексты помечены как заглушки.
+            {isKids
+              ? "Материалы детской секции ушу. Обложки из существующих медиа, тексты помечены как заглушки."
+              : "Черновые материалы о фехтовании. Обложки из существующих медиа, тексты помечены как заглушки."}
           </p>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
