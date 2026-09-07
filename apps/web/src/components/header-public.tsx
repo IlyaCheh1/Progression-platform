@@ -7,6 +7,7 @@ import AppLogo from "@/components/app-logo";
 import { useAudience } from "@/hooks/landing/useAudience";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { publicNavForAudience, withAudience } from "@/lib/audience";
+import { KIDS_WUSHU } from "@/lib/landing/kids-wushu";
 
 const NAV = [
   { title: "О нас", href: "/about" },
@@ -38,7 +39,7 @@ export default function Header() {
   const isMobile = useMobileMedia();
   const pathname = usePathname();
   const router = useRouter();
-  const { mode } = useAudience();
+  const { mode, isKids } = useAudience();
   const [menuOpen, setMenuOpen] = useState(false);
   const homeHref = withAudience("/", mode);
   const nav = publicNavForAudience(NAV, mode);
@@ -79,7 +80,7 @@ export default function Header() {
   return (
     <>
       <header className="landing-header fixed left-0 right-0 top-0 z-50 flex min-h-[4.5rem] items-center md:min-h-[5.25rem]">
-        <Link href={homeHref} className="flex shrink-0 items-center" aria-label="Мастер меча — главная">
+        <Link href={homeHref} className="flex shrink-0 items-center" aria-label={isKids ? `${KIDS_WUSHU.school} — главная` : "Мастер меча — главная"}>
           <AppLogo size={isMobile ? 44 : 52} priority />
         </Link>
 

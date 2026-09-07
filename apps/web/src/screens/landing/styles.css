@@ -1308,16 +1308,6 @@ a.experience-item {
   filter: drop-shadow(0 0 18px rgba(212, 168, 75, 0.35));
 }
 
-.kids-hero-kicker {
-  display: block;
-  font-family: var(--mos-font-body);
-  font-size: clamp(0.7rem, 1.4vw, 0.85rem);
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-}
-
 .kids-slogan {
   max-width: 36rem;
   font-family: var(--mos-font-display);

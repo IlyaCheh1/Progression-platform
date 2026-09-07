@@ -14,6 +14,22 @@ describe("kids landing hotfix", () => {
     assert.doesNotMatch(directions, /useAudience/);
     assert.match(hero, /isKids \? \(/);
     assert.match(hero, /KIDS_WUSHU\.media\.hero/);
+    assert.match(hero, /KIDS_WUSHU\.school/);
+    assert.match(hero, /KIDS_WUSHU\.section/);
+    assert.doesNotMatch(hero, /KIDS_WUSHU\.brand/);
+    assert.doesNotMatch(hero, /Школа фехтования|Мастер меча/);
+  });
+
+  it("keeps kids chrome on wushu naming only", () => {
+    const header = readFileSync(fileURLToPath(new URL("../../components/header-public.tsx", import.meta.url)), "utf8");
+    const articles = readFileSync(fileURLToPath(new URL("../../screens/landing/articles.tsx", import.meta.url)), "utf8");
+    const footer = readFileSync(fileURLToPath(new URL("../../components/footer.tsx", import.meta.url)), "utf8");
+
+    assert.match(header, /isKids \? `\$\{KIDS_WUSHU\.school\} — главная`/);
+    assert.match(articles, /isKids \? KIDS_WUSHU\.school : "Мастер меча"/);
+    assert.match(footer, /KIDS_WUSHU\.school/);
+    assert.match(footer, /KIDS_WUSHU\.section/);
+    assert.match(footer, /isKids/);
   });
 
   it("commits a local child wushu hero image", () => {
