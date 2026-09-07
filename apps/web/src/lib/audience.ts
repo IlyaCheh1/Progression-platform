@@ -16,6 +16,11 @@ export function parseAudience(value: string | null | undefined): AudienceMode | 
   return null;
 }
 
+export function audienceFromSearch(audience: string | string[] | undefined): AudienceMode {
+  const raw = Array.isArray(audience) ? audience[0] : audience;
+  return parseAudience(raw) ?? "adults";
+}
+
 export function readStoredAudience(): AudienceMode | null {
   if (typeof window === "undefined") return null;
   try {

@@ -3,7 +3,8 @@
 import dynamic from "next/dynamic";
 import Header from "@/components/header-public";
 import Hero from "@/screens/landing/hero";
-import { useAudience } from "@/hooks/landing/useAudience";
+import { AudienceProvider, useAudience } from "@/hooks/landing/useAudience";
+import type { AudienceMode } from "@/lib/audience";
 import "./styles.css";
 
 const Directions = dynamic(() => import("@/screens/landing/directions"), {
@@ -20,7 +21,7 @@ const RpgBlock = dynamic(() => import("@/screens/landing/rpg"));
 const Join = dynamic(() => import("@/screens/landing/join"));
 const Footer = dynamic(() => import("@/components/footer"));
 
-export default function LandingScreen() {
+function LandingBody() {
   const { isKids } = useAudience();
 
   return (
@@ -47,5 +48,13 @@ export default function LandingScreen() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function LandingScreen({ initialAudience = "adults" }: { initialAudience?: AudienceMode }) {
+  return (
+    <AudienceProvider initialMode={initialAudience}>
+      <LandingBody />
+    </AudienceProvider>
   );
 }

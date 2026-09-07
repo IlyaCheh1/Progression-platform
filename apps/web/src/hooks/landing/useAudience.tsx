@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import {
   AUDIENCE_CHANGED_EVENT,
@@ -27,8 +27,8 @@ function syncAudienceUrl(mode: AudienceMode) {
   }
 }
 
-export function useAudience() {
-  const [mode, setModeState] = useState<AudienceMode>(currentAudience);
+function useAudienceState(initialMode: AudienceMode) {
+  const [mode, setModeState] = useState<AudienceMode>(initialMode);
 
   useEffect(() => {
     const next = currentAudience();
@@ -40,8 +40,13 @@ export function useAudience() {
       const detail = (event as CustomEvent<AudienceMode>).detail;
       if (detail === "kids" || detail === "adults") setModeState(detail);
     };
+    const onPopState = () => setModeState(currentAudience());
     window.addEventListener(AUDIENCE_CHANGED_EVENT, onChange);
-    return () => window.removeEventListener(AUDIENCE_CHANGED_EVENT, onChange);
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener(AUDIENCE_CHANGED_EVENT, onChange);
+      window.removeEventListener("popstate", onPopState);
+    };
   }, []);
 
   const setMode = useCallback((next: AudienceMode) => {
@@ -51,5 +56,26 @@ export function useAudience() {
     window.dispatchEvent(new CustomEvent<AudienceMode>(AUDIENCE_CHANGED_EVENT, { detail: next }));
   }, []);
 
-  return { mode, setMode, isKids: mode === "kids" };
+  return useMemo(() => ({ mode, setMode, isKids: mode === "kids" }), [mode, setMode]);
+}
+
+const AudienceContext = createContext<ReturnType<typeof useAudienceState> | null>(null);
+
+export function AudienceProvider({
+  initialMode = "adults",
+  children,
+}: {
+  initialMode?: AudienceMode;
+  children: ReactNode;
+}) {
+  const value = useAudienceState(initialMode);
+  return <AudienceContext.Provider value={value}>{children}</AudienceContext.Provider>;
+}
+
+export function useAudience() {
+  const ctx = useContext(AudienceContext);
+  if (!ctx) {
+    throw new Error("useAudience must be used inside AudienceProvider");
+  }
+  return ctx;
 }
