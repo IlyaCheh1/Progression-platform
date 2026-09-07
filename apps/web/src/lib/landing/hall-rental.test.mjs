@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   HALL_RENTAL_ADMIN_ROLES,
@@ -22,15 +24,41 @@ const valid = {
 };
 
 describe("hall rental canon", () => {
-  it("keeps owner facts and mock photo paths", () => {
+  it("keeps owner facts and photorealistic hall photo paths", () => {
     assert.equal(HALL_RENTAL_FACTS.price, "3 000 ₽ / час");
     assert.equal(HALL_RENTAL_FACTS.area, "80 м²");
     assert.equal(HALL_RENTAL_FACTS.mirrors, "Зеркала");
     assert.equal(HALL_RENTAL_FACTS.floor, "ласточкин хвост");
-    assert.ok(HALL_RENTAL_PHOTOS.length >= 3);
-    assert.ok(HALL_RENTAL_PHOTOS.every((photo) => photo.src.startsWith("/media/arenda/")));
-    assert.ok(HALL_RENTAL_PHOTOS.every((photo) => photo.caption.includes("Макет")));
+    assert.equal(HALL_RENTAL_PHOTOS.length, 4);
+    assert.ok(HALL_RENTAL_PHOTOS.every((photo) => photo.src.startsWith("/media/arenda/") && photo.src.endsWith(".webp")));
+    assert.ok(HALL_RENTAL_PHOTOS.every((photo) => !photo.src.endsWith(".svg")));
+    assert.deepEqual(
+      HALL_RENTAL_PHOTOS.map((photo) => photo.src),
+      [
+        "/media/arenda/hall-overview.webp",
+        "/media/arenda/hall-mirrors.webp",
+        "/media/arenda/hall-windows.webp",
+        "/media/arenda/hall-corner.webp",
+      ],
+    );
     assert.deepEqual([...HALL_RENTAL_ADMIN_ROLES], ["administrator", "platform_admin"]);
+  });
+
+  it("commits local hall webp photos and drops svg mocks", () => {
+    const mediaDir = fileURLToPath(new URL("../../../public/media/arenda", import.meta.url));
+    const names = readdirSync(mediaDir);
+    assert.ok(!names.some((name) => name.endsWith(".svg")));
+    for (const photo of HALL_RENTAL_PHOTOS) {
+      const file = fileURLToPath(new URL(`../../../public${photo.src}`, import.meta.url));
+      assert.equal(existsSync(file), true, `missing ${photo.src}`);
+    }
+
+    const landing = readFileSync(fileURLToPath(new URL("../../screens/landing/arenda.tsx", import.meta.url)), "utf8");
+    const page = readFileSync(fileURLToPath(new URL("../../app/arenda/page.tsx", import.meta.url)), "utf8");
+    assert.match(landing, /object-cover/);
+    assert.match(page, /object-cover/);
+    assert.doesNotMatch(landing, /\.svg/);
+    assert.doesNotMatch(page, /\.svg/);
   });
 });
 

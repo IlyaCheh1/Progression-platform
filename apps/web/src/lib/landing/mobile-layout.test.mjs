@@ -11,6 +11,7 @@ describe("landing mobile layout guards", () => {
     assert.match(css, /hero-audience-badge[\s\S]*min-height:\s*44px/);
     assert.match(css, /#arenda/);
     assert.match(css, /#zayavka/);
+    assert.match(css, /\.hall-photo-card img[\s\S]*object-fit:\s*cover/);
     assert.match(css, /\.hall-day-chip[\s\S]*min-height:\s*44px/);
     assert.match(css, /\.recon-tracks[\s\S]*grid-template-columns:\s*1fr 1fr/);
     assert.match(css, /kids-hero \.hero-bottom-copy[\s\S]*display:\s*none/);
