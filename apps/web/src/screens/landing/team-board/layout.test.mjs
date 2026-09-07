@@ -89,7 +89,9 @@ describe("team-board Gwent card face", () => {
     assert.match(pieces, /team-card-plate/);
     assert.match(pieces, /team-card-vignette/);
     assert.match(pieces, /shownPower = power \?\? basePowerOf\(card\)/);
-    assert.match(css, /aspect-ratio:\s*2 \/ 3/);
+    assert.match(css, /\.team-card[\s\S]*aspect-ratio:\s*2 \/ 3/);
+    assert.match(css, /\.team-card-face[\s\S]*aspect-ratio:\s*2 \/ 3/);
+    assert.match(css, /\.team-dialog-art \.team-card-face/);
     assert.match(css, /\.team-card-power[\s\S]*left:\s*0\.18rem/);
     assert.match(css, /\.team-card-faction[\s\S]*right:\s*0\.28rem/);
     assert.match(css, /\[data-rarity="bronze"\]/);

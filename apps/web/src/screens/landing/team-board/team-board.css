@@ -401,6 +401,7 @@
   display: block;
   width: 100%;
   height: 100%;
+  aspect-ratio: 2 / 3;
   --card-accent: var(--team-amber);
   background: #120e0a;
 }
@@ -697,6 +698,11 @@
 .team-dialog-art {
   width: min(16rem, 100%);
   margin: 0 auto;
+}
+
+.team-dialog-art .team-card-face,
+.team-drag-overlay .team-card-face {
+  height: auto;
 }
 
 .team-dialog-name {
