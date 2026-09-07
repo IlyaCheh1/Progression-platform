@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getPublicOrigin, SSO_PATHS } from "@/lib/onlyid/sso";
+import {
+  cookieOptions,
+  getPublicOrigin,
+  ID_TOKEN_COOKIE,
+  resolveSsoApiBase,
+  ssoEndpoint,
+  SSO_PATHS,
+} from "@/lib/onlyid/sso";
 
 /**
- * Clears local client session is done in the browser.
- * This endpoint returns an optional OnlyID end-session URL for full SSO logout.
+ * Local session is cleared in the browser.
+ * Returns an OnlyID end-session URL (with id_token_hint when available).
  */
 export async function POST(request: NextRequest) {
-  const ssoBase = process.env.SSO_BASE_URL?.replace(/\/$/, "");
-  const clientId = process.env.SSO_CLIENT_ID;
+  const clientId = process.env.SSO_CLIENT_ID?.trim();
+  const ssoBase = resolveSsoApiBase();
   let origin: string;
   try {
     origin = getPublicOrigin(request.url);
@@ -17,13 +24,24 @@ export async function POST(request: NextRequest) {
   }
   const postLogout = `${origin}/login`;
 
+  const clearOpts = { ...cookieOptions(request, 0), maxAge: 0 };
+  const empty = NextResponse.json({ ssoLogoutUrl: null });
+  empty.cookies.set(ID_TOKEN_COOKIE, "", clearOpts);
+
   if (!ssoBase || !clientId) {
-    return NextResponse.json({ ssoLogoutUrl: null });
+    return empty;
   }
 
-  const endSession = new URL(`${ssoBase}${SSO_PATHS.logout}`);
+  const endSession = new URL(ssoEndpoint(SSO_PATHS.logout));
   endSession.searchParams.set("client_id", clientId);
   endSession.searchParams.set("post_logout_redirect_uri", postLogout);
 
-  return NextResponse.json({ ssoLogoutUrl: endSession.toString() });
+  const idToken = request.cookies.get(ID_TOKEN_COOKIE)?.value?.trim();
+  if (idToken) {
+    endSession.searchParams.set("id_token_hint", idToken);
+  }
+
+  const res = NextResponse.json({ ssoLogoutUrl: endSession.toString() });
+  res.cookies.set(ID_TOKEN_COOKIE, "", clearOpts);
+  return res;
 }

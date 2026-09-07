@@ -1,17 +1,22 @@
 import { SignJWT, jwtVerify } from "jose";
 
-export const SSO_PATHS = {
-  authorize: "/api/v1/user/oauth/authorize",
-  token: "/api/v1/user/oauth/token",
-  userinfo: "/api/v1/user/oauth/userinfo",
-  logout: "/api/v1/user/oauth/logout",
-  jwks: "/api/v1/user/.well-known/jwks.json",
-  issuerSuffix: "/api/v1/user",
-} as const;
+export {
+  SSO_PATHS,
+  buildCallbackUrl,
+  getPublicOrigin,
+  isSafeReturnPath,
+  resolvePostLoginPath,
+  resolveSsoApiBase,
+  resolveSsoIssuer,
+  ssoEndpoint,
+} from "@/lib/onlyid/paths";
 
 export const PKCE_COOKIE = "mos_oauth_pkce";
 export const REDIRECT_COOKIE = "oauth_redirect_after";
+export const ID_TOKEN_COOKIE = "mos_oauth_id_token";
 const PKCE_MAX_AGE = 600;
+/** Keep id_token_hint available for the same window as the school session. */
+const ID_TOKEN_MAX_AGE = 30 * 24 * 60 * 60;
 
 export type OAuthPkcePayload = {
   state: string;
@@ -82,34 +87,6 @@ export async function sha256Base64Url(input: string): Promise<string> {
     .replace(/=/g, "");
 }
 
-export function getPublicOrigin(requestUrl: string): string {
-  const fromEnv =
-    process.env.SSO_OAUTH_CALLBACK_URL?.replace(/\/api\/auth\/oauth\/callback\/?$/, "") ||
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
-  if (fromEnv) return fromEnv;
-
-  if (process.env.NODE_ENV !== "production") {
-    return new URL(requestUrl).origin;
-  }
-
-  throw new Error("NEXT_PUBLIC_SITE_URL or SSO_OAUTH_CALLBACK_URL must be set in production");
-}
-
-/** Same-origin relative path only (blocks // and /\ open redirects). */
-export function isSafeReturnPath(value: string | null | undefined): value is string {
-  if (!value) return false;
-  if (!value.startsWith("/")) return false;
-  if (value.startsWith("//") || value.startsWith("/\\")) return false;
-  if (value.includes("\\") || value.includes("@")) return false;
-  return /^\/[A-Za-z0-9._~/?&=%+,#\-]*$/.test(value);
-}
-
-export function buildCallbackUrl(requestUrl: string): string {
-  const fullCallback = process.env.SSO_OAUTH_CALLBACK_URL?.replace(/\/$/, "");
-  if (fullCallback) return fullCallback;
-  return `${getPublicOrigin(requestUrl)}/api/auth/oauth/callback`;
-}
-
 export function schoolApiBaseUrl(): string {
   return (
     process.env.SCHOOL_API_INTERNAL_URL?.replace(/\/$/, "") ||
@@ -154,4 +131,4 @@ export async function readPkceCookieValue(
   }
 }
 
-export { PKCE_MAX_AGE };
+export { PKCE_MAX_AGE, ID_TOKEN_MAX_AGE };

@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { writeCachedProfile } from "@/lib/profile-api";
 import { saveSession, type SessionUser } from "@/lib/session";
 import { normalizeGender } from "@/lib/avatars";
 import { DEFAULT_BACKGROUND_ID, normalizeBackgroundId } from "@/lib/backgrounds";
 import { normalizeSelectedSkinId } from "@/lib/characters";
+import { resolvePostLoginPath } from "@/lib/onlyid/paths";
 import { routes } from "@/lib/routes";
 import { SCHOOL_API } from "@/lib/utils";
 
@@ -16,8 +17,9 @@ const ERROR_MESSAGES: Record<string, string> = {
   sso_not_configured: "Вход через OnlyID не настроен.",
 };
 
-export default function AuthCallbackPage() {
+function AuthCallbackHydrate() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [message, setMessage] = useState("Завершаем вход через OnlyID…");
 
   useEffect(() => {
@@ -77,7 +79,7 @@ export default function AuthCallbackPage() {
         }
 
         if (!cancelled) {
-          router.replace(routes.home);
+          router.replace(resolvePostLoginPath(searchParams.get("next") || routes.home));
         }
       } catch {
         if (!cancelled) {
@@ -90,7 +92,15 @@ export default function AuthCallbackPage() {
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, [router, searchParams]);
 
   return <main className="grid min-h-screen place-items-center text-mos-muted">{message}</main>;
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<main className="grid min-h-screen place-items-center text-mos-muted">Завершаем вход через OnlyID…</main>}>
+      <AuthCallbackHydrate />
+    </Suspense>
+  );
 }

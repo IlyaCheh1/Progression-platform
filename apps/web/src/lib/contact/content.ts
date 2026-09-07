@@ -43,6 +43,12 @@ export const CONTACT_CONTENT = {
       value: LEGAL_ENTITY.ogrnip,
     },
     {
+      key: "kids-phone",
+      label: "Детская секция ушу",
+      value: "+7 (915) 048-61-60 · Татьяна",
+      href: "tel:+79150486160",
+    },
+    {
       key: "vk",
       label: "Сообщество ВКонтакте",
       value: LEGAL_ENTITY.vkUrl.replace("https://", ""),

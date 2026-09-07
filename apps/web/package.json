@@ -9,7 +9,7 @@
     "icons:content:prompts": "node -e \"import('./scripts/content-icon-prompts.mjs').then(m=>console.log(Object.keys(m.questPrompts).length+' quests,',Object.keys(m.achievementPrompts).length+' achievements'))\"",
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "next lint",
-    "test": "node --test src/lib/*.test.mjs",
+    "test": "node --experimental-strip-types --test src/lib/*.test.mjs src/lib/landing/*.test.mjs src/lib/onlyid/*.test.mjs src/screens/landing/team-board/*.test.mjs",
     "chat:build": "npm --prefix ../../packages/support-chat-widget run build && mkdir -p public/chat && cp ../../packages/support-chat-widget/dist/og-chat.js public/chat/og-chat.js"
   },
   "dependencies": {

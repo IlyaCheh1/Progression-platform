@@ -1,9 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import Button from "@/components/ui/button";
+import { useAudience } from "@/hooks/landing/useAudience";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { isHeroVideoReady } from "@/lib/hero-video-ready";
+import type { AudienceMode } from "@/lib/audience";
+import { KIDS_AMBER, KIDS_SAGE, KIDS_WUSHU } from "@/lib/landing/kids-wushu";
 
 const VIDEOS = ["1.mp4", "6.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4"];
 
@@ -219,8 +221,33 @@ function HeroVideoSlide({
   );
 }
 
+function AudienceBadge({
+  value,
+  active,
+  onSelect,
+  children,
+}: {
+  value: AudienceMode;
+  active: boolean;
+  onSelect: (mode: AudienceMode) => void;
+  children: string;
+}) {
+  return (
+    <button
+      type="button"
+      className="hero-audience-badge"
+      data-active={active || undefined}
+      aria-pressed={active}
+      onClick={() => onSelect(value)}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function Hero() {
   const isMobile = useMobileMedia();
+  const { mode, setMode, isKids } = useAudience();
   const slideCount = isMobile ? MOBILE_IMAGES.length : VIDEOS.length;
   const [idx, setIdx] = useState(0);
   const [mountedSlides, setMountedSlides] = useState(() => new Set([0, 1]));
@@ -285,7 +312,7 @@ export default function Hero() {
       setParticles([]);
       return;
     }
-    const colors = ["#d4a84b", "#f0c35a", "#c8c6c2"];
+    const colors = isKids ? [KIDS_AMBER, KIDS_SAGE, "#f0c35a"] : ["#d4a84b", "#f0c35a", "#c8c6c2"];
     setParticles(
       Array.from({ length: 12 }, (_, i) => ({
         id: i,
@@ -296,11 +323,23 @@ export default function Hero() {
         delay: Math.random() * 6,
       })),
     );
-  }, [isMobile, reduceMotion]);
+  }, [isMobile, reduceMotion, isKids]);
 
   return (
-    <section id="hero" className="relative h-screen w-full overflow-hidden" style={{ background: "var(--void)" }}>
-      {isMobile
+    <section id="hero" className={`relative h-dvh min-h-[32rem] w-full overflow-hidden${isKids ? " kids-hero" : ""}`} style={{ background: "var(--void)" }}>
+      {isKids ? (
+        <div className="absolute inset-0" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={KIDS_WUSHU.media.hero}
+            alt=""
+            className="h-full w-full object-cover object-[62%_center]"
+            style={{ filter: "saturate(1.2) brightness(0.38)" }}
+            decoding="async"
+            fetchPriority="high"
+          />
+        </div>
+      ) : isMobile
         ? MOBILE_IMAGES.map((slide, i) => {
             const isActive = i === idx;
             const isMounted = mountedSlides.has(i);
@@ -359,8 +398,9 @@ export default function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           zIndex: 2,
-          background:
-            "radial-gradient(ellipse at 20% 50%, rgba(196,92,42,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(212,168,75,0.16) 0%, transparent 60%)",
+          background: isKids
+            ? "radial-gradient(ellipse at 18% 40%, rgba(90,143,123,0.28) 0%, transparent 58%), radial-gradient(ellipse at 82% 48%, rgba(212,168,75,0.22) 0%, transparent 60%)"
+            : "radial-gradient(ellipse at 20% 50%, rgba(196,92,42,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(212,168,75,0.16) 0%, transparent 60%)",
         }}
       />
 
@@ -383,34 +423,61 @@ export default function Hero() {
         />
       ))}
 
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pb-28 text-center">
+      <div className="hero-main relative z-10 flex h-full flex-col items-center justify-center px-6 pb-28 text-center">
         <div className="flex w-full flex-col items-center gap-8 md:gap-10">
           <h1
             className="mobile-fluid-hero-title flex max-w-4xl flex-col items-center gap-4 font-unbounded font-medium tracking-tight md:gap-6 lg:gap-7"
             style={{ textShadow: "0 0 60px rgba(212,168,75,0.28)" }}
           >
-            <span className="block text-white leading-tight">Играй. Тренируйся.</span>
-            <span className="block leading-tight" style={{ color: "var(--color-controlsPrimaryActive)" }}>
-              Прокачивай персонажа.
-            </span>
+            {isKids ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={KIDS_WUSHU.media.logo} alt="" className="kids-hero-mark" />
+                <span className="kids-hero-kicker">{KIDS_WUSHU.school}</span>
+                <span className="block text-white leading-tight">{KIDS_WUSHU.brand}</span>
+                <span className="block leading-tight" style={{ color: KIDS_SAGE }}>
+                  {KIDS_WUSHU.section}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="block text-white leading-tight">Играй. Тренируйся.</span>
+                <span className="block leading-tight" style={{ color: "var(--color-controlsPrimaryActive)" }}>
+                  Прокачивай персонажа.
+                </span>
+              </>
+            )}
           </h1>
 
-          <div className="grid w-full max-w-[14rem] grid-cols-1 gap-4 sm:max-w-md sm:grid-cols-2">
-            <Button href="/login" variant="primary" size="lg" className="w-full px-6 uppercase">
-              Начать путь
-            </Button>
-            <Button href="#directions" variant="magenta" size="lg" className="w-full px-6 uppercase">
-              Направления
-            </Button>
+          {isKids ? <p className="kids-slogan">{KIDS_WUSHU.slogan}</p> : null}
+          {isKids ? <span className="kids-age-ribbon">{KIDS_WUSHU.age}</span> : null}
+
+          <div className="hero-audience-toggle" role="group" aria-label="Режим сайта">
+            <AudienceBadge value="kids" active={mode === "kids"} onSelect={setMode}>
+              Для детей
+            </AudienceBadge>
+            <AudienceBadge value="adults" active={mode === "adults"} onSelect={setMode}>
+              Для взрослых
+            </AudienceBadge>
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 z-10 flex w-[calc(100%-1.5rem)] max-w-xl -translate-x-1/2 flex-col items-center gap-2 px-3 text-center sm:w-auto sm:px-6">
+      <div className="hero-bottom-copy absolute left-1/2 z-10 flex w-[calc(100%-1.5rem)] max-w-xl -translate-x-1/2 flex-col items-center gap-2 px-3 text-center sm:w-auto sm:px-6">
         <p className="font-golos text-[calc(0.875rem+2pt)] font-medium leading-relaxed text-white/60 md:text-[calc(0.875rem+4pt)]">
-          Школа исторического фехтования с RPG-прокачкой:
-          <br />
-          опыт, способности, достижения и награды за тренировки.
+          {isKids ? (
+            <>
+              {KIDS_WUSHU.body}
+              <br />
+              {KIDS_WUSHU.cta}
+            </>
+          ) : (
+            <>
+              Школа исторического фехтования с RPG-прокачкой:
+              <br />
+              опыт, способности, достижения и награды за тренировки.
+            </>
+          )}
         </p>
         <div className="relative h-12 w-px overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
           <div

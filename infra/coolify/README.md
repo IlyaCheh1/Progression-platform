@@ -67,6 +67,7 @@ OnlyID идёт напрямую через web BFF (`/api/auth/*`) + `school-ap
 
 ```env
 NEXT_PUBLIC_SITE_URL=https://mastersword.ru
+# Публичный сайт OnlyID — web резолвит OAuth на https://api.onlyid.ru
 SSO_BASE_URL=https://onlyid.ru
 SSO_ISSUER=https://api.onlyid.ru/api/v1/user
 SSO_CLIENT_ID=cid_...

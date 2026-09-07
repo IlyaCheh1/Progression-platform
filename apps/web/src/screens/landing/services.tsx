@@ -6,6 +6,7 @@ import { directions } from "@/lib/content";
 import { SCHOOL_COURSE_PAGES } from "@/lib/courses/data";
 import { getSchoolColor } from "@/lib/school-colors";
 import { getSchoolIconSrc } from "@/lib/school-icons";
+import { useAudience } from "@/hooks/landing/useAudience";
 import { useCenteredListItem } from "@/hooks/landing/useCenteredListItem";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { useScrollDirection } from "@/hooks/landing/useScrollDirection";
@@ -46,7 +47,7 @@ function buildExperiences(mode: TrainingMode): TrainingExperience[] {
     category: MODE_CATEGORY[mode],
     description:
       mode === "group"
-        ? `${direction.description} Формат зала: совместные упражнения, спarring и общий RPG-прогресс.`
+        ? `${direction.description} Формат зала: совместные упражнения, спарринг и общий RPG-прогресс.`
         : `${direction.description} Персональный трек с тренером, гибкий график и точечная коррекция.`,
     color: getSchoolColor(direction.key, index),
     icon: getSchoolIconSrc(direction.key),
@@ -92,13 +93,28 @@ export default function Services() {
   const [tappedIndex, setTappedIndex] = useState<number | null>(null);
   const centeredIndexRef = useRef<number | null>(null);
   const isMobile = useMobileMedia();
+  const { isKids } = useAudience();
   const scrollDirection = useScrollDirection(isMobile);
   const centeredIndex = useCenteredListItem(listRef, ".experience-item", isMobile, mode, {
     measureSelector: "[data-exp-header]",
     scrollDirection,
   });
   const mobileActiveIndex = tappedIndex ?? centeredIndex;
-  const experiences = buildExperiences(mode);
+  const experiences = buildExperiences(mode)
+    .filter((item) => !isKids || item.key === "east")
+    .map((item) =>
+      isKids
+        ? {
+            ...item,
+            name: "Детская секция ушу",
+            category: mode === "group" ? "Набор от 6 лет" : "Татьяна",
+            description:
+              mode === "group"
+                ? "Традиционное и современное ушу. Координация, гибкость и акробатика. Дисциплина и внутренняя сила."
+                : "Персонально с Татьяной: 10 лет преподавания, 25 лет в спорте. Первое занятие бесплатно.",
+          }
+        : item,
+    );
 
   useEffect(() => {
     if (!isMobile) return;
@@ -175,7 +191,11 @@ export default function Services() {
               key={mode}
               className="experiences-mode-intro max-w-xl text-sm leading-relaxed text-white/50 md:text-base"
             >
-              {MODE_INTRO[mode]}
+              {isKids
+                ? mode === "group"
+                  ? "Сила тела. Дух дракона. Путь чемпиона. Соревнования и показательные выступления."
+                  : "Запишись сейчас: +7 (915) 048-61-60 · Татьяна. Количество мест ограничено."
+                : MODE_INTRO[mode]}
             </p>
           </div>
         </div>

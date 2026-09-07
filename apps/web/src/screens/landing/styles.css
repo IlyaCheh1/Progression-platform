@@ -104,7 +104,7 @@
 .room-panel {
   flex: 0 0 var(--room-slide-width, 100vw);
   width: var(--room-slide-width, 100vw);
-  height: 100vh;
+  height: 100%;
   position: relative;
   flex-shrink: 0;
   overflow: hidden;
@@ -1116,5 +1116,495 @@ a.experience-item {
 
 .trainer-card:hover {
   box-shadow: 0 24px 64px color-mix(in srgb, var(--trainer-accent) 12%, transparent);
+}
+
+:root {
+  --landing-header-offset: calc(4.5rem + env(safe-area-inset-top, 0px));
+}
+
+.landing-header {
+  background: color-mix(in srgb, var(--void) 78%, transparent);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(18px);
+  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+  padding-bottom: 0.75rem;
+  padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+  padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+}
+
+.public-main {
+  padding-top: calc(var(--landing-header-offset) + 1.5rem);
+}
+
+.mobile-public-menu {
+  padding-top: calc(var(--landing-header-offset) + 1.25rem);
+  padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+  padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+}
+
+#hero,
+#directions,
+#trainers,
+#team,
+#services,
+#akcii,
+#tariffs,
+#journal,
+#faq,
+#rpg,
+#join,
+#arenda,
+#zayavka {
+  scroll-margin-top: var(--landing-header-offset);
+}
+
+.hero-main {
+  padding-top: var(--landing-header-offset);
+}
+
+.hero-bottom-copy {
+  bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+}
+
+.rooms-dots {
+  bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --landing-header-offset: calc(5.25rem + env(safe-area-inset-top, 0px));
+  }
+
+  .landing-header {
+    padding-top: max(1rem, env(safe-area-inset-top, 0px));
+    padding-bottom: 1rem;
+    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+.kids-hero-mark {
+  width: 3.25rem;
+  height: auto;
+  margin-bottom: 0.25rem;
+  filter: drop-shadow(0 0 18px rgba(212, 168, 75, 0.35));
+}
+
+.kids-hero-kicker {
+  display: block;
+  font-family: var(--mos-font-body);
+  font-size: clamp(0.7rem, 1.4vw, 0.85rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.kids-slogan {
+  max-width: 36rem;
+  font-family: var(--mos-font-display);
+  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mos-amber);
+}
+
+.kids-age-ribbon {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #e8f2ed;
+  background: #5a8f7b;
+}
+
+.hero-audience-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(11, 11, 12, 0.42);
+}
+
+.hero-audience-badge {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  padding: 0.5rem 1.05rem;
+  font-family: var(--mos-font-body);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.hero-audience-badge:hover {
+  color: var(--mos-amber-hot);
+}
+
+.hero-audience-badge[data-active] {
+  color: var(--void);
+  background: var(--mos-amber);
+  border-color: var(--mos-amber);
+}
+
+.rooms-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 21;
+  display: flex;
+  height: 3rem;
+  width: 3rem;
+  transform: translateY(-50%);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--void) 72%, transparent);
+  color: white;
+  font-size: 1.75rem;
+  line-height: 1;
+  backdrop-filter: blur(12px);
+}
+
+.rooms-arrow[data-direction="prev"] {
+  left: 1rem;
+}
+
+.rooms-arrow[data-direction="next"] {
+  right: 1rem;
+}
+
+.rooms-arrow:disabled {
+  cursor: default;
+  opacity: 0.25;
+}
+
+.rooms-arrow:not(:disabled):hover {
+  border-color: color-mix(in srgb, var(--mos-amber) 55%, transparent);
+  color: var(--mos-amber);
+}
+
+.recon-tracks {
+  display: grid;
+  gap: 0.65rem;
+  max-width: 28rem;
+}
+
+.recon-track {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  background: rgba(11, 11, 12, 0.42);
+}
+
+.recon-track strong {
+  font-family: var(--mos-font-display);
+  font-size: 0.95rem;
+  color: white;
+}
+
+.recon-track span:last-child {
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.recon-track-badge {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mos-amber);
+  background: rgba(212, 168, 75, 0.12);
+}
+
+.promo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.75rem;
+  background: color-mix(in srgb, var(--void-mid) 88%, transparent);
+}
+
+.promo-card-badge {
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mos-amber);
+  background: rgba(212, 168, 75, 0.12);
+}
+
+.hall-photo-card {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--void-mid) 88%, transparent);
+}
+
+.hall-photo-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 8 / 5;
+  object-fit: cover;
+}
+
+.hall-photo-card figcaption {
+  padding: 0.55rem 0.75rem 0.7rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.hall-day-chip {
+  display: inline-flex;
+  min-height: 44px;
+  min-width: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.75);
+  background: transparent;
+  font-size: 0.85rem;
+}
+
+.hall-day-chip.is-active {
+  border-color: var(--mos-amber);
+  color: var(--void);
+  background: var(--mos-amber);
+}
+
+.hall-rental-input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--void) 70%, transparent);
+  padding: 0 0.9rem;
+  color: white;
+  color-scheme: dark;
+}
+
+.hall-rental-input:focus {
+  outline: 2px solid color-mix(in srgb, var(--mos-amber) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.article-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.75rem;
+  background: color-mix(in srgb, var(--void-mid) 88%, transparent);
+  text-decoration: none;
+  color: inherit;
+}
+
+.article-card-cover {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.article-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.article-card-mock {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--void);
+  background: var(--mos-amber);
+}
+
+.questions-section {
+  background:
+    radial-gradient(ellipse 70% 50% at 18% 0%, rgba(212, 168, 75, 0.1) 0%, transparent 68%),
+    radial-gradient(ellipse 60% 45% at 90% 20%, rgba(196, 92, 42, 0.08) 0%, transparent 70%),
+    var(--void);
+}
+
+.faq-item {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.15rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.faq-item-q {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  text-align: left;
+  font-family: var(--mos-font-display);
+  font-size: 0.95rem;
+  color: white;
+}
+
+.faq-item-a {
+  padding: 0 1.1rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 767px) {
+  :root {
+    --landing-header-offset: calc(4.25rem + env(safe-area-inset-top, 0px));
+  }
+
+  .hero-audience-toggle {
+    max-width: 100%;
+  }
+
+  .hero-audience-badge {
+    min-height: 44px;
+    min-width: 7.5rem;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.62rem;
+  }
+
+  .kids-hero-mark {
+    width: 2.5rem;
+  }
+
+  .kids-slogan {
+    max-width: 20rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    line-height: 1.35;
+  }
+
+  .kids-hero .hero-main {
+    gap: 1.25rem;
+    padding-bottom: 2.5rem;
+    justify-content: flex-start;
+    padding-top: calc(var(--landing-header-offset) + 1.25rem);
+  }
+
+  .kids-hero .hero-bottom-copy {
+    display: none;
+  }
+
+  .hero-bottom-copy {
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .room-panel-text {
+    padding-top: var(--landing-header-offset);
+    padding-bottom: 7.25rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .room-panel-text--tracks .room-panel-tagline,
+  .room-panel-text--tracks .room-panel-description {
+    margin-bottom: 0.5rem;
+  }
+
+  .recon-tracks {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    max-width: none;
+    margin-bottom: 0.75rem;
+  }
+
+  .recon-track {
+    padding: 0.45rem 0.5rem;
+  }
+
+  .recon-track strong {
+    font-size: 0.72rem;
+    line-height: 1.25;
+  }
+
+  .recon-track span:last-child {
+    display: none;
+  }
+
+  .rooms-arrow {
+    top: auto;
+    bottom: calc(3.1rem + env(safe-area-inset-bottom, 0px));
+    transform: none;
+    height: 2.75rem;
+    width: 2.75rem;
+    font-size: 1.4rem;
+  }
+
+  .rooms-arrow[data-direction="prev"] {
+    left: 0.5rem;
+  }
+
+  .rooms-arrow[data-direction="next"] {
+    right: 0.5rem;
+  }
+
+  .rooms-dots {
+    bottom: max(0.65rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .rooms-dots button {
+    height: 2.5rem;
+    width: 2.5rem;
+  }
+
+  .landing-cta .og-btn,
+  #join .og-btn,
+  .room-panel .og-btn,
+  .questions-section .og-btn,
+  #tariffs .og-btn,
+  #akcii .og-btn,
+  #journal .og-btn,
+  #arenda .og-btn,
+  .hall-rental-form .og-btn {
+    min-height: 44px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .faq-item-q {
+    min-height: 44px;
+  }
+
+  .promo-card,
+  .article-card {
+    max-width: 100%;
+  }
 }
 

@@ -1,64 +1,23 @@
 "use client";
 
 import { useRef } from "react";
+import { useAudience } from "@/hooks/landing/useAudience";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
-
-type Trainer = {
-  id: string;
-  name: string;
-  role: string;
-  bio: string[];
-  photo: string;
-  accent: string;
-};
-
-const TRAINERS: Trainer[] = [
-  {
-    id: "max-kiselev",
-    name: "Макс Киселев",
-    role: "Автор методик, исследователь, переводчик, лектор, тренер",
-    bio: [
-      "Автор методик обучения, исследователь, переводчик, лектор и, конечно, тренер по фехтованию.",
-      "Опыт в фехтовании больше 15 лет, опыт в преподавании — больше 10 лет.",
-    ],
-    photo: "/media/trainers/max-kiselev.webp",
-    accent: "#d4a84b",
-  },
-  {
-    id: "nikolay-lobanov",
-    name: "Николай Лобаев",
-    role: "Ведьмак, Итальянская рапира",
-    bio: [
-      "Тренер курсов «Ведьмак» и «Итальянская рапира». Курс по итальянской рапире полностью построен на его исследованиях трактатов мастеров XVII века.",
-      "Двукратный чемпион Москвы и чемпион России по арт-фехтованию, кандидат в мастера спорта. Один из первых выпускников нашей школы, тренерский опыт с 2021 года. Также ведёт курсы по длинному и одноручному мечу XV–XVI века.",
-    ],
-    photo: "/media/trainers/nikolay-lobanov.webp",
-    accent: "#c45c2a",
-  },
-  {
-    id: "tatyana-gribanova",
-    name: "Татьяна Грибанова",
-    role: "Ушу, «Клинки Востока»",
-    bio: [
-      "Мастер ушу и тренер направления «Клинки Востока».",
-      "Многократный призёр и чемпион различных соревнований по ушу. Опыт в преподавании — больше 10 лет.",
-    ],
-    photo: "/media/trainers/tatyana-gribanova.webp",
-    accent: "#5a8f7b",
-  },
-  {
-    id: "ivan-bobrovsky",
-    name: "Иван Бобровский",
-    role: "Иберийский двуручный меч, испанская рапира, наваха",
-    bio: ["Тренер по иберийскому двуручному мечу, испанской рапире и навахе."],
-    photo: "/media/trainers/ivan-bobrovsky.webp",
-    accent: "#5c7d99",
-  },
-];
+import { KIDS_SAGE, KIDS_WUSHU } from "@/lib/landing/kids-wushu";
+import { LANDING_TRAINERS } from "@/screens/landing/landing-trainers";
 
 export default function Trainers() {
   const sectionRef = useRef<HTMLElement>(null);
-  useRevealFade(sectionRef);
+  const { isKids } = useAudience();
+  const trainers = isKids
+    ? LANDING_TRAINERS.filter((trainer) => trainer.id === "tatyana-gribanova").map((trainer) => ({
+        ...trainer,
+        role: KIDS_WUSHU.section,
+        bio: [KIDS_WUSHU.body, KIDS_WUSHU.age],
+        accent: KIDS_SAGE,
+      }))
+    : LANDING_TRAINERS;
+  useRevealFade(sectionRef, 0.12, isKids);
 
   return (
     <section id="trainers" ref={sectionRef} className="relative overflow-x-clip py-24" style={{ background: "var(--void)" }}>
@@ -74,15 +33,23 @@ export default function Trainers() {
             className="mb-3 block font-golos text-xs font-semibold uppercase tracking-[0.12em]"
             style={{ color: "var(--mos-amber)" }}
           >
-            Команда школы
+            {isKids ? KIDS_WUSHU.section : "Команда школы"}
           </span>
           <h2 className="font-unbounded text-[calc(2.25rem-2pt)] font-medium tracking-[0.06em] text-white md:text-5xl">
-            Наши <span style={{ color: "#f0c35a" }}>мастера</span>
+            {isKids ? (
+              <>
+                Тренер <span style={{ color: KIDS_SAGE }}>{KIDS_WUSHU.trainerShort}</span>
+              </>
+            ) : (
+              <>
+                Наши <span style={{ color: "#f0c35a" }}>мастера</span>
+              </>
+            )}
           </h2>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {TRAINERS.map((trainer, index) => (
+          {trainers.map((trainer, index) => (
             <article
               key={trainer.id}
               className="trainer-card reveal-fade group overflow-hidden rounded-[28px] bg-white/[0.03] backdrop-blur-xl"

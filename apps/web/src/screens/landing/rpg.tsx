@@ -65,8 +65,14 @@ export default function RpgBlock() {
               RPG-<span style={{ color: "#f0c35a" }}>персонаж</span>
             </h2>
             <p className="mx-auto max-w-2xl text-[calc(1rem-2pt)] leading-relaxed text-white/40 md:text-base">
-              Логика прогрессии как в игре — но опыт приходит из реального зала.
+              Логика прогрессии как в игре — но опыт приходит из реального зала. Лист персонажа живёт внутри выбранного направления.
             </p>
+            <a
+              href="#directions"
+              className="mt-6 inline-flex text-xs font-semibold uppercase tracking-[0.14em] text-mos-amber hover:text-mos-amber-hot"
+            >
+              К слайдам направлений
+            </a>
           </div>
 
           <div className="reveal-fade mb-10 mt-10 md:mb-12 md:mt-12">
