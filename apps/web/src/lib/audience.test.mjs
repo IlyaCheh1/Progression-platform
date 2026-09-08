@@ -1,7 +1,16 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { audienceFromSearch, isAudienceMode, parseAudience, publicNavForAudience, withAudience } from "./audience.ts";
+import {
+  audienceFromPathname,
+  audienceFromSearch,
+  homeForAudience,
+  isAudienceMode,
+  isLandingPath,
+  parseAudience,
+  publicNavForAudience,
+  withAudience,
+} from "./audience.ts";
 
 describe("audience mode", () => {
   it("parses kids aliases and rejects junk", () => {
@@ -13,11 +22,18 @@ describe("audience mode", () => {
     assert.equal(isAudienceMode("teen"), false);
   });
 
-  it("keeps adults URLs clean and adds kids query", () => {
+  it("maps kids home to /kids and keeps other URLs clean", () => {
+    assert.equal(homeForAudience("kids"), "/kids");
+    assert.equal(homeForAudience("adults"), "/");
+    assert.equal(audienceFromPathname("/kids"), "kids");
+    assert.equal(audienceFromPathname("/"), "adults");
+    assert.equal(isLandingPath("/kids"), true);
     assert.equal(withAudience("/tariffs", "adults"), "/tariffs");
-    assert.equal(withAudience("/tariffs", "kids"), "/tariffs?audience=kids");
-    assert.equal(withAudience("/#directions", "kids"), "/?audience=kids#directions");
-    assert.equal(withAudience("/akcii?ref=nav", "kids"), "/akcii?ref=nav&audience=kids");
+    assert.equal(withAudience("/tariffs", "kids"), "/tariffs");
+    assert.equal(withAudience("/#directions", "kids"), "/kids#directions");
+    assert.equal(withAudience("/#join", "kids"), "/kids#join");
+    assert.equal(withAudience("/akcii?ref=nav", "kids"), "/akcii?ref=nav");
+    assert.equal(withAudience("/kids#join", "adults"), "/#join");
   });
 
   it("hides the rooms slider link in kids public nav", () => {
@@ -36,7 +52,7 @@ describe("audience mode", () => {
     );
   });
 
-  it("reads the first audience query value for the homepage", () => {
+  it("reads the first audience query value for the homepage redirect", () => {
     assert.equal(audienceFromSearch("kids"), "kids");
     assert.equal(audienceFromSearch(["kids", "adults"]), "kids");
     assert.equal(audienceFromSearch(undefined), "adults");

@@ -18,7 +18,8 @@ describe("kids landing hotfix", () => {
     assert.match(hero, /KIDS_WUSHU\.media\.heroDesktop/);
     assert.doesNotMatch(hero, /KIDS_WUSHU\.media\.hero"/);
     assert.match(hero, /KIDS_WUSHU\.school/);
-    assert.match(hero, /KIDS_WUSHU\.section/);
+    assert.doesNotMatch(hero, /KIDS_WUSHU\.section/);
+    assert.doesNotMatch(hero, /hero-audience-toggle/);
     assert.match(hero, /KIDS_WUSHU\.lead/);
     assert.match(hero, /items-center justify-center[\s\S]*text-center/);
     assert.doesNotMatch(hero, /KIDS_WUSHU\.slogan/);
@@ -35,6 +36,8 @@ describe("kids landing hotfix", () => {
 
     assert.match(header, /useHeroVisible/);
     assert.match(header, /data-over-hero=\{overHero \|\| undefined\}/);
+    assert.match(header, /data-kids=\{isKids \|\| undefined\}/);
+    assert.match(header, /AudienceToggle/);
     assert.match(header, /isKids \? `\$\{KIDS_WUSHU\.school\} — главная`/);
     assert.match(articles, /isKids \? KIDS_WUSHU\.school : "Мастер меча"/);
     assert.match(footer, /KIDS_WUSHU\.school/);
@@ -54,5 +57,22 @@ describe("kids landing hotfix", () => {
     assert.match(credit, /FECHTOGRAPHY/);
     assert.match(credit, /text-free/);
     assert.doesNotMatch(credit, /Pexels/i);
+  });
+
+  it("exposes /kids as a real page and redirects the old query", () => {
+    const home = readFileSync(fileURLToPath(new URL("../../app/page.tsx", import.meta.url)), "utf8");
+    const kids = readFileSync(fileURLToPath(new URL("../../app/kids/page.tsx", import.meta.url)), "utf8");
+    const toggle = readFileSync(fileURLToPath(new URL("../../components/audience-toggle.tsx", import.meta.url)), "utf8");
+    const css = readFileSync(fileURLToPath(new URL("../../screens/landing/styles.css", import.meta.url)), "utf8");
+
+    assert.match(kids, /initialAudience="kids"/);
+    assert.match(kids, /canonical: "\/kids"/);
+    assert.match(home, /permanentRedirect\("\/kids"\)/);
+    assert.match(home, /initialAudience="adults"/);
+    assert.match(toggle, /homeForAudience\("kids"\)/);
+    assert.match(toggle, /homeForAudience\("adults"\)/);
+    assert.match(css, /kids-age-ribbon[\s\S]*font-size:\s*calc\(0\.68rem \* 2\)/);
+    assert.match(css, /hero-audience-badge \{[\s\S]*font-size:\s*calc\(0\.68rem \* 1\.2\)/);
+    assert.match(css, /landing-header\[data-kids\] \.hero-audience-badge\[data-active\][\s\S]*background:\s*#5a8f7b/);
   });
 });

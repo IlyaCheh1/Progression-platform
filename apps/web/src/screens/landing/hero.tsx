@@ -4,7 +4,6 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { useAudience } from "@/hooks/landing/useAudience";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { isHeroVideoReady } from "@/lib/hero-video-ready";
-import type { AudienceMode } from "@/lib/audience";
 import { KIDS_AMBER, KIDS_SAGE, KIDS_WUSHU } from "@/lib/landing/kids-wushu";
 
 const VIDEOS = ["1.mp4", "6.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4"];
@@ -221,33 +220,9 @@ function HeroVideoSlide({
   );
 }
 
-function AudienceBadge({
-  value,
-  active,
-  onSelect,
-  children,
-}: {
-  value: AudienceMode;
-  active: boolean;
-  onSelect: (mode: AudienceMode) => void;
-  children: string;
-}) {
-  return (
-    <button
-      type="button"
-      className="hero-audience-badge"
-      data-active={active || undefined}
-      aria-pressed={active}
-      onClick={() => onSelect(value)}
-    >
-      {children}
-    </button>
-  );
-}
-
 export default function Hero() {
   const isMobile = useMobileMedia();
-  const { mode, setMode, isKids } = useAudience();
+  const { isKids } = useAudience();
   const slideCount = isMobile ? MOBILE_IMAGES.length : VIDEOS.length;
   const [idx, setIdx] = useState(0);
   const [mountedSlides, setMountedSlides] = useState(() => new Set([0, 1]));
@@ -436,9 +411,6 @@ export default function Hero() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={KIDS_WUSHU.media.logo} alt="" className="kids-hero-mark" />
                 <span className="block text-white leading-tight">{KIDS_WUSHU.school}</span>
-                <span className="block leading-tight" style={{ color: KIDS_SAGE }}>
-                  {KIDS_WUSHU.section}
-                </span>
               </>
             ) : (
               <>
@@ -451,15 +423,6 @@ export default function Hero() {
           </h1>
 
           {isKids ? <span className="kids-age-ribbon">{KIDS_WUSHU.age}</span> : null}
-
-          <div className="hero-audience-toggle" role="group" aria-label="Режим сайта">
-            <AudienceBadge value="kids" active={mode === "kids"} onSelect={setMode}>
-              Для детей
-            </AudienceBadge>
-            <AudienceBadge value="adults" active={mode === "adults"} onSelect={setMode}>
-              Для взрослых
-            </AudienceBadge>
-          </div>
         </div>
       </div>
 

@@ -26,6 +26,6 @@ export const LANDING_PROMOS: PromoItem[] = [
     title: "Первое занятие бесплатно",
     teaser: "Детская секция ушу. Набор от 6 лет. Количество мест ограничено. Тренер Татьяна: +7 (915) 048-61-60.",
     badge: "Дети",
-    href: "/?audience=kids#join",
+    href: "/kids#join",
   },
 ];

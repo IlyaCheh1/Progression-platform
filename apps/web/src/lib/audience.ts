@@ -2,7 +2,7 @@ export const AUDIENCE_MODES = ["adults", "kids"] as const;
 export type AudienceMode = (typeof AUDIENCE_MODES)[number];
 
 export const AUDIENCE_QUERY = "audience";
-export const AUDIENCE_STORAGE_KEY = "mos.audience";
+export const KIDS_HOME = "/kids";
 
 export function isAudienceMode(value: unknown): value is AudienceMode {
   return value === "adults" || value === "kids";
@@ -21,27 +21,27 @@ export function audienceFromSearch(audience: string | string[] | undefined): Aud
   return parseAudience(raw) ?? "adults";
 }
 
-export function readStoredAudience(): AudienceMode | null {
-  if (typeof window === "undefined") return null;
-  try {
-    return parseAudience(window.localStorage.getItem(AUDIENCE_STORAGE_KEY));
-  } catch {
-    return null;
-  }
+export function isKidsPath(pathname: string | null | undefined): boolean {
+  if (!pathname) return false;
+  return pathname === KIDS_HOME || pathname.startsWith(`${KIDS_HOME}/`);
 }
 
-export function writeStoredAudience(mode: AudienceMode) {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(AUDIENCE_STORAGE_KEY, mode);
-  } catch {
-    // private mode / quota
-  }
+export function audienceFromPathname(pathname: string | null | undefined): AudienceMode {
+  return isKidsPath(pathname) ? "kids" : "adults";
 }
 
-export function resolveAudience(search: string | URLSearchParams | null | undefined): AudienceMode {
-  const params = typeof search === "string" ? new URLSearchParams(search.startsWith("?") ? search.slice(1) : search) : search;
-  return parseAudience(params?.get(AUDIENCE_QUERY)) ?? readStoredAudience() ?? "adults";
+export function homeForAudience(mode: AudienceMode): string {
+  return mode === "kids" ? KIDS_HOME : "/";
+}
+
+export function isLandingPath(pathname: string | null | undefined): boolean {
+  const path = (pathname ?? "").split("?")[0];
+  return path === "" || path === "/" || path === KIDS_HOME;
+}
+
+function rewriteHomePath(path: string, mode: AudienceMode): string {
+  if (path === "" || path === "/" || path === KIDS_HOME) return homeForAudience(mode);
+  return path;
 }
 
 export function withAudience(href: string, mode: AudienceMode): string {
@@ -50,13 +50,11 @@ export function withAudience(href: string, mode: AudienceMode): string {
   const withoutHash = hashIndex >= 0 ? href.slice(0, hashIndex) : href;
   const [path, query = ""] = withoutHash.split("?");
   const params = new URLSearchParams(query);
-  if (mode === "kids") params.set(AUDIENCE_QUERY, "kids");
-  else params.delete(AUDIENCE_QUERY);
+  params.delete(AUDIENCE_QUERY);
+  const nextPath = rewriteHomePath(path, mode);
   const qs = params.toString();
-  return `${path}${qs ? `?${qs}` : ""}${hash}`;
+  return `${nextPath}${qs ? `?${qs}` : ""}${hash}`;
 }
-
-export const AUDIENCE_CHANGED_EVENT = "mos:audience-changed";
 
 const KIDS_HIDDEN_HREFS = new Set(["/#directions"]);
 

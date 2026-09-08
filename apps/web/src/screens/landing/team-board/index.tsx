@@ -281,7 +281,6 @@ export default function TeamBoard() {
       <SidePanel
         side={side}
         title={sideTitle(side)}
-        description={TEAM_COPY.sides[side].description}
         badge={playing && play.playerSide ? (side === play.playerSide ? TEAM_COPY.game.youBadge : TEAM_COPY.game.botBadge) : undefined}
         isPlayerSide={playing && play.playerSide === side}
       />

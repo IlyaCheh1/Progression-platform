@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -89,6 +89,23 @@ describe("team-board OG layout contract", () => {
     assert.doesNotMatch(copy, /title: "Школа"|title: "Спарринг"|Master of the Sword/);
     assert.match(board, /useRevealFade\(sectionRef, 0\.05, playing \? play\.phase : mode\)/);
     assert.match(board, /querySelectorAll\("\.reveal-fade"\)[\s\S]*classList\.add\("visible"\)/);
+  });
+
+  it("uses OG faction card-backs on placards and drops the description badge", () => {
+    assert.match(css, /--side-panel-bg:\s*url\("\/media\/team\/factions\/northern-realms\.png"\)/);
+    assert.match(css, /--side-panel-bg:\s*url\("\/media\/team\/factions\/nilfgaard\.png"\)/);
+    assert.doesNotMatch(pieces, /team-side-panel-description/);
+    assert.doesNotMatch(board, /TEAM_COPY\.sides\[side\]\.description/);
+    assert.equal(existsSync(fileURLToPath(new URL("../../../../public/media/team/factions/northern-realms.png", import.meta.url))), true);
+    assert.equal(existsSync(fileURLToPath(new URL("../../../../public/media/team/factions/nilfgaard.png", import.meta.url))), true);
+  });
+
+  it("styles play lanes as Gwent parchment rows with centered lane icons", () => {
+    assert.match(css, /board-parchment\.svg/);
+    assert.match(css, /\.team-row-sigil[\s\S]*left:\s*50%/);
+    assert.match(pieces, /data-lane=\{sigil\}/);
+    assert.match(pieces, /ROW_SIGILS/);
+    assert.equal(existsSync(fileURLToPath(new URL("../../../../public/media/team/board-parchment.svg", import.meta.url))), true);
   });
 });
 

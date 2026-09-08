@@ -37,6 +37,7 @@ type DirectionSlide = {
   title: string;
   description: string;
   image: string;
+  imagePosition?: string;
   tag: string;
   tagline: string;
   stat: string;
@@ -91,6 +92,7 @@ export default function Directions() {
         title: direction.title,
         description: direction.description,
         image: `/media/directions/${index + 1}.webp`,
+        imagePosition: direction.key === "east" ? "64% 18%" : undefined,
         tag: "Направление",
         tagline: SCHOOL_TAGLINE,
         stat: "8 путей мастерства",
@@ -248,7 +250,10 @@ function DirectionPanel({
               src={slide.image}
               alt={slide.title}
               className="absolute inset-0 h-full w-full object-cover"
-              style={{ filter: "saturate(1.6) brightness(0.5)" }}
+              style={{
+                filter: "saturate(1.6) brightness(0.5)",
+                objectPosition: slide.imagePosition,
+              }}
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "low"}
               decoding="async"
@@ -275,8 +280,12 @@ function DirectionPanel({
 
       <div
         className={`room-panel-text relative z-10 flex h-full flex-col justify-end px-6 pb-24 md:px-24${
-          isMontante ? " room-panel-text--montante" : " max-w-3xl"
-        }${slide.reconstruction || slide.tracks ? " room-panel-text--tracks" : ""}`}
+          isMontante
+            ? " room-panel-text--montante"
+            : slide.reconstruction || slide.tracks
+              ? " room-panel-text--tracks"
+              : " max-w-3xl"
+        }`}
       >
         <div
           className="mb-6 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest"
@@ -286,7 +295,11 @@ function DirectionPanel({
         </div>
 
         <h2
-          className="mobile-fluid-room-title mb-4 font-unbounded font-medium md:text-[calc(4.5rem-3px)] lg:text-[calc(6rem-3px)]"
+          className={`mobile-fluid-room-title mb-4 font-unbounded font-medium${
+            slide.reconstruction
+              ? " room-panel-title--recon"
+              : " md:text-[calc(4.5rem-3px)] lg:text-[calc(6rem-3px)]"
+          }`}
           style={{ color: slide.color, textShadow: `0 0 60px ${slide.glow}` }}
         >
           {isMontante ? (

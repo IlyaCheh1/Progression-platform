@@ -6,14 +6,14 @@ import Button from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 import { TEAM_COPY } from "./copy.ts";
-import { basePowerOf, ROW_SIGILS, SYMBOL_PATHS } from "./symbols.ts";
+import { basePowerOf, ICON_PATHS, ROW_SIGILS } from "./symbols.ts";
 import type { CardScore, CardSymbol, RowDef, SideId, TeamCard } from "./types.ts";
 
 export function SymbolIcon({ name, className }: { name?: CardSymbol | (typeof ROW_SIGILS)[number]; className?: string }) {
-  const symbol = name && name in SYMBOL_PATHS ? name : "rhombus";
+  const symbol = name && name in ICON_PATHS ? name : "rhombus";
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden focusable="false">
-      <path d={SYMBOL_PATHS[symbol]} />
+      <path d={ICON_PATHS[symbol]} />
     </svg>
   );
 }
@@ -158,13 +158,11 @@ export function MobileSideSwitcher({
 export function SidePanel({
   side,
   title,
-  description,
   badge,
   isPlayerSide,
 }: {
   side: SideId;
   title: string;
-  description: string;
   badge?: string;
   isPlayerSide?: boolean;
 }) {
@@ -174,7 +172,6 @@ export function SidePanel({
         <h3 className="team-side-panel-title">{title}</h3>
         {badge ? <span className="team-side-panel-badge">{badge}</span> : null}
       </div>
-      <p className="team-side-panel-description">{description}</p>
     </aside>
   );
 }
@@ -298,24 +295,22 @@ export function BoardRow({
       data-drop-state={dropState}
       data-filled={cards.length > 0 || undefined}
       data-has-power={rowPower !== undefined || undefined}
+      data-lane={sigil}
       ref={(node) => registerZone(row.id, node)}
     >
+      <span className="team-sr-only">
+        {row.title}. {row.description}
+      </span>
       <span className="team-row-count" aria-hidden>
         {rowPower !== undefined ? rowPower : countLabel}
       </span>
-      <div className="team-row-header">
-        <span className="team-row-sigil" aria-hidden>
-          <SymbolIcon name={sigil} />
-        </span>
-        <span className="team-row-titles">
-          <span className="team-row-title">{row.title}</span>
-          <span className="team-row-description">{row.description}</span>
-        </span>
-      </div>
+      <span className="team-row-sigil" aria-hidden>
+        <SymbolIcon name={sigil} />
+      </span>
       <div className="team-row-field">
         <ul className="team-row-track" aria-label={row.title}>
           {cards.length === 0 ? (
-            <li className="team-row-empty">{emptyLabel}</li>
+            <li className="team-sr-only">{emptyLabel}</li>
           ) : (
             cards.map((card, index) => {
               const score = powerByCardId?.[card.id];

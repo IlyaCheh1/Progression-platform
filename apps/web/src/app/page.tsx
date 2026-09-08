@@ -1,3 +1,4 @@
+import { permanentRedirect } from "next/navigation";
 import LandingScreen from "@/screens/landing";
 import { audienceFromSearch } from "@/lib/audience";
 
@@ -7,5 +8,8 @@ type HomePageProps = {
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
-  return <LandingScreen initialAudience={audienceFromSearch(params.audience)} />;
+  if (audienceFromSearch(params.audience) === "kids") {
+    permanentRedirect("/kids");
+  }
+  return <LandingScreen initialAudience="adults" />;
 }

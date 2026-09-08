@@ -4,10 +4,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AppLogo from "@/components/app-logo";
+import { AudienceToggle } from "@/components/audience-toggle";
 import { useAudience } from "@/hooks/landing/useAudience";
 import { useHeroVisible } from "@/hooks/landing/useHeroVisible";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
-import { publicNavForAudience, withAudience } from "@/lib/audience";
+import { isLandingPath, publicNavForAudience, withAudience } from "@/lib/audience";
 import { KIDS_WUSHU } from "@/lib/landing/kids-wushu";
 
 const NAV = [
@@ -42,7 +43,7 @@ export default function Header() {
   const router = useRouter();
   const { mode, isKids } = useAudience();
   const isHeroVisible = useHeroVisible();
-  const overHero = pathname === "/" && isHeroVisible;
+  const overHero = isLandingPath(pathname) && isHeroVisible;
   const [menuOpen, setMenuOpen] = useState(false);
   const homeHref = withAudience("/", mode);
   const nav = publicNavForAudience(NAV, mode);
@@ -61,9 +62,9 @@ export default function Header() {
     const hashIndex = resolved.indexOf("#");
     const hash = hashIndex >= 0 ? resolved.slice(hashIndex) : "";
     const path = hashIndex >= 0 ? resolved.slice(0, hashIndex) : resolved;
-    const isHomeHash = hash && (path === "" || path === "/" || path.startsWith("/?"));
+    const isHomeHash = Boolean(hash) && isLandingPath(path);
 
-    if (isHomeHash && pathname === "/") {
+    if (isHomeHash && isLandingPath(pathname)) {
       event.preventDefault();
       const target = document.querySelector<HTMLElement>(hash);
       if (!target) return;
@@ -74,7 +75,7 @@ export default function Header() {
     }
 
     if (menuOpen) setMenuOpen(false);
-    if (isHomeHash && pathname !== "/") {
+    if (isHomeHash && !isLandingPath(pathname)) {
       event.preventDefault();
       router.push(resolved);
     }
@@ -85,6 +86,7 @@ export default function Header() {
       <header
         className="landing-header fixed left-0 right-0 top-0 z-50 flex min-h-[4.5rem] items-center md:min-h-[5.25rem]"
         data-over-hero={overHero || undefined}
+        data-kids={isKids || undefined}
       >
         <Link href={homeHref} className="flex shrink-0 items-center" aria-label={isKids ? `${KIDS_WUSHU.school} — главная` : "Мастер меча — главная"}>
           <AppLogo size={isMobile ? 44 : 52} priority />
@@ -106,13 +108,14 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="relative ml-auto flex items-center lg:hidden">
+        <div className="relative ml-auto flex items-center gap-2 sm:gap-3">
+          <AudienceToggle />
           <button
             type="button"
             aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((open) => !open)}
-            className="flex h-11 w-11 items-center justify-center"
+            className="flex h-11 w-11 shrink-0 items-center justify-center lg:hidden"
           >
             <MenuIcon open={menuOpen} />
           </button>

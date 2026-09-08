@@ -17,6 +17,13 @@ describe("directions slide layout", () => {
     assert.match(tsx, /className="rooms-index /);
   });
 
+  it("keeps the reconstruction title on one unclipped line", () => {
+    assert.match(tsx, /slide\.reconstruction\s*\?\s*" room-panel-title--recon"/);
+    assert.match(css, /\.room-panel-text--tracks[\s\S]*container-type:\s*inline-size/);
+    assert.match(css, /\.mobile-fluid-room-title\.room-panel-title--recon[\s\S]*white-space:\s*nowrap/);
+    assert.match(css, /\.mobile-fluid-room-title\.room-panel-title--recon[\s\S]*7\.6cqi/);
+  });
+
   it("does not let reconstruction tracks inflate the equalized middle height", () => {
     const middle = tsx.slice(tsx.indexOf('className="room-panel-middle"'));
     const middleBlock = middle.slice(0, middle.indexOf("{slide.tracks"));
