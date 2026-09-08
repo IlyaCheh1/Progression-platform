@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent, TouchEvent as ReactTouchEvent } from "react";
+import { createPortal } from "react-dom";
 
 import Button from "@/components/ui/button";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
@@ -25,11 +26,22 @@ import { basePowerOf } from "./symbols.ts";
 import type { BoardMode, CardPlacement, RowDef, SideId, TeamCard } from "./types.ts";
 import "./team-board.css";
 
+const DRAG_START_THRESHOLD_PX = 6;
+
 const ROWS: RowDef[] = buildRows().map((row) => ({
   ...row,
   title: TEAM_COPY.rows[row.key].title,
   description: TEAM_COPY.rows[row.key].description,
 }));
+
+function suppressNextClick() {
+  const swallow = (event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  window.addEventListener("click", swallow, { capture: true, once: true });
+  window.setTimeout(() => window.removeEventListener("click", swallow, true), 50);
+}
 
 function handCards(placements: Record<string, CardPlacement>, roster: Record<string, TeamCard>, side: SideId): TeamCard[] {
   return Object.entries(placements)
@@ -62,6 +74,7 @@ export default function TeamBoard() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const zones = useRef<Record<string, HTMLElement | null>>({});
   const dragPoint = useRef<{ x: number; y: number } | null>(null);
+  const [hoverZone, setHoverZone] = useState<string | null>(null);
   const botTimer = useRef<number | null>(null);
 
   const roster = useMemo(() => cardsById(TEAM_BOARD_CARDS), []);
@@ -164,37 +177,59 @@ export default function TeamBoard() {
   }, [placeExplore, placePlay, playing, returnExplore, roster]);
 
   const onPointerDown = useCallback((event: ReactPointerEvent<HTMLButtonElement>, cardId: string) => {
-    if (event.pointerType === "touch" || !isFinePointer()) return;
+    if (event.button !== 0 || event.pointerType === "touch" || !isFinePointer()) return;
     if (playing && !canSelectPlayerCard(play, cardId)) return;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    if (playing) dispatchPlay({ type: "START_DRAG", cardId });
-    else dispatchExplore({ type: "START_DRAG", cardId });
-    dragPoint.current = { x: event.clientX, y: event.clientY };
-  }, [play, playing]);
 
-  useEffect(() => {
-    if (!board.dragging) return;
-    const move = (event: PointerEvent) => {
-      dragPoint.current = { x: event.clientX, y: event.clientY };
-      if (overlayRef.current) {
-        overlayRef.current.style.left = `${event.clientX}px`;
-        overlayRef.current.style.top = `${event.clientY}px`;
-      }
+    const pointerId = event.pointerId;
+    const originX = event.clientX;
+    const originY = event.clientY;
+    let started = false;
+    dragPoint.current = { x: originX, y: originY };
+
+    const placeOverlay = (x: number, y: number) => {
+      if (!overlayRef.current) return;
+      overlayRef.current.style.left = `${x}px`;
+      overlayRef.current.style.top = `${y}px`;
     };
-    const up = (event: PointerEvent) => {
-      const zone = zoneAtPoint(event.clientX, event.clientY);
-      const cardId = board.dragging?.cardId;
+
+    const move = (moveEvent: PointerEvent) => {
+      if (moveEvent.pointerId !== pointerId) return;
+      dragPoint.current = { x: moveEvent.clientX, y: moveEvent.clientY };
+      if (!started) {
+        if (Math.hypot(moveEvent.clientX - originX, moveEvent.clientY - originY) < DRAG_START_THRESHOLD_PX) return;
+        started = true;
+        if (playing) dispatchPlay({ type: "START_DRAG", cardId });
+        else dispatchExplore({ type: "START_DRAG", cardId });
+      }
+      placeOverlay(moveEvent.clientX, moveEvent.clientY);
+      setHoverZone(zoneAtPoint(moveEvent.clientX, moveEvent.clientY) ?? null);
+      moveEvent.preventDefault();
+    };
+
+    const finish = (upEvent: PointerEvent) => {
+      if (upEvent.pointerId !== pointerId) return;
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", finish);
+      window.removeEventListener("pointercancel", finish);
+      setHoverZone(null);
+      if (!started) return;
+      const zone = zoneAtPoint(upEvent.clientX, upEvent.clientY);
       if (playing) dispatchPlay({ type: "END_DRAG" });
       else dispatchExplore({ type: "END_DRAG" });
-      if (cardId) dropCard(cardId, zone);
+      dropCard(cardId, zone);
+      suppressNextClick();
     };
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", up);
-    return () => {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", up);
-    };
-  }, [board.dragging, dropCard, playing, zoneAtPoint]);
+
+    window.addEventListener("pointermove", move, { passive: false });
+    window.addEventListener("pointerup", finish);
+    window.addEventListener("pointercancel", finish);
+  }, [dropCard, play, playing, zoneAtPoint]);
+
+  useLayoutEffect(() => {
+    if (!board.dragging || !dragPoint.current || !overlayRef.current) return;
+    overlayRef.current.style.left = `${dragPoint.current.x}px`;
+    overlayRef.current.style.top = `${dragPoint.current.y}px`;
+  }, [board.dragging]);
 
   useEffect(() => {
     if (!playing || play.phase !== "finished" || play.result || !play.playerSide) return;
@@ -270,10 +305,10 @@ export default function TeamBoard() {
     const allowed = playing
       ? canPlaceOnRow(play, dragging.cardId, rowId)
       : explore.cards[dragging.cardId]?.allowedRows.includes(rowId) ?? false;
-    const over = dragPoint.current ? zoneAtPoint(dragPoint.current.x, dragPoint.current.y) === rowId : false;
+    const over = hoverZone === rowId;
     if (over) return allowed ? "active" : "blocked";
     return allowed ? "allowed" : "blocked";
-  }, [board.dragging, explore.cards, play, playing, zoneAtPoint]);
+  }, [board.dragging, explore.cards, hoverZone, play, playing]);
 
   const renderSide = (side: SideId) => {
     if (!sideVisible(side)) return null;
@@ -466,13 +501,11 @@ export default function TeamBoard() {
             >
               {renderSide(topSide)}
               {renderHand(topSide)}
-              {playing ? (
-                <div className="team-board-field">
-                  {sideVisible(topSide) ? renderRows(topSide) : null}
-                  <div className="team-board-divider" aria-hidden />
-                  {sideVisible(bottomSide) ? renderRows(bottomSide) : null}
-                </div>
-              ) : null}
+              <div className="team-board-field">
+                {sideVisible(topSide) ? renderRows(topSide) : null}
+                <div className="team-board-divider" aria-hidden />
+                {sideVisible(bottomSide) ? renderRows(bottomSide) : null}
+              </div>
               {renderSide(bottomSide)}
               {renderHand(bottomSide)}
             </div>
@@ -544,7 +577,9 @@ export default function TeamBoard() {
         </div>
       ) : null}
 
-      {draggedCard ? <DragOverlay card={draggedCard} overlayRef={overlayRef} /> : null}
+      {draggedCard && typeof document !== "undefined"
+        ? createPortal(<DragOverlay card={draggedCard} overlayRef={overlayRef} />, document.body)
+        : null}
     </section>
   );
 }

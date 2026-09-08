@@ -13,6 +13,8 @@ describe("team-board OG layout contract", () => {
   it("keeps adults-only mount and hides the board for kids", () => {
     assert.match(landing, /\{!isKids \? <TeamBoard \/> : null\}/);
     assert.doesNotMatch(landing, /isKids && <TeamBoard/);
+    assert.match(landing, /\{isKids \? <Trainers \/> : null\}/);
+    assert.doesNotMatch(landing, /<Trainers \/>\s*\n\s*\{!isKids \? <TeamBoard/);
   });
 
   it("exposes MobileSideSwitcher with aria-pressed", () => {
@@ -22,9 +24,12 @@ describe("team-board OG layout contract", () => {
     assert.doesNotMatch(board, /addEventListener\(\s*["']wheel["']/);
   });
 
-  it("drags only on fine pointers and keeps tap-to-open on touch", () => {
+  it("drags mouse cards onto the field after a short move and keeps tap-to-open on touch", () => {
+    assert.match(board, /DRAG_START_THRESHOLD_PX/);
     assert.match(board, /pointerType === "touch" \|\| !isFinePointer\(\)/);
     assert.match(board, /matchMedia\("\(pointer: fine\)"\)/);
+    assert.match(board, /suppressNextClick/);
+    assert.match(pieces, /onDragStart/);
   });
 
   it("uses MOS amber/void tokens instead of OG yellow/violet", () => {
@@ -62,25 +67,20 @@ describe("team-board OG layout contract", () => {
     assert.match(tablet, /\.team-hand\[data-side="sideB"\][\s\S]*order:\s*5/);
   });
 
-  it("uses the OG desktop play grid and explore catalogue", () => {
+  it("uses the desktop play grid for both explore and duel", () => {
     const desktop = css.slice(css.indexOf("@media (min-width: 1280px)"));
     assert.match(
       desktop,
       /grid-template:\s*"handTop handTop"\s*"panelTop field" 1fr\s*"panelBot field" 1fr\s*"handBot handBot"/,
     );
-    assert.match(desktop, /\[data-mode="explore"\] \.team-board/);
-    assert.match(desktop, /grid-template-rows:\s*repeat\(2, auto\)/);
-    assert.match(desktop, /\.team-side-panel\[data-side="sideA"\][\s\S]*grid-area:\s*1 \/ 1/);
-    assert.match(desktop, /\.team-hand\[data-side="sideA"\][\s\S]*grid-area:\s*1 \/ 2/);
-    assert.match(desktop, /\.team-side-panel\[data-side="sideB"\][\s\S]*grid-area:\s*2 \/ 1/);
-    assert.match(desktop, /\.team-hand\[data-side="sideB"\][\s\S]*grid-area:\s*2 \/ 2/);
+    assert.doesNotMatch(desktop, /\[data-mode="explore"\] \.team-board[\s\S]*grid-template-rows:\s*repeat\(2, auto\)/);
   });
 
-  it("keeps explore as a catalogue without the play field", () => {
-    assert.match(css, /\[data-mode="explore"\] \.team-board-field[\s\S]*display:\s*none/);
-    assert.match(board, /\{playing \? \(/);
+  it("keeps the play field visible in explore so cards can be dropped", () => {
+    assert.doesNotMatch(css, /\[data-mode="explore"\] \.team-board-field[\s\S]*display:\s*none/);
     assert.match(board, /className="team-board-field"/);
     assert.match(board, /className="team-board-side"/);
+    assert.doesNotMatch(board, /\{playing \? \(\s*<div className="team-board-field"/);
   });
 
   it("uses OG faction names in full and remounts the field after a match starts", () => {
@@ -130,5 +130,12 @@ describe("team-board Gwent card face", () => {
     assert.match(css, /@media \(min-width: 768px\) and \(pointer: fine\)/);
     assert.match(css, /\.team-hand \.team-hand-slot:hover/);
     assert.match(css, /translateY\(-14px\)/);
+  });
+
+  it("shows trainer name, role and bio paragraphs in the card dialog", () => {
+    assert.match(pieces, /team-dialog-name/);
+    assert.match(pieces, /card\.role/);
+    assert.match(pieces, /card\.fullDescription\.split/);
+    assert.match(pieces, /team-dialog-bio/);
   });
 });

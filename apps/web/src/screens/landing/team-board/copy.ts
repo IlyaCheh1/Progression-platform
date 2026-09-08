@@ -2,8 +2,8 @@ import type { BonusKind, CardSymbol, MatchOutcome, RowKey, SideId } from "./type
 
 export const TEAM_COPY = {
   eyebrow: "Команда школы",
-  title: "Расклад мастеров",
-  subtitle: "Соберите линию школы и спарринг-сторону. Карты можно переставлять — это та же механика, что на OnlyGames.",
+  title: "Наши мастера",
+  subtitle: "Сыграй с нашими мастерами, изучи их способности и присоединяйся к команде учеников.",
   gameSubtitle: "Шесть ходов, три ряда, одна карта за ход. Победа — по рядам, при равенстве по силе.",
   modeExplore: "Расклад",
   modePlay: "Дуэль",

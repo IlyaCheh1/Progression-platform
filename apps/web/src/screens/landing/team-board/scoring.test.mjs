@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
+import { LANDING_TRAINERS } from "../landing-trainers.ts";
 import { evaluateMatch, placeCard, qualifiesComeback, scoreCard } from "./scoring.ts";
 import { TEAM_BOARD_CARDS } from "./roster.ts";
 import { cardsById } from "./scoring.ts";
@@ -122,6 +123,22 @@ describe("MasterSword roster", () => {
       assert.ok(mock.id.startsWith("mock-"));
       assert.equal(mock.image.src, undefined);
       assert.match(mock.fullDescription, /не сотрудник/i);
+    }
+  });
+
+  it("copies name, role, photo, accent and every bio paragraph onto game cards", () => {
+    assert.equal(LANDING_TRAINERS.length, 4);
+    for (const trainer of LANDING_TRAINERS) {
+      const card = TEAM_BOARD_CARDS.find((item) => item.id === trainer.id);
+      assert.ok(card, trainer.id);
+      assert.equal(card.name, trainer.name);
+      assert.equal(card.role, trainer.role);
+      assert.equal(card.image.src, trainer.photo);
+      assert.equal(card.visual.accent, trainer.accent);
+      assert.equal(card.shortDescription, trainer.bio[0] ?? trainer.role);
+      for (const paragraph of trainer.bio) {
+        assert.ok(card.fullDescription.includes(paragraph), paragraph);
+      }
     }
   });
 });

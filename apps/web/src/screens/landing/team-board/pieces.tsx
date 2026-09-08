@@ -120,6 +120,7 @@ export function TeamCardButton({
       data-side={card.side}
       onClick={() => onActivate(card.id)}
       onPointerDown={(event) => onPointerDown?.(event, card.id)}
+      onDragStart={(event) => event.preventDefault()}
     >
       <TeamCardFace card={card} power={power} powerBonus={powerBonus} />
     </button>
@@ -399,7 +400,11 @@ export function CardDialog({
               {card.name}
             </h3>
             <p className="team-dialog-role">{card.role}</p>
-            <p className="team-dialog-bio">{card.fullDescription}</p>
+            {card.fullDescription.split(/\n\n+/).map((paragraph) => (
+              <p key={paragraph} className="team-dialog-bio">
+                {paragraph}
+              </p>
+            ))}
             {card.mock ? <p className="team-dialog-ability">{TEAM_COPY.mockHint}</p> : null}
             {abilityHint ? <p className="team-dialog-ability">{abilityHint}</p> : null}
             {canPlay || (gameMode && canReturn && onBoard) || (!gameMode && onBoard) ? (

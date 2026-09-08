@@ -27,6 +27,7 @@ describe("kids landing hotfix", () => {
     assert.doesNotMatch(hero, /Тренер Татьяна|Сила тела\. Дух дракона/);
     assert.doesNotMatch(hero, /KIDS_WUSHU\.brand/);
     assert.doesNotMatch(hero, /Школа фехтования|Мастер меча/);
+    assert.match(landing, /\{isKids \? <Trainers \/> : null\}/);
   });
 
   it("keeps kids chrome on wushu naming only", () => {
