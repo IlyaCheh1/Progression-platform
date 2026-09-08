@@ -501,11 +501,13 @@ export default function TeamBoard() {
             >
               {renderSide(topSide)}
               {renderHand(topSide)}
-              <div className="team-board-field">
-                {sideVisible(topSide) ? renderRows(topSide) : null}
-                <div className="team-board-divider" aria-hidden />
-                {sideVisible(bottomSide) ? renderRows(bottomSide) : null}
-              </div>
+              {playing ? (
+                <div className="team-board-field">
+                  {sideVisible(topSide) ? renderRows(topSide) : null}
+                  <div className="team-board-divider" aria-hidden />
+                  {sideVisible(bottomSide) ? renderRows(bottomSide) : null}
+                </div>
+              ) : null}
               {renderSide(bottomSide)}
               {renderHand(bottomSide)}
             </div>
@@ -525,7 +527,7 @@ export default function TeamBoard() {
           allowedRows={expandedPlacement.allowedRows}
           rows={ROWS.filter((row) => row.side === expandedCard.side)}
           gameMode={playing}
-          canPlay={playing ? canSelectPlayerCard(play, expandedCard.id) : true}
+          canPlay={playing ? canSelectPlayerCard(play, expandedCard.id) : false}
           canReturn={playing ? play.phase === "playerTurn" && play.pendingCardId === expandedCard.id : true}
           isRowPlayable={playing ? (rowId) => canPlaceOnRow(play, expandedCard.id, rowId) : undefined}
           abilityHint={TEAM_COPY.symbols[expandedCard.visual.symbol]}

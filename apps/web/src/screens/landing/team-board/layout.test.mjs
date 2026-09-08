@@ -67,20 +67,26 @@ describe("team-board OG layout contract", () => {
     assert.match(tablet, /\.team-hand\[data-side="sideB"\][\s\S]*order:\s*5/);
   });
 
-  it("uses the desktop play grid for both explore and duel", () => {
+  it("uses the desktop play grid in skirmish and a two-row team grid in explore", () => {
     const desktop = css.slice(css.indexOf("@media (min-width: 1280px)"));
     assert.match(
       desktop,
       /grid-template:\s*"handTop handTop"\s*"panelTop field" 1fr\s*"panelBot field" 1fr\s*"handBot handBot"/,
     );
-    assert.doesNotMatch(desktop, /\[data-mode="explore"\] \.team-board[\s\S]*grid-template-rows:\s*repeat\(2, auto\)/);
+    assert.match(
+      desktop,
+      /\[data-mode="explore"\] \.team-board[\s\S]*grid-template:\s*"panelTop handTop"\s*"panelBot handBot"/,
+    );
   });
 
-  it("keeps the play field visible in explore so cards can be dropped", () => {
-    assert.doesNotMatch(css, /\[data-mode="explore"\] \.team-board-field[\s\S]*display:\s*none/);
+  it("hides the play field in teams mode and shows it only in skirmish", () => {
     assert.match(board, /className="team-board-field"/);
     assert.match(board, /className="team-board-side"/);
-    assert.doesNotMatch(board, /\{playing \? \(\s*<div className="team-board-field"/);
+    assert.match(board, /\{playing \? \(\s*<div className="team-board-field"/);
+    assert.match(board, /canPlay=\{playing \? canSelectPlayerCard\(play, expandedCard\.id\) : false\}/);
+    assert.match(copy, /modeExplore: "Команды"/);
+    assert.match(copy, /modePlay: "Схватка"/);
+    assert.match(copy, /resetBoard: "Сбросить команды"/);
   });
 
   it("uses OG faction names in full and remounts the field after a match starts", () => {

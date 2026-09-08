@@ -1081,6 +1081,12 @@
     grid-area: handBot;
   }
 
+  .team-board-section[data-mode="explore"] .team-board {
+    grid-template:
+      "panelTop handTop"
+      "panelBot handBot" / minmax(0, 13.5rem) minmax(0, 1fr);
+  }
+
   .team-side-panel {
     justify-content: center;
   }
