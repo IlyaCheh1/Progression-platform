@@ -10,6 +10,8 @@ describe("kids wushu canon (poster A)", () => {
     assert.doesNotMatch(JSON.stringify(KIDS_WUSHU), /Школа фехтования|Мастер меча/);
     assert.equal(KIDS_WUSHU.section, "Детская секция ушу");
     assert.equal(KIDS_WUSHU.slogan, "Сила тела. Дух дракона. Путь чемпиона.");
+    assert.equal(KIDS_WUSHU.lead, "Мы формируем характер, волю и уверенность — и растим чемпионов.");
+    assert.doesNotMatch(KIDS_WUSHU.lead, /Тренер Татьяна|10 лет преподавания/);
     assert.match(KIDS_WUSHU.body, /характер, волю и уверенность/);
     assert.match(KIDS_WUSHU.body, /10 лет преподавания, 25 лет в спорте/);
     assert.deepEqual(

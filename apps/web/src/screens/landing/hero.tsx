@@ -425,16 +425,10 @@ export default function Hero() {
         />
       ))}
 
-      <div
-        className={`hero-main relative z-10 flex h-full flex-col px-6 pb-28${
-          isKids ? " items-start justify-center text-left" : " items-center justify-center text-center"
-        }`}
-      >
-        <div className={`flex w-full flex-col gap-8 md:gap-10${isKids ? " max-w-xl items-start" : " items-center"}`}>
+      <div className="hero-main relative z-10 flex h-full flex-col items-center justify-center px-6 pb-28 text-center">
+        <div className="flex w-full flex-col items-center gap-8 md:gap-10">
           <h1
-            className={`mobile-fluid-hero-title flex max-w-4xl flex-col gap-4 font-unbounded font-medium tracking-tight md:gap-6 lg:gap-7${
-              isKids ? " items-start" : " items-center"
-            }`}
+            className="mobile-fluid-hero-title flex max-w-4xl flex-col items-center gap-4 font-unbounded font-medium tracking-tight md:gap-6 lg:gap-7"
             style={{ textShadow: "0 0 60px rgba(212,168,75,0.28)" }}
           >
             {isKids ? (
@@ -456,7 +450,6 @@ export default function Hero() {
             )}
           </h1>
 
-          {isKids ? <p className="kids-slogan">{KIDS_WUSHU.slogan}</p> : null}
           {isKids ? <span className="kids-age-ribbon">{KIDS_WUSHU.age}</span> : null}
 
           <div className="hero-audience-toggle" role="group" aria-label="Режим сайта">
@@ -474,7 +467,7 @@ export default function Hero() {
         <p className="font-golos text-[calc(0.875rem+2pt)] font-medium leading-relaxed text-white/60 md:text-[calc(0.875rem+4pt)]">
           {isKids ? (
             <>
-              {KIDS_WUSHU.body}
+              {KIDS_WUSHU.lead}
               <br />
               {KIDS_WUSHU.cta}
             </>

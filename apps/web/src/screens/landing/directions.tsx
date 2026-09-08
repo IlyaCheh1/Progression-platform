@@ -146,7 +146,7 @@ export default function Directions() {
   return (
     <section id="directions" ref={containerRef} className="relative h-dvh min-h-[32rem]">
       <div className="rooms-sticky sticky top-0 h-dvh min-h-[32rem] w-full overflow-hidden">
-        <div className="absolute left-1/2 top-8 z-20 hidden -translate-x-1/2 items-center gap-3 text-xs font-semibold uppercase tracking-widest text-white/40 md:flex">
+        <div className="rooms-index absolute left-1/2 z-20 hidden -translate-x-1/2 items-center gap-3 text-xs font-semibold uppercase tracking-widest text-white/40 md:flex">
           <span>Направления</span>
           <span className="h-px w-8 bg-white/20" />
           <span style={{ color: "var(--mos-amber)" }}>
@@ -286,7 +286,7 @@ function DirectionPanel({
         </div>
 
         <h2
-          className="mobile-fluid-room-title mb-4 font-unbounded font-medium leading-none md:text-[calc(4.5rem-3px)] lg:text-[calc(6rem-3px)]"
+          className="mobile-fluid-room-title mb-4 font-unbounded font-medium md:text-[calc(4.5rem-3px)] lg:text-[calc(6rem-3px)]"
           style={{ color: slide.color, textShadow: `0 0 60px ${slide.glow}` }}
         >
           {isMontante ? (
@@ -303,26 +303,26 @@ function DirectionPanel({
         <div className="room-panel-middle">
           <p className="room-panel-tagline mb-4 max-w-lg font-light italic text-white/60">{slide.tagline}</p>
           <p className="room-panel-description mb-6 max-w-md leading-relaxed text-white/50">{slide.description}</p>
-          {slide.tracks ? (
-            <ul className="recon-tracks mb-8">
-              {slide.tracks.map((track) => (
-                <li key={track.id} className="recon-track">
-                  <strong>{track.title}</strong>
-                </li>
-              ))}
-            </ul>
-          ) : slide.reconstruction ? (
-            <ul className="recon-tracks mb-8">
-              {RECONSTRUCTION_TRACKS.map((track) => (
-                <li key={track.id} className="recon-track">
-                  <span className="recon-track-badge">Макет</span>
-                  <strong>{track.title}</strong>
-                  <span>{track.description}</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
         </div>
+        {slide.tracks ? (
+          <ul className="recon-tracks mb-8">
+            {slide.tracks.map((track) => (
+              <li key={track.id} className="recon-track">
+                <strong>{track.title}</strong>
+              </li>
+            ))}
+          </ul>
+        ) : slide.reconstruction ? (
+          <ul className="recon-tracks mb-8">
+            {RECONSTRUCTION_TRACKS.map((track) => (
+              <li key={track.id} className="recon-track">
+                <span className="recon-track-badge">Макет</span>
+                <strong>{track.title}</strong>
+                <span>{track.description}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
 
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: slide.color }}>

@@ -19,6 +19,11 @@ describe("kids landing hotfix", () => {
     assert.doesNotMatch(hero, /KIDS_WUSHU\.media\.hero"/);
     assert.match(hero, /KIDS_WUSHU\.school/);
     assert.match(hero, /KIDS_WUSHU\.section/);
+    assert.match(hero, /KIDS_WUSHU\.lead/);
+    assert.match(hero, /items-center justify-center[\s\S]*text-center/);
+    assert.doesNotMatch(hero, /KIDS_WUSHU\.slogan/);
+    assert.doesNotMatch(hero, /KIDS_WUSHU\.body/);
+    assert.doesNotMatch(hero, /Тренер Татьяна|Сила тела\. Дух дракона/);
     assert.doesNotMatch(hero, /KIDS_WUSHU\.brand/);
     assert.doesNotMatch(hero, /Школа фехтования|Мастер меча/);
   });
@@ -28,6 +33,8 @@ describe("kids landing hotfix", () => {
     const articles = readFileSync(fileURLToPath(new URL("../../screens/landing/articles.tsx", import.meta.url)), "utf8");
     const footer = readFileSync(fileURLToPath(new URL("../../components/footer.tsx", import.meta.url)), "utf8");
 
+    assert.match(header, /useHeroVisible/);
+    assert.match(header, /data-over-hero=\{overHero \|\| undefined\}/);
     assert.match(header, /isKids \? `\$\{KIDS_WUSHU\.school\} — главная`/);
     assert.match(articles, /isKids \? KIDS_WUSHU\.school : "Мастер меча"/);
     assert.match(footer, /KIDS_WUSHU\.school/);

@@ -175,9 +175,38 @@
 }
 
 .team-board-field {
+  position: relative;
   order: 5;
-  display: grid;
-  gap: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.85rem;
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(ellipse 110% 60% at 50% 50%, color-mix(in srgb, var(--team-amber) 8%, transparent) 0%, transparent 72%),
+    linear-gradient(180deg, var(--board-felt-a) 0%, var(--board-felt-b) 50%, var(--board-felt-a) 100%);
+  box-shadow:
+    inset 0 0 0 1px var(--board-line),
+    inset 0 2px 44px #00000099,
+    0 24px 60px #00000073;
+}
+
+.team-board-field::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    repeating-linear-gradient(90deg, #ffffff04 0 1px, transparent 1px 34px),
+    repeating-linear-gradient(0deg, #ffffff04 0 1px, transparent 1px 34px);
+}
+
+.team-board-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
 .team-board-section[data-mode="explore"] .team-board-field {
@@ -185,9 +214,22 @@
 }
 
 .team-board-divider {
+  position: relative;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--team-amber), transparent);
-  opacity: 0.35;
+  margin: 0.55rem 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--team-amber) 55%, transparent) 30%, color-mix(in srgb, var(--team-amber) 55%, transparent) 70%, transparent);
+}
+
+.team-board-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.45rem;
+  height: 0.45rem;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: var(--team-amber);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--team-amber) 55%, transparent);
 }
 
 .team-side-panel {
@@ -229,10 +271,14 @@
 }
 
 .team-side-panel-title {
+  width: 100%;
   margin: 0;
   font-family: var(--mos-font-display), Unbounded, sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
+  text-wrap: balance;
   color: #fff;
 }
 
@@ -908,6 +954,11 @@
 
   .team-board-field {
     order: 3;
+  }
+
+  .team-board[data-top-side="sideA"] .team-board-side[data-side="sideA"],
+  .team-board[data-top-side="sideB"] .team-board-side[data-side="sideB"] {
+    flex-direction: column-reverse;
   }
 
   .team-board[data-top-side="sideA"] .team-side-panel[data-side="sideB"],

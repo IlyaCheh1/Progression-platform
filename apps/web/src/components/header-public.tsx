@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AppLogo from "@/components/app-logo";
 import { useAudience } from "@/hooks/landing/useAudience";
+import { useHeroVisible } from "@/hooks/landing/useHeroVisible";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { publicNavForAudience, withAudience } from "@/lib/audience";
 import { KIDS_WUSHU } from "@/lib/landing/kids-wushu";
@@ -40,6 +41,8 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { mode, isKids } = useAudience();
+  const isHeroVisible = useHeroVisible();
+  const overHero = pathname === "/" && isHeroVisible;
   const [menuOpen, setMenuOpen] = useState(false);
   const homeHref = withAudience("/", mode);
   const nav = publicNavForAudience(NAV, mode);
@@ -79,7 +82,10 @@ export default function Header() {
 
   return (
     <>
-      <header className="landing-header fixed left-0 right-0 top-0 z-50 flex min-h-[4.5rem] items-center md:min-h-[5.25rem]">
+      <header
+        className="landing-header fixed left-0 right-0 top-0 z-50 flex min-h-[4.5rem] items-center md:min-h-[5.25rem]"
+        data-over-hero={overHero || undefined}
+      >
         <Link href={homeHref} className="flex shrink-0 items-center" aria-label={isKids ? `${KIDS_WUSHU.school} — главная` : "Мастер меча — главная"}>
           <AppLogo size={isMobile ? 44 : 52} priority />
         </Link>

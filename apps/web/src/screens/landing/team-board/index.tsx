@@ -8,7 +8,7 @@ import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
 
 import { pickBotMove, randomSide } from "./bot.ts";
-import { TEAM_COPY, outcomeLabel, rowCountLabel, sideTitle } from "./copy.ts";
+import { TEAM_COPY, outcomeLabel, rowCountLabel, sideShort, sideTitle } from "./copy.ts";
 import { createExploreState, exploreReducer } from "./explore-reducer.ts";
 import { canSelectPlayerCard, createSetupState, gameReducer } from "./game-reducer.ts";
 import { BoardRow, CardDialog, DragOverlay, Hand, MobileSideSwitcher, ModeSwitch, SidePanel } from "./pieces.tsx";
@@ -54,8 +54,6 @@ function isFinePointer() {
 export default function TeamBoard() {
   const sectionRef = useRef<HTMLElement>(null);
   const isMobile = useMobileMedia();
-  useRevealFade(sectionRef);
-
   const [mode, setMode] = useState<BoardMode>("explore");
   const [showResult, setShowResult] = useState(false);
   const [announcement, setAnnouncement] = useState("");
@@ -76,6 +74,14 @@ export default function TeamBoard() {
   playRef.current = play;
 
   const playing = mode === "play";
+  useRevealFade(sectionRef, 0.05, playing ? play.phase : mode);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || !playing) return;
+    section.querySelectorAll(".reveal-fade").forEach((el) => el.classList.add("visible"));
+  }, [play.phase, playing]);
+
   const board = playing ? play : explore;
   const topSide: SideId = playing && play.playerSide ? play.playerSide : "sideA";
   const bottomSide = oppositeSide(topSide);
@@ -311,7 +317,7 @@ export default function TeamBoard() {
   };
 
   const renderRows = (side: SideId) => (
-    <div className="team-side-rows">
+    <div className="team-board-side" data-side={side} aria-label={sideTitle(side)}>
       {ROWS.filter((row) => row.side === side).map((row, rank) => (
         <BoardRow
           key={row.id}
@@ -442,7 +448,7 @@ export default function TeamBoard() {
             <MobileSideSwitcher
               sides={visibleSides}
               activeSide={board.activeSide}
-              labelOf={sideTitle}
+              labelOf={isMobile ? sideShort : sideTitle}
               onChange={setActiveSide}
             />
             {playing ? <p className="team-board-swipe-hint">{TEAM_COPY.swipeBoardHint}</p> : null}
@@ -461,11 +467,13 @@ export default function TeamBoard() {
             >
               {renderSide(topSide)}
               {renderHand(topSide)}
-              <div className="team-board-field">
-                {sideVisible(topSide) ? renderRows(topSide) : null}
-                <div className="team-board-divider" aria-hidden />
-                {sideVisible(bottomSide) ? renderRows(bottomSide) : null}
-              </div>
+              {playing ? (
+                <div className="team-board-field">
+                  {sideVisible(topSide) ? renderRows(topSide) : null}
+                  <div className="team-board-divider" aria-hidden />
+                  {sideVisible(bottomSide) ? renderRows(bottomSide) : null}
+                </div>
+              ) : null}
               {renderSide(bottomSide)}
               {renderHand(bottomSide)}
             </div>

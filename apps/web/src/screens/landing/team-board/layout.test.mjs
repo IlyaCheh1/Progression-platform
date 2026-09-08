@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const css = readFileSync(fileURLToPath(new URL("./team-board.css", import.meta.url)), "utf8");
 const pieces = readFileSync(fileURLToPath(new URL("./pieces.tsx", import.meta.url)), "utf8");
 const board = readFileSync(fileURLToPath(new URL("./index.tsx", import.meta.url)), "utf8");
+const copy = readFileSync(fileURLToPath(new URL("./copy.ts", import.meta.url)), "utf8");
 const landing = readFileSync(fileURLToPath(new URL("../index.tsx", import.meta.url)), "utf8");
 
 describe("team-board OG layout contract", () => {
@@ -77,6 +78,17 @@ describe("team-board OG layout contract", () => {
 
   it("keeps explore as a catalogue without the play field", () => {
     assert.match(css, /\[data-mode="explore"\] \.team-board-field[\s\S]*display:\s*none/);
+    assert.match(board, /\{playing \? \(/);
+    assert.match(board, /className="team-board-field"/);
+    assert.match(board, /className="team-board-side"/);
+  });
+
+  it("uses OG faction names in full and remounts the field after a match starts", () => {
+    assert.match(copy, /title: "Королевства Севера"/);
+    assert.match(copy, /title: "Нильфгаард"/);
+    assert.doesNotMatch(copy, /title: "Школа"|title: "Спарринг"|Master of the Sword/);
+    assert.match(board, /useRevealFade\(sectionRef, 0\.05, playing \? play\.phase : mode\)/);
+    assert.match(board, /querySelectorAll\("\.reveal-fade"\)[\s\S]*classList\.add\("visible"\)/);
   });
 });
 

@@ -293,6 +293,19 @@
   justify-content: flex-start;
 }
 
+.mobile-fluid-room-title {
+  line-height: 1.12;
+  overflow: visible;
+}
+
+#directions .room-panel-text {
+  justify-content: safe flex-end;
+}
+
+#directions .rooms-index {
+  top: calc(var(--landing-header-offset) + 0.5rem);
+}
+
 .room-panel .video-overlay {
   z-index: 4;
 }
@@ -319,12 +332,15 @@
   }
 }
 
-@media (min-width: 2400px) {
-  .room-panel-text {
-    transform: scale(1.5);
-    transform-origin: left bottom;
+@media (min-width: 768px) {
+  #directions .room-panel-text {
+    padding-top: calc(var(--landing-header-offset) + 2.25rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
+}
 
+@media (min-width: 2400px) {
   .room-panel-tagline,
   .room-panel--montante .room-panel-tagline {
     font-size: 1.375rem;
@@ -1247,6 +1263,16 @@ a.experience-item {
   padding-bottom: 0.75rem;
   padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
   padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    backdrop-filter 0.3s ease;
+}
+
+.landing-header[data-over-hero] {
+  background: transparent;
+  border-bottom-color: transparent;
+  backdrop-filter: none;
 }
 
 .public-main {
@@ -1317,16 +1343,6 @@ a.experience-item {
   .kids-hero-art {
     object-position: 82% 28%;
   }
-}
-
-.kids-slogan {
-  max-width: 36rem;
-  font-family: var(--mos-font-display);
-  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--mos-amber);
 }
 
 .kids-age-ribbon {
@@ -1625,22 +1641,8 @@ a.experience-item {
     width: 2.5rem;
   }
 
-  .kids-slogan {
-    max-width: 20rem;
-    font-size: 0.78rem;
-    letter-spacing: 0.05em;
-    line-height: 1.35;
-  }
-
   .kids-hero .hero-main {
     gap: 1.25rem;
-    padding-bottom: 2.5rem;
-    justify-content: flex-start;
-    padding-top: calc(var(--landing-header-offset) + 1.25rem);
-  }
-
-  .kids-hero .hero-bottom-copy {
-    display: none;
   }
 
   .hero-bottom-copy {

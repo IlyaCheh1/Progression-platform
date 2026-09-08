@@ -21,8 +21,8 @@ export const TEAM_COPY = {
   mockBadge: "Заглушка",
   mockHint: "Карта-заглушка. Данные появятся позже — это не сотрудник школы.",
   sides: {
-    sideA: { title: "Школа", description: "Действующие мастера Master of the Sword и свободные места в составе." },
-    sideB: { title: "Спарринг", description: "Шесть мест соперника. Пока заполнены заглушками." },
+    sideA: { title: "Королевства Севера", short: "Север", description: "Продукт, игры и сообщество" },
+    sideB: { title: "Нильфгаард", short: "Нильфгаард", description: "Технологии, сервисы и инфраструктура" },
   },
   rows: {
     "row-1": { title: "Авангард", description: "Первая линия. Сильны треугольник и крест." },
@@ -31,7 +31,7 @@ export const TEAM_COPY = {
   },
   game: {
     setupTitle: "Выберите сторону",
-    setupCopy: "Школа — живые тренеры и две вакансии. Спарринг — шесть заглушек. Кто ходит первым, решает жребий.",
+    setupCopy: "Вы управляете одной колодой. Право первого хода определяет жребий, дальше бот отвечает после вашего подтверждения.",
     youBadge: "Вы",
     botBadge: "Бот",
     confirmTurn: "Подтвердить ход",
@@ -78,6 +78,10 @@ export const TEAM_COPY = {
 
 export function sideTitle(side: SideId): string {
   return TEAM_COPY.sides[side].title;
+}
+
+export function sideShort(side: SideId): string {
+  return TEAM_COPY.sides[side].short;
 }
 
 export function rowTitle(key: RowKey): string {
