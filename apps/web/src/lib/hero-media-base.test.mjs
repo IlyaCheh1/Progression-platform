@@ -1,25 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-/** Mirrors normalizeMediaBase in screens/landing/hero.tsx */
-function normalizeMediaBase(raw) {
-  const trimmed = raw.trim().replace(/\/$/, "");
-  try {
-    const url = new URL(trimmed);
-    const host = url.hostname.toLowerCase();
-    if (host.endsWith(".selstorage.ru") || host.endsWith(".selcdn.ru")) {
-      const parts = url.pathname.split("/").filter(Boolean);
-      const mediaIdx = parts.indexOf("media");
-      if (mediaIdx > 0) {
-        url.pathname = `/${parts.slice(mediaIdx).join("/")}`;
-        return url.toString().replace(/\/$/, "");
-      }
-    }
-  } catch {
-    // relative
-  }
-  return trimmed;
-}
+import { normalizeMediaBase } from "./hero-media.ts";
 
 test("strips doubled bucket segment on selstorage.ru", () => {
   assert.equal(

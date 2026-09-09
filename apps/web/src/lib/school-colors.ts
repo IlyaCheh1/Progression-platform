@@ -1,9 +1,14 @@
 export const SCHOOL_COLORS: Record<string, string> = {
   witcher: "#c45c2a",
   east: "#5a8f7b",
+  ushu: "#5a8f7b",
   spanish_rapier: "#5c7d99",
   italian_rapier: "#a64d56",
+  rapier_xvii: "#a64d56",
   montante: "#a67c52",
+  two_swords: "#7a6b99",
+  saber: "#9a5b3c",
+  fan: "#c4a070",
   navaja: "#6b7d8f",
 };
 

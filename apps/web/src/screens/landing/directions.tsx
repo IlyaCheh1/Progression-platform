@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
-import { directions } from "@/lib/content";
-import { SCHOOL_COURSE_PAGES } from "@/lib/courses/data";
-import { RECONSTRUCTION_TRACKS } from "@/lib/landing/reconstruction";
-import { getSchoolColor } from "@/lib/school-colors";
-import { buildServiceButtonTheme } from "@/lib/service-button-theme";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import HeroVideoBackdrop from "@/components/hero-video-backdrop";
+import Button from "@/components/ui/button";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { useRoomsScroll } from "@/hooks/landing/useRoomsScroll";
-import Button from "@/components/ui/button";
-
-const SCHOOL_TAGLINE = "Горизонтальный путь школ — выбери клинок и стиль.";
+import {
+  ADULT_COURSE_SLIDES,
+  ADULT_SCHOOL_SLIDE,
+  ADULT_SCHOOL_VIDEO,
+  courseEnrollHref,
+  coursePageHref,
+  type AdultCourseSlide,
+} from "@/lib/landing/adult-directions";
+import { buildServiceButtonTheme } from "@/lib/service-button-theme";
 
 function hexToRgb(hex: string) {
   const normalized = hex.replace("#", "");
@@ -31,26 +34,31 @@ function buildDirectionTheme(color: string) {
   };
 }
 
-type DirectionSlide = {
-  id: number;
-  key: string;
+type SchoolSlideView = {
+  kind: "school";
+  key: "school";
   title: string;
-  description: string;
-  image: string;
-  imagePosition?: string;
-  tag: string;
-  tagline: string;
-  stat: string;
-  href: string;
+  titleAccent: string;
+  lead: string;
+  directions: string;
+  arsenal: string;
   cta: string;
   color: string;
   glow: string;
   gradient: string;
   gradientMobile: string;
-  personaHref?: string;
-  reconstruction?: boolean;
-  tracks?: ReadonlyArray<{ id: string; title: string }>;
 };
+
+type CourseSlideView = AdultCourseSlide & {
+  kind: "course";
+  href: string;
+  enrollHref: string;
+  glow: string;
+  gradient: string;
+  gradientMobile: string;
+};
+
+type DirectionSlideView = SchoolSlideView | CourseSlideView;
 
 function ArrowButton({
   label,
@@ -81,50 +89,74 @@ export default function Directions() {
   const containerRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileMedia();
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const [mountedSlides, setMountedSlides] = useState(() => new Set([0, 1]));
+  const videoRefs = useRef<Map<number, HTMLVideoElement>>(new Map());
 
-  const slides = useMemo<DirectionSlide[]>(() => {
-    const schoolSlides: DirectionSlide[] = directions.map((direction, index) => {
-      const theme = buildDirectionTheme(getSchoolColor(direction.key, index));
-      const course = SCHOOL_COURSE_PAGES[direction.key];
-      return {
-        id: index + 1,
-        key: direction.key,
-        title: direction.title,
-        description: direction.description,
-        image: `/media/directions/${index + 1}.webp`,
-        imagePosition: direction.key === "east" ? "64% 18%" : undefined,
-        tag: "Направление",
-        tagline: SCHOOL_TAGLINE,
-        stat: "8 путей мастерства",
-        href: course?.href ?? "/tariffs",
-        cta: course?.cta ?? "Подробнее",
-        personaHref: "#rpg",
-        ...theme,
-      };
-    });
+  const slides = useMemo<DirectionSlideView[]>(() => {
+    const schoolTheme = buildDirectionTheme("#d4a84b");
+    const school: SchoolSlideView = {
+      kind: "school",
+      key: "school",
+      title: ADULT_SCHOOL_SLIDE.title,
+      titleAccent: ADULT_SCHOOL_SLIDE.titleAccent,
+      lead: ADULT_SCHOOL_SLIDE.lead,
+      directions: ADULT_SCHOOL_SLIDE.directions,
+      arsenal: ADULT_SCHOOL_SLIDE.arsenal,
+      cta: ADULT_SCHOOL_SLIDE.cta,
+      ...schoolTheme,
+    };
 
-    const reconTheme = buildDirectionTheme("#8a7048");
-    return [
-      ...schoolSlides,
-      {
-        id: schoolSlides.length + 1,
-        key: "reconstruction",
-        title: "Реконструкция",
-        description:
-          "Седьмое направление — историческая реконструкция. Четыре трека ниже пока макеты: названия и тексты уточним.",
-        image: "/media/directions/7.webp",
-        tag: "Направление",
-        tagline: "Не путать с RPG-листом — персонаж живёт внутри школы оружия",
-        stat: "4 трека · макет",
-        href: "/journal/rekonstrukciya-bez-mifov",
-        cta: "Читать черновик",
-        reconstruction: true,
-        ...reconTheme,
-      },
-    ];
+    const courses: CourseSlideView[] = ADULT_COURSE_SLIDES.map((slide) => ({
+      ...slide,
+      kind: "course",
+      href: coursePageHref(slide.courseSlug),
+      enrollHref: courseEnrollHref(slide.courseSlug),
+      ...buildDirectionTheme(slide.color),
+    }));
+
+    return [school, ...courses];
   }, []);
 
   const { activeRoom, goToRoom } = useRoomsScroll(containerRef, trackRef, slides.length, undefined, isMobile);
+
+  const registerVideo = useCallback((index: number, node: HTMLVideoElement | null) => {
+    if (node) videoRefs.current.set(index, node);
+    else videoRefs.current.delete(index);
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduceMotion(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    const next = (activeRoom + 1) % slides.length;
+    setMountedSlides((prev) => {
+      const nextSet = new Set(prev);
+      nextSet.add(activeRoom);
+      nextSet.add(next);
+      if (nextSet.size > 3) {
+        return new Set([activeRoom, next, (activeRoom + slides.length - 1) % slides.length]);
+      }
+      return nextSet;
+    });
+  }, [activeRoom, slides.length]);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    const next = (activeRoom + 1) % slides.length;
+    videoRefs.current.forEach((video, index) => {
+      if (index === activeRoom || index === next) {
+        void video.play().catch(() => {});
+        return;
+      }
+      video.pause();
+    });
+  }, [activeRoom, mountedSlides, reduceMotion, slides.length]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -148,13 +180,15 @@ export default function Directions() {
   return (
     <section id="directions" ref={containerRef} className="relative h-dvh min-h-[32rem]">
       <div className="rooms-sticky sticky top-0 h-dvh min-h-[32rem] w-full overflow-hidden">
-        <div className="rooms-index absolute left-1/2 z-20 hidden -translate-x-1/2 items-center gap-3 text-xs font-semibold uppercase tracking-widest text-white/40 md:flex">
-          <span>Направления</span>
-          <span className="h-px w-8 bg-white/20" />
-          <span style={{ color: "var(--mos-amber)" }}>
-            {activeRoom + 1} / {slides.length}
-          </span>
-        </div>
+        {activeRoom > 0 ? (
+          <div className="rooms-index absolute left-1/2 z-20 hidden -translate-x-1/2 items-center gap-3 text-xs font-semibold uppercase tracking-widest text-white/40 md:flex">
+            <span>Направления</span>
+            <span className="h-px w-8 bg-white/20" />
+            <span style={{ color: "var(--mos-amber)" }}>
+              {activeRoom} / {slides.length - 1}
+            </span>
+          </div>
+        ) : null}
 
         <div ref={trackRef} className="h-scroll-container h-full will-change-transform">
           {slides.map((slide, i) => (
@@ -162,51 +196,59 @@ export default function Directions() {
               key={slide.key}
               slide={slide}
               index={i}
-              isMobile={isMobile}
-              shouldLoadMedia={Math.abs(i - activeRoom) <= 2}
-              showDecor={!isMobile}
+              isActive={i === activeRoom}
+              isNext={i === (activeRoom + 1) % slides.length}
+              isMounted={mountedSlides.has(i)}
+              reduceMotion={reduceMotion}
+              registerVideo={registerVideo}
+              onOpenCourses={() => goToRoom(1)}
             />
           ))}
         </div>
 
         <ArrowButton
-          label="Предыдущее направление"
+          label="Предыдущий слайд"
           direction="prev"
           disabled={activeRoom <= 0}
           onClick={() => goToRoom(activeRoom - 1)}
         />
         <ArrowButton
-          label="Следующее направление"
+          label="Следующий слайд"
           direction="next"
           disabled={activeRoom >= slides.length - 1}
           onClick={() => goToRoom(activeRoom + 1)}
         />
 
-        <div
-          className="rooms-dots absolute left-1/2 z-20 flex -translate-x-1/2 gap-1"
-          role="tablist"
-          aria-label="Направления"
-        >
-          {slides.map((slide, i) => (
-            <button
-              key={slide.key}
-              type="button"
-              role="tab"
-              aria-label={slide.title}
-              aria-selected={i === activeRoom}
-              onClick={() => goToRoom(i)}
-              className="flex h-10 w-10 cursor-pointer items-center justify-center md:h-6 md:w-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
-            >
-              <span
-                className="block h-2 w-2 rounded-full transition-transform duration-300 hover:scale-125"
-                style={{
-                  background: i === activeRoom ? slides[activeRoom].color : "rgba(255,255,255,0.2)",
-                  transform: i === activeRoom ? "scale(1.5)" : "scale(1)",
-                }}
-              />
-            </button>
-          ))}
-        </div>
+        {activeRoom > 0 ? (
+          <div
+            className="rooms-dots absolute left-1/2 z-20 flex -translate-x-1/2 gap-1"
+            role="tablist"
+            aria-label="Направления"
+          >
+            {slides.slice(1).map((slide, courseIndex) => {
+              const roomIndex = courseIndex + 1;
+              return (
+                <button
+                  key={slide.key}
+                  type="button"
+                  role="tab"
+                  aria-label={slide.title}
+                  aria-selected={roomIndex === activeRoom}
+                  onClick={() => goToRoom(roomIndex)}
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center md:h-6 md:w-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+                >
+                  <span
+                    className="block h-2 w-2 rounded-full transition-transform duration-300 hover:scale-125"
+                    style={{
+                      background: roomIndex === activeRoom ? slides[activeRoom].color : "rgba(255,255,255,0.2)",
+                      transform: roomIndex === activeRoom ? "scale(1.5)" : "scale(1)",
+                    }}
+                  />
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
     </section>
   );
@@ -215,149 +257,134 @@ export default function Directions() {
 function DirectionPanel({
   slide,
   index,
-  isMobile,
-  shouldLoadMedia,
-  showDecor,
+  isActive,
+  isNext,
+  isMounted,
+  reduceMotion,
+  registerVideo,
+  onOpenCourses,
 }: {
-  slide: DirectionSlide;
+  slide: DirectionSlideView;
   index: number;
-  isMobile: boolean;
-  shouldLoadMedia: boolean;
-  showDecor: boolean;
+  isActive: boolean;
+  isNext: boolean;
+  isMounted: boolean;
+  reduceMotion: boolean;
+  registerVideo: (index: number, node: HTMLVideoElement | null) => void;
+  onOpenCourses: () => void;
 }) {
-  const isMontante = slide.key === "montante";
+  const comingSoon = slide.kind === "course" && Boolean(slide.comingSoon);
 
   return (
-    <div className={`room-panel${isMontante ? " room-panel--montante" : ""}`} style={{ background: "var(--mos-bg)" }}>
+    <div className={`room-panel${slide.kind === "school" ? " room-panel--school" : ""}`} style={{ background: "var(--mos-bg)" }}>
       <div className="absolute inset-0">
-        {shouldLoadMedia ? (
-          isMontante ? (
-            <div className="room-panel-image-zone--montante">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className="room-panel-image--montante"
-                style={{ filter: "saturate(1.15) brightness(0.9)" }}
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchPriority={index === 0 ? "high" : "low"}
-                decoding="async"
-              />
-            </div>
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className="absolute inset-0 h-full w-full object-cover"
-              style={{
-                filter: "saturate(1.6) brightness(0.5)",
-                objectPosition: slide.imagePosition,
-              }}
-              loading={index === 0 ? "eager" : "lazy"}
-              fetchPriority={index === 0 ? "high" : "low"}
-              decoding="async"
-            />
-          )
-        ) : (
-          <div className="absolute inset-0" style={{ background: "var(--mos-bg)" }} aria-hidden />
-        )}
+        <HeroVideoBackdrop
+          index={index}
+          file={slide.kind === "school" ? ADULT_SCHOOL_VIDEO : slide.video}
+          isActive={isActive}
+          isNext={isNext}
+          isMounted={isMounted}
+          reduceMotion={reduceMotion}
+          registerVideo={registerVideo}
+          blurred={comingSoon}
+          forceLocal={slide.kind === "school"}
+        />
       </div>
 
       <div className="room-panel-left-vignette absolute inset-0" aria-hidden />
       <div
         className="room-panel-color-mask absolute inset-0"
-        style={{ background: isMobile ? slide.gradientMobile : slide.gradient, mixBlendMode: "multiply" }}
+        style={{ background: slide.gradient, mixBlendMode: "multiply" }}
       />
       <div className="video-overlay absolute inset-0" />
 
-      {showDecor && (
-        <div
-          className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{ background: slide.glow, filter: "blur(80px)", opacity: 0.5 }}
-        />
+      {slide.kind === "school" ? (
+        <SchoolSlideCopy slide={slide} onOpenCourses={onOpenCourses} />
+      ) : (
+        <CourseSlideCopy slide={slide} comingSoon={comingSoon} />
       )}
+    </div>
+  );
+}
 
-      <div
-        className={`room-panel-text relative z-10 flex h-full flex-col justify-end px-6 pb-24 md:px-24${
-          isMontante
-            ? " room-panel-text--montante"
-            : slide.reconstruction || slide.tracks
-              ? " room-panel-text--tracks"
-              : " max-w-3xl"
-        }`}
-      >
-        <div
-          className="mb-6 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest"
-          style={{ background: `${slide.color}22`, color: slide.color }}
-        >
-          ✦ {slide.tag}
-        </div>
-
+function SchoolSlideCopy({ slide, onOpenCourses }: { slide: SchoolSlideView; onOpenCourses: () => void }) {
+  return (
+    <div className="school-slide-copy relative z-10 flex h-full flex-col items-center px-6 text-center">
+      <div className="flex flex-1 flex-col items-center justify-center">
         <h2
-          className={`mobile-fluid-room-title mb-4 font-unbounded font-medium${
-            slide.reconstruction
-              ? " room-panel-title--recon"
-              : " md:text-[calc(4.5rem-3px)] lg:text-[calc(6rem-3px)]"
-          }`}
-          style={{ color: slide.color, textShadow: `0 0 60px ${slide.glow}` }}
+          className="mobile-fluid-hero-title flex max-w-4xl flex-col items-center gap-3 font-unbounded font-medium tracking-tight md:gap-5"
+          style={{ textShadow: "0 0 60px rgba(212,168,75,0.28)" }}
         >
-          {isMontante ? (
-            <>
-              Иберийский<span className="room-panel-title-gap"> </span>
-              <br className="room-panel-title-break" />
-              <span className="room-panel-title-tail">двуручный меч</span>
-            </>
-          ) : (
-            slide.title
-          )}
+          <span className="block text-[1.5em] leading-tight" style={{ color: "var(--color-controlsPrimaryActive)" }}>
+            {slide.title}
+          </span>
+          <span className="block max-w-3xl text-[calc(0.72em+2pt)] text-white leading-tight md:text-[calc(0.55em+2pt)]">
+            {slide.titleAccent}
+          </span>
         </h2>
-
-        <div className="room-panel-middle">
-          <p className="room-panel-tagline mb-4 max-w-lg font-light italic text-white/60">{slide.tagline}</p>
-          <p className="room-panel-description mb-6 max-w-md leading-relaxed text-white/50">{slide.description}</p>
+        <p className="mt-8 max-w-xl font-golos text-[calc(0.875rem+3pt)] font-medium leading-relaxed text-white/70 md:text-[calc(0.875rem+5pt)]">
+          {slide.lead}
+        </p>
+      </div>
+      <div className="flex w-full flex-col items-center gap-6">
+        <Button
+          type="button"
+          variant="primary"
+          size="lg"
+          className="cta-pulse uppercase"
+          onClick={onOpenCourses}
+        >
+          {slide.cta}
+        </Button>
+        <div className="school-slide-facts flex w-full items-start justify-between gap-6 font-golos text-[calc(0.75rem+2pt)] font-medium leading-snug text-white/70 md:text-[calc(0.875rem+2pt)]">
+          <p className="max-w-[46%] text-left">
+            <span aria-hidden>✨ </span>
+            {slide.directions}
+          </p>
+          <p className="max-w-[46%] text-right">
+            <span aria-hidden>⚔️ </span>
+            {slide.arsenal}
+          </p>
         </div>
-        {slide.tracks ? (
-          <ul className="recon-tracks mb-8">
-            {slide.tracks.map((track) => (
-              <li key={track.id} className="recon-track">
-                <strong>{track.title}</strong>
-              </li>
-            ))}
-          </ul>
-        ) : slide.reconstruction ? (
-          <ul className="recon-tracks mb-8">
-            {RECONSTRUCTION_TRACKS.map((track) => (
-              <li key={track.id} className="recon-track">
-                <span className="recon-track-badge">Макет</span>
-                <strong>{track.title}</strong>
-                <span>{track.description}</span>
-              </li>
-            ))}
-          </ul>
-        ) : null}
+      </div>
+    </div>
+  );
+}
 
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: slide.color }}>
-            <span>◆</span>
-            <span>{slide.stat}</span>
-          </div>
-          <div className="h-px max-w-24 flex-1" style={{ background: `${slide.color}40` }} />
-          {slide.personaHref ? (
-            <a href={slide.personaHref} className="text-xs uppercase tracking-[0.12em] text-white/55 hover:text-mos-amber">
-              Персонаж направления
-            </a>
-          ) : null}
-          <Button
-            href={slide.href}
-            variant="filled"
-            size="sm"
-            className="shrink-0 uppercase"
-            style={buildServiceButtonTheme(slide.color)}
-          >
-            {slide.cta}
-          </Button>
-        </div>
+function CourseSlideCopy({ slide, comingSoon }: { slide: CourseSlideView; comingSoon: boolean }) {
+  return (
+    <div className="room-panel-text relative z-10 flex h-full max-w-3xl flex-col justify-end px-6 pb-24 md:px-24">
+      <div
+        className="mb-6 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest"
+        style={{ background: `${slide.color}22`, color: slide.color }}
+      >
+        ✦ {comingSoon ? "Скоро" : "Направление"}
+      </div>
+
+      <h2
+        className="mobile-fluid-room-title mb-4 font-unbounded font-medium md:text-[calc(4.5rem-3px)] lg:text-[calc(6rem-3px)]"
+        style={{ color: slide.color, textShadow: `0 0 60px ${slide.glow}` }}
+      >
+        {slide.title}
+      </h2>
+
+      <div className="room-panel-middle">
+        <p className="room-panel-description mb-6 max-w-md leading-relaxed text-white/50">{slide.description}</p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <Button href={slide.href} variant="stroke" size="sm" className="shrink-0 uppercase">
+          Описание курса
+        </Button>
+        <Button
+          href={slide.enrollHref}
+          variant="filled"
+          size="sm"
+          className="shrink-0 uppercase"
+          style={buildServiceButtonTheme(slide.color)}
+        >
+          Записаться
+        </Button>
       </div>
     </div>
   );

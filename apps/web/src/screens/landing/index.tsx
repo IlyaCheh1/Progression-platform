@@ -2,14 +2,12 @@
 
 import dynamic from "next/dynamic";
 import Header from "@/components/header-public";
+import Directions from "@/screens/landing/directions";
 import Hero from "@/screens/landing/hero";
 import { AudienceProvider, useAudience } from "@/hooks/landing/useAudience";
 import type { AudienceMode } from "@/lib/audience";
 import "./styles.css";
 
-const Directions = dynamic(() => import("@/screens/landing/directions"), {
-  loading: () => <section id="directions" className="min-h-screen" style={{ background: "var(--void)" }} aria-hidden />,
-});
 const Trainers = dynamic(() => import("@/screens/landing/trainers"));
 const TeamBoard = dynamic(() => import("@/screens/landing/team-board"));
 const Services = dynamic(() => import("@/screens/landing/services"));
@@ -32,8 +30,7 @@ function LandingBody() {
     >
       <Header />
       <main>
-        <Hero />
-        {!isKids ? <Directions /> : null}
+        {isKids ? <Hero /> : <Directions />}
         {isKids ? <Trainers /> : null}
         {!isKids ? <TeamBoard /> : null}
         <Services />

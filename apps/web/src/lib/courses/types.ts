@@ -19,6 +19,7 @@ export type CourseContent = {
   accentColor: string;
   metaDescription: string;
   heroImage?: string;
+  comingSoon?: boolean;
   quote?: { text: string; author: string };
   intro: {
     heading: string;

@@ -1,4 +1,7 @@
 import type { CourseContent, CourseFaqItem } from "@/lib/courses/types";
+import { COURSE_ENROLL_HASH } from "./constants";
+
+export { COURSE_ENROLL_HASH };
 
 export const SHARED_SCHEDULE: CourseContent["schedule"] = [
   {

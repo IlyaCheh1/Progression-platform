@@ -246,7 +246,7 @@
   }
 
   .room-panel--montante .room-panel-description {
-    font-size: calc(0.875rem - 1pt);
+    font-size: 0.875rem;
   }
 }
 
@@ -270,13 +270,13 @@
 
 @media (max-width: 2399px) {
   .room-panel--montante .room-panel-description {
-    font-size: calc(0.75rem - 3pt);
+    font-size: calc(0.75rem - 2pt);
   }
 }
 
 @media (min-width: 768px) and (max-width: 2399px) {
   .room-panel--montante .room-panel-description {
-    font-size: calc(0.875rem - 1pt);
+    font-size: 0.875rem;
   }
 }
 
@@ -319,19 +319,24 @@
   top: calc(var(--landing-header-offset) + 0.5rem);
 }
 
+#directions .school-slide-copy {
+  padding-top: calc(var(--landing-header-offset) + 2.25rem);
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+}
+
 .room-panel .video-overlay {
   z-index: 4;
 }
 
 @media (max-width: 2399px) {
   .room-panel-description {
-    font-size: calc(0.75rem - 2pt);
+    font-size: calc(0.75rem - 1pt);
   }
 }
 
 @media (min-width: 768px) and (max-width: 2399px) {
   .room-panel-description {
-    font-size: 0.875rem;
+    font-size: calc(0.875rem + 1pt);
   }
 }
 
@@ -363,7 +368,7 @@
 
   .room-panel-description,
   .room-panel--montante .room-panel-description {
-    font-size: calc(1.125rem - 2pt);
+    font-size: calc(1.125rem - 1pt);
     line-height: 1.7;
     max-width: 38rem;
   }
@@ -548,6 +553,14 @@
       transparent 0%,
       rgba(13, 13, 13, 0.15) 45%,
       rgba(13, 13, 13, 0.85) 100%
+    );
+  }
+
+  .room-panel--school .video-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(13, 13, 13, 0.35) 0%,
+      transparent 36%
     );
   }
 
@@ -1299,6 +1312,42 @@ a.experience-item {
   padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
 }
 
+.room-panel--school .room-panel-left-vignette {
+  background: linear-gradient(
+    to bottom,
+    rgba(13, 13, 13, 0.28) 0%,
+    transparent 32%
+  );
+}
+
+.room-panel--school .room-panel-color-mask {
+  display: none;
+}
+
+.room-panel--school .video-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(13, 13, 13, 0.4) 0%,
+    transparent 38%
+  );
+}
+
+.course-lead-input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid color-mix(in srgb, var(--mos-line) 70%, transparent);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--mos-stone) 55%, transparent);
+  padding: 0 0.9rem;
+  color: var(--mos-text);
+}
+
+.course-lead-input:focus {
+  outline: 2px solid color-mix(in srgb, var(--mos-amber) 55%, transparent);
+  outline-offset: 1px;
+}
+
+#enroll,
 #hero,
 #directions,
 #trainers,
@@ -1721,6 +1770,12 @@ a.experience-item {
     height: 2.75rem;
     width: 2.75rem;
     font-size: 1.4rem;
+  }
+
+  #directions .school-slide-copy {
+    padding-right: 3.5rem;
+    padding-bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+    padding-left: 3.5rem;
   }
 
   .rooms-arrow[data-direction="prev"] {

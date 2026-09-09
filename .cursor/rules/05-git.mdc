@@ -1,8 +1,16 @@
 ---
+description: Git and worktree contract — hermes task branches, no direct main push
 alwaysApply: true
 ---
-# Git workflow
 
-- Default branch is `main`; push to `origin/main`, never to `origin/master`.
-- After commits, use `git push origin main` (or `git push` when upstream is `origin/main`).
-- If the local branch is not `main`, push with `git push origin HEAD:main` and prefer renaming the branch to `main`.
+# Git and worktree workflow
+
+- Default branch is `main`. Never commit or push directly to `main` / `origin/main`. Never use `master`.
+- Product edits only in the assigned isolated Cursor worktree. Do not create worktrees inside product directory trees.
+- **New task:** base on fetched `origin/main`, branch `hermes/<task>`. If `origin/main` is unavailable, stop and agree a fallback — do not invent one.
+- **Resume:** keep the assigned branch and baseline WIP; do not reset or recreate the worktree.
+- Before editing: confirm worktree, branch, and `git status --short`. Preserve unrelated WIP; stop on ownership conflicts.
+- Commit, push, MR/merge, deploy, and release only when explicitly requested. Never force-push, `--no-verify`, or hook bypass.
+- Instruction/docs changes ship with the next substantive product change — no standalone docs-only commit/MR.
+- Worktree cleanup is a separate authorized operation after process/dirty/untracked/unpreserved-commit checks.
+- Full contract: root `AGENTS.md` §8.
