@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import LandingLeadForm from "@/components/landing-lead-form";
 import Button from "@/components/ui/button";
 import { useAudience } from "@/hooks/landing/useAudience";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
@@ -24,20 +25,26 @@ export default function Join() {
             </span>
           </h2>
           {isKids ? (
-            <p className="mx-auto mb-2 max-w-xl text-sm text-white/45">
-              {KIDS_WUSHU.enroll} · {KIDS_WUSHU.phoneDisplay} · {KIDS_WUSHU.trainerShort}. {KIDS_WUSHU.places}.
-            </p>
-          ) : null}
-          <div className="mt-10 flex justify-center md:mt-14">
-            <Button
-              href={isKids ? kidsPhoneHref() : "/contact"}
-              variant="primary"
-              size="lg"
-              className="cta-pulse w-full max-w-[224px] px-8 uppercase sm:w-auto sm:min-w-[260px] sm:max-w-[280px]"
-            >
-              {isKids ? KIDS_WUSHU.enroll : "Оставить заявку"}
-            </Button>
-          </div>
+            <>
+              <p className="mx-auto mb-2 max-w-xl text-sm text-white/45">
+                {KIDS_WUSHU.enroll} · {KIDS_WUSHU.phoneDisplay} · {KIDS_WUSHU.trainerShort}. {KIDS_WUSHU.places}.
+              </p>
+              <div className="mt-10 flex justify-center md:mt-14">
+                <Button
+                  href={kidsPhoneHref()}
+                  variant="primary"
+                  size="lg"
+                  className="cta-pulse w-full max-w-[224px] px-8 uppercase sm:w-auto sm:min-w-[260px] sm:max-w-[280px]"
+                >
+                  {KIDS_WUSHU.enroll}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="mx-auto mt-10 w-full max-w-xl md:mt-14">
+              <LandingLeadForm />
+            </div>
+          )}
         </div>
       </div>
     </section>

@@ -2,6 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/button";
 import CourseFaqSection from "@/components/course-faq-section";
+import CourseHashScroll from "@/components/course-hash-scroll";
+import CourseLeadForm from "@/components/course-lead-form";
+import { COURSE_ENROLL_HASH } from "@/lib/courses/constants";
 import type { CourseContent } from "@/lib/courses/types";
 
 type CoursePageProps = {
@@ -13,6 +16,7 @@ export default function CoursePage({ course }: CoursePageProps) {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-12 md:px-6 md:py-16">
+      <CourseHashScroll />
       <Link href="/" className="text-sm text-mos-amber transition-colors hover:text-mos-amber-hot">
         ← На главную
       </Link>
@@ -24,6 +28,11 @@ export default function CoursePage({ course }: CoursePageProps) {
         <h1 className="mt-3 font-unbounded text-3xl font-medium leading-tight text-mos-text md:text-4xl">
           {course.title}
         </h1>
+        {course.comingSoon ? (
+          <p className="mt-4 inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest" style={{ background: `${accent}22`, color: accent }}>
+            Скоро в наборе
+          </p>
+        ) : null}
 
         {course.heroImage ? (
           <div className="relative mt-6 aspect-[16/10] overflow-hidden rounded-2xl border border-mos-line/50">
@@ -141,7 +150,8 @@ export default function CoursePage({ course }: CoursePageProps) {
       </div>
 
       <section
-        className="mt-14 rounded-2xl border p-6 md:p-8"
+        id={COURSE_ENROLL_HASH}
+        className="mt-14 scroll-mt-28 rounded-2xl border p-6 md:p-8"
         style={{
           borderColor: `${accent}4D`,
           backgroundColor: `${accent}1A`,
@@ -149,17 +159,14 @@ export default function CoursePage({ course }: CoursePageProps) {
       >
         <h2 className="font-unbounded text-xl text-mos-text">Записаться на курс</h2>
         <p className="mt-3 text-sm leading-relaxed text-mos-muted">
-          Оформите запись через сообщество школы или посмотрите тарифы на главной странице.
+          {course.comingSoon
+            ? "Курс ещё в подготовке. Оставьте заявку — мы напишем, когда откроется набор."
+            : "Оставьте заявку, и администратор школы свяжется с вами, чтобы подобрать группу и время."}
         </p>
+        <div className="mt-6">
+          <CourseLeadForm direction={course.slug} accentColor={accent} />
+        </div>
         <div className="mt-6 flex flex-wrap gap-3">
-          <a
-            href={course.links.enroll}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="og-btn og-btn-primary og-btn-md uppercase"
-          >
-            Записаться
-          </a>
           <a
             href={course.links.masters}
             target="_blank"

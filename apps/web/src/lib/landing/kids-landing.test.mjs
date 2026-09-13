@@ -9,10 +9,10 @@ describe("kids landing hotfix", () => {
     const directions = readFileSync(fileURLToPath(new URL("../../screens/landing/directions.tsx", import.meta.url)), "utf8");
     const hero = readFileSync(fileURLToPath(new URL("../../screens/landing/hero.tsx", import.meta.url)), "utf8");
 
-    assert.match(landing, /\{!isKids \? <Directions \/> : null\}/);
+    assert.match(landing, /\{isKids \? <Hero \/> : <Directions \/>\}/);
     assert.doesNotMatch(directions, /KIDS_SLIDES/);
     assert.doesNotMatch(directions, /useAudience/);
-    assert.match(hero, /isKids \? \(/);
+    assert.match(hero, /if \(!isKids\) return null/);
     assert.match(hero, /<picture>/);
     assert.match(hero, /KIDS_WUSHU\.media\.heroMobile/);
     assert.match(hero, /KIDS_WUSHU\.media\.heroDesktop/);

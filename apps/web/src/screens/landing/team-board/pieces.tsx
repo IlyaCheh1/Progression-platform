@@ -355,6 +355,7 @@ export function CardDialog({
   canReturn,
   isRowPlayable,
   abilityHint,
+  playLockHint,
 }: {
   card: TeamCard;
   zone: "hand" | "board";
@@ -369,6 +370,7 @@ export function CardDialog({
   canReturn: boolean;
   isRowPlayable?: (rowId: string) => boolean;
   abilityHint?: string;
+  playLockHint?: string;
 }) {
   const onBoard = zone === "board";
   useEffect(() => {
@@ -407,7 +409,7 @@ export function CardDialog({
             ))}
             {card.mock ? <p className="team-dialog-ability">{TEAM_COPY.mockHint}</p> : null}
             {abilityHint ? <p className="team-dialog-ability">{abilityHint}</p> : null}
-            {canPlay || (gameMode && canReturn && onBoard) || (!gameMode && onBoard) ? (
+            {canPlay || Boolean(playLockHint) || (gameMode && canReturn && onBoard) || (!gameMode && onBoard) ? (
               <div className="team-dialog-actions">
                 {canPlay ? (
                   <>
@@ -435,8 +437,8 @@ export function CardDialog({
                       })}
                     </div>
                   </>
-                ) : gameMode ? (
-                  <p className="team-dialog-block-title">{TEAM_COPY.game.cardLocked}</p>
+                ) : playLockHint ? (
+                  <p className="team-dialog-block-title">{playLockHint}</p>
                 ) : null}
                 {(canReturn && onBoard) || (!gameMode && onBoard) ? (
                   <Button variant="stroke" size="md" className="w-full" disabled={gameMode && !canReturn} onClick={onReturn}>

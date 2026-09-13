@@ -1,7 +1,9 @@
 ---
-globs: "**/*.ts, **/*.tsx, **/*.mts, **/*.cts"
+description: TypeScript conventions for apps/web and TS packages
+globs: apps/web/**/*.ts,apps/web/**/*.tsx,apps/web/**/*.mts,apps/web/**/*.cts,packages/support-chat-widget/**/*.ts,packages/support-chat-widget/**/*.tsx,packages/design-tokens/**/*.ts,packages/design-tokens/**/*.tsx
 alwaysApply: false
 ---
+
 # TypeScript rules
 
 - Keep strict typing. Do not use `any` unless an external boundary makes it unavoidable and the reason is documented.
@@ -12,4 +14,5 @@ alwaysApply: false
 - Keep exported APIs explicit and stable.
 - Prefer pure functions for domain transformations.
 - Do not suppress compiler or linter errors globally to make a change pass.
-- Preserve the project's import style, module system, formatter, and package manager.
+- Preserve import style, module system, formatter, and package managers: workspace **pnpm**; widget package **npm** (`package-lock.json`).
+- Web unit tests use the package script runner **`node --test`** (`pnpm test:web`). Do not switch to `tsx` or experimental strip-types runners.

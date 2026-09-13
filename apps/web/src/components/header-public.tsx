@@ -42,7 +42,7 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { mode, isKids } = useAudience();
-  const isHeroVisible = useHeroVisible();
+  const isHeroVisible = useHeroVisible(isKids ? "hero" : "directions");
   const overHero = isLandingPath(pathname) && isHeroVisible;
   const [menuOpen, setMenuOpen] = useState(false);
   const homeHref = withAudience("/", mode);

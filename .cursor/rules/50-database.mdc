@@ -1,7 +1,9 @@
 ---
-globs: "**/migrations/**/*, **/*.sql, **/schema.*, **/prisma/**/*, **/drizzle/**/*"
+description: Postgres migrations, outbox schema, and local infra SQL
+globs: infra/local/migrations/**/*,**/*.sql,apps/support-chat/db/**/*
 alwaysApply: false
 ---
+
 # Database rules
 
 - Treat migrations as production code: review, test, and make rollback or forward-fix strategy explicit.
@@ -13,4 +15,5 @@ alwaysApply: false
 - Use parameterized queries and least-privilege credentials.
 - Keep tenant, ownership, and row-level access constraints explicit.
 - For data backfills, make batches resumable and idempotent with progress/verification queries.
-- Include verification SQL or tests for schema and data migrations.
+- Local migrations live under `infra/local/migrations/`; apply only to local/explicit targets — never shared/prod without explicit request.
+- Outbox tables are part of the delivery contract; coordinate with `docs/runbooks/outbox-stuck.md`.

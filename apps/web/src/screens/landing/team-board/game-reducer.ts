@@ -90,11 +90,14 @@ export function gameReducer(state: GameState, action: GameAction, roster: TeamCa
       }
       return {
         ...state,
+        ...advanceTurn(state, state.playerSide, "botTurn"),
+        moves: [...state.moves, { cardId: action.cardId, rowId: action.rowId }],
+        cards: placeCard(state.cards, action.cardId, action.rowId, qualifiesComeback(state.cards, catalog, action.cardId, action.rowId)),
+        activeSide: oppositeSide(state.playerSide),
         selectedCardId: action.cardId,
         expandedCardId: null,
         dragging: null,
-        pendingCardId: action.cardId,
-        cards: placeCard(state.cards, action.cardId, action.rowId, qualifiesComeback(state.cards, catalog, action.cardId, action.rowId)),
+        pendingCardId: null,
       };
     }
     case "MOVE_CARD": {
