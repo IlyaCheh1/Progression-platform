@@ -1,6 +1,8 @@
 ---
+description: Universal engineering standards for every change in this repository
 alwaysApply: true
 ---
+
 # Core engineering rules
 
 - Read the relevant code, tests, configuration, and documentation before editing.
@@ -17,3 +19,4 @@ alwaysApply: true
 - Reuse existing abstractions when they fit. Do not create speculative frameworks or premature generalization.
 - Keep changes reviewable. Split large tasks into logical steps and report material risks early.
 - At completion report: changed areas, verification performed, remaining risks, and follow-up work.
+- Root agent contract: `AGENTS.md` (quality gates must pass; web tests use `node --test`, not `tsx`).

@@ -143,5 +143,6 @@ describe("team-board Gwent card face", () => {
     assert.match(pieces, /card\.role/);
     assert.match(pieces, /card\.fullDescription\.split/);
     assert.match(pieces, /team-dialog-bio/);
+    assert.match(pieces, /playLockHint/);
   });
 });

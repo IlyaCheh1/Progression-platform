@@ -17,37 +17,40 @@ describe("gameReducer", () => {
     assert.equal(Object.keys(started.cards).length, 12);
   });
 
-  it("plays one pending card, confirms, then finishes after six turns", () => {
+  it("commits a played card immediately so the next card can be played after the bot", () => {
     let state = createMatchState(TEAM_BOARD_CARDS, "sideA", "sideA", "m1");
     state = gameReducer(state, { type: "PLAY_CARD", cardId: "max-kiselev", rowId: "sideA-row-1" }, TEAM_BOARD_CARDS);
-    assert.equal(state.pendingCardId, "max-kiselev");
-    assert.equal(state.cards["max-kiselev"].zone, "board");
-
-    state = gameReducer(state, { type: "CONFIRM_TURN" }, TEAM_BOARD_CARDS);
     assert.equal(state.phase, "botTurn");
     assert.equal(state.pendingCardId, null);
-    assert.equal(state.turn, 1);
+    assert.equal(state.cards["max-kiselev"].zone, "board");
+    assert.deepEqual(state.moves, [{ cardId: "max-kiselev", rowId: "sideA-row-1" }]);
 
     const botCard = Object.entries(state.cards).find(([, card]) => card.side === "sideB" && card.zone === "hand");
     assert.ok(botCard);
     state = gameReducer(state, { type: "BOT_PLAY", cardId: botCard[0], rowId: botCard[1].allowedRows[0] }, TEAM_BOARD_CARDS);
     assert.equal(state.phase, "playerTurn");
     assert.equal(state.turn, 2);
+
+    state = gameReducer(state, { type: "PLAY_CARD", cardId: "tatyana-gribanova", rowId: "sideA-row-2" }, TEAM_BOARD_CARDS);
+    assert.equal(state.cards["tatyana-gribanova"].zone, "board");
+    assert.equal(state.phase, "botTurn");
+    assert.equal(state.pendingCardId, null);
   });
 
-  it("returns a pending card to hand", () => {
+  it("cannot return a card after the play is committed", () => {
     let state = createMatchState(TEAM_BOARD_CARDS, "sideA", "sideA", "m1");
     state = gameReducer(state, { type: "PLAY_CARD", cardId: "ivan-bobrovsky", rowId: "sideA-row-2" }, TEAM_BOARD_CARDS);
     state = gameReducer(state, { type: "RETURN_CARD", cardId: "ivan-bobrovsky" }, TEAM_BOARD_CARDS);
-    assert.equal(state.pendingCardId, null);
-    assert.equal(state.cards["ivan-bobrovsky"].zone, "hand");
+    assert.equal(state.cards["ivan-bobrovsky"].zone, "board");
+    assert.equal(state.phase, "botTurn");
   });
 
-  it("does not allow a second play before confirm", () => {
+  it("does not allow a second card on the same player turn", () => {
     let state = createMatchState(TEAM_BOARD_CARDS, "sideA", "sideA", "m1");
     state = gameReducer(state, { type: "PLAY_CARD", cardId: "max-kiselev", rowId: "sideA-row-1" }, TEAM_BOARD_CARDS);
     state = gameReducer(state, { type: "PLAY_CARD", cardId: "tatyana-gribanova", rowId: "sideA-row-2" }, TEAM_BOARD_CARDS);
     assert.equal(state.cards["tatyana-gribanova"].zone, "hand");
-    assert.equal(state.pendingCardId, "max-kiselev");
+    assert.equal(state.cards["max-kiselev"].zone, "board");
+    assert.equal(state.moves.length, 1);
   });
 });

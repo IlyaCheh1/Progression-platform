@@ -1,16 +1,18 @@
 ---
-description: Architecture, module boundaries, contracts, and cross-cutting design decisions for complex changes.
+description: Event-driven architecture, module boundaries, normative vs implementation
+globs: Architecture/**/*,Master of the Sword module/**/*,modules/**/*,packages/contracts/**/*,schemas/**/*,docs/adr/**/*,015-platform-development-agent-spec.md
 alwaysApply: false
 ---
+
 # Architecture rules
 
-- Identify the current module boundaries and dependency direction before proposing a design.
-- Keep domain/business logic independent from UI, transport, framework, and persistence details.
-- Prefer explicit contracts and dependency injection at system boundaries.
-- Avoid circular dependencies and hidden global state.
-- Make side effects visible and isolate them behind adapters or services.
-- For cross-service or cross-package changes, document compatibility, rollout, and rollback strategy.
+- Distinguish **normative design** (`Architecture/`, `Master of the Sword module/`) from **implementation** (`apps/`, `packages/`, `docs/adr/`, `docs/implementation-status.md`). Report gaps; do not silently rewrite canon to match incomplete code.
+- Full school manifest canon: `Master of the Sword module/fencing-school/module-manifest.yaml`. The file under `modules/fencing-school/` is a short stub only.
+- Events are immutable facts. Corrections are new events. No in-place history rewrite.
+- Single authoritative writer per aggregate; cross-engine changes via typed async protocols and approved read contracts.
+- At-least-once delivery + inbox dedup + domain idempotency + transactional outbox (atomic with state). See `Architecture/002a-platform-contract-standard.md` and `docs/runbooks/outbox-stuck.md`.
+- Context Modules must not compute primary Level/XP; Engines own progression surfaces declared in RFCs.
+- Keep domain logic independent of UI/transport/framework details; prefer explicit contracts at boundaries.
+- Avoid circular dependencies and hidden global state; make side effects visible behind adapters.
+- For cross-package changes, document compatibility, rollout, and rollback; record decisions in `docs/adr/` when consequential.
 - Introduce a new abstraction only when at least two concrete use cases justify it or the boundary is required for testing/security.
-- Record consequential architectural decisions in the repository's existing ADR or design-document format.
-- For concurrency, distributed workflows, caching, retries, or queues, define idempotency and failure semantics.
-- For any new external dependency, justify necessity, maintenance status, security implications, bundle/runtime cost, and removal path.

@@ -529,6 +529,13 @@ export default function TeamBoard() {
           gameMode={playing}
           canPlay={playing ? canSelectPlayerCard(play, expandedCard.id) : false}
           canReturn={playing ? play.phase === "playerTurn" && play.pendingCardId === expandedCard.id : true}
+          playLockHint={
+            playing && !canSelectPlayerCard(play, expandedCard.id)
+              ? play.pendingCardId && play.pendingCardId !== expandedCard.id
+                ? TEAM_COPY.game.pendingHint
+                : TEAM_COPY.game.cardLocked
+              : undefined
+          }
           isRowPlayable={playing ? (rowId) => canPlaceOnRow(play, expandedCard.id, rowId) : undefined}
           abilityHint={TEAM_COPY.symbols[expandedCard.visual.symbol]}
           onClose={closeCard}
