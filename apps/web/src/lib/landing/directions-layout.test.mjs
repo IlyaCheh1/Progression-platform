@@ -27,8 +27,17 @@ describe("directions slide layout", () => {
     assert.match(css, /\.room-panel--school \.video-overlay[\s\S]*transparent 38%/);
     assert.doesNotMatch(css, /\.room-panel--school \.room-panel-left-vignette[\s\S]*0\.72\) 100%/);
     assert.match(tsx, /ADULT_SCHOOL_VIDEO/);
-    assert.match(tsx, /forceLocal=\{slide.kind === "school"\}/);
+    assert.match(tsx, /slide.kind === "school" \? ADULT_SCHOOL_VIDEO : \(slide.image \?\? slide.video\)/);
+    assert.match(tsx, /forceLocal/);
     assert.match(tsx, /HeroVideoBackdrop/);
+  });
+
+  it("centers hero arrows with geometric icons, not font glyphs", () => {
+    assert.match(tsx, /className="rooms-arrow-icon"/);
+    assert.match(tsx, /<ArrowIcon direction=\{direction\} \/>/);
+    assert.doesNotMatch(tsx, /[‹›]/);
+    assert.match(css, /\.rooms-arrow \{[\s\S]*?padding:\s*0;/);
+    assert.match(css, /\.rooms-arrow-icon \{[\s\S]*?display:\s*block;/);
   });
 
   it("does not let extra blocks inflate the equalized middle height", () => {

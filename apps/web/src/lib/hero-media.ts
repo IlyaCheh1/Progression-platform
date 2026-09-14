@@ -1,16 +1,11 @@
 /** Same-origin files from the Next.js public/ folder (always deployed with the web app). */
 export const LOCAL_HERO_MEDIA_BASE = "/media/hero";
 
-/**
- * Desktop hero / adult direction videos, in on-screen order.
- * «Первое / второе / номер N» в копирайте считается по этому списку, не по имени файла.
- */
-export const HERO_VIDEOS = ["1.mp4", "6.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4"] as const;
-
-export type HeroVideoFile = (typeof HERO_VIDEOS)[number];
-
 /** Temporary local-only backdrop for the adult school intro slide. */
 export const SCHOOL_HERO_VIDEO = "school.mp4" as const;
+
+/** Existing adult witcher direction video. */
+export const WITCHER_HERO_VIDEO = "1.mp4" as const;
 
 /**
  * Selectel public domain is https://<bucket-uuid>.selstorage.ru/<key>.
@@ -48,5 +43,13 @@ export function heroMediaUrl(file: string, useLocal = false): string {
 }
 
 export function heroPosterUrl(file: string, useLocal = false): string {
-  return heroMediaUrl(file.replace(/\.mp4$/i, ".webp"), useLocal);
+  return heroMediaUrl(heroStillFile(file), useLocal);
+}
+
+export function heroStillFile(file: string): string {
+  return file.replace(/\.mp4$/i, ".webp");
+}
+
+export function isHeroImageFile(file: string): boolean {
+  return /\.(webp|jpe?g|png)$/i.test(file);
 }
