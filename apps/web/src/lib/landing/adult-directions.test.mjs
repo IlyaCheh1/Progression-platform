@@ -4,7 +4,7 @@ import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { COURSE_ENROLL_HASH } from "../courses/constants.ts";
-import { HERO_VIDEOS, SCHOOL_HERO_VIDEO } from "../hero-media.ts";
+import { SCHOOL_HERO_VIDEO, WITCHER_HERO_VIDEO } from "../hero-media.ts";
 
 function read(rel) {
   return readFileSync(fileURLToPath(new URL(rel, import.meta.url)), "utf8");
@@ -68,16 +68,32 @@ describe("adult direction slides", () => {
     assert.equal(COURSE_ENROLL_HASH, "enroll");
   });
 
-  it("maps hero videos in the requested order", () => {
-    assert.match(catalog, new RegExp(`video: HERO_VIDEOS\\[1\\][\\s\\S]*ushu-vzroslye`));
-    assert.equal(HERO_VIDEOS[1], "6.mp4");
-    assert.equal(HERO_VIDEOS[0], "1.mp4");
-    assert.equal(HERO_VIDEOS[4], "4.mp4");
-    assert.match(catalog, /key: "ushu"[\s\S]*HERO_VIDEOS\[1\]/);
-    assert.match(catalog, /key: "witcher"[\s\S]*HERO_VIDEOS\[0\]/);
-    assert.match(catalog, /key: "rapier_xvii"[\s\S]*HERO_VIDEOS\[3\]/);
-    assert.match(catalog, /key: "saber"[\s\S]*HERO_VIDEOS\[4\]/);
-    assert.equal(HERO_VIDEOS[3], "3.mp4");
+  it("binds course slides to new studio stills and drops old hero videos", () => {
+    const heroDir = fileURLToPath(new URL("../../../public/media/hero", import.meta.url));
+    const stills = [
+      ["two_swords", "2.webp", "dva-mecha"],
+      ["fan", "5.webp", "veer"],
+      ["ushu", "6.webp", "ushu-vzroslye"],
+      ["rapier_xvii", "3.webp", "shpaga-xvii"],
+      ["saber", "4.webp", "sablya"],
+    ];
+
+    for (const [key, file, slug] of stills) {
+      assert.equal(existsSync(`${heroDir}/${file}`), true, `missing ${file}`);
+      assert.match(
+        catalog,
+        new RegExp(`key: "${key}"[\\s\\S]*?image: "${file}"[\\s\\S]*?courseSlug: "${slug}"`),
+      );
+    }
+
+    assert.doesNotMatch(catalog, /HERO_VIDEOS/);
+    assert.doesNotMatch(catalog, /imageOnly/);
+    assert.equal(WITCHER_HERO_VIDEO, "1.mp4");
+    assert.equal(existsSync(`${heroDir}/1.mp4`), true);
+    assert.equal(existsSync(`${heroDir}/1.webp`), true);
+    const witcherBlock = catalog.match(/key: "witcher"[\s\S]*?courseSlug: "vedmak"/)?.[0] ?? "";
+    assert.match(witcherBlock, /video: WITCHER_HERO_VIDEO/);
+    assert.doesNotMatch(witcherBlock, /image:/);
   });
 
   it("does not render the old adult hero on the landing", () => {

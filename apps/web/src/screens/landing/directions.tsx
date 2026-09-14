@@ -60,6 +60,21 @@ type CourseSlideView = AdultCourseSlide & {
 
 type DirectionSlideView = SchoolSlideView | CourseSlideView;
 
+function ArrowIcon({ direction }: { direction: "prev" | "next" }) {
+  return (
+    <svg className="rooms-arrow-icon" viewBox="0 0 24 24" aria-hidden>
+      <path
+        d={direction === "prev" ? "M16 5 8 12l8 7" : "M8 5l8 7-8 7"}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function ArrowButton({
   label,
   direction,
@@ -80,7 +95,7 @@ function ArrowButton({
       disabled={disabled}
       onClick={onClick}
     >
-      {direction === "prev" ? "‹" : "›"}
+      <ArrowIcon direction={direction} />
     </button>
   );
 }
@@ -274,21 +289,25 @@ function DirectionPanel({
   onOpenCourses: () => void;
 }) {
   const comingSoon = slide.kind === "course" && Boolean(slide.comingSoon);
+  const backdropFile =
+    slide.kind === "school" ? ADULT_SCHOOL_VIDEO : (slide.image ?? slide.video);
 
   return (
     <div className={`room-panel${slide.kind === "school" ? " room-panel--school" : ""}`} style={{ background: "var(--mos-bg)" }}>
       <div className="absolute inset-0">
-        <HeroVideoBackdrop
-          index={index}
-          file={slide.kind === "school" ? ADULT_SCHOOL_VIDEO : slide.video}
-          isActive={isActive}
-          isNext={isNext}
-          isMounted={isMounted}
-          reduceMotion={reduceMotion}
-          registerVideo={registerVideo}
-          blurred={comingSoon}
-          forceLocal={slide.kind === "school"}
-        />
+        {backdropFile ? (
+          <HeroVideoBackdrop
+            index={index}
+            file={backdropFile}
+            isActive={isActive}
+            isNext={isNext}
+            isMounted={isMounted}
+            reduceMotion={reduceMotion}
+            registerVideo={registerVideo}
+            blurred={comingSoon}
+            forceLocal
+          />
+        ) : null}
       </div>
 
       <div className="room-panel-left-vignette absolute inset-0" aria-hidden />

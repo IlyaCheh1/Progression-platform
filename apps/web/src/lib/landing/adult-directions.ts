@@ -1,5 +1,5 @@
 import { COURSE_ENROLL_HASH } from "../courses/constants";
-import { HERO_VIDEOS, SCHOOL_HERO_VIDEO } from "../hero-media";
+import { SCHOOL_HERO_VIDEO, WITCHER_HERO_VIDEO } from "../hero-media";
 import { getSchoolColor } from "../school-colors";
 
 export const ADULT_SCHOOL_SLIDE = {
@@ -21,7 +21,10 @@ export type AdultCourseSlide = {
   key: AdultCourseSlideKey;
   title: string;
   description: string;
-  video: (typeof HERO_VIDEOS)[number];
+  /** Local studio still in /media/hero. */
+  image?: `${string}.webp`;
+  /** Local hero video when the slide has no new still. */
+  video?: `${string}.mp4`;
   courseSlug: string;
   comingSoon?: boolean;
   color: string;
@@ -33,7 +36,7 @@ export const ADULT_COURSE_SLIDES: readonly AdultCourseSlide[] = [
     title: "Ушу",
     description:
       "Взрослая секция ушу: координация, гибкость и владение клинком в восточной традиции. Эпические формы и сила тела — в ритме взрослого зала.",
-    video: HERO_VIDEOS[1],
+    image: "6.webp",
     courseSlug: "ushu-vzroslye",
     color: getSchoolColor("ushu"),
   },
@@ -42,7 +45,7 @@ export const ADULT_COURSE_SLIDES: readonly AdultCourseSlide[] = [
     title: "Ведьмак",
     description:
       "Сражайся как ведьмак. Основы владения длинным мечом, передвижение в боевой стойке, удары и защиты — точность и скорость, чтобы выйти победителем против любого противника.",
-    video: HERO_VIDEOS[0],
+    video: WITCHER_HERO_VIDEO,
     courseSlug: "vedmak",
     color: getSchoolColor("witcher"),
   },
@@ -51,7 +54,7 @@ export const ADULT_COURSE_SLIDES: readonly AdultCourseSlide[] = [
     title: "Два меча",
     description:
       "Парная работа двумя клинками: независимые руки, ритм и контроль дистанции. Каждый меч — и атака, и защита; курс учит вести бой, когда оружия двое.",
-    video: HERO_VIDEOS[2],
+    image: "2.webp",
     courseSlug: "dva-mecha",
     color: getSchoolColor("two_swords"),
   },
@@ -60,7 +63,7 @@ export const ADULT_COURSE_SLIDES: readonly AdultCourseSlide[] = [
     title: "Шпага XVII века",
     description:
       "Курс построен на исторических источниках. Рапира Фабриса — высшая точка итальянской школы начала XVII века: дуэльная техника Капоферро, Джиганти и Фабриса, ставшая эталоном для Европы.",
-    video: HERO_VIDEOS[3],
+    image: "3.webp",
     courseSlug: "shpaga-xvii",
     color: getSchoolColor("rapier_xvii"),
   },
@@ -68,7 +71,7 @@ export const ADULT_COURSE_SLIDES: readonly AdultCourseSlide[] = [
     key: "saber",
     title: "Сабля XVI-XVII века",
     description: "Курс построен на исторических источниках. Рубка, укол и работа калибром по трактатам эпохи — от строевой практики до дуэльной дистанции.",
-    video: HERO_VIDEOS[4],
+    image: "4.webp",
     courseSlug: "sablya",
     color: getSchoolColor("saber"),
   },
@@ -77,7 +80,7 @@ export const ADULT_COURSE_SLIDES: readonly AdultCourseSlide[] = [
     title: "Веер",
     description:
       "Боевой веер: пластика, дистанция и скрытая сила восточного оружия. Курс в подготовке — можно оставить заявку и узнать о наборе первым.",
-    video: HERO_VIDEOS[5],
+    image: "5.webp",
     courseSlug: "veer",
     comingSoon: true,
     color: getSchoolColor("fan"),

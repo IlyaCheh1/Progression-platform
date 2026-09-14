@@ -5,6 +5,7 @@ import {
   CAN_FALLBACK_HERO_MEDIA_TO_LOCAL,
   heroMediaUrl,
   heroPosterUrl,
+  isHeroImageFile,
 } from "@/lib/hero-media";
 import { isHeroVideoReady } from "@/lib/hero-video-ready";
 
@@ -37,7 +38,8 @@ export default function HeroVideoBackdrop({
   const [useLocalFallback, setUseLocalFallback] = useState(forceLocal);
   const [videoReady, setVideoReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const poster = heroPosterUrl(file, useLocalFallback);
+  const imageOnly = isHeroImageFile(file);
+  const poster = imageOnly ? heroMediaUrl(file, useLocalFallback) : heroPosterUrl(file, useLocalFallback);
   const videoSrc = heroMediaUrl(file, useLocalFallback);
   const blurClass = blurred ? " scale-110 blur-md" : "";
 
@@ -92,7 +94,7 @@ export default function HeroVideoBackdrop({
 
   if (!isMounted) return null;
 
-  if (reduceMotion) {
+  if (reduceMotion || imageOnly) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
