@@ -425,7 +425,7 @@ func main() {
 			return
 		}
 		if created {
-			log.Printf("onlyid provisioned student login=%s id=%s", s.Login, s.ID)
+			log.Printf("onlyid provisioned student id=%s", s.ID)
 			saveState()
 		}
 		writeAuthSession(w, s)

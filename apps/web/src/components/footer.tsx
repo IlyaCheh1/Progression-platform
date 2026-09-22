@@ -21,14 +21,9 @@ const SOCIAL_ICONS = {
 } as const;
 
 const FOOTER_LINKS = [
+  { title: "Войти", href: "/api/auth/login", onlyId: true },
   { title: "О нас", href: "/about" },
-  { title: "Тарифы", href: "/#tariffs" },
-  { title: "Акции", href: "/akcii" },
-  { title: "Аренда зала", href: "/arenda" },
-  { title: "FAQ", href: "/faq" },
-  { title: "Журнал", href: "/journal" },
   { title: "Контакты", href: "/contact" },
-  { title: "Войти", href: "/login" },
   { title: "Публичная оферта", href: "/legal/offer" },
   { title: "Пользовательское соглашение", href: "/legal/terms" },
   { title: "Рекуррентные платежи", href: "/legal/recurrent" },
@@ -83,10 +78,12 @@ export default function Footer() {
               {isKids ? (
                 <>
                   <p>
-                    {KIDS_WUSHU.school}: {KIDS_WUSHU.body} {KIDS_WUSHU.age}. {KIDS_WUSHU.cta}
+                    {KIDS_WUSHU.school} ведёт занятия ушу для детей: техника, внимание и характер растут в одном зале.
+                    Отсюда выходят на чемпионаты и турниры — от первых стартов до борьбы всерьёз.
                   </p>
                   <p>
-                    {KIDS_WUSHU.enroll}: {KIDS_WUSHU.phoneDisplay} · {KIDS_WUSHU.trainerShort}. {KIDS_WUSHU.places}.
+                    Отдельная часть пути — сборы в Китае. Едем на тренировочные лагеря, чтобы поставить базу там, где
+                    этому искусству учат каждый день.
                   </p>
                 </>
               ) : (
@@ -109,16 +106,26 @@ export default function Footer() {
           className="mt-10 flex flex-wrap gap-x-6 gap-y-3 border-t pt-6"
           style={{ borderColor: "rgba(255,255,255,0.1)" }}
         >
-          {FOOTER_LINKS.map((item) => (
-            <Link
-              key={item.title}
-              href={withAudience(item.href, mode)}
-              className="flex items-center gap-2 text-sm text-white/55 underline-offset-4 transition-colors duration-150 hover:text-white hover:underline"
-            >
-              <AccentBar />
-              {item.title}
-            </Link>
-          ))}
+          {FOOTER_LINKS.map((item) =>
+            "onlyId" in item && item.onlyId ? (
+              <a
+                key={item.title}
+                href={item.href}
+                className="og-btn og-btn-primary min-h-11 rounded-full px-5 text-sm no-underline"
+              >
+                {item.title}
+              </a>
+            ) : (
+              <Link
+                key={item.title}
+                href={withAudience(item.href, mode)}
+                className="flex items-center gap-2 text-sm text-white/55 underline-offset-4 transition-colors duration-150 hover:text-white hover:underline"
+              >
+                <AccentBar />
+                {item.title}
+              </Link>
+            ),
+          )}
         </div>
 
         <div

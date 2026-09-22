@@ -64,6 +64,10 @@ describe("kids landing hotfix", () => {
     assert.match(footer, /KIDS_WUSHU\.school/);
     assert.match(footer, /KIDS_WUSHU\.section/);
     assert.match(footer, /isKids/);
+    assert.match(footer, /чемпионаты и турниры/);
+    assert.match(footer, /сборы в Китае/);
+    assert.match(footer, /href: "\/api\/auth\/login"/);
+    assert.doesNotMatch(footer, /title: "Тарифы"|title: "Акции"|title: "Аренда|title: "FAQ"|title: "Журнал"/);
   });
 
   it("commits official text-free Shagal poster A hero art", () => {

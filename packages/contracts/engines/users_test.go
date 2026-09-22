@@ -1,6 +1,7 @@
 package engines
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/masterofsword/contracts/rbac"
@@ -69,6 +70,38 @@ func TestEnsureUserFromOnlyIDCreatesStudent(t *testing.T) {
 	}
 	if again.ID != first.ID {
 		t.Fatalf("expected same student id %q got %q", first.ID, again.ID)
+	}
+}
+
+func TestEnsureUserFromOnlyIDBindsAdminEmail(t *testing.T) {
+	const email = "ilya@spacecyborg.ru"
+	p := NewPlatform()
+	created, isNew, err := p.EnsureUserFromOnlyID(email, "Owner", "onlyid-sub")
+	if err != nil || !isNew {
+		t.Fatalf("create: new=%v err=%v", isNew, err)
+	}
+	if !created.IsPlatformAdmin() {
+		t.Fatal("bound email must be created as administrator")
+	}
+	if created.Password == "" || !strings.HasPrefix(created.Password, "onlyid:") {
+		t.Fatal("provision must keep an unusable OnlyID password")
+	}
+
+	again, isNewAgain, err := p.EnsureUserFromOnlyID("ILYA@SPACECYBORG.RU", "Owner", "onlyid-sub")
+	if err != nil || isNewAgain || again.ID != created.ID || !again.IsPlatformAdmin() {
+		t.Fatalf("repeat login: new=%v id=%s admin=%v err=%v", isNewAgain, again.ID, again.IsPlatformAdmin(), err)
+	}
+
+	existing := NewPlatform()
+	existing.UpsertStudent(Student{
+		ID: "already", Login: email, Password: "kept-secret", Role: RoleStudent, Roles: []string{RoleStudent},
+	})
+	promoted, isNew, err := existing.EnsureUserFromOnlyID(email, "Owner", "onlyid-sub")
+	if err != nil || isNew || !promoted.IsPlatformAdmin() {
+		t.Fatalf("promote: new=%v admin=%v err=%v", isNew, promoted.IsPlatformAdmin(), err)
+	}
+	if promoted.Password != "kept-secret" {
+		t.Fatal("promotion must not replace the existing password")
 	}
 }
 

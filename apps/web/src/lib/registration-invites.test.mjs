@@ -94,6 +94,8 @@ describe("registration invites", () => {
     assert.match(cabinet, /\/api\/auth\/login/);
     assert.doesNotMatch(cabinet, /Регистрация/);
     assert.doesNotMatch(cabinet, /invite=/);
+    assert.doesNotMatch(cabinet, /\/v1\/auth\/login/);
+    assert.doesNotMatch(cabinet, /или логин школы/);
 
     assert.match(registerPage, /RegistrationScreen/);
     assert.match(registerScreen, /Регистрация/);
