@@ -2853,27 +2853,24 @@ a.experience-item {
   }
 
   #directions .school-slide-band {
-    align-items: start;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    min-height: 10.3125rem;
+    min-height: 0;
+    grid-template-columns: 1fr;
   }
 
-  #directions .school-slide-side {
-    width: min(9.375rem, 100%);
-    font-size: 0.68rem;
-  }
-
-  #directions .school-slide-side > p + p {
-    font-size: 0.53125rem;
+  #directions .school-slide-side,
+  #directions .school-slide-only {
+    display: none;
   }
 
   #directions .school-slide-band .og-btn {
-    max-width: 5rem;
+    max-width: none;
     height: auto;
     min-height: 2.75rem;
-    white-space: normal;
-    line-height: 1.15;
-    padding: 0.35rem 0.4rem;
+    white-space: nowrap;
+    padding: 0.35rem 0.9rem;
   }
 
   .rooms-arrow[data-direction="prev"] {

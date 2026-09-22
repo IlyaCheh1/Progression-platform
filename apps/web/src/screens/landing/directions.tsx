@@ -326,6 +326,19 @@ function DirectionPanel({
   );
 }
 
+function SchoolLead({ text }: { text: string }) {
+  const hidden = " (и не только)";
+  const at = text.indexOf(hidden);
+  if (at < 0) return text;
+  return (
+    <>
+      {text.slice(0, at)}
+      <span className="school-slide-only">{hidden}</span>
+      {text.slice(at + hidden.length)}
+    </>
+  );
+}
+
 function SchoolSlideCopy({ slide, onOpenCourses }: { slide: SchoolSlideView; onOpenCourses: () => void }) {
   return (
     <div className="school-slide-copy relative z-10 flex h-full flex-col items-center px-6 text-center">
@@ -342,7 +355,7 @@ function SchoolSlideCopy({ slide, onOpenCourses }: { slide: SchoolSlideView; onO
           </span>
         </h2>
         <p className="mt-8 max-w-xl whitespace-pre-line font-golos text-[calc(0.875rem+3pt)] font-medium leading-relaxed text-white/70 md:text-[calc(0.875rem+5pt)]">
-          {slide.lead}
+          <SchoolLead text={slide.lead} />
         </p>
       </div>
       <div className="school-slide-band w-full items-start">

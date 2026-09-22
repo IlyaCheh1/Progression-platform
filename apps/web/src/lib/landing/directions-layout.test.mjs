@@ -24,11 +24,14 @@ describe("directions slide layout", () => {
     assert.match(css, /grid-template-columns:\s*minmax\(0,\s*1fr\) auto minmax\(0,\s*1fr\)/);
     assert.match(css, /#directions \.school-slide-side \{\s*justify-self:\s*center;/);
     assert.match(css, /#directions \.school-slide-side \{\s*justify-self:\s*center;\s*width:\s*min\(30rem, 100%\)/);
-    assert.match(css, /#directions \.school-slide-side \{\s*width:\s*min\(9\.375rem, 100%\);\s*font-size:\s*0\.68rem;/);
-    assert.match(css, /#directions \.school-slide-side > p \+ p \{\s*font-size:\s*0\.53125rem;/);
+    assert.match(
+      css,
+      /@media \(max-width: 767px\) \{[\s\S]*#directions \.school-slide-side,\s*#directions \.school-slide-only \{\s*display:\s*none;/,
+    );
+    assert.match(tsx, /school-slide-only/);
     assert.match(css, /#directions \.school-slide-side > p:first-child \{\s*white-space:\s*nowrap;/);
     assert.match(css, /#directions \.school-slide-band \{\s*display:\s*grid;[\s\S]*min-height:\s*16\.6875rem;/);
-    assert.match(css, /#directions \.school-slide-band \{[\s\S]*min-height:\s*10\.3125rem;/);
+    assert.match(css, /@media \(max-width: 767px\) \{[\s\S]*#directions \.school-slide-band \{[\s\S]*min-height:\s*0;/);
     assert.match(tsx, /school-slide-cta flex items-start justify-center/);
     assert.match(tsx, /school-slide-facts[\s\S]*text-center/);
     assert.match(tsx, /uppercase tracking-\[0\.08em\] text-white">Направления/);
