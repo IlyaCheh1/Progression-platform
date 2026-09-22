@@ -43,17 +43,38 @@ type Hall struct {
 	Name string `json:"name"`
 }
 
+// Group is a training cohort (students assigned to a coach / direction).
+type Group struct {
+	ID         string   `json:"id"`
+	Name       string   `json:"name"`
+	CoachID    string   `json:"coachId,omitempty"`
+	Direction  string   `json:"direction,omitempty"`
+	StudentIDs []string `json:"studentIds,omitempty"`
+}
+
 type Session struct {
-	ID        string    `json:"id"`
-	HallID    string    `json:"hallId"`
-	GroupKey  string    `json:"groupKey"`
-	Title     string    `json:"title"`
-	StartsAt  time.Time `json:"startsAt"`
-	EndsAt    time.Time `json:"endsAt"`
-	Capacity  int       `json:"capacity"`
-	Enrolled  int       `json:"enrolled"`
-	CoachID   string    `json:"coachId,omitempty"`
-	Cancelled bool      `json:"cancelled"`
+	ID         string    `json:"id"`
+	HallID     string    `json:"hallId"`
+	GroupKey   string    `json:"groupKey"`
+	Title      string    `json:"title"`
+	StartsAt   time.Time `json:"startsAt"`
+	EndsAt     time.Time `json:"endsAt"`
+	Capacity   int       `json:"capacity"`
+	Enrolled   int       `json:"enrolled"`
+	CoachID    string    `json:"coachId,omitempty"`
+	StudentIDs []string  `json:"studentIds,omitempty"`
+	Notes      string    `json:"notes,omitempty"`
+	Cancelled  bool      `json:"cancelled"`
+}
+
+// SessionAttendance is a per-student mark after a training session.
+type SessionAttendance struct {
+	SessionID   string    `json:"sessionId"`
+	StudentID   string    `json:"studentId"`
+	Present     bool      `json:"present"`
+	ResultNotes string    `json:"resultNotes,omitempty"`
+	MarkedAt    time.Time `json:"markedAt"`
+	MarkedBy    string    `json:"markedBy,omitempty"`
 }
 
 type ReservationType string

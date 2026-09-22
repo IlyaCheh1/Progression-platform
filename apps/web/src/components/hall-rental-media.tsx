@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useHorizontalSwipe } from "@/hooks/landing/useHorizontalSwipe";
 import { HALL_RENTAL_HALLS, stepHallPhoto, type HallRentalHall, type HallRentalPhoto } from "@/lib/landing/hall-rental";
 
 export function HallChipRow({
@@ -68,6 +69,8 @@ function PeekHallFilmstrip({ photos }: { photos: readonly HallRentalPhoto[] }) {
   const [pos, setPos] = useState(count);
   const [moving, setMoving] = useState(false);
   const [instant, setInstant] = useState(false);
+  const shiftRef = useRef<(delta: number) => void>(() => {});
+  const swipeRef = useHorizontalSwipe((direction) => shiftRef.current(direction));
   const current = photos[index] ?? photos[0];
   const previous = photos[stepHallPhoto(index, -1, count)];
   const next = photos[stepHallPhoto(index, 1, count)];
@@ -122,10 +125,12 @@ function PeekHallFilmstrip({ photos }: { photos: readonly HallRentalPhoto[] }) {
   };
 
   const slide = { "--hall-pos": pos } as CSSProperties;
+  shiftRef.current = shift;
 
   return (
     <div className="hall-filmstrip-block mt-10">
       <div
+        ref={swipeRef}
         className={`hall-filmstrip reveal-fade hall-filmstrip--peek${instant ? " is-instant" : ""}`}
         role="group"
         aria-label="Фото зала"
@@ -179,6 +184,9 @@ export function HallFilmstrip({
 }) {
   const [index, setIndex] = useState(0);
   const count = photos.length;
+  const swipeRef = useHorizontalSwipe((direction) => {
+    setIndex((value) => stepHallPhoto(value, direction, count));
+  });
   const current = photos[index] ?? photos[0];
   const previous = photos[stepHallPhoto(index, -1, count)];
   const next = photos[stepHallPhoto(index, 1, count)];
@@ -188,7 +196,7 @@ export function HallFilmstrip({
 
   return (
     <div className="mt-10">
-      <div className="hall-filmstrip reveal-fade" role="group" aria-label="Фото зала">
+      <div ref={swipeRef} className="hall-filmstrip reveal-fade" role="group" aria-label="Фото зала">
         <button
           type="button"
           className="hall-filmstrip-frame is-side is-prev"

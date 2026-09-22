@@ -114,6 +114,15 @@ describe("hall picker and filmstrip", () => {
     const media = readFileSync(fileURLToPath(new URL("../../components/hall-rental-media.tsx", import.meta.url)), "utf8");
     assert.match(css, /#arenda \.hall-spec[\s\S]*background:\s*var\(--void\)/);
     assert.match(css, /#arenda \.hall-spec[\s\S]*width:\s*max-content/);
+    assert.match(landing, /mobileSpecLine/);
+    assert.match(landing, /spec\.label === "Площадь" \? "площадь"/);
+    assert.match(landing, /hall-spec-short/);
+    assert.match(css, /#arenda \.hall-spec-short \{\s*display:\s*none/);
+    assert.match(css, /#arenda \.hall-rental-lead h2 \{\s*font-size:\s*clamp\(1\.35rem, 7vw, 1\.7rem\);\s*white-space:\s*nowrap/);
+    assert.match(css, /#arenda \.hall-rental-lead \.hall-chip-row \{\s*flex-wrap:\s*nowrap/);
+    assert.match(css, /#arenda \.hall-spec-short \{\s*display:\s*block/);
+    assert.match(media, /useHorizontalSwipe/);
+    assert.match(css, /#arenda \.hall-filmstrip,\s*#tariffs \.tariff-swipe \{\s*touch-action:\s*pan-y/);
     assert.match(css, /hall-filmstrip--peek[\s\S]*width:\s*200%/);
     assert.match(css, /hall-filmstrip-dot/);
     assert.match(css, /\.hall-slide-track \{[^}]*transition:\s*transform [^;]*ease/);

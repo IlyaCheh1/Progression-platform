@@ -426,9 +426,27 @@ export default function SettingsPage() {
 
             {tab === "admin" && isAdminPrincipal(session.roles) ? (
               <RolePanel title="Администрирование">
-                <p>Управление платформой, пользователями и контентом школы.</p>
-                <RoleLink href={routes.admin}>Войти в админ-панель</RoleLink>
+                <p>Встроенная CRM школы: пользователи, календарь, группы, залы, уведомления и оплаты.</p>
+                <RoleLink href={routes.admin}>Открыть админ-панель</RoleLink>
                 <div className="mt-4 flex flex-wrap gap-2">
+                  <Link
+                    href="/admin/calendar"
+                    className="inline-flex rounded-xl border border-mos-line/40 px-3 py-2 text-mos-text hover:border-mos-amber"
+                  >
+                    Календарь
+                  </Link>
+                  <Link
+                    href="/admin/users"
+                    className="inline-flex rounded-xl border border-mos-line/40 px-3 py-2 text-mos-text hover:border-mos-amber"
+                  >
+                    Пользователи
+                  </Link>
+                  <Link
+                    href="/admin/payments"
+                    className="inline-flex rounded-xl border border-mos-line/40 px-3 py-2 text-mos-text hover:border-mos-amber"
+                  >
+                    Оплаты
+                  </Link>
                   {roleLinks
                     .filter((item) => item.href !== routes.admin)
                     .map((item) => (
@@ -452,9 +470,9 @@ export default function SettingsPage() {
             ) : null}
 
             {tab === "guardian" && hasRole(session.roles, "guardian") ? (
-              <RolePanel title="Кабинет опекуна">
+              <RolePanel title="Кабинет представителя">
                 <p>Прогресс подопечных и уведомления школы.</p>
-                <RoleLink href={routes.guardian}>Открыть кабинет опекуна</RoleLink>
+                <RoleLink href={routes.guardian}>Открыть кабинет представителя</RoleLink>
               </RolePanel>
             ) : null}
 

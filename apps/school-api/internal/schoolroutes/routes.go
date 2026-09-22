@@ -120,8 +120,158 @@ func Register(mux *http.ServeMux, d Deps) {
 		d.WriteJSON(w, d.Platform.School.ListHalls())
 	})
 
+	mux.HandleFunc("POST /v1/admin/halls", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body school.Hall
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		h, err := d.Platform.School.UpsertHall(body)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, h)
+	}))
+
 	mux.HandleFunc("GET /v1/schedule/sessions", func(w http.ResponseWriter, r *http.Request) {
-		d.WriteJSON(w, d.Platform.School.ListSessions(time.Time{}, time.Time{}))
+		from, _ := time.Parse(time.RFC3339, r.URL.Query().Get("from"))
+		to, _ := time.Parse(time.RFC3339, r.URL.Query().Get("to"))
+		coachID := r.URL.Query().Get("coachId")
+		d.WriteJSON(w, d.Platform.School.ListSessionsForCoach(from, to, coachID))
+	})
+
+	mux.HandleFunc("POST /v1/admin/schedule/sessions", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body school.Session
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		sess, err := d.Platform.School.CreateSession(body)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, sess)
+	}))
+
+	mux.HandleFunc("DELETE /v1/admin/schedule/sessions/{id}", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		if err := d.Platform.School.CancelSession(r.PathValue("id")); err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, map[string]any{"ok": true})
+	}))
+
+	mux.HandleFunc("POST /v1/admin/schedule/sessions/{id}/enroll", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body struct {
+			StudentID string `json:"studentId"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.StudentID == "" {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		sess, err := d.Platform.School.EnrollStudent(r.PathValue("id"), body.StudentID)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, sess)
+	}))
+
+	mux.HandleFunc("POST /v1/admin/schedule/sessions/{id}/unenroll", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body struct {
+			StudentID string `json:"studentId"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.StudentID == "" {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		sess, err := d.Platform.School.UnenrollStudent(r.PathValue("id"), body.StudentID)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, sess)
+	}))
+
+	mux.HandleFunc("GET /v1/schedule/sessions/{id}/attendance", authz.RequirePermission(d.Platform, rbac.PermAttendanceConfirm, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		d.WriteJSON(w, d.Platform.School.ListSessionAttendance(r.PathValue("id")))
+	}))
+
+	mux.HandleFunc("POST /v1/schedule/sessions/{id}/attendance", authz.RequirePermission(d.Platform, rbac.PermAttendanceConfirm, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {
+		var body struct {
+			StudentID   string `json:"studentId"`
+			Present     bool   `json:"present"`
+			ResultNotes string `json:"resultNotes"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.StudentID == "" {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		sess, ok := d.Platform.School.GetSession(r.PathValue("id"))
+		if !ok {
+			http.Error(w, `{"error":"session not found"}`, http.StatusNotFound)
+			return
+		}
+		if !actor.IsPlatformAdmin() && sess.CoachID != "" && sess.CoachID != actor.ID {
+			http.Error(w, `{"error":"forbidden"}`, http.StatusForbidden)
+			return
+		}
+		row, err := d.Platform.School.MarkSessionAttendance(r.PathValue("id"), body.StudentID, actor.ID, body.Present, body.ResultNotes)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, row)
+	}))
+
+	mux.HandleFunc("GET /v1/groups", authz.RequirePermission(d.Platform, rbac.PermScheduleRead, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		d.WriteJSON(w, d.Platform.School.ListGroups())
+	}))
+
+	mux.HandleFunc("POST /v1/admin/groups", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body school.Group
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		g, err := d.Platform.School.UpsertGroup(body)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, g)
+	}))
+
+	mux.HandleFunc("PUT /v1/admin/groups/{id}", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		var body school.Group
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, `{"error":"bad_request"}`, http.StatusBadRequest)
+			return
+		}
+		body.ID = r.PathValue("id")
+		g, err := d.Platform.School.UpsertGroup(body)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, g)
+	}))
+
+	mux.HandleFunc("DELETE /v1/admin/groups/{id}", authz.RequirePermission(d.Platform, rbac.PermUsersUpdate, func(w http.ResponseWriter, r *http.Request, _ *engines.Student) {
+		if err := d.Platform.School.DeleteGroup(r.PathValue("id")); err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
+		d.WriteJSON(w, map[string]any{"ok": true})
+	}))
+
+	mux.HandleFunc("GET /v1/commerce/provider", func(w http.ResponseWriter, r *http.Request) {
+		d.WriteJSON(w, map[string]any{
+			"provider": "yookassa",
+			"live":     d.Platform.School.PaymentProviderLive(),
+		})
 	})
 
 	mux.HandleFunc("POST /v1/bookings/trial", authz.RequirePermission(d.Platform, rbac.PermBookingCreate, func(w http.ResponseWriter, r *http.Request, actor *engines.Student) {

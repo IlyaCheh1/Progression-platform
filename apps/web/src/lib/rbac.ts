@@ -54,7 +54,7 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   student: "Ученик",
-  guardian: "Опекун",
+  guardian: "Представитель ученика",
   coach: "Тренер",
   renter: "Арендатор",
   administrator: "Администратор",
