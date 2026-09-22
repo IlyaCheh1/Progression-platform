@@ -51,16 +51,45 @@ export type PurchaseRegistration = {
   gender: PurchaseGender | "";
 };
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PERSON_NAME_RE = /^[\p{L}][\p{L}\s'’-]*$/u;
+
+function personNameError(value: string, empty: string, bad: string): string | undefined {
+  const text = value.trim();
+  if (text.length < 2) return empty;
+  if (!PERSON_NAME_RE.test(text)) return bad;
+  return undefined;
+}
+
+function birthDateError(value: string): string | undefined {
+  if (!value.trim()) return "Укажите дату рождения.";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return "Укажите реальную дату рождения.";
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const real =
+    date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+  if (!real || year < 1900) return "Укажите реальную дату рождения.";
+  const today = new Date();
+  const todayUtc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+  if (date.getTime() > todayUtc) return "Дата рождения не может быть в будущем.";
+  let age = today.getFullYear() - year;
+  const monthDelta = today.getMonth() + 1 - month;
+  if (monthDelta < 0 || (monthDelta === 0 && today.getDate() < day)) age -= 1;
+  if (age > 100) return "Укажите реальную дату рождения.";
+  return undefined;
+}
 
 export function registrationErrors(value: PurchaseRegistration): Partial<Record<keyof PurchaseRegistration, string>> {
   const errors: Partial<Record<keyof PurchaseRegistration, string>> = {};
-  if (!value.name.trim()) errors.name = "Укажите имя.";
-  if (!value.surname.trim()) errors.surname = "Укажите фамилию.";
+  const name = personNameError(value.name, "Укажите имя.", "Имя — только буквы, минимум 2.");
+  const surname = personNameError(value.surname, "Укажите фамилию.", "Фамилия — только буквы, минимум 2.");
+  if (name) errors.name = name;
+  if (surname) errors.surname = surname;
   if (!EMAIL_RE.test(value.email.trim())) errors.email = "Укажите почту.";
-  if (!value.birthDate) errors.birthDate = "Укажите дату рождения.";
-  if (!purchasePhone(value.phone)) errors.phone = "Укажите телефон.";
-  if (value.gender !== "female" && value.gender !== "male") errors.gender = "Укажите пол.";
+  const birthDate = birthDateError(value.birthDate);
+  if (birthDate) errors.birthDate = birthDate;
+  if (!purchasePhone(value.phone)) errors.phone = "Укажите телефон в формате +7 и 10 цифр.";
+  if (value.gender !== "female" && value.gender !== "male") errors.gender = "Выберите пол.";
   return errors;
 }
 

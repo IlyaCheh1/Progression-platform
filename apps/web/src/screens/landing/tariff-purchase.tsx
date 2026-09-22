@@ -47,11 +47,12 @@ export default function TariffPurchase({ tariffId, onClose }: { tariffId: Purcha
     gender: "",
   });
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof PurchaseRegistration, string>>>({});
-  const [sectionKey, setSectionKey] = useState(SECTIONS[0]?.key ?? "ushu");
+  const [sectionKeys, setSectionKeys] = useState<string[]>(() => (SECTIONS[0] ? [SECTIONS[0].key] : []));
+  const [sectionError, setSectionError] = useState("");
   const [selectedTariff, setSelectedTariff] = useState(tariffId);
   const [onlineAddon, setOnlineAddon] = useState(false);
-  const [promoOpen, setPromoOpen] = useState(false);
   const [promoCode, setPromoCode] = useState("");
+  const [promoNotice, setPromoNotice] = useState("");
   const [payNotice, setPayNotice] = useState("");
   const [infoConsent, setInfoConsent] = useState(false);
 
@@ -183,6 +184,7 @@ export default function TariffPurchase({ tariffId, onClose }: { tariffId: Purcha
 
           {step === "register" ? (
             <form
+              className="purchase-step"
               onSubmit={(event) => {
                 event.preventDefault();
                 continueRegistration();
@@ -219,33 +221,32 @@ export default function TariffPurchase({ tariffId, onClose }: { tariffId: Purcha
                   error={formErrors.phone}
                   onChange={(phone) => setForm({ ...form, phone })}
                 />
-                <label className="purchase-field">
-                  <span>Пол</span>
-                  <select
-                    value={form.gender}
-                    onChange={(event) => setForm({ ...form, gender: event.target.value as PurchaseGender | "" })}
-                  >
-                    <option value="">Выберите</option>
-                    <option value="female">Женский</option>
-                    <option value="male">Мужской</option>
-                  </select>
-                  {formErrors.gender ? <p className="purchase-error">{formErrors.gender}</p> : null}
-                </label>
+                <SiteSelect
+                  label="Пол"
+                  value={form.gender}
+                  placeholder="Выберите"
+                  error={formErrors.gender}
+                  options={[
+                    { value: "female", label: "Женский" },
+                    { value: "male", label: "Мужской" },
+                  ]}
+                  onChange={(gender) => setForm({ ...form, gender: gender as PurchaseGender })}
+                />
               </div>
-              <Button type="submit" variant="primary" size="md" className="uppercase">
+              <Button type="submit" variant="primary" size="md" className="purchase-next uppercase">
                 Далее
               </Button>
             </form>
           ) : null}
 
           {step === "section" ? (
-            <div>
+            <div className="purchase-step">
               <h2 id={titleId} className="font-unbounded text-2xl text-white">
                 Секция
               </h2>
-              <div className="purchase-sections" role="listbox" aria-label="Секции">
+              <div className="purchase-sections" role="listbox" aria-multiselectable="true" aria-label="Секции">
                 {SECTIONS.map((section) => {
-                  const selected = section.key === sectionKey;
+                  const selected = sectionKeys.includes(section.key);
                   return (
                     <button
                       key={section.key}
@@ -253,7 +254,14 @@ export default function TariffPurchase({ tariffId, onClose }: { tariffId: Purcha
                       role="option"
                       aria-selected={selected}
                       className={`purchase-section ${selected ? "is-active" : ""}`}
-                      onClick={() => setSectionKey(section.key)}
+                      onClick={() => {
+                        setSectionError("");
+                        setSectionKeys((current) =>
+                          current.includes(section.key)
+                            ? current.filter((key) => key !== section.key)
+                            : [...current, section.key],
+                        );
+                      }}
                     >
                       {section.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -265,31 +273,41 @@ export default function TariffPurchase({ tariffId, onClose }: { tariffId: Purcha
                   );
                 })}
               </div>
-              <Button type="button" variant="primary" size="md" className="uppercase" onClick={() => setStep("subscribe")}>
+              {sectionError ? <p className="purchase-error">{sectionError}</p> : null}
+              <Button
+                type="button"
+                variant="primary"
+                size="md"
+                className="purchase-next uppercase"
+                onClick={() => {
+                  if (sectionKeys.length === 0) {
+                    setSectionError("Выберите хотя бы одну секцию.");
+                    return;
+                  }
+                  setStep("subscribe");
+                }}
+              >
                 Далее
               </Button>
             </div>
           ) : null}
 
           {step === "subscribe" ? (
-            <div>
+            <div className="purchase-step">
               <h2 id={titleId} className="font-unbounded text-2xl text-white">
                 Подписка
               </h2>
-              <p className="text-sm text-white/70">
-                Домашний клуб: <span className="text-white">Школа</span>
-              </p>
-              <label className="purchase-field">
-                <span>Тариф</span>
-                <select value={selectedTariff} onChange={(event) => setSelectedTariff(event.target.value as PurchaseTariffId)}>
-                  {PURCHASE_TARIFFS.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.lane} · {item.label} — {item.priceLabel}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <p className="font-unbounded text-xl text-white">{tariff.priceLabel}</p>
+              <SiteSelect
+                label="Тариф"
+                value={selectedTariff}
+                placeholder="Выберите"
+                options={PURCHASE_TARIFFS.map((item) => ({
+                  value: item.id,
+                  label: `${item.lane} · ${item.label} — ${item.priceLabel}`,
+                }))}
+                onChange={(id) => setSelectedTariff(id as PurchaseTariffId)}
+              />
+              <p className="purchase-price font-unbounded text-xl text-white">{tariff.priceLabel}</p>
               <label className="purchase-addon">
                 <input type="checkbox" checked={onlineAddon} onChange={(event) => setOnlineAddon(event.target.checked)} />
                 <span>
@@ -299,35 +317,120 @@ export default function TariffPurchase({ tariffId, onClose }: { tariffId: Purcha
                   </span>
                 </span>
               </label>
-              <Button type="button" variant="stroke" size="md" className="uppercase" onClick={() => setPromoOpen(true)}>
-                Промокод
-              </Button>
+              {promoNotice ? <p className="purchase-error">{promoNotice}</p> : null}
               {payNotice ? <p className="purchase-error">{payNotice}</p> : null}
-              <Button
-                type="button"
-                variant="primary"
-                size="lg"
-                className="uppercase"
-                onClick={() => setPayNotice(PURCHASE_PAYMENT_NOTICE)}
-              >
-                Оплатить
-              </Button>
-              {promoOpen ? (
-                <div className="purchase-promo" role="dialog" aria-label="Промокод">
-                  <label className="purchase-field">
-                    <span>Промокод</span>
-                    <input value={promoCode} onChange={(event) => setPromoCode(event.target.value)} />
-                  </label>
-                  <Button type="button" variant="primary" size="md" className="uppercase" onClick={() => setPromoOpen(false)}>
-                    Готово
-                  </Button>
-                </div>
-              ) : null}
+              <div className="purchase-pay-row">
+                <label className="purchase-code-field">
+                  <input
+                    value={promoCode}
+                    placeholder="Промокод"
+                    aria-label="Промокод"
+                    onChange={(event) => {
+                      setPromoCode(event.target.value);
+                      setPromoNotice("");
+                    }}
+                  />
+                </label>
+                <Button
+                  type="button"
+                  variant="stroke"
+                  size="md"
+                  className="uppercase"
+                  onClick={() => setPromoNotice(promoCode.trim() ? "Промокод принят." : "Введите промокод.")}
+                >
+                  Применить
+                </Button>
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="md"
+                  className="purchase-pay uppercase"
+                  onClick={() => setPayNotice(PURCHASE_PAYMENT_NOTICE)}
+                >
+                  Оплатить
+                </Button>
+              </div>
             </div>
           ) : null}
         </div>
       )}
     </dialog>
+  );
+}
+
+function SiteSelect({
+  label,
+  value,
+  placeholder,
+  options,
+  error,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  placeholder: string;
+  options: { value: string; label: string }[];
+  error?: string;
+  onChange: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const current = options.find((item) => item.value === value);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div className="purchase-field" ref={rootRef}>
+      <span>{label}</span>
+      <div className={open ? "purchase-select is-open" : "purchase-select"}>
+        <button
+          type="button"
+          className="purchase-select-trigger"
+          aria-expanded={open}
+          aria-haspopup="listbox"
+          onClick={() => setOpen((currentOpen) => !currentOpen)}
+        >
+          <span>{current?.label ?? placeholder}</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
+            <path d="M2 4.5 6 8.5 10 4.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          </svg>
+        </button>
+        {open ? (
+          <ul className="purchase-select-menu" role="listbox" aria-label={label}>
+            {options.map((item) => (
+              <li key={item.value}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={item.value === value}
+                  onClick={() => {
+                    onChange(item.value);
+                    setOpen(false);
+                  }}
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+      {error ? <p className="purchase-error">{error}</p> : null}
+    </div>
   );
 }
 

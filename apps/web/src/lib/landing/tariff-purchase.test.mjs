@@ -47,6 +47,31 @@ describe("landing tariff purchase", () => {
       gender: "",
     });
     assert.ok(errors.name && errors.surname && errors.email && errors.birthDate && errors.phone && errors.gender);
+    const byValue = registrationErrors({
+      name: "123",
+      surname: "А1",
+      email: "dfg",
+      birthDate: "4344-03-31",
+      phone: "+79773881309",
+      gender: "male",
+    });
+    assert.match(byValue.name, /буквы/);
+    assert.match(byValue.surname, /минимум 2/);
+    assert.ok(byValue.email);
+    assert.match(byValue.birthDate, /будущем/);
+    assert.equal(byValue.phone, undefined);
+    assert.equal(byValue.gender, undefined);
+    assert.deepEqual(
+      registrationErrors({
+        name: "Иван",
+        surname: "Петров",
+        email: "ivan@example.com",
+        birthDate: "1990-03-31",
+        phone: "+79773881309",
+        gender: "male",
+      }),
+      {},
+    );
   });
 
   it("opens from Купить and skips to payment only when the lookup is known", () => {
@@ -64,8 +89,10 @@ describe("landing tariff purchase", () => {
     assert.match(dialog, /Секция/);
     assert.match(dialog, /Подписка/);
     assert.match(dialog, /Промокод/);
-    assert.match(dialog, /Домашний клуб/);
-    assert.match(dialog, />Школа</);
+    assert.match(dialog, /Применить/);
+    assert.match(dialog, /purchase-pay-row/);
+    assert.doesNotMatch(dialog, /Домашний клуб/);
+    assert.doesNotMatch(dialog, /purchase-promo/);
     assert.doesNotMatch(dialog, /вступительн|localStorage|checkoutMembership|fetch\(/i);
     assert.doesNotMatch(dialog, /фитнес|опыт тренировок/i);
     assert.match(dialog, /Давайте знакомиться/);
@@ -75,8 +102,13 @@ describe("landing tariff purchase", () => {
     assert.match(dialog, /получение информационных материалов/);
     assert.match(dialog, /\/legal\/info-consent/);
     assert.match(dialog, /scrollTo\(scrollX, scrollY\)/);
+    assert.match(dialog, /purchase-select-menu/);
+    assert.match(dialog, /aria-multiselectable="true"/);
+    assert.doesNotMatch(dialog, /<select/);
     assert.doesNotMatch(dialog, /500\s*₽|скидк/i);
     const styles = readFileSync(fileURLToPath(new URL("../../screens/landing/styles.css", import.meta.url)), "utf8");
     assert.match(styles, /\.purchase-dialog \{[\s\S]*?position:\s*fixed/);
+    assert.match(styles, /aspect-ratio:\s*16\s*\/\s*9/);
+    assert.match(styles, /\.purchase-next/);
   });
 });
