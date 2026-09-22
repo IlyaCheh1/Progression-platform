@@ -35,6 +35,57 @@ export const HALL_RENTAL_PHOTOS = [
   { src: "/media/arenda/hall-corner.webp", alt: "Зал ушу: угол зала", caption: "Угол зала" },
 ] as const;
 
+export type HallRentalPhoto = {
+  src: string;
+  alt: string;
+  caption: string;
+};
+
+/** Fencing hall has no separate photo set yet — same local stills, reversed, marked as a mock. */
+const FENCING_HALL_PHOTOS: readonly HallRentalPhoto[] = [
+  { ...HALL_RENTAL_PHOTOS[3], alt: "Макет зала фехтования: угол зала" },
+  { ...HALL_RENTAL_PHOTOS[2], alt: "Макет зала фехтования: окна в пол" },
+  { ...HALL_RENTAL_PHOTOS[1], alt: "Макет зала фехтования: стена зеркал" },
+  { ...HALL_RENTAL_PHOTOS[0], alt: "Макет зала фехтования: общий вид" },
+];
+
+export type HallRentalHall = {
+  id: "ushu" | "fencing";
+  label: string;
+  mock: boolean;
+  specs: readonly { label: string; value: string }[];
+  photos: readonly HallRentalPhoto[];
+};
+
+export const HALL_RENTAL_HALLS: readonly HallRentalHall[] = [
+  {
+    id: "ushu",
+    label: "Зал УШУ",
+    mock: false,
+    specs: [
+      { label: "Цена", value: HALL_RENTAL_FACTS.price },
+      { label: "Площадь", value: HALL_RENTAL_FACTS.area },
+    ],
+    photos: HALL_RENTAL_PHOTOS,
+  },
+  {
+    id: "fencing",
+    label: "Зал фехтования",
+    mock: true,
+    specs: [
+      { label: "Цена", value: HALL_RENTAL_FACTS.price },
+      { label: "Площадь", value: HALL_RENTAL_FACTS.area },
+    ],
+    photos: FENCING_HALL_PHOTOS,
+  },
+];
+
+export function stepHallPhoto(index: number, delta: number, length: number): number {
+  if (length <= 0) return 0;
+  const next = (index + delta) % length;
+  return next < 0 ? next + length : next;
+}
+
 export const HALL_RENTAL_HOURS_MIN = 1;
 export const HALL_RENTAL_HOURS_MAX = 8;
 

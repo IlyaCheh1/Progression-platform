@@ -38,7 +38,7 @@ export default function Trainers() {
             {KIDS_WUSHU.section}
           </span>
           <h2 className="font-unbounded text-[calc(2.25rem-2pt)] font-medium tracking-[0.06em] text-white md:text-5xl">
-            Тренер <span style={{ color: KIDS_SAGE }}>{KIDS_WUSHU.trainerShort}</span>
+            Наши тренеры
           </h2>
         </div>
 
@@ -85,6 +85,14 @@ export default function Trainers() {
                 ))}
               </div>
             </div>
+          </article>
+
+          <article
+            className="trainer-card trainer-card-empty reveal-fade overflow-hidden rounded-[28px] bg-white/[0.03] backdrop-blur-xl"
+            aria-label="Карточка тренера пока пустая"
+          >
+            <div className="trainer-card-photo trainer-card-photo-empty relative aspect-[16/10] overflow-hidden sm:aspect-[5/3]" />
+            <div className="p-6 md:p-7" />
           </article>
         </div>
       </div>

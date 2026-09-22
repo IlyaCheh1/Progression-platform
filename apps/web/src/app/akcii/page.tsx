@@ -14,19 +14,21 @@ export default function AkciiPage() {
     <PublicPageShell>
       <div className="mx-auto max-w-6xl">
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-mos-amber">Акции</p>
-        <h1 className="mt-3 font-unbounded text-4xl text-white md:text-6xl">Специальные предложения</h1>
-        <p className="mt-4 max-w-2xl text-white/50">
-          Отдельная страница, не только секция лендинга. Часть формулировок ещё черновая.
-        </p>
+        <h1 className="mt-3 font-unbounded text-4xl text-white md:text-6xl">Все акции</h1>
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {LANDING_PROMOS.map((promo) => (
-            <article key={promo.id} className="promo-card">
-              <span className="promo-card-badge">{promo.badge}</span>
-              <h2 className="mt-4 font-unbounded text-xl text-white">{promo.title}</h2>
-              <p className="mt-3 text-sm leading-relaxed text-white/55">{promo.teaser}</p>
-              <Link href={promo.href} className="mt-5 inline-flex text-xs uppercase tracking-[0.12em] text-mos-amber">
-                К действию
-              </Link>
+            <article key={promo.id} className="promo-tile">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={promo.image} alt="" />
+              <div className="promo-tile-shade" aria-hidden />
+              <span className="promo-tile-badge">{promo.badge}</span>
+              <div className="promo-tile-body">
+                <h2 className="font-unbounded text-xl text-white">{promo.title}</h2>
+                <p className="text-sm leading-relaxed text-white/80">{promo.teaser}</p>
+                <Link href={`/akcii/${promo.slug}`} className="promo-tile-more">
+                  Подробнее
+                </Link>
+              </div>
             </article>
           ))}
         </div>

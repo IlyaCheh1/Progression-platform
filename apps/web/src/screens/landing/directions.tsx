@@ -67,7 +67,7 @@ function ArrowIcon({ direction }: { direction: "prev" | "next" }) {
         d={direction === "prev" ? "M16 5 8 12l8 7" : "M8 5l8 7-8 7"}
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="2.75"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -337,33 +337,39 @@ function SchoolSlideCopy({ slide, onOpenCourses }: { slide: SchoolSlideView; onO
           <span className="block text-[1.5em] leading-tight" style={{ color: "var(--color-controlsPrimaryActive)" }}>
             {slide.title}
           </span>
-          <span className="block max-w-3xl text-[calc(0.72em+2pt)] text-white leading-tight md:text-[calc(0.55em+2pt)]">
+          <span className="block max-w-3xl text-[calc(0.72em+2pt)] leading-tight text-white md:text-[calc(0.55em+2pt)]">
             {slide.titleAccent}
           </span>
         </h2>
-        <p className="mt-8 max-w-xl font-golos text-[calc(0.875rem+3pt)] font-medium leading-relaxed text-white/70 md:text-[calc(0.875rem+5pt)]">
+        <p className="mt-8 max-w-xl whitespace-pre-line font-golos text-[calc(0.875rem+3pt)] font-medium leading-relaxed text-white/70 md:text-[calc(0.875rem+5pt)]">
           {slide.lead}
         </p>
       </div>
-      <div className="flex w-full flex-col items-center gap-6">
-        <Button
-          type="button"
-          variant="primary"
-          size="lg"
-          className="cta-pulse uppercase"
-          onClick={onOpenCourses}
+      <div className="school-slide-band w-full items-start">
+        <div
+          className="school-slide-facts school-slide-side text-center font-golos text-[calc(0.75rem+2pt+2px)] font-medium leading-snug text-white/80 md:text-[calc(0.875rem+2pt+2px)]"
+          style={{ textShadow: "0 2px 18px rgba(0,0,0,0.85)" }}
         >
-          {slide.cta}
-        </Button>
-        <div className="school-slide-facts flex w-full items-start justify-between gap-6 font-golos text-[calc(0.75rem+2pt)] font-medium leading-snug text-white/70 md:text-[calc(0.875rem+2pt)]">
-          <p className="max-w-[46%] text-left">
-            <span aria-hidden>✨ </span>
-            {slide.directions}
-          </p>
-          <p className="max-w-[46%] text-right">
-            <span aria-hidden>⚔️ </span>
-            {slide.arsenal}
-          </p>
+          <p className="uppercase tracking-[0.08em] text-white">Направления</p>
+          <p className="mt-1">{slide.directions}</p>
+        </div>
+        <div className="school-slide-cta flex items-start justify-center">
+          <Button
+            type="button"
+            variant="primary"
+            size="lg"
+            className="cta-pulse shrink-0 uppercase"
+            onClick={onOpenCourses}
+          >
+            {slide.cta}
+          </Button>
+        </div>
+        <div
+          className="school-slide-side text-center font-golos text-[calc(0.75rem+2pt+2px)] font-medium leading-snug text-white/80 md:text-[calc(0.875rem+2pt+2px)]"
+          style={{ textShadow: "0 2px 18px rgba(0,0,0,0.85)" }}
+        >
+          <p className="uppercase tracking-[0.08em] text-white">Арсенал</p>
+          <p className="mt-1">{slide.arsenal}</p>
         </div>
       </div>
     </div>
@@ -372,7 +378,7 @@ function SchoolSlideCopy({ slide, onOpenCourses }: { slide: SchoolSlideView; onO
 
 function CourseSlideCopy({ slide, comingSoon }: { slide: CourseSlideView; comingSoon: boolean }) {
   return (
-    <div className="room-panel-text relative z-10 flex h-full max-w-3xl flex-col justify-end px-6 pb-24 md:px-24">
+    <div className={`room-panel-text relative z-10 flex h-full max-w-3xl flex-col justify-end px-6 pb-24 md:px-24${slide.key === "saber" ? " room-panel-text--saber" : ""}`}>
       <div
         className="mb-6 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest"
         style={{ background: `${slide.color}22`, color: slide.color }}
@@ -381,10 +387,17 @@ function CourseSlideCopy({ slide, comingSoon }: { slide: CourseSlideView; coming
       </div>
 
       <h2
-        className="mobile-fluid-room-title mb-4 font-unbounded font-medium md:text-[calc(4.5rem-3px)] lg:text-[calc(6rem-3px)]"
+        className={`mobile-fluid-room-title mb-4 font-unbounded font-medium md:text-[calc(4.5rem-3px)] lg:text-[calc(6rem-3px)]${slide.key === "saber" ? " room-panel-title--saber" : ""}`}
         style={{ color: slide.color, textShadow: `0 0 60px ${slide.glow}` }}
       >
-        {slide.title}
+        {slide.key === "saber" ? (
+          <>
+            <span className="room-panel-title-line">Сабля XVI-XVII</span>
+            <span className="room-panel-title-line">века</span>
+          </>
+        ) : (
+          slide.title
+        )}
       </h2>
 
       <div className="room-panel-middle">

@@ -29,6 +29,43 @@ body {
   background-attachment: fixed;
 }
 
+.cookie-notice {
+  position: fixed;
+  z-index: 70;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  width: min(36rem, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 0.8rem 0.9rem;
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, #141310 92%, black);
+  color: #f4f1ea;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+.cookie-notice p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.cookie-notice a {
+  color: var(--mos-amber);
+  text-underline-offset: 0.18em;
+}
+
+@media (max-width: 767px) {
+  .cookie-notice {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
 ::-webkit-scrollbar {
   height: 4px;
   width: 4px;

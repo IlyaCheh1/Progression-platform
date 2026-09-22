@@ -56,7 +56,7 @@ export function withAudience(href: string, mode: AudienceMode): string {
   return `${nextPath}${qs ? `?${qs}` : ""}${hash}`;
 }
 
-const KIDS_HIDDEN_HREFS = new Set(["/#directions"]);
+const KIDS_HIDDEN_HREFS = new Set(["/#directions", "/#arenda"]);
 
 export function publicNavForAudience<T extends { href: string }>(
   items: readonly T[],

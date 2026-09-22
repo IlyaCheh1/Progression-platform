@@ -1,13 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import Button from "@/components/ui/button";
-import { useAudience } from "@/hooks/landing/useAudience";
+import { useRef, useState, type CSSProperties } from "react";
+import type { PurchaseTariffId } from "@/lib/landing/tariff-purchase";
+import TariffPurchase from "@/screens/landing/tariff-purchase";
+import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
 import { cn } from "@/lib/utils";
+import { getSchoolColor } from "@/lib/school-colors";
+
+type TariffFormat = "solo" | "group" | "online" | "split";
 
 type PricingCard = {
   id: string;
+  format: TariffFormat;
+  lane: "Групповые" | "Персональные" | "Сплиты";
   title: string;
   description: string;
   price: string;
@@ -20,37 +26,47 @@ type PricingCard = {
   ctaVariant: "primary" | "secondary";
 };
 
+const GROUP_PAGE_TEXT =
+  "Общий ритм зала, партнёрская работа и RPG-прогресс. Пробное занятие — 1 000 ₽.";
+const SOLO_PAGE_TEXT = "Час с тренером в зале. Разовое — 4 000 ₽. Ставка ниже на абонементе.";
+
 const GROUP_CARDS: PricingCard[] = [
   {
     id: "trial",
+    format: "group",
+    lane: "Групповые",
     title: "Пробное занятие",
-    description: "Первый выход в зал — познакомиться с техникой, тренером и атмосферой школы.",
+    description: GROUP_PAGE_TEXT,
     price: "1 000 ₽",
-    accent: "#5a574f",
+    accent: getSchoolColor("ushu"),
     features: ["Одно посещение", "Знакомство с тренером", "Базовая безопасность"],
-    cta: "Записаться",
+    cta: "Купить",
     ctaVariant: "secondary",
   },
   {
     id: "monthly",
+    format: "group",
+    lane: "Групповые",
     title: "Абонемент",
-    description: "Групповые тренировки один раз в неделю.",
+    description: GROUP_PAGE_TEXT,
     price: "от 5 000 ₽",
     priceSuffix: "в месяц · 1 раз в неделю",
     popular: true,
-    accent: "#d4a84b",
+    accent: getSchoolColor("witcher"),
     features: ["Групповые тренировки", "RPG-прогресс и XP", "Система скидок", "Доступ к залу"],
-    cta: "Выбрать тариф",
+    cta: "Купить",
     ctaVariant: "primary",
   },
   {
     id: "single",
+    format: "group",
+    lane: "Групповые",
     title: "Разовое занятие",
-    description: "Одно групповое занятие без абонемента — удобно для нерегулярного графика.",
+    description: GROUP_PAGE_TEXT,
     price: "2 000 ₽",
-    accent: "#8a8780",
+    accent: getSchoolColor("two_swords"),
     features: ["Одно групповое занятие", "Без абонемента", "Запись по расписанию"],
-    cta: "Записаться",
+    cta: "Купить",
     ctaVariant: "secondary",
   },
 ];
@@ -58,51 +74,63 @@ const GROUP_CARDS: PricingCard[] = [
 const SOLO_CARDS: PricingCard[] = [
   {
     id: "solo-single",
+    format: "solo",
+    lane: "Персональные",
     title: "Разовое занятие",
-    description: "Одно индивидуальное занятие с тренером в зале — без абонемента.",
+    description: SOLO_PAGE_TEXT,
     price: "4 000 ₽",
     priceSuffix: "за час",
-    accent: "#5a574f",
+    accent: getSchoolColor("rapier_xvii"),
     features: ["1 час с тренером", "Персональный разбор", "Без абонемента"],
-    cta: "Записаться",
+    cta: "Купить",
     ctaVariant: "secondary",
   },
   {
     id: "solo-monthly",
+    format: "solo",
+    lane: "Персональные",
     title: "Абонемент",
-    description: "Индивидуальные тренировки один раз в неделю с тренером.",
+    description: SOLO_PAGE_TEXT,
     price: "от 12 800 ₽",
     priceSuffix: "в месяц · 1 раз в неделю",
     popular: true,
-    accent: "#d4a84b",
+    accent: getSchoolColor("saber"),
     features: [
       "Индивидуально с тренером",
       "1 раз в неделю · 1 час",
       "Ставка 3 200 ₽/ч при абонементе",
       "Система скидок на срок",
     ],
-    cta: "Выбрать тариф",
+    cta: "Купить",
     ctaVariant: "primary",
   },
   {
     id: "solo-online",
+    format: "online",
+    lane: "Персональные",
     title: "Онлайн",
     description: "Индивидуальное занятие в онлайн-формате с тренером.",
     price: "4 000 ₽",
     priceSuffix: "за час",
-    accent: "#8a8780",
+    accent: getSchoolColor("fan"),
     features: ["1 час с тренером", "Дистанционный формат", "Разбор техники"],
-    cta: "Записаться",
+    cta: "Купить",
     ctaVariant: "secondary",
   },
 ];
 
-const GROUP_DISCOUNTS = [
-  "50% скидка на второй абонемент для влюблённых",
-  "50% скидка на второй абонемент внутри семьи (дети и родители, сёстры и братья)",
-] as const;
-
-const DISCOUNT_COURSES = "Клинки Востока, Итальянская рапира, Иберийский двуручный меч";
+const SPLIT_CARD: PricingCard = {
+  id: "split",
+  format: "split",
+  lane: "Сплиты",
+  title: "Сплит",
+  description: "Заглушка. Парная персоналка на двоих — цена и слоты появятся после ТЗ.",
+  price: "макет · 2 человека",
+  accent: getSchoolColor("split"),
+  features: ["Двое в зале", "Общий тренер", "Черновик формата"],
+  cta: "Купить",
+  ctaVariant: "secondary",
+};
 
 const SUBSCRIPTION_MONTHLY_BASE = 5000;
 const SOLO_SUBSCRIPTION_MONTHLY_BASE = 12800;
@@ -132,7 +160,7 @@ function SubscriptionTermPicker({
   onChange: (months: SubscriptionMonths) => void;
 }) {
   return (
-    <div className="mt-4 grid grid-cols-4 gap-2">
+    <div className="tariff-terms" role="group" aria-label="Срок абонемента">
       {SUBSCRIPTION_TERMS.map((term) => {
         const selected = value === term.months;
 
@@ -141,12 +169,8 @@ function SubscriptionTermPicker({
             key={term.months}
             type="button"
             onClick={() => onChange(term.months)}
-            className={cn(
-              "flex flex-col items-center rounded-xl border px-2 py-2 transition-all duration-200",
-              selected
-                ? "border-mos-amber/50 bg-mos-amber/10 text-mos-amber"
-                : "border-white/10 bg-white/[0.03] text-mos-muted hover:border-white/20 hover:text-mos-text",
-            )}
+            className={cn("tariff-term", selected && "is-selected")}
+            aria-pressed={selected}
           >
             <span className="font-unbounded text-sm leading-none">{term.months}</span>
             <span className="mt-1 text-[10px] uppercase tracking-[0.08em]">
@@ -159,27 +183,15 @@ function SubscriptionTermPicker({
   );
 }
 
-function SubscriptionPrice({
-  months,
-  monthlyBase,
-}: {
-  months: SubscriptionMonths;
-  monthlyBase: number;
-}) {
+function subscriptionFigures(months: SubscriptionMonths, monthlyBase: number) {
   const term = SUBSCRIPTION_TERMS.find((item) => item.months === months) ?? SUBSCRIPTION_TERMS[0];
   const total = calcSubscriptionTotal(term.months, term.discountPercent, monthlyBase);
   const monthly = Math.round(total / term.months);
-
-  return (
-    <div className="pricing-card-price mt-6">
-      <p className="font-unbounded text-3xl text-mos-text">{formatRubles(total)}</p>
-      <p className="mt-1 text-sm text-mos-muted">
-        {term.months === 1
-          ? "в месяц · 1 раз в неделю"
-          : `${formatRubles(monthly)}/мес · скидка ${term.discountPercent}% · 1 раз в неделю`}
-      </p>
-    </div>
-  );
+  const note =
+    term.months === 1
+      ? "в месяц · 1 раз в неделю"
+      : `${formatRubles(monthly)}/мес · скидка ${term.discountPercent}% · 1 раз в неделю`;
+  return { price: formatRubles(total), note };
 }
 
 function isSubscriptionCard(cardId: string): boolean {
@@ -192,16 +204,18 @@ function subscriptionMonthlyBase(cardId: string): number {
 
 function CheckIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden className="shrink-0 text-mos-amber">
-      <path
-        d="M3.5 8.2 6.4 11.1 12.5 5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <span className="tariff-check" aria-hidden>
+      <svg width="12" height="12" viewBox="0 0 16 16">
+        <path
+          d="M3.5 8.2 6.4 11.1 12.5 5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
   );
 }
 
@@ -209,316 +223,168 @@ function PricingCardView({
   card,
   subscriptionMonths,
   onSubscriptionMonthsChange,
+  onBuy,
   className,
   style,
 }: {
   card: PricingCard;
   subscriptionMonths: SubscriptionMonths;
   onSubscriptionMonthsChange: (months: SubscriptionMonths) => void;
+  onBuy: (id: PurchaseTariffId) => void;
   className?: string;
   style?: CSSProperties;
 }) {
   return (
     <article
-      className={cn(
-        "pricing-card relative flex h-full flex-col overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl",
-        card.popular && "pricing-card--popular",
-        className,
-      )}
-      style={style}
+      className={cn("pricing-card tariff-plan", card.popular && "pricing-card--popular", className)}
+      style={{ ...style, "--plan": card.accent, "--plan-ink": card.accent === getSchoolColor("fan") ? "#1a1814" : "#fff" } as CSSProperties}
     >
-      {card.popular && (
-        <span className="absolute right-5 top-5 z-10 rounded-full border border-mos-amber/30 bg-mos-amber/10 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-mos-amber">
-          Самое популярное
-        </span>
-      )}
-
-      <div
-        className="pricing-card-hero relative h-40 overflow-hidden border-b border-white/5"
-        style={{
-          background: `radial-gradient(circle at 30% 20%, ${card.accent}55 0%, transparent 42%), linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0))`,
-        }}
-      >
-        <div className="pricing-card-x" aria-hidden />
-        <div
-          className="absolute bottom-5 left-5 flex h-14 w-14 items-center justify-center rounded-full border border-white/10"
-          style={{ background: `${card.accent}22`, boxShadow: `0 0 40px ${card.accent}33` }}
-        >
-          <span className="font-unbounded text-lg text-mos-text">◆</span>
-        </div>
+      <div className="tariff-plan-head">
+        <h3 className="font-unbounded">{card.title}</h3>
+        <p className="tariff-plan-price">
+          <strong className={cn("font-unbounded", card.id === "split" && "is-mock")}>
+            {isSubscriptionCard(card.id)
+              ? subscriptionFigures(subscriptionMonths, subscriptionMonthlyBase(card.id)).price
+              : card.price}
+          </strong>
+        </p>
+        {isSubscriptionCard(card.id) ? (
+          <p className="tariff-plan-note">{subscriptionFigures(subscriptionMonths, subscriptionMonthlyBase(card.id)).note}</p>
+        ) : card.priceSuffix ? (
+          <p className="tariff-plan-note">{card.priceSuffix}</p>
+        ) : null}
       </div>
 
-      <div className="pricing-card-body flex flex-1 flex-col p-6 md:p-7">
-        <h3 className="font-unbounded text-2xl text-mos-text">{card.title}</h3>
-        <p className="pricing-card-desc mt-3 min-h-[72px] text-sm leading-relaxed text-mos-muted">{card.description}</p>
-
+      <div className="tariff-plan-body">
         {isSubscriptionCard(card.id) ? (
-          <>
-            <SubscriptionTermPicker value={subscriptionMonths} onChange={onSubscriptionMonthsChange} />
-            <SubscriptionPrice months={subscriptionMonths} monthlyBase={subscriptionMonthlyBase(card.id)} />
-          </>
-        ) : (
-          <div className="pricing-card-price mt-6">
-            <p className="font-unbounded text-3xl text-mos-text">{card.price}</p>
-            {card.priceSuffix && <p className="mt-1 text-sm text-mos-muted">{card.priceSuffix}</p>}
-          </div>
-        )}
-
-        <div className="pricing-card-cta mt-6">
-          <Button
-            href="/contact"
-            variant={card.ctaVariant}
-            size="lg"
-            className={cn("w-full uppercase", card.popular && "cta-pulse")}
-          >
-            {card.cta}
-          </Button>
-        </div>
-
-        <div className="pricing-card-features mt-8 space-y-3">
+          <SubscriptionTermPicker value={subscriptionMonths} onChange={onSubscriptionMonthsChange} />
+        ) : null}
+        <p className="tariff-plan-lead">{card.description}</p>
+        <ul className="tariff-features">
           {card.features.map((feature) => (
-            <div key={feature} className="flex items-start gap-3 text-sm text-mos-text/80">
+            <li key={feature}>
               <CheckIcon />
               <span>{feature}</span>
-            </div>
+            </li>
           ))}
-        </div>
-
-        {card.bundleLabel && (
-          <div className="pricing-card-bundle mt-8">
-            <span>{card.bundleLabel}</span>
-          </div>
-        )}
+        </ul>
+        <button type="button" className="tariff-buy" onClick={() => onBuy(card.id as PurchaseTariffId)}>
+          {card.cta}
+        </button>
       </div>
     </article>
   );
 }
 
-function TariffsCarousel({
-  cards,
-  subscriptionMonths,
-  onSubscriptionMonthsChange,
-}: {
-  cards: PricingCard[];
-  subscriptionMonths: SubscriptionMonths;
-  onSubscriptionMonthsChange: (months: SubscriptionMonths) => void;
-}) {
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const popularIndex = Math.max(
-    0,
-    cards.findIndex((card) => card.popular),
-  );
-  const [activeIndex, setActiveIndex] = useState(popularIndex);
+const TARIFF_FORMATS: readonly { id: TariffFormat; label: string }[] = [
+  { id: "solo", label: "Индивидуальные" },
+  { id: "group", label: "Групповые" },
+  { id: "online", label: "Онлайн" },
+];
 
-  const scrollToIndex = useCallback((index: number) => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-    const slide = scroller.querySelector<HTMLElement>(`[data-tariff-slide="${index}"]`);
-    if (!slide) return;
-    const left = slide.offsetLeft - (scroller.clientWidth - slide.clientWidth) / 2;
-    scroller.scrollTo({ left, behavior: "smooth" });
-  }, []);
+const TARIFF_CARDS: PricingCard[] = [...GROUP_CARDS, ...SOLO_CARDS, SPLIT_CARD];
 
-  useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
+function visibleTariffs(cards: readonly PricingCard[], start: number, count: number): PricingCard[] {
+  if (cards.length === 0) return [];
+  return Array.from({ length: Math.min(count, cards.length) }, (_, offset) => cards[(start + offset) % cards.length]);
+}
 
-    const frame = window.requestAnimationFrame(() => {
-      scrollToIndex(popularIndex);
-      setActiveIndex(popularIndex);
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [cards, popularIndex, scrollToIndex]);
-
-  useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-
-    const updateActive = () => {
-      const slides = Array.from(scroller.querySelectorAll<HTMLElement>("[data-tariff-slide]"));
-      if (slides.length === 0) return;
-
-      const center = scroller.scrollLeft + scroller.clientWidth / 2;
-      let nearest = 0;
-      let nearestDistance = Number.POSITIVE_INFINITY;
-
-      slides.forEach((slide, index) => {
-        const slideCenter = slide.offsetLeft + slide.clientWidth / 2;
-        const distance = Math.abs(slideCenter - center);
-        if (distance < nearestDistance) {
-          nearestDistance = distance;
-          nearest = index;
-        }
-      });
-
-      setActiveIndex(nearest);
-    };
-
-    updateActive();
-    scroller.addEventListener("scroll", updateActive, { passive: true });
-    return () => scroller.removeEventListener("scroll", updateActive);
-  }, [cards]);
-
+function TariffArrow({ direction, label, onClick }: { direction: "prev" | "next"; label: string; onClick: () => void }) {
   return (
-    <div className="pricing-carousel mt-10 lg:hidden">
-      <div className="mb-4 flex items-center justify-between px-6">
-        <p className="font-golos text-xs uppercase tracking-[0.14em] text-mos-muted">Листайте тарифы</p>
-        <span className="font-unbounded text-xs text-mos-amber">
-          {activeIndex + 1} / {cards.length}
-        </span>
-      </div>
-
-      <div className="relative">
-        <div
-          ref={scrollerRef}
-          className="pricing-carousel-track flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          aria-roledescription="карусель"
-          aria-label="Тарифы"
-        >
-          {cards.map((card, index) => (
-            <div
-              key={card.id}
-              data-tariff-slide={index}
-              className="w-[min(82vw,22rem)] shrink-0 snap-center"
-              aria-current={activeIndex === index ? "true" : undefined}
-            >
-              <PricingCardView
-                card={card}
-                subscriptionMonths={subscriptionMonths}
-                onSubscriptionMonthsChange={onSubscriptionMonthsChange}
-                className="reveal-fade"
-                style={{ transitionDelay: `${index * 0.06}s` }}
-              />
-            </div>
-          ))}
-        </div>
-
-        <div
-          className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[var(--mos-bg)] to-transparent"
-          aria-hidden
+    <button type="button" className="tariff-arrow" aria-label={label} onClick={onClick}>
+      <svg className="tariff-arrow-icon" viewBox="0 0 24 24" aria-hidden>
+        <path
+          d={direction === "prev" ? "M16 5 8 12l8 7" : "M8 5l8 7-8 7"}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
-        <div
-          className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[var(--mos-bg)] to-transparent"
-          aria-hidden
-        />
-      </div>
-
-      <div className="mt-5 flex flex-col items-center gap-3 px-6">
-        <div className="flex items-center gap-2" role="tablist" aria-label="Переключение тарифов">
-          {cards.map((card, index) => (
-            <button
-              key={card.id}
-              type="button"
-              role="tab"
-              aria-label={card.title}
-              aria-selected={activeIndex === index}
-              onClick={() => scrollToIndex(index)}
-              className="flex h-8 w-8 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mos-amber/60"
-            >
-              <span
-                className="block rounded-full transition-all duration-300"
-                style={{
-                  width: activeIndex === index ? 22 : 8,
-                  height: 8,
-                  background: activeIndex === index ? "var(--mos-amber)" : "rgba(255,255,255,0.22)",
-                }}
-              />
-            </button>
-          ))}
-        </div>
-        <p className="font-golos text-xs text-white/35" aria-hidden>
-          ← свайп →
-        </p>
-      </div>
-    </div>
+      </svg>
+    </button>
   );
 }
 
 export default function Tariffs() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { isKids } = useAudience();
-  const [tab, setTab] = useState<"group" | "solo">("group");
+  const isMobile = useMobileMedia();
+  const [formatId, setFormatId] = useState<TariffFormat>("group");
+  const [start, setStart] = useState(0);
   const [subscriptionMonths, setSubscriptionMonths] = useState<SubscriptionMonths>(1);
-  useRevealFade(sectionRef, 0.12, tab);
-  const cards = tab === "group" ? GROUP_CARDS : SOLO_CARDS;
+  const [purchaseTariffId, setPurchaseTariffId] = useState<PurchaseTariffId | null>(null);
+  useRevealFade(sectionRef);
+  const cards = TARIFF_CARDS;
+  const visibleCount = isMobile ? 1 : 3;
+  const visible = visibleTariffs(cards, start, visibleCount);
+  const step = (delta: number) => setStart((index) => (index + delta + cards.length) % cards.length);
+  const chooseFormat = (next: TariffFormat) => {
+    setFormatId(next);
+  };
 
   return (
-    <section id="tariffs" ref={sectionRef} className="pricing-section relative py-24" style={{ background: "var(--mos-bg)" }}>
-      <div className="mx-auto max-w-6xl">
-        <div className="reveal-fade px-6 text-center">
-          <h2 className="font-unbounded text-3xl tracking-[0.12em] text-mos-amber md:text-5xl">Тарифы</h2>
-          <p className="mx-auto mt-3 max-w-2xl font-golos text-mos-muted">
-            {isKids
-              ? "Первое занятие в детской секции ушу бесплатно. Набор от 6 лет, места ограничены. Дальше — те же форматы зала."
-              : "Групповые и персональные в зале. Сплиты и парный онлайн — на полной странице тарифов."}
-          </p>
-          <div className="mt-4 flex flex-wrap justify-center gap-3">
-            <Button href="/tariffs" variant="stroke" size="md" className="uppercase">
-              Все форматы
-            </Button>
-            <Button href="/contact" variant="primary" size="md" className="uppercase">
-              Заявка в контакты
-            </Button>
-          </div>
-          <div className="mt-6 inline-flex rounded-2xl border border-mos-line/40 bg-mos-stone/60 p-1">
-            {(
-              [
-                { id: "group", label: "Групповые" },
-                { id: "solo", label: "Персональные" },
-              ] as const
-            ).map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setTab(item.id)}
-                className={cn(
-                  "rounded-xl px-5 py-2 font-unbounded text-[10px] uppercase tracking-[0.12em] transition-all duration-300",
-                  tab === item.id ? "bg-mos-amber text-mos-bg" : "text-mos-muted hover:text-mos-text",
-                )}
-              >
-                {item.label}
-              </button>
-            ))}
+    <section id="tariffs" ref={sectionRef} className="pricing-section relative py-16 md:py-24" style={{ background: "var(--mos-bg)" }}>
+      <div className="mx-auto max-w-6xl px-4 md:px-6">
+        <div className="landing-frame">
+        <div className="landing-frame-head reveal-fade">
+          <h2 className="font-unbounded text-3xl tracking-[0.12em] md:text-5xl">Тарифы</h2>
+          <div className="flex shrink-0 items-center gap-2">
+            <TariffArrow direction="prev" label="Предыдущие тарифы" onClick={() => step(-1)} />
+            <TariffArrow direction="next" label="Следующие тарифы" onClick={() => step(1)} />
           </div>
         </div>
+        <p className="landing-frame-copy mt-3 max-w-2xl font-golos">
+          Групповые и персональные в зале. Сплит — макет на двоих, без рублёвой цены.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Формат">
+          {TARIFF_FORMATS.map((format) => (
+            <button
+              key={format.id}
+              type="button"
+              role="tab"
+              className={`hall-day-chip${format.id === formatId ? " is-active" : ""}`}
+              aria-selected={format.id === formatId}
+              onClick={() => chooseFormat(format.id)}
+            >
+              {format.label}
+            </button>
+          ))}
+        </div>
 
-        <TariffsCarousel
-          cards={cards}
-          subscriptionMonths={subscriptionMonths}
-          onSubscriptionMonthsChange={setSubscriptionMonths}
-        />
-
-        <div className="mt-12 hidden grid-cols-3 items-center gap-5 px-6 lg:grid">
-          {cards.map((card, i) => (
+        <div
+          className={cn("mt-10 grid items-stretch gap-5", visibleCount === 1 ? "grid-cols-1" : "grid-cols-3")}
+          aria-roledescription="карусель"
+          aria-label="Тарифы"
+        >
+          {visible.map((card) => (
             <PricingCardView
               key={card.id}
               card={card}
               subscriptionMonths={subscriptionMonths}
               onSubscriptionMonthsChange={setSubscriptionMonths}
-              className="reveal-fade"
-              style={{ transitionDelay: `${i * 0.06}s` }}
+              onBuy={setPurchaseTariffId}
+            />
+          ))}
+        </div>
+        <div className="hall-filmstrip-dots" role="tablist" aria-label="Кадры тарифов">
+          {cards.map((card, index) => (
+            <button
+              key={card.id}
+              type="button"
+              role="tab"
+              className={`hall-filmstrip-dot${index === start ? " is-active" : ""}`}
+              aria-selected={index === start}
+              aria-label={`${card.lane}: ${card.title}`}
+              onClick={() => setStart(index)}
             />
           ))}
         </div>
 
-        {tab === "group" && (
-          <div className="reveal-fade mx-auto mt-10 max-w-3xl px-6">
-            <div className="rounded-2xl bg-mos-stone/30 p-6">
-              <h3 className="font-unbounded text-sm uppercase tracking-[0.12em] text-mos-amber">Система скидок</h3>
-              <p className="mt-2 text-sm text-mos-muted">Действует на курсах: {DISCOUNT_COURSES}.</p>
-              <ul className="mt-4 space-y-2 text-sm text-mos-text/85">
-                {GROUP_DISCOUNTS.map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <CheckIcon />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
+      {purchaseTariffId ? (
+        <TariffPurchase tariffId={purchaseTariffId} onClose={() => setPurchaseTariffId(null)} />
+      ) : null}
     </section>
   );
 }

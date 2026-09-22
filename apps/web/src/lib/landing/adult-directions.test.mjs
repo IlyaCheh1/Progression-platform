@@ -18,22 +18,25 @@ describe("adult direction slides", () => {
   it("keeps school intro copy and a courses CTA", () => {
     assert.match(catalog, /title: "Мастер меча"/);
     assert.doesNotMatch(catalog, /«Мастер меча»/);
-    assert.match(catalog, /мало обычного спорта/);
-    assert.match(catalog, /китайского меча до европейского полуторника/);
+    assert.match(catalog, /мало обычного спорта"/);
+    assert.doesNotMatch(catalog, /мало обычного спорта\./);
+    assert.match(catalog, /любым клинком \(и не только\):\\nот китайского меча до европейского полуторника"/);
+    assert.doesNotMatch(catalog, /полуторника\./);
     assert.match(catalog, /сабли, шпаги, копья, алебарды, щиты и многое другое/);
-    assert.match(catalog, /cta: "Выбрать курсы"/);
+    assert.match(catalog, /cta: "Выбрать тренировки"/);
+    assert.doesNotMatch(catalog, /Выбрать курсы/);
     assert.doesNotMatch(catalog, /Выбери подходящее именно тебе/);
     assert.doesNotMatch(catalog, /RPG-прокачкой/);
     assert.doesNotMatch(catalog, /опыт, способности, достижения и награды/);
-    assert.equal(SCHOOL_HERO_VIDEO, "school.mp4");
+    assert.equal(SCHOOL_HERO_VIDEO, "A-diagonal-fighters-moving-5s.mp4");
     assert.match(catalog, /ADULT_SCHOOL_VIDEO/);
     assert.match(catalog, /SCHOOL_HERO_VIDEO/);
     assert.equal(
-      existsSync(fileURLToPath(new URL("../../../public/media/hero/school.mp4", import.meta.url))),
+      existsSync(fileURLToPath(new URL("../../../public/media/hero/A-diagonal-fighters-moving-5s.mp4", import.meta.url))),
       true,
     );
     assert.equal(
-      existsSync(fileURLToPath(new URL("../../../public/media/hero/school.webp", import.meta.url))),
+      existsSync(fileURLToPath(new URL("../../../public/media/hero/A-diagonal-fighters-moving-5s.webp", import.meta.url))),
       true,
     );
     const directions = read("../../screens/landing/directions.tsx");
@@ -105,5 +108,8 @@ describe("adult direction slides", () => {
     const join = read("../../screens/landing/join.tsx");
     assert.match(join, /LandingLeadForm/);
     assert.doesNotMatch(join, /\/contact/);
+    assert.match(join, /Пора взять в руки меч"/);
+    assert.doesNotMatch(join, /Хватит быть героем в цифровом мире/);
+    assert.doesNotMatch(join, /Пора взять в руки меч\./);
   });
 });

@@ -14,11 +14,17 @@ const Services = dynamic(() => import("@/screens/landing/services"));
 const Promos = dynamic(() => import("@/screens/landing/promos"));
 const Arenda = dynamic(() => import("@/screens/landing/arenda"));
 const Tariffs = dynamic(() => import("@/screens/landing/tariffs"));
+const Address = dynamic(() => import("@/screens/landing/address"));
 const Articles = dynamic(() => import("@/screens/landing/articles"));
-const Questions = dynamic(() => import("@/screens/landing/questions"));
+const Answers = dynamic(() => import("@/screens/landing/answers"));
+const TrialBanner = dynamic(() => import("@/screens/landing/trial-banner"));
+const CallbackBlock = dynamic(() => import("@/screens/landing/callback"));
 const RpgBlock = dynamic(() => import("@/screens/landing/rpg"));
 const Join = dynamic(() => import("@/screens/landing/join"));
 const Footer = dynamic(() => import("@/components/footer"));
+
+/** Set true to put the RPG character block back on the landing page. */
+const SHOW_LANDING_RPG = false;
 
 function LandingBody() {
   const { isKids } = useAudience();
@@ -34,15 +40,18 @@ function LandingBody() {
         {isKids ? <Trainers /> : null}
         {!isKids ? <TeamBoard /> : null}
         <Services />
-        <Promos />
-        <Arenda />
+        {!isKids ? <Arenda /> : null}
         <Tariffs />
+        <Promos />
+        <Address />
         <Articles />
-        <Questions />
+        <Answers />
         <div className="landing-end-zone relative">
           <div className="landing-end-glow pointer-events-none absolute inset-0" aria-hidden />
-          {!isKids ? <RpgBlock /> : null}
+          {SHOW_LANDING_RPG && !isKids ? <RpgBlock /> : null}
           <Join />
+          {!isKids ? <TrialBanner /> : null}
+          <CallbackBlock />
           <Footer />
         </div>
       </main>

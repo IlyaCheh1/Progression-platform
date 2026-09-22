@@ -13,8 +13,7 @@ export default function JournalPage() {
   return (
     <PublicPageShell>
       <div className="mx-auto max-w-6xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-mos-amber">Мастер меча</p>
-        <h1 className="mt-3 font-unbounded text-4xl text-white md:text-6xl">Журнал</h1>
+        <h1 className="font-unbounded text-4xl text-white md:text-6xl">Журнал</h1>
         <p className="mt-4 max-w-2xl text-white/50">Макеты статей. Обложки — существующие фото школы, не стоковые люди.</p>
         <div className="mt-12 grid gap-5 md:grid-cols-2">
           {JOURNAL_ARTICLES.map((article) => (

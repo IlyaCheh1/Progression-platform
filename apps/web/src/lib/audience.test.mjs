@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   audienceFromPathname,
@@ -28,28 +30,37 @@ describe("audience mode", () => {
     assert.equal(audienceFromPathname("/kids"), "kids");
     assert.equal(audienceFromPathname("/"), "adults");
     assert.equal(isLandingPath("/kids"), true);
-    assert.equal(withAudience("/tariffs", "adults"), "/tariffs");
-    assert.equal(withAudience("/tariffs", "kids"), "/tariffs");
+    assert.equal(withAudience("/#tariffs", "adults"), "/#tariffs");
+    assert.equal(withAudience("/#tariffs", "kids"), "/kids#tariffs");
+    assert.equal(withAudience("/#answers", "adults"), "/#answers");
+    assert.equal(withAudience("/#answers", "kids"), "/kids#answers");
     assert.equal(withAudience("/#directions", "kids"), "/kids#directions");
     assert.equal(withAudience("/#join", "kids"), "/kids#join");
     assert.equal(withAudience("/akcii?ref=nav", "kids"), "/akcii?ref=nav");
     assert.equal(withAudience("/kids#join", "adults"), "/#join");
   });
 
-  it("hides the rooms slider link in kids public nav", () => {
+  it("hides directions and hall rental from the kids menu and keeps section hashes on /kids", () => {
     const items = [
       { title: "О нас", href: "/about" },
       { title: "Направления", href: "/#directions" },
-      { title: "Тарифы", href: "/tariffs" },
+      { title: "Тарифы", href: "/#tariffs" },
+      { title: "Аренда зала", href: "/#arenda" },
+      { title: "FAQ", href: "/#answers" },
     ];
     assert.deepEqual(
       publicNavForAudience(items, "adults").map((item) => item.href),
-      ["/about", "/#directions", "/tariffs"],
+      ["/about", "/#directions", "/#tariffs", "/#arenda", "/#answers"],
     );
     assert.deepEqual(
       publicNavForAudience(items, "kids").map((item) => item.href),
-      ["/about", "/tariffs"],
+      ["/about", "/#tariffs", "/#answers"],
     );
+    const header = readFileSync(fileURLToPath(new URL("../components/header-public.tsx", import.meta.url)), "utf8");
+    assert.match(header, /title: "Тарифы", href: "\/#tariffs"/);
+    assert.match(header, /title: "FAQ", href: "\/#answers"/);
+    assert.match(header, /title: "Аренда зала", href: "\/#arenda"/);
+    assert.doesNotMatch(header, /href: "\/tariffs"|href: "\/faq"/);
   });
 
   it("reads the first audience query value for the homepage redirect", () => {

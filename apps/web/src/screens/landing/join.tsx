@@ -17,11 +17,9 @@ export default function Join() {
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="reveal-fade relative px-6 text-center md:px-12">
           <h2 className="mobile-fluid-join-title mx-auto mb-9 flex w-full flex-col gap-[1.875rem] font-unbounded font-medium leading-snug text-white md:gap-[2.625rem] md:text-5xl">
-            <span className="block w-full">
-              {isKids ? KIDS_WUSHU.cta : "Хватит быть героем в цифровом мире."}
-            </span>
+            {isKids ? <span className="block w-full">{KIDS_WUSHU.cta}</span> : null}
             <span className="block w-full" style={{ color: "var(--color-controlsPrimaryActive)" }}>
-              {isKids ? KIDS_WUSHU.age : "Пора взять в руки меч."}
+              {isKids ? KIDS_WUSHU.age : "Пора взять в руки меч"}
             </span>
           </h2>
           {isKids ? (

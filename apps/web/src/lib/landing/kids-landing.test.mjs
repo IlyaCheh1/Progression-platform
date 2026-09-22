@@ -27,7 +27,22 @@ describe("kids landing hotfix", () => {
     assert.doesNotMatch(hero, /Тренер Татьяна|Сила тела\. Дух дракона/);
     assert.doesNotMatch(hero, /KIDS_WUSHU\.brand/);
     assert.doesNotMatch(hero, /Школа фехтования|Мастер меча/);
+    assert.match(hero, /Присоединиться/);
+    assert.match(hero, /TariffPurchase/);
+    assert.match(hero, /kids-age-ribbon[\s\S]*kids-hero-intro[\s\S]*KIDS_WUSHU\.school[\s\S]*Присоединиться/);
+    assert.match(landing, /\{!isKids \? <TrialBanner \/> : null\}/);
+    assert.doesNotMatch(directions, /Присоединиться/);
     assert.match(landing, /\{isKids \? <Trainers \/> : null\}/);
+    const trainers = readFileSync(fileURLToPath(new URL("../../screens/landing/trainers.tsx", import.meta.url)), "utf8");
+    const services = readFileSync(fileURLToPath(new URL("../../screens/landing/services.tsx", import.meta.url)), "utf8");
+    assert.match(trainers, /Наши тренеры/);
+    assert.doesNotMatch(trainers, /Тренер <span/);
+    assert.match(trainers, /trainer\.name/);
+    assert.match(trainers, /trainer-card-empty/);
+    assert.doesNotMatch(trainers, /trainer-card-empty[\s\S]*<(img|h3|p)\b/);
+    assert.match(services, /isKids \? "Выберите удобный формат" : "Выбери свой формат"/);
+    assert.doesNotMatch(hero, /kids-hero-mark|KIDS_WUSHU\.media\.logo/);
+    assert.match(landing, /\{!isKids \? <Arenda \/> : null\}/);
   });
 
   it("keeps kids chrome on wushu naming only", () => {
@@ -40,7 +55,8 @@ describe("kids landing hotfix", () => {
     assert.match(header, /data-kids=\{isKids \|\| undefined\}/);
     assert.match(header, /AudienceToggle/);
     assert.match(header, /isKids \? `\$\{KIDS_WUSHU\.school\} — главная`/);
-    assert.match(articles, /isKids \? KIDS_WUSHU\.school : "Мастер меча"/);
+    assert.doesNotMatch(articles, /Мастер меча/);
+    assert.match(articles, /Журнал школы/);
     assert.match(footer, /KIDS_WUSHU\.school/);
     assert.match(footer, /KIDS_WUSHU\.section/);
     assert.match(footer, /isKids/);

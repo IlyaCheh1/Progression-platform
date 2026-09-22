@@ -379,9 +379,6 @@ export default function TeamBoard() {
     <section id="team" ref={sectionRef} className="team-board-section relative z-10 overflow-x-clip px-6 py-24" data-mode={mode}>
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="reveal-fade text-center">
-          <span className="mb-3 block font-golos text-xs font-semibold uppercase tracking-[0.12em]" style={{ color: "var(--mos-amber)" }}>
-            {TEAM_COPY.eyebrow}
-          </span>
           <h2 className="font-unbounded mb-4 text-[calc(2.25rem-2pt)] font-medium text-white md:text-6xl">{TEAM_COPY.title}</h2>
           <p className="mx-auto max-w-2xl font-golos text-[calc(1rem-2pt)] leading-relaxed text-white/40 md:text-base">
             {playing ? TEAM_COPY.gameSubtitle : TEAM_COPY.subtitle}
@@ -462,20 +459,7 @@ export default function TeamBoard() {
               </>
             )}
           </div>
-        ) : (
-          <div className="team-game-status-actions" style={{ marginTop: "1.25rem" }}>
-            <Button
-              variant="stroke"
-              size="md"
-              onClick={() => {
-                dispatchExplore({ type: "RESET_BOARD" });
-                setAnnouncement(TEAM_COPY.announce.reset);
-              }}
-            >
-              {TEAM_COPY.resetBoard}
-            </Button>
-          </div>
-        )}
+        ) : null}
 
         {showBoard ? (
           <>

@@ -86,7 +86,8 @@ describe("team-board OG layout contract", () => {
     assert.match(board, /canPlay=\{playing \? canSelectPlayerCard\(play, expandedCard\.id\) : false\}/);
     assert.match(copy, /modeExplore: "Команды"/);
     assert.match(copy, /modePlay: "Схватка"/);
-    assert.match(copy, /resetBoard: "Сбросить команды"/);
+    assert.doesNotMatch(copy, /Сбросить команды/);
+    assert.doesNotMatch(board, /Сбросить команды|RESET_BOARD/);
   });
 
   it("uses OG faction names in full and remounts the field after a match starts", () => {

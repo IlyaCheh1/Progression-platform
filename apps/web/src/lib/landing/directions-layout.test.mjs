@@ -18,6 +18,35 @@ describe("directions slide layout", () => {
     assert.match(tsx, /activeRoom > 0/);
     assert.match(css, /#directions \.school-slide-copy[\s\S]*padding-top:\s*calc\(var\(--landing-header-offset\) \+ 2\.25rem\)/);
     assert.match(tsx, /school-slide-facts/);
+    assert.match(tsx, /flex flex-1 flex-col items-center justify-center/);
+    assert.match(tsx, /school-slide-band w-full items-start/);
+    assert.match(css, /#directions \.school-slide-band \{\s*display:\s*grid;/);
+    assert.match(css, /grid-template-columns:\s*minmax\(0,\s*1fr\) auto minmax\(0,\s*1fr\)/);
+    assert.match(css, /#directions \.school-slide-side \{\s*justify-self:\s*center;/);
+    assert.match(css, /#directions \.school-slide-side \{\s*justify-self:\s*center;\s*width:\s*min\(30rem, 100%\)/);
+    assert.match(css, /#directions \.school-slide-side \{\s*width:\s*min\(9\.375rem, 100%\);\s*font-size:\s*0\.68rem;/);
+    assert.match(css, /#directions \.school-slide-side > p \+ p \{\s*font-size:\s*0\.53125rem;/);
+    assert.match(css, /#directions \.school-slide-side > p:first-child \{\s*white-space:\s*nowrap;/);
+    assert.match(css, /#directions \.school-slide-band \{\s*display:\s*grid;[\s\S]*min-height:\s*16\.6875rem;/);
+    assert.match(css, /#directions \.school-slide-band \{[\s\S]*min-height:\s*10\.3125rem;/);
+    assert.match(tsx, /school-slide-cta flex items-start justify-center/);
+    assert.match(tsx, /school-slide-facts[\s\S]*text-center/);
+    assert.match(tsx, /uppercase tracking-\[0\.08em\] text-white">Направления/);
+    assert.match(tsx, /uppercase tracking-\[0\.08em\] text-white">Арсенал/);
+    assert.match(tsx, /text-\[calc\(0\.75rem\+2pt\+2px\)\]/);
+    assert.match(tsx, /md:text-\[calc\(0\.875rem\+2pt\+2px\)\]/);
+    assert.match(tsx, /whitespace-pre-line/);
+    assert.doesNotMatch(tsx, /text-left/);
+    assert.doesNotMatch(tsx, /text-right/);
+  });
+
+  it("breaks only the sabre title onto two nowrap lines", () => {
+    assert.match(tsx, /slide\.key === "saber" \? " room-panel-title--saber"/);
+    assert.match(tsx, /<span className="room-panel-title-line">Сабля XVI-XVII<\/span>/);
+    assert.match(tsx, /<span className="room-panel-title-line">века<\/span>/);
+    assert.match(css, /#directions \.room-panel-title--saber \{\s*font-size:\s*10\.4cqi;/);
+    assert.match(css, /\.room-panel-title--saber \.room-panel-title-line \{\s*display:\s*block;\s*white-space:\s*nowrap;/);
+    assert.equal(tsx.match(/room-panel-title-line/g)?.length, 2);
   });
 
   it("keeps two course CTAs and a school intro slide", () => {
@@ -37,7 +66,10 @@ describe("directions slide layout", () => {
     assert.match(tsx, /<ArrowIcon direction=\{direction\} \/>/);
     assert.doesNotMatch(tsx, /[‹›]/);
     assert.match(css, /\.rooms-arrow \{[\s\S]*?padding:\s*0;/);
+    assert.match(css, /\.rooms-arrow \{[\s\S]*?border:\s*none;/);
+    assert.doesNotMatch(css.match(/\.rooms-arrow \{[^}]*\}/)?.[0] ?? "", /border-radius:\s*999/);
     assert.match(css, /\.rooms-arrow-icon \{[\s\S]*?display:\s*block;/);
+    assert.match(css, /\.rooms-arrow-icon \{[\s\S]*?width:\s*2\.75rem;/);
   });
 
   it("does not let extra blocks inflate the equalized middle height", () => {

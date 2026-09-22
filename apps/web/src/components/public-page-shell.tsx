@@ -7,9 +7,16 @@ import "@/screens/landing/styles.css";
 type PublicPageShellProps = {
   children: ReactNode;
   narrow?: boolean;
+  /** Child sections supply their own horizontal padding. */
+  flush?: boolean;
 };
 
-export function PublicPageShell({ children, narrow = false }: PublicPageShellProps) {
+export function PublicPageShell({ children, narrow = false, flush = false }: PublicPageShellProps) {
+  const mainClass = flush
+    ? "public-main flex-1"
+    : narrow
+      ? "og-doc-prose mx-auto max-w-3xl px-4 pb-16 md:px-6 md:pb-24"
+      : "px-6 pb-16 md:pb-24";
   return (
     <AudienceProvider>
       <div
@@ -17,7 +24,7 @@ export function PublicPageShell({ children, narrow = false }: PublicPageShellPro
         style={{ background: "var(--void)", color: "white" }}
       >
         <Header />
-        <main className={`public-main flex-1 ${narrow ? "og-doc-prose mx-auto max-w-3xl px-4 pb-16 md:px-6 md:pb-24" : "px-6 pb-16 md:pb-24"}`}>
+        <main className={`public-main flex-1 ${mainClass}`}>
           {children}
         </main>
         <Footer />

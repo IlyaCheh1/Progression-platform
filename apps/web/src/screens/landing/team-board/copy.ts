@@ -1,7 +1,6 @@
 import type { BonusKind, CardSymbol, MatchOutcome, RowKey, SideId } from "./types.ts";
 
 export const TEAM_COPY = {
-  eyebrow: "Команда школы",
   title: "Наши мастера",
   subtitle: "Сыграй с нашими мастерами, изучи их способности и присоединяйся к команде учеников.",
   gameSubtitle: "Шесть ходов, три ряда, одна карта за ход. Победа — по рядам, при равенстве по силе.",
@@ -15,7 +14,6 @@ export const TEAM_COPY = {
   currentRow: "Сейчас в этом ряду",
   handEmpty: "Рука пуста",
   rowEmpty: "Пусто",
-  resetBoard: "Сбросить команды",
   swipeBoardHint: "Смахните влево или вправо, чтобы сменить сторону",
   switchSides: "Сторона доски",
   mockBadge: "Заглушка",
@@ -66,7 +64,6 @@ export const TEAM_COPY = {
     played: (name: string, row: string) => `${name} → ${row}`,
     moved: (name: string, row: string) => `${name} переставлен в ${row}`,
     returned: (name: string) => `${name} вернулся в руку`,
-    reset: "Команды сброшены",
     startedYouFirst: "Вы ходите первым",
     startedBotFirst: "Бот ходит первым",
     botPlayed: (name: string, row: string) => `Бот: ${name} → ${row}`,

@@ -1,8 +1,8 @@
 /** Same-origin files from the Next.js public/ folder (always deployed with the web app). */
 export const LOCAL_HERO_MEDIA_BASE = "/media/hero";
 
-/** Temporary local-only backdrop for the adult school intro slide. */
-export const SCHOOL_HERO_VIDEO = "school.mp4" as const;
+/** Local backdrop for the adult school intro slide. */
+export const SCHOOL_HERO_VIDEO = "A-diagonal-fighters-moving-5s.mp4" as const;
 
 /** Existing adult witcher direction video. */
 export const WITCHER_HERO_VIDEO = "1.mp4" as const;

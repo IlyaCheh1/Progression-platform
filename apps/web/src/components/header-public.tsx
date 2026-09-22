@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import AppLogo from "@/components/app-logo";
 import { AudienceToggle } from "@/components/audience-toggle";
@@ -14,11 +14,11 @@ import { KIDS_WUSHU } from "@/lib/landing/kids-wushu";
 const NAV = [
   { title: "О нас", href: "/about" },
   { title: "Направления", href: "/#directions" },
-  { title: "Тарифы", href: "/tariffs" },
+  { title: "Тарифы", href: "/#tariffs" },
   { title: "Акции", href: "/akcii" },
   { title: "Аренда зала", href: "/#arenda" },
   { title: "Контакты", href: "/contact" },
-  { title: "FAQ", href: "/faq" },
+  { title: "FAQ", href: "/#answers" },
 ] as const;
 
 function MenuIcon({ open }: { open: boolean }) {
@@ -40,7 +40,6 @@ function MenuIcon({ open }: { open: boolean }) {
 export default function Header() {
   const isMobile = useMobileMedia();
   const pathname = usePathname();
-  const router = useRouter();
   const { mode, isKids } = useAudience();
   const isHeroVisible = useHeroVisible(isKids ? "hero" : "directions");
   const overHero = isLandingPath(pathname) && isHeroVisible;
@@ -77,7 +76,7 @@ export default function Header() {
     if (menuOpen) setMenuOpen(false);
     if (isHomeHash && !isLandingPath(pathname)) {
       event.preventDefault();
-      router.push(resolved);
+      window.location.assign(resolved);
     }
   };
 

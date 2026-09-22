@@ -2,49 +2,45 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import Button from "@/components/ui/button";
 import { useAudience } from "@/hooks/landing/useAudience";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
 import { LANDING_PROMOS } from "@/lib/landing/promos";
 import { withAudience } from "@/lib/audience";
+import { cn } from "@/lib/utils";
 
 export default function Promos() {
   const sectionRef = useRef<HTMLElement>(null);
   const { mode, isKids } = useAudience();
   useRevealFade(sectionRef);
-  const items = isKids
-    ? LANDING_PROMOS.filter((item) => item.id === "kids-wushu" || item.id === "family")
-    : LANDING_PROMOS;
+  const items = isKids ? LANDING_PROMOS.filter((item) => item.showOnKids) : LANDING_PROMOS;
 
   return (
-    <section id="akcii" ref={sectionRef} className="relative py-24" style={{ background: "var(--void)" }}>
-      <div className="relative z-10 mx-auto max-w-6xl px-6">
-        <div className="reveal-fade mb-12 text-center">
-          <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.12em] text-mos-amber">Акции</span>
-          <h2 className="font-unbounded text-[calc(2.25rem-2pt)] font-medium text-white md:text-5xl">
-            Сейчас в школе
-          </h2>
-        </div>
-        <div className="grid gap-5 md:grid-cols-3">
-          {items.map((promo, index) => (
-            <article
-              key={promo.id}
-              className="promo-card reveal-fade"
-              style={{ transitionDelay: `${index * 0.05}s` }}
-            >
-              <span className="promo-card-badge">{promo.badge}</span>
-              <h3 className="mt-4 font-unbounded text-xl text-white">{promo.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-white/55">{promo.teaser}</p>
-              <Link href={withAudience(promo.href, mode)} className="mt-5 inline-flex text-xs uppercase tracking-[0.12em] text-mos-amber">
-                Подробнее
-              </Link>
-            </article>
-          ))}
-        </div>
-        <div className="reveal-fade mt-10 flex justify-center">
-          <Button href={withAudience("/akcii", mode)} variant="stroke" size="md" className="uppercase">
-            Все акции
-          </Button>
+    <section id="akcii" ref={sectionRef} className="relative py-16 md:py-24" style={{ background: "var(--void)" }}>
+      <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6">
+        <div className="landing-frame">
+          <div className="landing-frame-head reveal-fade">
+            <h2 className="font-unbounded text-3xl tracking-[0.12em] md:text-5xl">Акции</h2>
+            <Link href={withAudience("/akcii", mode)} className="landing-frame-link">
+              Все акции
+            </Link>
+          </div>
+          <div className={cn("promo-mosaic", items.length < 3 && "promo-mosaic-pair")}>
+            {items.map((promo) => (
+              <article key={promo.id} className={cn("promo-tile reveal-fade", promo.featured && "promo-tile-feature")}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={promo.image} alt="" />
+                <div className="promo-tile-shade" aria-hidden />
+                <span className="promo-tile-badge">{promo.badge}</span>
+                <div className="promo-tile-body">
+                  <h3 className="font-unbounded text-2xl text-white md:text-3xl">{promo.title}</h3>
+                  <p className="max-w-xl text-sm leading-relaxed text-white/80">{promo.teaser}</p>
+                  <Link href={withAudience(`/akcii/${promo.slug}`, mode)} className="promo-tile-more">
+                    Подробнее
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -6,9 +6,11 @@ import { fileURLToPath } from "node:url";
 import {
   HALL_RENTAL_ADMIN_ROLES,
   HALL_RENTAL_FACTS,
+  HALL_RENTAL_HALLS,
   HALL_RENTAL_PHOTOS,
   normalizePhone,
   parseBearerToken,
+  stepHallPhoto,
   validateHallRentalInput,
 } from "./hall-rental.ts";
 
@@ -54,11 +56,87 @@ describe("hall rental canon", () => {
     }
 
     const landing = readFileSync(fileURLToPath(new URL("../../screens/landing/arenda.tsx", import.meta.url)), "utf8");
+    const media = readFileSync(fileURLToPath(new URL("../../components/hall-rental-media.tsx", import.meta.url)), "utf8");
+    const catalog = readFileSync(fileURLToPath(new URL("./hall-rental.ts", import.meta.url)), "utf8");
     const page = readFileSync(fileURLToPath(new URL("../../app/arenda/page.tsx", import.meta.url)), "utf8");
-    assert.match(landing, /object-cover/);
-    assert.match(page, /object-cover/);
+    assert.match(media, /object-cover/);
+    assert.match(landing, /HALL_RENTAL_HALLS/);
+    assert.match(landing, /HallFilmstrip/);
+    assert.match(media, /Предыдущее фото/);
+    assert.match(media, /Следующее фото/);
+    assert.match(catalog, /Зал УШУ/);
+    assert.match(catalog, /Зал фехтования/);
+    assert.match(page, /HallRentalMedia/);
     assert.doesNotMatch(landing, /\.svg/);
     assert.doesNotMatch(page, /\.svg/);
+    assert.doesNotMatch(media, /\.svg/);
+  });
+});
+
+describe("hall picker and filmstrip", () => {
+  it("switches specs between the wushu hall and a fencing mock", () => {
+    assert.deepEqual(
+      HALL_RENTAL_HALLS.map((hall) => hall.label),
+      ["Зал УШУ", "Зал фехтования"],
+    );
+    const ushu = HALL_RENTAL_HALLS[0];
+    const fencing = HALL_RENTAL_HALLS[1];
+    assert.equal(ushu.mock, false);
+    assert.equal(fencing.mock, true);
+    for (const hall of [ushu, fencing]) {
+      assert.deepEqual(
+        hall.specs.map((spec) => spec.label),
+        ["Цена", "Площадь"],
+      );
+      assert.equal(hall.specs[0].value, HALL_RENTAL_FACTS.price);
+      assert.equal(hall.specs[1].value, HALL_RENTAL_FACTS.area);
+    }
+    const landing = readFileSync(fileURLToPath(new URL("../../screens/landing/arenda.tsx", import.meta.url)), "utf8");
+    const page = readFileSync(fileURLToPath(new URL("../../app/arenda/page.tsx", import.meta.url)), "utf8");
+    assert.doesNotMatch(landing, /hall\.note|Зеркала|Покрытие|ласточкин хвост/);
+    assert.match(page, /Зеркала/);
+    assert.match(page, /Покрытие/);
+    assert.match(page, /ласточкин хвост/);
+    assert.match(page, /promo-card/);
+    assert.doesNotMatch(page, /hall-spec/);
+    assert.match(page, /HallRentalForm/);
+    const factsAt = page.indexOf("FACTS.map");
+    const mediaAt = page.indexOf("<HallRentalMedia");
+    const formAt = page.indexOf("<HallRentalForm");
+    assert.ok(factsAt >= 0 && mediaAt > factsAt && formAt > factsAt);
+    assert.ok(fencing.photos.every((photo) => HALL_RENTAL_PHOTOS.some((item) => item.src === photo.src)));
+    assert.notEqual(fencing.photos[0].src, ushu.photos[0].src);
+    assert.match(landing, /HALL_RENTAL_HALLS\[0\]\.photos/);
+    assert.match(landing, /peek/);
+    assert.doesNotMatch(landing, /photos=\{hall\.photos\}/);
+    assert.doesNotMatch(page, /peek/);
+    const css = readFileSync(fileURLToPath(new URL("../../screens/landing/styles.css", import.meta.url)), "utf8");
+    const media = readFileSync(fileURLToPath(new URL("../../components/hall-rental-media.tsx", import.meta.url)), "utf8");
+    assert.match(css, /#arenda \.hall-spec[\s\S]*background:\s*var\(--void\)/);
+    assert.match(css, /#arenda \.hall-spec[\s\S]*width:\s*max-content/);
+    assert.match(css, /hall-filmstrip--peek[\s\S]*width:\s*200%/);
+    assert.match(css, /hall-filmstrip-dot/);
+    assert.match(css, /\.hall-slide-track \{[^}]*transition:\s*transform [^;]*ease/);
+    assert.match(media, /hall-slide-track/);
+    assert.match(media, /--hall-pos/);
+    const topBlocks = css.match(/#arenda \.hall-rental-top \{[^}]*\}/g) ?? [];
+    assert.ok(topBlocks.length >= 2);
+    for (const block of topBlocks) {
+      assert.doesNotMatch(block, /margin-right:\s*-|width:\s*calc\(100% \+/);
+    }
+    assert.match(css, /#arenda \.hall-filmstrip-block \{[^}]*margin-left:\s*-1\.1rem/);
+    assert.match(css, /#arenda \.hall-filmstrip-block \{[^}]*margin-left:\s*-2rem/);
+    assert.match(css, /is-side \{[^}]*height:\s*12rem/);
+    assert.match(css, /is-center \{[^}]*height:\s*14\.5rem/);
+    assert.match(css, /is-side \{[^}]*height:\s*18rem/);
+    assert.match(css, /is-center \{[^}]*height:\s*22rem/);
+  });
+
+  it("loops the filmstrip in both directions", () => {
+    assert.equal(stepHallPhoto(0, -1, 4), 3);
+    assert.equal(stepHallPhoto(3, 1, 4), 0);
+    assert.equal(stepHallPhoto(1, 1, 4), 2);
+    assert.equal(stepHallPhoto(2, -1, 4), 1);
   });
 });
 

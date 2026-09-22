@@ -22,7 +22,7 @@ const SOCIAL_ICONS = {
 
 const FOOTER_LINKS = [
   { title: "О нас", href: "/about" },
-  { title: "Тарифы", href: "/tariffs" },
+  { title: "Тарифы", href: "/#tariffs" },
   { title: "Акции", href: "/akcii" },
   { title: "Аренда зала", href: "/arenda" },
   { title: "FAQ", href: "/faq" },
@@ -31,8 +31,11 @@ const FOOTER_LINKS = [
   { title: "Войти", href: "/login" },
   { title: "Публичная оферта", href: "/legal/offer" },
   { title: "Пользовательское соглашение", href: "/legal/terms" },
+  { title: "Рекуррентные платежи", href: "/legal/recurrent" },
   { title: "Политика конфиденциальности", href: "/legal/privacy" },
   { title: "Политика cookies", href: "/legal/cookies" },
+  { title: "Политика обработки персональных данных", href: "/legal/personal-data" },
+  { title: "Согласие на информационные материалы", href: "/legal/info-consent" },
 ] as const;
 
 const SOCIAL_LINKS = [
