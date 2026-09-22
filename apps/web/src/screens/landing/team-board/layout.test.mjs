@@ -58,6 +58,15 @@ describe("team-board OG layout contract", () => {
     assert.match(mobile, /\.team-hand \.team-card[\s\S]*transform:\s*none/);
   });
 
+  it("compacts phone play lanes to OG-scale cards with a swipeable row track", () => {
+    const mobile = css.slice(css.indexOf("@media (max-width: 767px)"), css.indexOf("@media (min-width: 768px)"));
+    assert.match(mobile, /\.team-row-field[\s\S]*--board-card-w:\s*4\.4rem/);
+    assert.match(mobile, /\.team-row-track[\s\S]*overflow-x:\s*auto/);
+    assert.match(mobile, /\.team-row-track[\s\S]*min-height:\s*calc\(var\(--board-card-w/);
+    assert.match(mobile, /\.team-row-slot[\s\S]*width:\s*var\(--board-card-w/);
+    assert.match(mobile, /\.team-row[\s\S]*min-height:\s*0/);
+  });
+
   it("stacks tablet play as handTop → panelTop → field → panelBot → handBot", () => {
     const tablet = css.slice(css.indexOf("@media (min-width: 768px)"), css.indexOf("@media (min-width: 1280px)"));
     assert.match(tablet, /\.team-hand\[data-side="sideA"\][\s\S]*order:\s*1/);
