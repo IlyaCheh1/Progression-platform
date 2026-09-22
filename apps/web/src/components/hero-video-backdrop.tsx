@@ -100,6 +100,7 @@ export default function HeroVideoBackdrop({
       <img
         src={poster}
         alt=""
+        draggable={false}
         className={`${MEDIA_CLASS}${blurClass}`}
         style={{ filter: MEDIA_FILTER }}
         decoding="async"
@@ -116,6 +117,7 @@ export default function HeroVideoBackdrop({
         src={poster}
         alt=""
         aria-hidden
+        draggable={false}
         className={`absolute inset-0 transition-opacity duration-300 ${MEDIA_CLASS}${blurClass}`}
         style={{
           filter: MEDIA_FILTER,

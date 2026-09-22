@@ -21,8 +21,11 @@ describe("landing mobile layout guards", () => {
     assert.match(css, /\.tariffs-format-card[\s\S]*padding:\s*0\.7rem 0\.85rem 0\.8rem/);
   });
 
-  it("does not reintroduce wheel trapping on direction slides", () => {
+  it("does not let a vertical wheel trap page scroll on direction slides", () => {
     const hook = readFileSync(fileURLToPath(new URL("../../hooks/landing/useRoomsScroll.ts", import.meta.url)), "utf8");
-    assert.doesNotMatch(hook, /addEventListener\(\s*["']wheel["']/);
+    assert.match(hook, /addEventListener\(\s*["']wheel["']/);
+    assert.match(hook, /applyWheelDelta/);
+    assert.match(hook, /if \(decision\.preventDefault\) event\.preventDefault\(\)/);
+    assert.match(hook, /LAPTOP_GESTURE_PHONE_QUERY/);
   });
 });

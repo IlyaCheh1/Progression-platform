@@ -346,13 +346,23 @@
   padding-left: 1.5rem;
 }
 
-/* Keeps the school CTA on the lower hero line the side phrases used to share. */
+/* НАПРАВЛЕНИЯ, the button, and АРСЕНАЛ share the lower hero line. */
 #directions .school-slide-band {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
   width: 100%;
   min-height: 16.6875rem;
+}
+
+#directions .school-slide-side {
+  justify-self: center;
+  width: min(30rem, 100%);
+  text-align: center;
+}
+
+#directions .school-slide-side > p:first-child {
+  white-space: nowrap;
 }
 
 #directions .school-slide-band .school-slide-cta-btn {
@@ -2894,9 +2904,16 @@ a.experience-item {
   }
 
   #directions .school-slide-band {
+    display: flex;
     align-items: flex-start;
+    justify-content: center;
     width: 100%;
     min-height: 10.3125rem;
+  }
+
+  #directions .school-slide-side,
+  #directions .school-slide-only {
+    display: none;
   }
 
   #directions .school-slide-band .school-slide-cta-btn {

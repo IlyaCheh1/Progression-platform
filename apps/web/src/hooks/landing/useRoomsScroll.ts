@@ -2,7 +2,16 @@
 
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 
-import { classifySwipeAxis, SWIPE_AXIS_RATIO, SWIPE_THRESHOLD_PX } from "@/lib/landing/rooms-swipe";
+import {
+  applyWheelDelta,
+  classifySwipeAxis,
+  createWheelGesture,
+  LAPTOP_GESTURE_PHONE_QUERY,
+  pointerSlideStep,
+  SWIPE_AXIS_RATIO,
+  SWIPE_THRESHOLD_PX,
+  WHEEL_GESTURE_IDLE_MS,
+} from "@/lib/landing/rooms-swipe";
 
 interface UseRoomsScrollResult {
   activeRoom: number;
@@ -19,8 +28,9 @@ function progressForRoom(index: number, roomsCount: number) {
 }
 
 /**
- * Horizontal direction slides. Vertical page scroll is never captured:
- * slides change only via goToRoom (arrows, dots) or a clear horizontal swipe.
+ * Horizontal direction slides. Vertical page scroll is never captured.
+ * Slides change via goToRoom, a phone touch swipe, or a laptop trackpad
+ * (horizontal wheel deltaX / mouse or pen drag).
  */
 export function useRoomsScroll(
   containerRef: RefObject<HTMLElement | null>,
@@ -129,6 +139,100 @@ export function useRoomsScroll(
       sticky.removeEventListener("touchcancel", handleTouchEnd);
     };
   }, [trackRef, goToRoom, roomsCount]);
+
+  useEffect(() => {
+    const sticky = trackRef.current?.parentElement;
+    if (!sticky) return;
+
+    const phoneGesture = () => window.matchMedia(LAPTOP_GESTURE_PHONE_QUERY).matches;
+    let gesture = createWheelGesture();
+    let idleTimer = 0;
+    let drag: { id: number; x: number; y: number; axis: "horizontal" | "vertical" | null; stepped: boolean } | null = null;
+    let swallowClick = false;
+
+    const handleWheel = (event: WheelEvent) => {
+      if (phoneGesture()) return;
+      const decision = applyWheelDelta(gesture, event.deltaX, event.deltaY);
+      gesture = decision.gesture;
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => {
+        gesture = createWheelGesture();
+      }, WHEEL_GESTURE_IDLE_MS);
+      if (decision.preventDefault) event.preventDefault();
+      if (decision.step !== 0) goToRoom(snappedRoomRef.current + decision.step);
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!drag || event.pointerId !== drag.id || drag.stepped) return;
+      const deltaX = event.clientX - drag.x;
+      const deltaY = event.clientY - drag.y;
+      if (!drag.axis) drag.axis = classifySwipeAxis(deltaX, deltaY);
+      if (drag.axis !== "horizontal") return;
+      const step = pointerSlideStep(deltaX, deltaY, event.pointerType);
+      if (step === 0) return;
+      event.preventDefault();
+      drag.stepped = true;
+      swallowClick = true;
+      goToRoom(snappedRoomRef.current + step);
+    };
+
+    const endDragListeners = () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerCancel);
+    };
+
+    const onPointerUp = (event: PointerEvent) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const deltaX = event.clientX - drag.x;
+      const deltaY = event.clientY - drag.y;
+      const stepped = drag.stepped;
+      drag = null;
+      endDragListeners();
+      if (stepped) return;
+      const step = pointerSlideStep(deltaX, deltaY, event.pointerType);
+      if (step === 0) return;
+      swallowClick = true;
+      goToRoom(snappedRoomRef.current + step);
+    };
+
+    const onPointerCancel = (event: PointerEvent) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      drag = null;
+      endDragListeners();
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (phoneGesture()) return;
+      if (event.pointerType === "touch") return;
+      if (event.button !== 0) return;
+      const target = event.target;
+      if (target instanceof Element && target.closest("img, video")) event.preventDefault();
+      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, axis: null, stepped: false };
+      window.addEventListener("pointermove", onPointerMove, { passive: false });
+      window.addEventListener("pointerup", onPointerUp);
+      window.addEventListener("pointercancel", onPointerCancel);
+    };
+
+    const onClick = (event: MouseEvent) => {
+      if (!swallowClick) return;
+      swallowClick = false;
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    sticky.addEventListener("wheel", handleWheel, { passive: false });
+    sticky.addEventListener("pointerdown", onPointerDown);
+    sticky.addEventListener("click", onClick, true);
+
+    return () => {
+      window.clearTimeout(idleTimer);
+      endDragListeners();
+      sticky.removeEventListener("wheel", handleWheel);
+      sticky.removeEventListener("pointerdown", onPointerDown);
+      sticky.removeEventListener("click", onClick, true);
+    };
+  }, [trackRef, goToRoom]);
 
   return { activeRoom, goToRoom };
 }
