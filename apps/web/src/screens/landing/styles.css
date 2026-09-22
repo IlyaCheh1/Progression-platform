@@ -2355,6 +2355,10 @@ a.experience-item {
   max-width: 100%;
 }
 
+#arenda .hall-spec-short {
+  display: none;
+}
+
 #arenda .hall-filmstrip--peek {
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
   align-items: center;
@@ -2484,26 +2488,56 @@ a.experience-item {
 
 @media (max-width: 767px) {
   #arenda .hall-rental-top {
-    gap: 0.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  #arenda .hall-rental-lead h2 {
+    font-size: clamp(1.35rem, 7vw, 1.7rem);
+    white-space: nowrap;
+  }
+
+  #arenda .hall-rental-lead .hall-chip-row {
+    flex-wrap: nowrap;
+    width: 100%;
   }
 
   #arenda .hall-rental-lead .hall-day-chip {
-    padding-right: 0.6rem;
-    padding-left: 0.6rem;
+    padding-right: 0.55rem;
+    padding-left: 0.55rem;
+    font-size: 0.78rem;
     white-space: nowrap;
   }
 
   #arenda .hall-spec {
-    padding: 0.4rem 0.55rem;
+    width: 100%;
+    max-width: none;
+    align-self: stretch;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+  }
+
+  #arenda .hall-spec-full {
+    display: none;
+  }
+
+  #arenda .hall-spec-short {
+    display: block;
+    color: #f4f1ea;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.35;
   }
 
   #arenda .hall-spec li {
-    gap: 0.55rem;
+    display: block;
   }
 
-  #arenda .hall-spec ul {
-    flex: 1 1 auto;
-    justify-content: space-between;
+  #arenda .hall-filmstrip,
+  #tariffs .tariff-swipe {
+    touch-action: pan-y;
   }
 }
 

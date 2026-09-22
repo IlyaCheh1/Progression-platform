@@ -7,10 +7,15 @@ import { useAudience } from "@/hooks/landing/useAudience";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
 import { KIDS_WUSHU, kidsPhoneHref } from "@/lib/landing/kids-wushu";
 
+/** Adult “Пора взять в руки меч” block stays in the tree, but off the page for now. */
+const SHOW_ADULT_JOIN = false;
+
 export default function Join() {
   const sectionRef = useRef<HTMLElement>(null);
   const { isKids } = useAudience();
   useRevealFade(sectionRef, 0.15);
+
+  if (!isKids && !SHOW_ADULT_JOIN) return null;
 
   return (
     <section id="join" ref={sectionRef} className="join-section relative z-10 overflow-hidden px-6">

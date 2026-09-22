@@ -64,6 +64,12 @@ describe("landing tariff carousel", () => {
     assert.match(redirect, /location\.replace\("\/#tariffs"\)/);
     assert.doesNotMatch(redirect, /Групповые|Сплиты|promo-card/);
     assert.match(source, /visibleCount === 1 \? "grid-cols-1" : "grid-cols-3"/);
+    assert.match(source, /useHorizontalSwipe\(step\)/);
+    assert.match(source, /tariff-swipe/);
+    const swipe = readFileSync(fileURLToPath(new URL("../../hooks/landing/useHorizontalSwipe.ts", import.meta.url)), "utf8");
+    assert.match(swipe, /max-width: 767px/);
+    assert.match(swipe, /classifySwipeAxis/);
+    assert.doesNotMatch(swipe, /addEventListener\(\s*["']wheel["']/);
     assert.doesNotMatch(source, /<PricingCardView[\s\S]*reveal-fade/);
   });
 
