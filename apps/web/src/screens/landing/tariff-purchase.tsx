@@ -49,7 +49,7 @@ export default function TariffPurchase({ tariffId, onClose }: { tariffId: Purcha
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof PurchaseRegistration, string>>>({});
   const [sectionKeys, setSectionKeys] = useState<string[]>(() => (SECTIONS[0] ? [SECTIONS[0].key] : []));
   const [sectionError, setSectionError] = useState("");
-  const [selectedTariff, setSelectedTariff] = useState(tariffId);
+  const [sectionTariffs, setSectionTariffs] = useState<Record<string, PurchaseTariffId>>({});
   const [onlineAddon, setOnlineAddon] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [promoNotice, setPromoNotice] = useState("");
@@ -118,7 +118,10 @@ export default function TariffPurchase({ tariffId, onClose }: { tariffId: Purcha
     setStep("section");
   };
 
-  const tariff = purchaseTariff(selectedTariff);
+  const chosenSections = sectionKeys.flatMap((key) => {
+    const section = SECTIONS.find((item) => item.key === key);
+    return section ? [section] : [];
+  });
 
   return (
     <dialog
@@ -297,17 +300,35 @@ export default function TariffPurchase({ tariffId, onClose }: { tariffId: Purcha
               <h2 id={titleId} className="font-unbounded text-2xl text-white">
                 Подписка
               </h2>
-              <SiteSelect
-                label="Тариф"
-                value={selectedTariff}
-                placeholder="Выберите"
-                options={PURCHASE_TARIFFS.map((item) => ({
-                  value: item.id,
-                  label: `${item.lane} · ${item.label} — ${item.priceLabel}`,
-                }))}
-                onChange={(id) => setSelectedTariff(id as PurchaseTariffId)}
-              />
-              <p className="purchase-price font-unbounded text-xl text-white">{tariff.priceLabel}</p>
+              <ul className="purchase-lines">
+                {chosenSections.map((section) => {
+                  const tariffIdForSection = sectionTariffs[section.key] ?? tariffId;
+                  const rowTariff = purchaseTariff(tariffIdForSection);
+                  return (
+                    <li key={section.key} className="purchase-line">
+                      <div className="purchase-line-head">
+                        <p className="purchase-line-title font-unbounded text-white">{section.title}</p>
+                        <p className="purchase-price font-unbounded text-xl text-white">{rowTariff.priceLabel}</p>
+                      </div>
+                      <SiteSelect
+                        label="Тариф"
+                        value={tariffIdForSection}
+                        placeholder="Выберите"
+                        options={PURCHASE_TARIFFS.map((item) => ({
+                          value: item.id,
+                          label: `${item.lane} · ${item.label} — ${item.priceLabel}`,
+                        }))}
+                        onChange={(id) =>
+                          setSectionTariffs((current) => ({
+                            ...current,
+                            [section.key]: id as PurchaseTariffId,
+                          }))
+                        }
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
               <label className="purchase-addon">
                 <input type="checkbox" checked={onlineAddon} onChange={(event) => setOnlineAddon(event.target.checked)} />
                 <span>

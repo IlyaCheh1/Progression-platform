@@ -90,6 +90,9 @@ describe("landing tariff purchase", () => {
     assert.match(dialog, /Подписка/);
     assert.match(dialog, /Промокод/);
     assert.match(dialog, /Применить/);
+    assert.match(dialog, /purchase-lines/);
+    assert.match(dialog, /purchase-line-title/);
+    assert.match(dialog, /sectionTariffs\[section\.key\]/);
     assert.match(dialog, /purchase-pay-row/);
     assert.doesNotMatch(dialog, /Домашний клуб/);
     assert.doesNotMatch(dialog, /purchase-promo/);
@@ -110,5 +113,7 @@ describe("landing tariff purchase", () => {
     assert.match(styles, /\.purchase-dialog \{[\s\S]*?position:\s*fixed/);
     assert.match(styles, /aspect-ratio:\s*16\s*\/\s*9/);
     assert.match(styles, /\.purchase-next/);
+    assert.match(styles, /\.purchase-code-field \{[\s\S]*?max-width:\s*50%/);
+    assert.match(styles, /\.purchase-field input,[\s\S]*?\.purchase-select-trigger \{[\s\S]*?border-radius:\s*1\.35rem/);
   });
 });

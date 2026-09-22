@@ -3089,7 +3089,7 @@ a.experience-item {
   min-height: 3.15rem;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 0.9rem;
+  border-radius: 1.35rem;
   background: rgba(255, 255, 255, 0.04);
 }
 
@@ -3179,10 +3179,11 @@ a.experience-item {
 }
 
 .purchase-field input,
+.purchase-code-field input,
 .purchase-select-trigger {
   min-height: 2.75rem;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 0.85rem;
+  border-radius: 1.35rem;
   background: rgba(255, 255, 255, 0.04);
   color: white;
   padding: 0.4rem 0.75rem;
@@ -3214,7 +3215,7 @@ a.experience-item {
   padding: 0.35rem;
   list-style: none;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 0.85rem;
+  border-radius: 1.35rem;
   background: color-mix(in srgb, var(--void-mid) 96%, black);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
 }
@@ -3222,7 +3223,7 @@ a.experience-item {
 .purchase-select-menu button {
   width: 100%;
   border: 0;
-  border-radius: 0.6rem;
+  border-radius: 1rem;
   background: transparent;
   color: rgba(255, 255, 255, 0.86);
   padding: 0.6rem 0.75rem;
@@ -3253,10 +3254,39 @@ a.experience-item {
   letter-spacing: 0.04em;
 }
 
+.purchase-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.purchase-line {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.purchase-line-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.purchase-line-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
 .purchase-code-field {
   display: flex;
-  flex: 1 1 auto;
+  flex: 0 1 50%;
   align-items: center;
+  width: 50%;
+  max-width: 50%;
   min-width: 0;
 }
 
