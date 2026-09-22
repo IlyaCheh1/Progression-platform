@@ -1,5 +1,5 @@
 import { COURSE_ENROLL_HASH } from "../courses/constants";
-import { SCHOOL_HERO_VIDEO } from "../hero-media";
+import { SCHOOL_HERO_MOBILE_STILL, SCHOOL_HERO_VIDEO } from "../hero-media";
 import { getSchoolColor } from "../school-colors";
 
 export const ADULT_SCHOOL_SLIDE = {
@@ -12,6 +12,9 @@ export const ADULT_SCHOOL_SLIDE = {
 
 /** Temporary local backdrop for the school intro slide. */
 export const ADULT_SCHOOL_VIDEO = SCHOOL_HERO_VIDEO;
+
+/** Portrait still used only while the school intro is on a phone. */
+export const ADULT_SCHOOL_MOBILE_STILL = SCHOOL_HERO_MOBILE_STILL;
 
 export type AdultCourseSlideKey = "ushu" | "witcher" | "two_swords" | "rapier_xvii" | "saber" | "fan";
 

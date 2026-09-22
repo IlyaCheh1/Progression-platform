@@ -4,7 +4,7 @@ import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { COURSE_ENROLL_HASH } from "../courses/constants.ts";
-import { SCHOOL_HERO_VIDEO, WITCHER_HERO_VIDEO } from "../hero-media.ts";
+import { SCHOOL_HERO_MOBILE_STILL, SCHOOL_HERO_VIDEO, WITCHER_HERO_VIDEO } from "../hero-media.ts";
 
 function read(rel) {
   return readFileSync(fileURLToPath(new URL(rel, import.meta.url)), "utf8");
@@ -31,6 +31,7 @@ describe("adult direction slides", () => {
     assert.doesNotMatch(catalog, /RPG-прокачкой/);
     assert.doesNotMatch(catalog, /опыт, способности, достижения и награды/);
     assert.equal(SCHOOL_HERO_VIDEO, "A-diagonal-fighters-moving-5s.mp4");
+    assert.equal(SCHOOL_HERO_MOBILE_STILL, "school-mobile.webp");
     assert.match(catalog, /ADULT_SCHOOL_VIDEO/);
     assert.match(catalog, /SCHOOL_HERO_VIDEO/);
     assert.equal(
@@ -39,6 +40,10 @@ describe("adult direction slides", () => {
     );
     assert.equal(
       existsSync(fileURLToPath(new URL("../../../public/media/hero/A-diagonal-fighters-moving-5s.webp", import.meta.url))),
+      true,
+    );
+    assert.equal(
+      existsSync(fileURLToPath(new URL("../../../public/media/hero/school-mobile.webp", import.meta.url))),
       true,
     );
     const directions = read("../../screens/landing/directions.tsx");

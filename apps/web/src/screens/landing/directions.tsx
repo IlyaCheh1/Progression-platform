@@ -8,6 +8,7 @@ import { useRoomsScroll } from "@/hooks/landing/useRoomsScroll";
 import {
   ADULT_COURSE_SLIDES,
   ADULT_SCHOOL_SLIDE,
+  ADULT_SCHOOL_MOBILE_STILL,
   ADULT_SCHOOL_VIDEO,
   courseEnrollHref,
   coursePageHref,
@@ -212,6 +213,7 @@ export default function Directions() {
               isMounted={mountedSlides.has(i)}
               reduceMotion={reduceMotion}
               registerVideo={registerVideo}
+              isMobile={isMobile}
               onOpenCourses={() => goToRoom(1)}
             />
           ))}
@@ -273,6 +275,7 @@ function DirectionPanel({
   isMounted,
   reduceMotion,
   registerVideo,
+  isMobile,
   onOpenCourses,
 }: {
   slide: DirectionSlideView;
@@ -282,11 +285,16 @@ function DirectionPanel({
   isMounted: boolean;
   reduceMotion: boolean;
   registerVideo: (index: number, node: HTMLVideoElement | null) => void;
+  isMobile: boolean;
   onOpenCourses: () => void;
 }) {
   const comingSoon = slide.kind === "course" && Boolean(slide.comingSoon);
   const backdropFile =
-    slide.kind === "school" ? ADULT_SCHOOL_VIDEO : (slide.image ?? slide.video);
+    slide.kind === "school"
+      ? isMobile
+        ? ADULT_SCHOOL_MOBILE_STILL
+        : ADULT_SCHOOL_VIDEO
+      : (slide.image ?? slide.video);
 
   return (
     <div className={`room-panel${slide.kind === "school" ? " room-panel--school" : ""}`} style={{ background: "var(--mos-bg)" }}>
@@ -361,44 +369,46 @@ function SchoolSlideCopy({ slide, onOpenCourses }: { slide: SchoolSlideView; onO
 function CourseSlideCopy({ slide, comingSoon }: { slide: CourseSlideView; comingSoon: boolean }) {
   return (
     <div className={`room-panel-text relative z-10 flex h-full max-w-3xl flex-col justify-end px-6 pb-24 md:px-24${slide.key === "saber" ? " room-panel-text--saber" : ""}`}>
-      <div
-        className="mb-6 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest"
-        style={{ background: `${slide.color}22`, color: slide.color }}
-      >
-        ✦ {comingSoon ? "Скоро" : "Направление"}
-      </div>
-
-      <h2
-        className={`mobile-fluid-room-title mb-4 font-unbounded font-medium md:text-[calc(4.5rem-3px)] lg:text-[calc(6rem-3px)]${slide.key === "saber" ? " room-panel-title--saber" : ""}`}
-        style={{ color: slide.color, textShadow: `0 0 60px ${slide.glow}` }}
-      >
-        {slide.key === "saber" ? (
-          <>
-            <span className="room-panel-title-line">Сабля XVI-XVII</span>
-            <span className="room-panel-title-line">века</span>
-          </>
-        ) : (
-          slide.title
-        )}
-      </h2>
-
-      <div className="room-panel-middle">
-        <p className="room-panel-description mb-6 max-w-md leading-relaxed text-white/50">{slide.description}</p>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <Button href={slide.href} variant="stroke" size="sm" className="shrink-0 uppercase">
-          Описание курса
-        </Button>
-        <Button
-          href={slide.enrollHref}
-          variant="filled"
-          size="sm"
-          className="shrink-0 uppercase"
-          style={buildServiceButtonTheme(slide.color)}
+      <div className="room-panel-copy">
+        <div
+          className="mb-6 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest"
+          style={{ background: `${slide.color}22`, color: slide.color }}
         >
-          Записаться
-        </Button>
+          ✦ {comingSoon ? "Скоро" : "Направление"}
+        </div>
+
+        <h2
+          className={`mobile-fluid-room-title mb-4 font-unbounded font-medium md:text-[calc(4.5rem-3px)] lg:text-[calc(6rem-3px)]${slide.key === "saber" ? " room-panel-title--saber" : ""}`}
+          style={{ color: slide.color, textShadow: `0 0 60px ${slide.glow}` }}
+        >
+          {slide.key === "saber" ? (
+            <>
+              <span className="room-panel-title-line">Сабля XVI-XVII</span>
+              <span className="room-panel-title-line">века</span>
+            </>
+          ) : (
+            slide.title
+          )}
+        </h2>
+
+        <div className="room-panel-middle">
+          <p className="room-panel-description mb-6 max-w-md leading-relaxed text-white/50">{slide.description}</p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Button href={slide.href} variant="stroke" size="sm" className="shrink-0 uppercase">
+            Описание курса
+          </Button>
+          <Button
+            href={slide.enrollHref}
+            variant="filled"
+            size="sm"
+            className="shrink-0 uppercase"
+            style={buildServiceButtonTheme(slide.color)}
+          >
+            Записаться
+          </Button>
+        </div>
       </div>
     </div>
   );

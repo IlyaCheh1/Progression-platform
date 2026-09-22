@@ -13,6 +13,11 @@ describe("directions slide layout", () => {
     assert.match(css, /\.mobile-fluid-room-title[\s\S]*line-height:\s*1\.12/);
     assert.match(css, /#directions \.rooms-index[\s\S]*top:\s*calc\(var\(--landing-header-offset\)/);
     assert.doesNotMatch(css, /\.room-panel-text\s*\{[^}]*transform:\s*scale\(1\.5\)/);
+    assert.match(tsx, /className="room-panel-copy"/);
+    assert.match(
+      css,
+      /@media \(min-width: 1921px\) \{[\s\S]*#directions \.room-panel-copy \{\s*transform:\s*scale\(1\.8\);\s*transform-origin:\s*left bottom;/,
+    );
     assert.doesNotMatch(tsx, /leading-none/);
     assert.match(tsx, /className="rooms-index /);
     assert.match(tsx, /activeRoom > 0/);
@@ -54,7 +59,8 @@ describe("directions slide layout", () => {
     assert.match(css, /\.room-panel--school \.video-overlay[\s\S]*transparent 38%/);
     assert.doesNotMatch(css, /\.room-panel--school \.room-panel-left-vignette[\s\S]*0\.72\) 100%/);
     assert.match(tsx, /ADULT_SCHOOL_VIDEO/);
-    assert.match(tsx, /slide.kind === "school" \? ADULT_SCHOOL_VIDEO : \(slide.image \?\? slide.video\)/);
+    assert.match(tsx, /isMobile\s*\?\s*ADULT_SCHOOL_MOBILE_STILL\s*:\s*ADULT_SCHOOL_VIDEO/);
+    assert.match(tsx, /slide\.image \?\? slide\.video/);
     assert.match(tsx, /forceLocal/);
     assert.match(tsx, /HeroVideoBackdrop/);
   });

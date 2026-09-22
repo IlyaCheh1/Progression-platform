@@ -4,6 +4,9 @@ export const LOCAL_HERO_MEDIA_BASE = "/media/hero";
 /** Local backdrop for the adult school intro slide. */
 export const SCHOOL_HERO_VIDEO = "A-diagonal-fighters-moving-5s.mp4" as const;
 
+/** Phone-only still for the adult school intro. Desktop keeps the video. */
+export const SCHOOL_HERO_MOBILE_STILL = "school-mobile.webp" as const;
+
 /** Existing adult witcher direction video. */
 export const WITCHER_HERO_VIDEO = "1.mp4" as const;
 

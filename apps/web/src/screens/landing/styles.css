@@ -757,6 +757,12 @@
     font-size: 4.5rem;
     line-height: 1.1;
   }
+
+  /* Direction caption only. Phones and widths through 1920 stay at the unscaled size. */
+  #directions .room-panel-copy {
+    transform: scale(1.8);
+    transform-origin: left bottom;
+  }
 }
 
 @media (max-width: 767px) {
