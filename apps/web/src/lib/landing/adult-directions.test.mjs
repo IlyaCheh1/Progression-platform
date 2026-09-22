@@ -20,9 +20,11 @@ describe("adult direction slides", () => {
     assert.doesNotMatch(catalog, /«Мастер меча»/);
     assert.match(catalog, /мало обычного спорта"/);
     assert.doesNotMatch(catalog, /мало обычного спорта\./);
-    assert.match(catalog, /любым клинком \(и не только\):\\nот китайского меча до европейского полуторника"/);
+    assert.match(catalog, /любым клинком:\\nот китайского меча до европейского полуторника"/);
+    assert.doesNotMatch(catalog, /и не только/);
     assert.doesNotMatch(catalog, /полуторника\./);
-    assert.match(catalog, /сабли, шпаги, копья, алебарды, щиты и многое другое/);
+    assert.doesNotMatch(catalog, /directions:/);
+    assert.doesNotMatch(catalog, /arsenal:/);
     assert.match(catalog, /cta: "Выбрать тренировки"/);
     assert.doesNotMatch(catalog, /Выбрать курсы/);
     assert.doesNotMatch(catalog, /Выбери подходящее именно тебе/);

@@ -40,8 +40,6 @@ type SchoolSlideView = {
   title: string;
   titleAccent: string;
   lead: string;
-  directions: string;
-  arsenal: string;
   cta: string;
   color: string;
   glow: string;
@@ -116,8 +114,6 @@ export default function Directions() {
       title: ADULT_SCHOOL_SLIDE.title,
       titleAccent: ADULT_SCHOOL_SLIDE.titleAccent,
       lead: ADULT_SCHOOL_SLIDE.lead,
-      directions: ADULT_SCHOOL_SLIDE.directions,
-      arsenal: ADULT_SCHOOL_SLIDE.arsenal,
       cta: ADULT_SCHOOL_SLIDE.cta,
       ...schoolTheme,
     };
@@ -346,30 +342,16 @@ function SchoolSlideCopy({ slide, onOpenCourses }: { slide: SchoolSlideView; onO
         </p>
       </div>
       <div className="school-slide-band w-full items-start">
-        <div
-          className="school-slide-facts school-slide-side text-center font-golos text-[calc(0.75rem+2pt+2px)] font-medium leading-snug text-white/80 md:text-[calc(0.875rem+2pt+2px)]"
-          style={{ textShadow: "0 2px 18px rgba(0,0,0,0.85)" }}
-        >
-          <p className="uppercase tracking-[0.08em] text-white">Направления</p>
-          <p className="mt-1">{slide.directions}</p>
-        </div>
         <div className="school-slide-cta flex items-start justify-center">
           <Button
             type="button"
             variant="primary"
             size="lg"
-            className="cta-pulse shrink-0 uppercase"
+            className="cta-pulse school-slide-cta-btn shrink-0 uppercase"
             onClick={onOpenCourses}
           >
             {slide.cta}
           </Button>
-        </div>
-        <div
-          className="school-slide-side text-center font-golos text-[calc(0.75rem+2pt+2px)] font-medium leading-snug text-white/80 md:text-[calc(0.875rem+2pt+2px)]"
-          style={{ textShadow: "0 2px 18px rgba(0,0,0,0.85)" }}
-        >
-          <p className="uppercase tracking-[0.08em] text-white">Арсенал</p>
-          <p className="mt-1">{slide.arsenal}</p>
         </div>
       </div>
     </div>
