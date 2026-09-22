@@ -72,7 +72,7 @@ function applyWidgetAttributes(el: Element, userId: string, userName: string) {
 }
 
 function shouldShowChat(pathname: string): boolean {
-  return !pathname.startsWith("/login") && !pathname.startsWith("/auth/");
+  return !pathname.startsWith("/login") && !pathname.startsWith("/register") && !pathname.startsWith("/auth/");
 }
 
 export default function SupportChatLauncher() {

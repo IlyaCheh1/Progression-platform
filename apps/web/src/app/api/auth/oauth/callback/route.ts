@@ -6,6 +6,12 @@ import {
   type JWTVerifyOptions,
 } from "jose";
 
+import {
+  consumeRegistrationInvite,
+  inviteAcceptsOnlyIdEmail,
+  lookupRegistrationInvite,
+  REGISTRATION_INVITE_COOKIE,
+} from "@/lib/auth/registration-invites";
 import { BRIDGE_COOKIE, BRIDGE_MAX_AGE, signBridgeCookieValue } from "@/lib/onlyid/bridge";
 import {
   buildCallbackUrl,
@@ -63,12 +69,18 @@ function redirectWithError(request: NextRequest, error: string): NextResponse {
   } catch {
     origin = request.nextUrl.origin;
   }
-  const url = new URL("/login", origin);
-  url.searchParams.set("login_error", error);
+  const inviteToken = request.cookies.get(REGISTRATION_INVITE_COOKIE)?.value;
+  const invite = inviteToken ? lookupRegistrationInvite(inviteToken) : null;
+  const backToRegistration = Boolean(inviteToken && invite && invite.status !== "missing");
+  const url = backToRegistration
+    ? new URL(`/register/${encodeURIComponent(inviteToken ?? "")}`, origin)
+    : new URL("/login", origin);
+  url.searchParams.set(backToRegistration ? "register_error" : "login_error", error);
   const res = NextResponse.redirect(url);
   const options = cookieOptions(request, 0);
   res.cookies.set(PKCE_COOKIE, "", { ...options, maxAge: 0 });
   res.cookies.set(REDIRECT_COOKIE, "", { ...options, maxAge: 0 });
+  res.cookies.set(REGISTRATION_INVITE_COOKIE, "", { ...options, maxAge: 0 });
   return res;
 }
 
@@ -226,6 +238,20 @@ export async function GET(request: NextRequest) {
       return redirectWithError(request, "user_blocked");
     }
 
+    const inviteToken = request.cookies.get(REGISTRATION_INVITE_COOKIE)?.value;
+    const inviteLookup = inviteToken ? lookupRegistrationInvite(inviteToken) : null;
+    if (inviteLookup && inviteLookup.status !== "missing" && inviteLookup.status !== "active") {
+      return redirectWithError(request, "invite_closed");
+    }
+    if (
+      inviteLookup?.status === "active" &&
+      !inviteAcceptsOnlyIdEmail(inviteLookup.invite.login, userinfo.email)
+    ) {
+      return redirectWithError(request, "email_mismatch");
+    }
+    const displayName =
+      inviteLookup?.status === "active" ? inviteLookup.invite.displayName : extractDisplayName(userinfo);
+
     const schoolRes = await fetch(`${schoolApiBaseUrl()}/v1/auth/onlyid`, {
       method: "POST",
       headers: {
@@ -235,7 +261,7 @@ export async function GET(request: NextRequest) {
       body: JSON.stringify({
         email: userinfo.email,
         sub: userinfo.sub,
-        displayName: extractDisplayName(userinfo),
+        displayName,
       }),
     });
 
@@ -266,6 +292,10 @@ export async function GET(request: NextRequest) {
       landing.searchParams.set("next", safeRedirect);
     }
 
+    if (inviteLookup?.status === "active") {
+      consumeRegistrationInvite(inviteLookup.invite.token);
+    }
+
     const bridgeValue = await signBridgeCookieValue(session, authSecret);
     const res = NextResponse.redirect(landing);
     const bridgeOpts = cookieOptions(request, BRIDGE_MAX_AGE);
@@ -275,6 +305,7 @@ export async function GET(request: NextRequest) {
     res.cookies.set(ID_TOKEN_COOKIE, tokens.id_token, idTokenOpts);
     res.cookies.set(PKCE_COOKIE, "", { ...clearOpts, maxAge: 0 });
     res.cookies.set(REDIRECT_COOKIE, "", { ...clearOpts, maxAge: 0 });
+    res.cookies.set(REGISTRATION_INVITE_COOKIE, "", { ...clearOpts, maxAge: 0 });
     return res;
   } catch (error) {
     console.error("[oauth/callback]", error);

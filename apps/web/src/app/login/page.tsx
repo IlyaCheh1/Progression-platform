@@ -1,202 +1,22 @@
-"use client";
+import type { Metadata } from "next";
+import { Suspense } from "react";
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { SCHOOL_API, schoolApiUnavailableMessage } from "@/lib/utils";
-import {
-  hasProfile,
-  homePathForRoles,
-  normalizeRoles,
-  parseExpiresAt,
-  primaryRole,
-  saveSession,
-} from "@/lib/session";
-import { writeCachedProfile } from "@/lib/profile-api";
-import { normalizeGender } from "@/lib/avatars";
-import { DEFAULT_BACKGROUND_ID, normalizeBackgroundId } from "@/lib/backgrounds";
-import { normalizeSelectedSkinId } from "@/lib/characters";
-import AppLogo from "@/components/app-logo";
-import Link from "next/link";
+import { DocPageShell } from "@/components/doc-page-shell";
+import { CabinetLogin } from "@/screens/auth/cabinet-login";
+import "@/screens/landing/styles.css";
+import "@/screens/auth/auth-pages.css";
 
-function readLoginRoles(data: Record<string, unknown>): ReturnType<typeof normalizeRoles> {
-  const student = (data.student ?? {}) as Record<string, unknown>;
-  return normalizeRoles(data.roles ?? student.roles ?? data.role ?? student.role ?? student.Role);
-}
-
-function PasswordToggleIcon({ visible }: { visible: boolean }) {
-  if (visible) {
-    return (
-      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.75">
-        <path
-          d="M3 3l18 18M10.58 10.58A2 2 0 0012 14a2 2 0 001.41-3.41M9.88 4.24A10.94 10.94 0 0112 5c5 0 9.27 3.11 11 7-1.02 2.28-2.78 4.18-5 5.32M6.11 6.11C3.6 7.62 1.73 10.05 1 13c1.73 3.89 6 7 11 7 1.05 0 2.06-.14 3-.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.75">
-      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
-const LOGIN_ERROR_MESSAGES: Record<string, string> = {
-  sso_not_configured: "Вход через OnlyID не настроен на сервере.",
-  sso_error: "Ошибка входа через OnlyID. Попробуйте снова.",
-  invalid_callback: "Некорректный ответ OnlyID.",
-  invalid_state: "Не удалось сохранить сессию входа (cookie). Попробуйте ещё раз в том же браузере, без инкогнито.",
-  token_exchange_failed: "OnlyID не выдал токен. Проверьте redirect_uri и секреты.",
-  provision_failed: "Не удалось создать школьный аккаунт. Попробуйте снова.",
-  user_blocked: "Аккаунт OnlyID заблокирован.",
-  no_email: "У аккаунта OnlyID нет email.",
-  school_session_failed: "Не удалось создать сессию школы.",
+export const metadata: Metadata = {
+  title: "Вход в личный кабинет — Мастер меча",
+  description: "Вход в личный кабинет школы «Мастер меча» через OnlyID.",
 };
-
-function LoginForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState(() => {
-    const code = searchParams.get("login_error");
-    return code ? LOGIN_ERROR_MESSAGES[code] || "Ошибка входа. Попробуйте снова." : "";
-  });
-
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    try {
-      const res = await fetch(`${SCHOOL_API}/v1/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ login, password }),
-      });
-      if (!res.ok) {
-        setError("Неверный логин или пароль. Запустите school-api и seed.");
-        return;
-      }
-      const data = await res.json();
-      const student = (data.student ?? {}) as Record<string, unknown>;
-      const roles = readLoginRoles(data as Record<string, unknown>);
-      const role = primaryRole(roles);
-      const profileComplete = Boolean(student.profileComplete);
-      const session = {
-        studentId: String(student.id ?? ""),
-        name: String(student.displayName ?? student.DisplayName ?? ""),
-        login,
-        characterId: String(student.characterId ?? student.CharacterID ?? ""),
-        accessToken: String(data.accessToken ?? ""),
-        role,
-        roles,
-        profileComplete,
-        expiresAt: parseExpiresAt(data.expiresAt),
-      };
-      saveSession(session);
-      const gender = normalizeGender(String(student.gender ?? "MALE"));
-      if (profileComplete) {
-        writeCachedProfile({
-          studentId: session.studentId,
-          characterId: session.characterId,
-          displayName: session.name,
-          profileComplete: true,
-          username: String(student.profileUsername ?? student.displayName ?? session.name),
-          selectedSkinId: normalizeSelectedSkinId(
-            String(student.selectedSkinId ?? student.skin ?? ""),
-            gender,
-          ),
-          gender,
-          backgroundKey: normalizeBackgroundId(String(student.backgroundKey ?? DEFAULT_BACKGROUND_ID)),
-          avatarUrl: String(student.avatarUrl ?? ""),
-          level: 1,
-          xp: 0,
-          xpToNextLevel: 500,
-          mastery: (student.mastery as Record<string, number>) ?? {},
-          ranks: (student.ranks as Record<string, number>) ?? {},
-        });
-      }
-      router.push(homePathForRoles(roles, hasProfile(session)));
-    } catch {
-      setError(schoolApiUnavailableMessage());
-    }
-  }
-
-  return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center px-4 text-center">
-      <Link href="/" className="mb-8 inline-flex shrink-0 justify-center" aria-label="Мастер меча — главная">
-        <AppLogo size={78} priority />
-      </Link>
-      <h1 className="font-display text-3xl text-mos-text">Вход</h1>
-
-      <a
-        href={
-          searchParams.get("returnUrl")
-            ? `/api/auth/login?returnUrl=${encodeURIComponent(searchParams.get("returnUrl") ?? "")}`
-            : "/api/auth/login"
-        }
-        className="mos-btn mt-6 w-full no-underline"
-      >
-        Войти через OnlyID
-      </a>
-
-      <div className="mt-6 flex w-full items-center gap-3 text-xs uppercase tracking-widest text-mos-muted">
-        <span className="h-px flex-1 bg-mos-line" />
-        или логин школы
-        <span className="h-px flex-1 bg-mos-line" />
-      </div>
-
-      <form onSubmit={onSubmit} className="mt-4 w-full space-y-4 text-left">
-        <label className="block text-xs uppercase tracking-widest text-mos-muted">
-          Логин
-          <input
-            className="mt-1 w-full border border-mos-line bg-mos-stone px-3 py-2 text-mos-text"
-            value={login}
-            onChange={(e) => setLogin(e.target.value)}
-            autoComplete="username"
-          />
-        </label>
-        <label className="block text-xs uppercase tracking-widest text-mos-muted">
-          Пароль
-          <div className="relative mt-1">
-            <input
-              type={showPassword ? "text" : "password"}
-              className="w-full border border-mos-line bg-mos-stone px-3 py-2 pr-10 text-mos-text"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
-            <button
-              type="button"
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-mos-muted transition-colors hover:text-mos-amber"
-              onClick={() => setShowPassword((visible) => !visible)}
-              aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
-              aria-pressed={showPassword}
-            >
-              <PasswordToggleIcon visible={showPassword} />
-            </button>
-          </div>
-        </label>
-        {error && <p className="text-sm text-[#c45c2a]">{error}</p>}
-        <button type="submit" className="mos-btn w-full">
-          Войти
-        </button>
-      </form>
-    </main>
-  );
-}
 
 export default function LoginPage() {
   return (
-    <Suspense
-      fallback={
-        <main className="grid min-h-screen place-items-center text-mos-muted">Загрузка…</main>
-      }
-    >
-      <LoginForm />
-    </Suspense>
+    <DocPageShell>
+      <Suspense fallback={<p className="auth-note">Загрузка…</p>}>
+        <CabinetLogin />
+      </Suspense>
+    </DocPageShell>
   );
 }

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import {
+  lookupRegistrationInvite,
+  REGISTRATION_INVITE_COOKIE,
+  REGISTRATION_INVITE_MAX_AGE,
+} from "@/lib/auth/registration-invites";
+import {
   buildCallbackUrl,
   cookieOptions,
   PKCE_COOKIE,
@@ -17,13 +22,26 @@ import {
 
 export const dynamic = "force-dynamic";
 
+function registrationReturn(request: NextRequest, token: string, error?: string) {
+  const url = new URL(`/register/${encodeURIComponent(token)}`, request.url);
+  if (error) url.searchParams.set("register_error", error);
+  return NextResponse.redirect(url);
+}
+
 export async function GET(request: NextRequest) {
+  const inviteToken = request.nextUrl.searchParams.get("invite");
+  const invite = inviteToken ? lookupRegistrationInvite(inviteToken) : null;
+  if (inviteToken && invite?.status !== "active") {
+    return registrationReturn(request, inviteToken);
+  }
+
   const authSecret = process.env.AUTH_SECRET?.trim();
   const ssoBase = resolveSsoApiBase();
   const clientId = process.env.SSO_CLIENT_ID?.trim();
   const clientSecret = process.env.SSO_CLIENT_SECRET?.trim();
 
   if (!authSecret || !ssoBase || !clientId || !clientSecret) {
+    if (inviteToken) return registrationReturn(request, inviteToken, "sso_not_configured");
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("login_error", "sso_not_configured");
     return NextResponse.redirect(loginUrl);
@@ -65,9 +83,15 @@ export async function GET(request: NextRequest) {
     const res = NextResponse.redirect(authorizeUrl);
     res.cookies.set(PKCE_COOKIE, pkceValue, options);
     res.cookies.set(REDIRECT_COOKIE, returnUrl, options);
+    if (inviteToken) {
+      res.cookies.set(REGISTRATION_INVITE_COOKIE, inviteToken, cookieOptions(request, REGISTRATION_INVITE_MAX_AGE));
+    } else {
+      res.cookies.set(REGISTRATION_INVITE_COOKIE, "", { ...cookieOptions(request, 0), maxAge: 0 });
+    }
     return res;
   } catch (error) {
     console.error("[api/auth/login]", error);
+    if (inviteToken) return registrationReturn(request, inviteToken, "sso_error");
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("login_error", "sso_error");
     return NextResponse.redirect(loginUrl);

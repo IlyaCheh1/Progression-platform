@@ -35,6 +35,13 @@ export default function AdminUsersPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [linkForm, setLinkForm] = useState({ displayName: "", login: "" });
+  const [issuedLink, setIssuedLink] = useState<{ url: string; mailed: false; displayName: string; login: string } | null>(
+    null,
+  );
+  const [linkError, setLinkError] = useState("");
+  const [linkBusy, setLinkBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
   const formSectionRef = useRef<HTMLElement | null>(null);
 
   const reload = useCallback(async (user: SessionUser) => {
@@ -138,6 +145,46 @@ export default function AdminUsersPage() {
     });
   }
 
+  async function issueLink(draft: { displayName: string; login: string }) {
+    if (!session) return;
+    setLinkBusy(true);
+    setLinkError("");
+    setCopied(false);
+    setIssuedLink(null);
+    try {
+      const res = await fetch("/api/admin/registration-links", {
+        method: "POST",
+        headers: authHeaders(session),
+        body: JSON.stringify(draft),
+      });
+      if (res.status === 403) {
+        setLinkError("Недостаточно прав, чтобы создать ссылку.");
+        return;
+      }
+      if (!res.ok) {
+        setLinkError(res.status === 400 ? "Укажите имя и логин." : "API недоступен.");
+        return;
+      }
+      const data = (await res.json()) as { url: string; mailed: false; displayName: string; login: string };
+      setIssuedLink(data);
+    } catch {
+      setLinkError("API недоступен.");
+    } finally {
+      setLinkBusy(false);
+    }
+  }
+
+  async function copyIssuedLink() {
+    if (!issuedLink) return;
+    try {
+      await navigator.clipboard.writeText(issuedLink.url);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+      setLinkError("Не удалось скопировать. Выделите ссылку вручную.");
+    }
+  }
+
   function toggleRole(role: UserRole) {
     setForm((f) => {
       const has = f.roles.includes(role);
@@ -208,6 +255,49 @@ export default function AdminUsersPage() {
         </form>
       </section>
 
+      <section className="mt-8 border border-mos-line/40 bg-mos-stone/20 p-5">
+        <h2 className="font-display text-xl text-mos-amber">Ссылка на регистрацию</h2>
+        <p className="mt-2 text-sm text-mos-muted">
+          Ссылка открывает отдельную страницу регистрации через OnlyID. Почта не подключена — скопируйте ссылку и
+          отправьте её сами. Ссылка одноразовая и хранится в памяти сервера до перезапуска.
+        </p>
+        <form
+          className="mt-4 grid gap-3 md:grid-cols-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void issueLink({ displayName: linkForm.displayName.trim(), login: linkForm.login.trim() });
+          }}
+        >
+          <Field
+            label="Имя"
+            value={linkForm.displayName}
+            onChange={(v) => setLinkForm((f) => ({ ...f, displayName: v }))}
+            required
+          />
+          <Field
+            label="Логин"
+            value={linkForm.login}
+            onChange={(v) => setLinkForm((f) => ({ ...f, login: v }))}
+            required
+          />
+          <div className="md:col-span-2">
+            <button type="submit" className="mos-btn" disabled={linkBusy || !session}>
+              Создать ссылку
+            </button>
+          </div>
+        </form>
+        {linkError && <p className="mt-4 text-sm text-[#c45c2a]">{linkError}</p>}
+        {issuedLink && (
+          <div className="mt-4 space-y-3">
+            <p className="text-sm text-mos-amber">Почта не подключена. Скопируйте ссылку и отправьте её сами.</p>
+            <p className="break-all text-sm text-mos-text">{issuedLink.url}</p>
+            <button type="button" className="mos-btn" onClick={() => void copyIssuedLink()}>
+              {copied ? "Скопировано" : "Копировать"}
+            </button>
+          </div>
+        )}
+      </section>
+
       <div className="mt-8 overflow-x-auto border border-mos-line/40">
         <table className="min-w-full text-left text-sm">
           <thead className="border-b border-mos-line/40 text-xs uppercase tracking-widest text-mos-muted">
@@ -230,6 +320,17 @@ export default function AdminUsersPage() {
                   <div className="flex flex-wrap gap-2">
                     <button type="button" className="mos-btn px-2 py-1 text-xs" onClick={() => startEdit(user)}>
                       Изменить
+                    </button>
+                    <button
+                      type="button"
+                      className="border border-mos-line/40 px-2 py-1 text-xs text-mos-muted"
+                      disabled={linkBusy}
+                      onClick={() => {
+                        setLinkForm({ displayName: user.displayName, login: user.login });
+                        void issueLink({ displayName: user.displayName, login: user.login });
+                      }}
+                    >
+                      Ссылка
                     </button>
                     <button
                       type="button"
