@@ -8,6 +8,12 @@ import { withAudience } from "@/lib/audience";
 import { HallChipRow, HallFilmstrip } from "@/components/hall-rental-media";
 import { HALL_RENTAL_HALLS } from "@/lib/landing/hall-rental";
 
+function mobileSpecLine(spec: { label: string; value: string }) {
+  const digits = spec.value.replace(/\s/g, "").match(/\d+/)?.[0] ?? spec.value;
+  const label = spec.label === "Площадь" ? "площадь" : spec.label;
+  return `${label}: ${digits}`;
+}
+
 export default function Arenda() {
   const sectionRef = useRef<HTMLElement>(null);
   const { mode } = useAudience();
@@ -34,9 +40,10 @@ export default function Arenda() {
           >
             <ul className="flex flex-col gap-2">
               {hall.specs.map((spec) => (
-                <li key={spec.label} className="flex items-baseline justify-between gap-4">
-                  <span className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-white/45">{spec.label}</span>
-                  <span className="text-right font-unbounded text-sm text-white md:text-base">{spec.value}</span>
+                <li key={spec.label} className="hall-spec-row flex items-baseline justify-between gap-4">
+                  <span className="hall-spec-full text-[0.62rem] font-bold uppercase tracking-[0.14em] text-white/45">{spec.label}</span>
+                  <span className="hall-spec-full text-right font-unbounded text-sm text-white md:text-base">{spec.value}</span>
+                  <span className="hall-spec-short font-golos">{mobileSpecLine(spec)}</span>
                 </li>
               ))}
             </ul>

@@ -3,6 +3,7 @@
 import { useRef, useState, type CSSProperties } from "react";
 import type { PurchaseTariffId } from "@/lib/landing/tariff-purchase";
 import TariffPurchase from "@/screens/landing/tariff-purchase";
+import { useHorizontalSwipe } from "@/hooks/landing/useHorizontalSwipe";
 import { useMobileMedia } from "@/hooks/landing/useMobileMedia";
 import { useRevealFade } from "@/hooks/landing/useRevealFade";
 import { cn } from "@/lib/utils";
@@ -318,6 +319,7 @@ export default function Tariffs() {
   const visibleCount = isMobile ? 1 : 3;
   const visible = visibleTariffs(cards, start, visibleCount);
   const step = (delta: number) => setStart((index) => (index + delta + cards.length) % cards.length);
+  const swipeRef = useHorizontalSwipe(step);
   const chooseFormat = (next: TariffFormat) => {
     setFormatId(next);
   };
@@ -352,7 +354,8 @@ export default function Tariffs() {
         </div>
 
         <div
-          className={cn("mt-10 grid items-stretch gap-5", visibleCount === 1 ? "grid-cols-1" : "grid-cols-3")}
+          ref={swipeRef}
+          className={cn("tariff-swipe mt-10 grid items-stretch gap-5", visibleCount === 1 ? "grid-cols-1" : "grid-cols-3")}
           aria-roledescription="карусель"
           aria-label="Тарифы"
         >

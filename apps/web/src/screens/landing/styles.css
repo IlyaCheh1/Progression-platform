@@ -346,23 +346,24 @@
   padding-left: 1.5rem;
 }
 
-/* Keeps НАПРАВЛЕНИЯ, the button, and АРСЕНАЛ on the hero line they held
-   when the phrase cluster shared that row. The phrases themselves sit above it. */
+/* Keeps the school CTA on the lower hero line the side phrases used to share. */
 #directions .school-slide-band {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: start;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   width: 100%;
   min-height: 16.6875rem;
 }
 
-#directions .school-slide-side {
-  justify-self: center;
-  width: min(30rem, 100%);
-  text-align: center;
-}
-
-#directions .school-slide-side > p:first-child {
+#directions .school-slide-band .school-slide-cta-btn {
+  width: max-content;
+  max-width: calc(100% - 2rem);
+  height: auto;
+  min-height: 3.5rem;
+  padding: 0.9rem 1.85rem;
+  font-size: clamp(0.95rem, 2.2vw, 1.125rem);
+  line-height: 1.15;
+  letter-spacing: 0.04em;
   white-space: nowrap;
 }
 
@@ -2354,6 +2355,10 @@ a.experience-item {
   max-width: 100%;
 }
 
+#arenda .hall-spec-short {
+  display: none;
+}
+
 #arenda .hall-filmstrip--peek {
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
   align-items: center;
@@ -2483,26 +2488,56 @@ a.experience-item {
 
 @media (max-width: 767px) {
   #arenda .hall-rental-top {
-    gap: 0.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  #arenda .hall-rental-lead h2 {
+    font-size: clamp(1.35rem, 7vw, 1.7rem);
+    white-space: nowrap;
+  }
+
+  #arenda .hall-rental-lead .hall-chip-row {
+    flex-wrap: nowrap;
+    width: 100%;
   }
 
   #arenda .hall-rental-lead .hall-day-chip {
-    padding-right: 0.6rem;
-    padding-left: 0.6rem;
+    padding-right: 0.55rem;
+    padding-left: 0.55rem;
+    font-size: 0.78rem;
     white-space: nowrap;
   }
 
   #arenda .hall-spec {
-    padding: 0.4rem 0.55rem;
+    width: 100%;
+    max-width: none;
+    align-self: stretch;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+  }
+
+  #arenda .hall-spec-full {
+    display: none;
+  }
+
+  #arenda .hall-spec-short {
+    display: block;
+    color: #f4f1ea;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.35;
   }
 
   #arenda .hall-spec li {
-    gap: 0.55rem;
+    display: block;
   }
 
-  #arenda .hall-spec ul {
-    flex: 1 1 auto;
-    justify-content: space-between;
+  #arenda .hall-filmstrip,
+  #tariffs .tariff-swipe {
+    touch-action: pan-y;
   }
 }
 
@@ -2853,27 +2888,17 @@ a.experience-item {
   }
 
   #directions .school-slide-band {
-    align-items: start;
+    align-items: flex-start;
     width: 100%;
     min-height: 10.3125rem;
   }
 
-  #directions .school-slide-side {
-    width: min(9.375rem, 100%);
-    font-size: 0.68rem;
-  }
-
-  #directions .school-slide-side > p + p {
-    font-size: 0.53125rem;
-  }
-
-  #directions .school-slide-band .og-btn {
-    max-width: 5rem;
-    height: auto;
-    min-height: 2.75rem;
-    white-space: normal;
-    line-height: 1.15;
-    padding: 0.35rem 0.4rem;
+  #directions .school-slide-band .school-slide-cta-btn {
+    max-width: calc(100vw - 2.5rem);
+    min-height: 3.25rem;
+    padding: 0.8rem 1.35rem;
+    font-size: clamp(0.78rem, 3.5vw, 0.95rem);
+    white-space: nowrap;
   }
 
   .rooms-arrow[data-direction="prev"] {

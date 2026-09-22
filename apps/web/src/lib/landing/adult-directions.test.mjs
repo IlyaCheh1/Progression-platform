@@ -20,9 +20,11 @@ describe("adult direction slides", () => {
     assert.doesNotMatch(catalog, /«Мастер меча»/);
     assert.match(catalog, /мало обычного спорта"/);
     assert.doesNotMatch(catalog, /мало обычного спорта\./);
-    assert.match(catalog, /любым клинком \(и не только\):\\nот китайского меча до европейского полуторника"/);
+    assert.match(catalog, /любым клинком:\\nот китайского меча до европейского полуторника"/);
+    assert.doesNotMatch(catalog, /и не только/);
     assert.doesNotMatch(catalog, /полуторника\./);
-    assert.match(catalog, /сабли, шпаги, копья, алебарды, щиты и многое другое/);
+    assert.doesNotMatch(catalog, /directions:/);
+    assert.doesNotMatch(catalog, /arsenal:/);
     assert.match(catalog, /cta: "Выбрать тренировки"/);
     assert.doesNotMatch(catalog, /Выбрать курсы/);
     assert.doesNotMatch(catalog, /Выбери подходящее именно тебе/);
@@ -104,8 +106,10 @@ describe("adult direction slides", () => {
     assert.doesNotMatch(landing, /<Hero \/>\s*<Directions \/>/);
   });
 
-  it("puts the adult join block on the landing lead form", () => {
+  it("keeps the adult join copy but hides that block for now", () => {
     const join = read("../../screens/landing/join.tsx");
+    assert.match(join, /SHOW_ADULT_JOIN = false/);
+    assert.match(join, /if \(!isKids && !SHOW_ADULT_JOIN\) return null/);
     assert.match(join, /LandingLeadForm/);
     assert.doesNotMatch(join, /\/contact/);
     assert.match(join, /Пора взять в руки меч"/);
