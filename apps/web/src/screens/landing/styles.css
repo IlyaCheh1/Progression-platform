@@ -1987,20 +1987,45 @@ a.experience-item {
   }
 }
 
-.kids-hero-join {
-  position: relative;
+.kids-hero-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-right: 1.5rem;
+  padding-left: 1.5rem;
+  text-align: center;
+  pointer-events: none;
 }
 
-.kids-hero-intro {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 1.35rem);
-  width: min(56rem, calc(100vw - 3rem));
+.kids-hero-stage-grow {
+  flex: 1 1 0;
+  width: 100%;
+  min-height: 0;
+}
+
+.kids-hero-stage-lower {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 0;
+}
+
+.kids-hero-title {
   margin: 0;
-  transform: translateX(-50%);
+  max-width: 56rem;
+}
+
+.kids-hero-stage [data-kids-join] {
+  pointer-events: auto;
+}
+
+.kids-hero-stage [aria-hidden="true"] {
+  visibility: hidden;
 }
 
 .kids-age-ribbon {

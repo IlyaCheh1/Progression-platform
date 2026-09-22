@@ -8,6 +8,7 @@ describe("kids landing hotfix", () => {
     const landing = readFileSync(fileURLToPath(new URL("../../screens/landing/index.tsx", import.meta.url)), "utf8");
     const directions = readFileSync(fileURLToPath(new URL("../../screens/landing/directions.tsx", import.meta.url)), "utf8");
     const hero = readFileSync(fileURLToPath(new URL("../../screens/landing/hero.tsx", import.meta.url)), "utf8");
+    const css = readFileSync(fileURLToPath(new URL("../../screens/landing/styles.css", import.meta.url)), "utf8");
 
     assert.match(landing, /\{isKids \? <Hero \/> : <Directions \/>\}/);
     assert.doesNotMatch(directions, /KIDS_SLIDES/);
@@ -21,7 +22,8 @@ describe("kids landing hotfix", () => {
     assert.doesNotMatch(hero, /KIDS_WUSHU\.section/);
     assert.doesNotMatch(hero, /hero-audience-toggle/);
     assert.match(hero, /KIDS_WUSHU\.lead/);
-    assert.match(hero, /items-center justify-center[\s\S]*text-center/);
+    assert.match(hero, /flex-col items-center justify-center[\s\S]*kids-age-ribbon/);
+    assert.match(hero, /pb-6 text-center/);
     assert.doesNotMatch(hero, /KIDS_WUSHU\.slogan/);
     assert.doesNotMatch(hero, /KIDS_WUSHU\.body/);
     assert.doesNotMatch(hero, /Тренер Татьяна|Сила тела\. Дух дракона/);
@@ -29,7 +31,9 @@ describe("kids landing hotfix", () => {
     assert.doesNotMatch(hero, /Школа фехтования|Мастер меча/);
     assert.match(hero, /Присоединиться/);
     assert.match(hero, /TariffPurchase/);
-    assert.match(hero, /kids-age-ribbon[\s\S]*kids-hero-intro[\s\S]*KIDS_WUSHU\.school[\s\S]*Присоединиться/);
+    assert.match(hero, /kids-age-ribbon[\s\S]*kids-hero-title[\s\S]*KIDS_WUSHU\.school[\s\S]*Присоединиться/);
+    assert.match(css, /\.kids-hero-stage \{[^}]*position:\s*absolute/);
+    assert.match(css, /\.kids-hero-stage-grow \{[^}]*flex:\s*1 1 0/);
     assert.match(landing, /\{!isKids \? <TrialBanner \/> : null\}/);
     assert.doesNotMatch(directions, /Присоединиться/);
     assert.match(landing, /\{isKids \? <Trainers \/> : null\}/);
