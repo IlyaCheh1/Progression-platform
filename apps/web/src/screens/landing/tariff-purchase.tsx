@@ -29,7 +29,7 @@ const SECTIONS = ADULT_COURSE_SLIDES.map((slide) => ({
   key: slide.key,
   title: slide.title,
   summary: slide.description,
-  image: slide.image ? `/media/hero/${slide.image}` : null,
+  image: slide.image && slide.key !== "witcher" ? `/media/hero/${slide.image}` : null,
 }));
 
 export default function TariffPurchase({ tariffId, onClose }: { tariffId: PurchaseTariffId; onClose: () => void }) {

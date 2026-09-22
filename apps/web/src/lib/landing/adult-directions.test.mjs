@@ -96,9 +96,11 @@ describe("adult direction slides", () => {
     assert.equal(WITCHER_HERO_VIDEO, "1.mp4");
     assert.equal(existsSync(`${heroDir}/1.mp4`), true);
     assert.equal(existsSync(`${heroDir}/1.webp`), true);
+    assert.equal(existsSync(`${heroDir}/witcher.webp`), true);
     const witcherBlock = catalog.match(/key: "witcher"[\s\S]*?courseSlug: "vedmak"/)?.[0] ?? "";
-    assert.match(witcherBlock, /video: WITCHER_HERO_VIDEO/);
-    assert.doesNotMatch(witcherBlock, /image:/);
+    assert.match(witcherBlock, /image: "witcher\.webp"/);
+    assert.doesNotMatch(witcherBlock, /video:/);
+    assert.equal(catalog.match(/witcher\.webp/g)?.length, 1);
   });
 
   it("does not render the old adult hero on the landing", () => {

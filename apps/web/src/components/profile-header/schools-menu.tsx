@@ -14,7 +14,7 @@ type SchoolMenuItemProps = {
 };
 
 function sectionIcon(slide: AdultCourseSlide): string {
-  if (slide.image) return `/media/hero/${slide.image}`;
+  if (slide.image && slide.key !== "witcher") return `/media/hero/${slide.image}`;
   return getSchoolIconSrc("witcher");
 }
 

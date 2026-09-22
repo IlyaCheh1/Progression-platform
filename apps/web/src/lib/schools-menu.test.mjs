@@ -22,6 +22,8 @@ describe("cabinet schools menu", () => {
 
   it("opens each adult section on its course page", () => {
     assert.match(menu, /coursePageHref\(section\.courseSlug\)/);
+    assert.match(menu, /slide\.key !== "witcher"/);
+    assert.match(menu, /getSchoolIconSrc\("witcher"\)/);
     assert.match(menu, /comingSoon \? "Скоро в наборе"/);
   });
 });

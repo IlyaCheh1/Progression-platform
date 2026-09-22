@@ -1,5 +1,5 @@
 import { COURSE_ENROLL_HASH } from "../courses/constants";
-import { SCHOOL_HERO_VIDEO, WITCHER_HERO_VIDEO } from "../hero-media";
+import { SCHOOL_HERO_VIDEO } from "../hero-media";
 import { getSchoolColor } from "../school-colors";
 
 export const ADULT_SCHOOL_SLIDE = {
@@ -43,7 +43,7 @@ export const ADULT_COURSE_SLIDES: readonly AdultCourseSlide[] = [
     title: "Ведьмак",
     description:
       "Сражайся как ведьмак. Основы владения длинным мечом, передвижение в боевой стойке, удары и защиты — точность и скорость, чтобы выйти победителем против любого противника.",
-    video: WITCHER_HERO_VIDEO,
+    image: "witcher.webp",
     courseSlug: "vedmak",
     color: getSchoolColor("witcher"),
   },
