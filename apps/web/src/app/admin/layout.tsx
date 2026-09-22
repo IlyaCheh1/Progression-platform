@@ -9,10 +9,17 @@ import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/admin", label: "Обзор" },
-  { href: "/admin/school", label: "Школа" },
+  { href: "/admin/calendar", label: "Календарь" },
+  { href: "/admin/halls", label: "Залы" },
+  { href: "/admin/groups", label: "Группы" },
   { href: "/admin/users", label: "Пользователи" },
+  { href: "/admin/crm", label: "CRM" },
+  { href: "/admin/notifications", label: "Уведомления" },
+  { href: "/admin/payments", label: "Оплаты" },
+  { href: "/admin/school", label: "Школа" },
   { href: "/admin/content", label: "Контент" },
   { href: "/admin/arenda", label: "Аренда" },
+  { href: "/admin/import", label: "Import" },
   { href: "/coach", label: "Тренер", coachOnly: true },
 ] as const;
 
@@ -43,7 +50,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <header className="border-b border-mos-line/50 bg-mos-bg/90">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4">
           <div>
-            <p className="font-display tracking-[0.18em] text-mos-amber">ADMIN</p>
+            <p className="font-display tracking-[0.18em] text-mos-amber">АДМИН-ПАНЕЛЬ</p>
             <p className="text-xs text-mos-muted">{user.name} · {user.login}</p>
           </div>
           <nav className="flex flex-wrap gap-2">
@@ -51,7 +58,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               if ("coachOnly" in item && item.coachOnly && !hasRole(user.roles, "coach")) {
                 return null;
               }
-              const active = pathname === item.href;
+              const active = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
               return (
                 <Link
                   key={item.href}

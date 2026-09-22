@@ -58,6 +58,8 @@ type SchoolModule struct {
 	talentUnlocks   map[string]map[string]bool
 	waitlist        map[string]*school.WaitlistEntry
 	rankReviews     map[string]*school.MasterRankReview
+	groups          map[string]*school.Group
+	sessionAtt      map[string]*school.SessionAttendance // key: sessionID+"|"+studentID
 }
 
 func NewSchoolModule(p *Platform) *SchoolModule {
@@ -81,7 +83,7 @@ func NewSchoolModule(p *Platform) *SchoolModule {
 		memberships:   make(map[string]*school.Membership),
 		receipts:      make(map[string]*school.FiscalReceipt),
 		webhookSeen:   make(map[string]struct{}),
-		yoo:           yoomoney.NewClient("sandbox-shop", "sandbox-secret"),
+		yoo:           yoomoney.NewClientFromEnv(),
 		questProgress: make(map[string]map[string]*QuestProgress),
 		achievements:  make(map[string]map[string]*AchievementState),
 		killSwitches:  make(map[string]bool),
@@ -91,6 +93,8 @@ func NewSchoolModule(p *Platform) *SchoolModule {
 		talentUnlocks:   make(map[string]map[string]bool),
 		waitlist:        make(map[string]*school.WaitlistEntry),
 		rankReviews:     make(map[string]*school.MasterRankReview),
+		groups:          make(map[string]*school.Group),
+		sessionAtt:      make(map[string]*school.SessionAttendance),
 	}
 	sm.seedDefaults()
 	return sm
@@ -98,6 +102,7 @@ func NewSchoolModule(p *Platform) *SchoolModule {
 
 func (sm *SchoolModule) seedDefaults() {
 	sm.halls["hall-main"] = &school.Hall{ID: "hall-main", Name: "Большой зал"}
+	sm.halls["hall-small"] = &school.Hall{ID: "hall-small", Name: "Малый зал"}
 	sm.tariffs["membership.month"] = &school.Tariff{
 		Key: "membership.month", Title: "Абонемент месяц", AmountMinor: 1200000, Currency: "RUB", Kind: "membership",
 	}
@@ -110,12 +115,262 @@ func (sm *SchoolModule) seedDefaults() {
 	sm.equipment["blade.800"] = training.EquipmentSpec{ID: "blade.800", Name: "Клинок 800г", MassGrams: 800}
 }
 
+// PaymentProviderLive reports whether checkout uses real ЮKassa HTTP.
+func (sm *SchoolModule) PaymentProviderLive() bool {
+	return sm.yoo != nil && sm.yoo.IsLive()
+}
+
 // UpsertSession inserts or replaces a training session (tests / admin scheduling).
 func (sm *SchoolModule) UpsertSession(s school.Session) {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 	cp := s
+	if cp.StudentIDs == nil {
+		cp.StudentIDs = []string{}
+	}
 	sm.sessions[s.ID] = &cp
+}
+
+// CreateSession creates a training session with hall conflict checks and a matching reservation.
+func (sm *SchoolModule) CreateSession(s school.Session) (*school.Session, error) {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	if strings.TrimSpace(s.Title) == "" {
+		return nil, fmt.Errorf("title required")
+	}
+	if s.HallID == "" {
+		return nil, fmt.Errorf("hallId required")
+	}
+	if _, ok := sm.halls[s.HallID]; !ok {
+		return nil, fmt.Errorf("hall not found")
+	}
+	if !s.EndsAt.After(s.StartsAt) {
+		return nil, fmt.Errorf("invalid time range")
+	}
+	if s.Capacity <= 0 {
+		s.Capacity = 12
+	}
+	if s.ID == "" {
+		s.ID = uuid.NewString()
+	}
+	if sm.hasHallConflict(s.HallID, s.StartsAt, s.EndsAt, s.ID) {
+		return nil, fmt.Errorf("hall conflict")
+	}
+	if s.GroupKey != "" {
+		if g, ok := sm.groups[s.GroupKey]; ok {
+			if s.CoachID == "" {
+				s.CoachID = g.CoachID
+			}
+			if len(s.StudentIDs) == 0 && len(g.StudentIDs) > 0 {
+				s.StudentIDs = append([]string(nil), g.StudentIDs...)
+				s.Enrolled = len(s.StudentIDs)
+			}
+		}
+	}
+	if s.StudentIDs == nil {
+		s.StudentIDs = []string{}
+	}
+	cp := s
+	sm.sessions[s.ID] = &cp
+	resID := "res-session-" + s.ID
+	sm.reserve[resID] = &school.Reservation{
+		ID: resID, HallID: s.HallID, Type: school.ReservationGroupSession,
+		StartsAt: s.StartsAt, EndsAt: s.EndsAt, Reference: s.ID,
+	}
+	out := cp
+	return &out, nil
+}
+
+// CancelSession soft-cancels a session and frees its hall reservation.
+func (sm *SchoolModule) CancelSession(sessionID string) error {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	sess, ok := sm.sessions[sessionID]
+	if !ok {
+		return fmt.Errorf("session not found")
+	}
+	sess.Cancelled = true
+	delete(sm.reserve, "res-session-"+sessionID)
+	return nil
+}
+
+// UpsertHall creates or renames a hall.
+func (sm *SchoolModule) UpsertHall(h school.Hall) (*school.Hall, error) {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	if strings.TrimSpace(h.Name) == "" {
+		return nil, fmt.Errorf("name required")
+	}
+	if h.ID == "" {
+		h.ID = uuid.NewString()
+	}
+	cp := h
+	sm.halls[h.ID] = &cp
+	out := cp
+	return &out, nil
+}
+
+// ListGroups returns training groups.
+func (sm *SchoolModule) ListGroups() []school.Group {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	out := make([]school.Group, 0, len(sm.groups))
+	for _, g := range sm.groups {
+		cp := *g
+		cp.StudentIDs = append([]string(nil), g.StudentIDs...)
+		out = append(out, cp)
+	}
+	return out
+}
+
+// UpsertGroup creates or updates a training group.
+func (sm *SchoolModule) UpsertGroup(g school.Group) (*school.Group, error) {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	if strings.TrimSpace(g.Name) == "" {
+		return nil, fmt.Errorf("name required")
+	}
+	if g.ID == "" {
+		g.ID = uuid.NewString()
+	}
+	if g.StudentIDs == nil {
+		g.StudentIDs = []string{}
+	}
+	cp := g
+	cp.StudentIDs = append([]string(nil), g.StudentIDs...)
+	sm.groups[g.ID] = &cp
+	out := cp
+	return &out, nil
+}
+
+// DeleteGroup removes a group (sessions keep historical groupKey).
+func (sm *SchoolModule) DeleteGroup(id string) error {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	if _, ok := sm.groups[id]; !ok {
+		return fmt.Errorf("group not found")
+	}
+	delete(sm.groups, id)
+	return nil
+}
+
+// EnrollStudent adds a student to a session roster.
+func (sm *SchoolModule) EnrollStudent(sessionID, studentID string) (*school.Session, error) {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	sess, ok := sm.sessions[sessionID]
+	if !ok || sess.Cancelled {
+		return nil, fmt.Errorf("session not found")
+	}
+	if _, ok := sm.p.students[studentID]; !ok {
+		return nil, fmt.Errorf("student not found")
+	}
+	for _, id := range sess.StudentIDs {
+		if id == studentID {
+			out := *sess
+			return &out, nil
+		}
+	}
+	if sess.Capacity > 0 && sess.Enrolled >= sess.Capacity {
+		return nil, fmt.Errorf("session full")
+	}
+	sess.StudentIDs = append(sess.StudentIDs, studentID)
+	sess.Enrolled = len(sess.StudentIDs)
+	b := &school.Booking{
+		ID: uuid.NewString(), Type: "enrollment", SessionID: sessionID,
+		StudentID: studentID, Status: "confirmed", CreatedAt: time.Now().UTC(),
+	}
+	sm.bookings[b.ID] = b
+	out := *sess
+	return &out, nil
+}
+
+// UnenrollStudent removes a student from a session roster.
+func (sm *SchoolModule) UnenrollStudent(sessionID, studentID string) (*school.Session, error) {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	sess, ok := sm.sessions[sessionID]
+	if !ok {
+		return nil, fmt.Errorf("session not found")
+	}
+	next := make([]string, 0, len(sess.StudentIDs))
+	found := false
+	for _, id := range sess.StudentIDs {
+		if id == studentID {
+			found = true
+			continue
+		}
+		next = append(next, id)
+	}
+	if !found {
+		return nil, fmt.Errorf("student not enrolled")
+	}
+	sess.StudentIDs = next
+	sess.Enrolled = len(next)
+	for _, b := range sm.bookings {
+		if b.SessionID == sessionID && b.StudentID == studentID && b.Status == "confirmed" && b.Type == "enrollment" {
+			b.Status = "cancelled"
+		}
+	}
+	out := *sess
+	return &out, nil
+}
+
+// MarkSessionAttendance records presence/result for a student on a session.
+func (sm *SchoolModule) MarkSessionAttendance(sessionID, studentID, markedBy string, present bool, resultNotes string) (*school.SessionAttendance, error) {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	sess, ok := sm.sessions[sessionID]
+	if !ok || sess.Cancelled {
+		return nil, fmt.Errorf("session not found")
+	}
+	enrolled := false
+	for _, id := range sess.StudentIDs {
+		if id == studentID {
+			enrolled = true
+			break
+		}
+	}
+	if !enrolled {
+		return nil, fmt.Errorf("student not enrolled")
+	}
+	key := sessionID + "|" + studentID
+	row := &school.SessionAttendance{
+		SessionID: sessionID, StudentID: studentID, Present: present,
+		ResultNotes: resultNotes, MarkedAt: time.Now().UTC(), MarkedBy: markedBy,
+	}
+	sm.sessionAtt[key] = row
+	if present {
+		sm.attendanceCount[studentID]++
+	}
+	out := *row
+	return &out, nil
+}
+
+// ListSessionAttendance returns attendance marks for a session.
+func (sm *SchoolModule) ListSessionAttendance(sessionID string) []school.SessionAttendance {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	out := make([]school.SessionAttendance, 0)
+	for _, a := range sm.sessionAtt {
+		if a.SessionID == sessionID {
+			out = append(out, *a)
+		}
+	}
+	return out
+}
+
+// GetSession returns one session by id.
+func (sm *SchoolModule) GetSession(id string) (*school.Session, bool) {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	s, ok := sm.sessions[id]
+	if !ok {
+		return nil, false
+	}
+	cp := *s
+	cp.StudentIDs = append([]string(nil), s.StudentIDs...)
+	return &cp, true
 }
 
 func (sm *SchoolModule) ListHalls() []school.Hall {
@@ -142,7 +397,24 @@ func (sm *SchoolModule) ListSessions(from, to time.Time) []school.Session {
 		if !to.IsZero() && s.StartsAt.After(to) {
 			continue
 		}
-		out = append(out, *s)
+		cp := *s
+		cp.StudentIDs = append([]string(nil), s.StudentIDs...)
+		out = append(out, cp)
+	}
+	return out
+}
+
+// ListSessionsForCoach filters sessions by coach id (empty coachID = all).
+func (sm *SchoolModule) ListSessionsForCoach(from, to time.Time, coachID string) []school.Session {
+	all := sm.ListSessions(from, to)
+	if coachID == "" {
+		return all
+	}
+	out := make([]school.Session, 0)
+	for _, s := range all {
+		if s.CoachID == coachID {
+			out = append(out, s)
+		}
 	}
 	return out
 }
@@ -619,7 +891,7 @@ func (sm *SchoolModule) HandleYooMoneyWebhook(providerPaymentID, eventID string)
 	if pay.Status == school.PaymentSucceeded {
 		return sm.membershipByOrder(pay.OrderID)
 	}
-	if _, err := sm.yoo.SimulateWebhook(providerPaymentID); err != nil {
+	if _, err := sm.yoo.ConfirmSucceeded(providerPaymentID); err != nil {
 		return nil, err
 	}
 	pay.Status = school.PaymentSucceeded

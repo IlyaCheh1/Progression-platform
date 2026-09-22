@@ -10,10 +10,10 @@ export const CABINET_BY_ROLE: Record<
   { label: string; href: string; badge: string; switchLabel: string }
 > = {
   administrator: {
-    label: "Админка",
+    label: "Админ-панель",
     href: "/admin",
     badge: "Админ",
-    switchLabel: "админку",
+    switchLabel: "админ-панель",
   },
   coach: {
     label: "Кабинет тренера",
@@ -22,10 +22,10 @@ export const CABINET_BY_ROLE: Record<
     switchLabel: "кабинет тренера",
   },
   guardian: {
-    label: "Кабинет опекуна",
+    label: "Кабинет представителя",
     href: "/guardian",
-    badge: "Опекун",
-    switchLabel: "кабинет опекуна",
+    badge: "Представитель",
+    switchLabel: "кабинет представителя",
   },
   renter: {
     label: "Кабинет арендатора",

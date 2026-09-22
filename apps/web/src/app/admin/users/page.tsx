@@ -1,17 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import SelectField from "@/components/ui/select-field";
-import { SCHOOL_API } from "@/lib/utils";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ASSIGNABLE_ROLES,
   ROLE_LABELS,
   formatRoles,
-  normalizeRole,
   normalizeRoles,
   type UserRole,
 } from "@/lib/rbac";
 import { authHeaders, loadSession, type SessionUser } from "@/lib/session";
+import { SCHOOL_API } from "@/lib/utils";
 
 type UserRow = {
   id: string;
@@ -26,7 +24,7 @@ const EMPTY_FORM = {
   displayName: "",
   login: "",
   password: "",
-  role: "student" as UserRole,
+  roles: ["student"] as UserRole[],
 };
 
 export default function AdminUsersPage() {
@@ -69,7 +67,8 @@ export default function AdminUsersPage() {
         displayName: form.displayName.trim(),
         login: form.login.trim(),
         password: form.password,
-        role: form.role,
+        role: form.roles[0] ?? "student",
+        roles: form.roles,
       };
       const res = await fetch(
         editId ? `${SCHOOL_API}/v1/admin/users/${editId}` : `${SCHOOL_API}/v1/admin/users`,
@@ -122,20 +121,31 @@ export default function AdminUsersPage() {
   }
 
   function startEdit(user: UserRow) {
-    const roles = normalizeRoles(user.roles ?? user.role);
-    const primaryRole =
-      roles.find((role) => ASSIGNABLE_ROLES.includes(role)) ?? normalizeRole(user.role);
+    const roles = normalizeRoles(user.roles ?? user.role).filter((role) =>
+      ASSIGNABLE_ROLES.includes(role),
+    ) as UserRole[];
     setEditId(user.id);
     setForm({
       displayName: user.displayName,
       login: user.login,
       password: "",
-      role: primaryRole,
+      roles: roles.length > 0 ? roles : ["student"],
     });
     setError("");
     setMessage("");
     window.requestAnimationFrame(() => {
       formSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  function toggleRole(role: UserRole) {
+    setForm((f) => {
+      const has = f.roles.includes(role);
+      if (has && f.roles.length === 1) return f;
+      return {
+        ...f,
+        roles: has ? f.roles.filter((r) => r !== role) : [...f.roles, role],
+      };
     });
   }
 
@@ -160,19 +170,24 @@ export default function AdminUsersPage() {
             required={!editId}
             type="password"
           />
-          <label className="block text-xs uppercase tracking-widest text-mos-muted">
-            Роль
-            <div className="mt-1">
-              <SelectField
-                options={ASSIGNABLE_ROLES.map((role) => ({
-                  value: role,
-                  label: ROLE_LABELS[role],
-                }))}
-                value={form.role}
-                onChange={(role) => setForm((f) => ({ ...f, role: role as UserRole }))}
-              />
+          <div className="md:col-span-2">
+            <p className="text-xs uppercase tracking-widest text-mos-muted">Роли</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {ASSIGNABLE_ROLES.map((role) => {
+                const on = form.roles.includes(role);
+                return (
+                  <button
+                    key={role}
+                    type="button"
+                    className={`border px-3 py-2 text-xs ${on ? "border-mos-amber text-mos-amber" : "border-mos-line/40 text-mos-muted"}`}
+                    onClick={() => toggleRole(role)}
+                  >
+                    {ROLE_LABELS[role]}
+                  </button>
+                );
+              })}
             </div>
-          </label>
+          </div>
           <div className="md:col-span-2 flex flex-wrap gap-2">
             <button type="submit" className="mos-btn" disabled={busy}>
               {editId ? "Сохранить" : "Создать"}

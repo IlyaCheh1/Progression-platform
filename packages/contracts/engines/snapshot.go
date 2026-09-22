@@ -43,6 +43,9 @@ type SchoolSnapshot struct {
 	BattlePass      map[string]BattlePassState     `json:"battlePass,omitempty"`
 	TalentUnlocks   map[string]map[string]bool     `json:"talentUnlocks,omitempty"`
 	IsMinor         map[string]bool                `json:"isMinor,omitempty"`
+	Groups          []school.Group                 `json:"groups,omitempty"`
+	Halls           []school.Hall                  `json:"halls,omitempty"`
+	SessionAtt      []school.SessionAttendance     `json:"sessionAttendance,omitempty"`
 }
 
 // ExportSnapshot captures current mutable state.
@@ -229,6 +232,17 @@ func (sm *SchoolModule) exportSnapshotLocked() SchoolSnapshot {
 	for _, r := range sm.reserve {
 		snap.Reservations = append(snap.Reservations, *r)
 	}
+	for _, g := range sm.groups {
+		cp := *g
+		cp.StudentIDs = append([]string(nil), g.StudentIDs...)
+		snap.Groups = append(snap.Groups, cp)
+	}
+	for _, h := range sm.halls {
+		snap.Halls = append(snap.Halls, *h)
+	}
+	for _, a := range sm.sessionAtt {
+		snap.SessionAtt = append(snap.SessionAtt, *a)
+	}
 	if sm.activeSeason != nil {
 		cp := *sm.activeSeason
 		snap.ActiveSeason = &cp
@@ -337,6 +351,24 @@ func (sm *SchoolModule) restoreSnapshotLocked(s SchoolSnapshot) {
 	for i := range s.Reservations {
 		r := s.Reservations[i]
 		sm.reserve[r.ID] = &r
+	}
+	sm.groups = map[string]*school.Group{}
+	for i := range s.Groups {
+		g := s.Groups[i]
+		g.StudentIDs = append([]string(nil), g.StudentIDs...)
+		sm.groups[g.ID] = &g
+	}
+	if len(s.Halls) > 0 {
+		sm.halls = map[string]*school.Hall{}
+		for i := range s.Halls {
+			h := s.Halls[i]
+			sm.halls[h.ID] = &h
+		}
+	}
+	sm.sessionAtt = map[string]*school.SessionAttendance{}
+	for i := range s.SessionAtt {
+		a := s.SessionAtt[i]
+		sm.sessionAtt[a.SessionID+"|"+a.StudentID] = &a
 	}
 	sm.activeSeason = s.ActiveSeason
 	if s.IsMinor != nil {

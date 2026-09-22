@@ -458,9 +458,15 @@ func main() {
 			return
 		}
 		targetID := r.PathValue("id")
-		if targetID == actor.ID && len(body.Roles) == 0 && body.Role != "" && !rbac.IsAdministrator(body.Role) {
-			http.Error(w, `{"error":"cannot_demote_self"}`, http.StatusForbidden)
-			return
+		if targetID == actor.ID {
+			roles := append([]string(nil), body.Roles...)
+			if len(roles) == 0 && body.Role != "" {
+				roles = []string{body.Role}
+			}
+			if len(roles) > 0 && !rbac.IsAdministratorInRoles(roles) {
+				http.Error(w, `{"error":"cannot_demote_self"}`, http.StatusForbidden)
+				return
+			}
 		}
 		updated, err := platform.UpdateUser(targetID, body)
 		if err != nil {
