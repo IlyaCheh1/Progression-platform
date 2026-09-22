@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { checkoutMembership, fetchMembership, fetchTariffs, type Tariff } from "@/lib/school-api";
+import {
+  checkoutMembership,
+  fetchMembership,
+  fetchPaymentProvider,
+  fetchTariffs,
+  type Tariff,
+} from "@/lib/school-api";
 import { loadSession } from "@/lib/session";
 import { routes } from "@/lib/routes";
 import { SCHOOL_API } from "@/lib/utils";
@@ -14,6 +20,7 @@ export default function MembershipPage() {
   const [active, setActive] = useState(false);
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
+  const [live, setLive] = useState(false);
 
   useEffect(() => {
     const user = loadSession();
@@ -24,6 +31,9 @@ export default function MembershipPage() {
     fetchTariffs().then(setTariffs).catch(() => setError("Тарифы недоступны."));
     fetchMembership(user)
       .then((m) => setActive(m.active))
+      .catch(() => undefined);
+    fetchPaymentProvider()
+      .then((p) => setLive(p.live))
       .catch(() => undefined);
   }, [router]);
 
@@ -36,17 +46,22 @@ export default function MembershipPage() {
       const pay = await checkoutMembership(user, tariffKey);
       if (pay.confirmationUrl) {
         window.open(pay.confirmationUrl, "_blank");
-        await fetch(`${SCHOOL_API}/v1/webhooks/yoomoney`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            event: "payment.succeeded",
-            eventId: `sandbox-${pay.id}`,
-            object: { id: pay.providerPaymentId ?? pay.id },
-          }),
-        });
-        const m = await fetchMembership(user);
-        setActive(m.active);
+        // Sandbox only: auto-settle via webhook. Live ЮKassa confirms via provider webhook.
+        if (!live) {
+          await fetch(`${SCHOOL_API}/v1/webhooks/yoomoney`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              event: "payment.succeeded",
+              eventId: `sandbox-${pay.id}`,
+              object: { id: pay.providerPaymentId ?? pay.id },
+            }),
+          });
+          const m = await fetchMembership(user);
+          setActive(m.active);
+        } else {
+          setError("Оплата открыта в ЮKassa. После оплаты абонемент активируется по webhook.");
+        }
       }
     } catch {
       setError("Ошибка оплаты.");
@@ -62,6 +77,7 @@ export default function MembershipPage() {
           ← Профиль
         </Link>
         <h1 className="mt-4 font-cinzel text-2xl">Абонемент</h1>
+        <p className="mt-1 text-xs text-mos-muted">Оплата через ЮKassa ({live ? "live" : "sandbox"})</p>
         {active && <p className="mt-2 text-green-400">Активный абонемент</p>}
         {error && <p className="mt-2 text-red-400">{error}</p>}
         <ul className="mt-6 space-y-4">
@@ -75,7 +91,7 @@ export default function MembershipPage() {
                 onClick={() => void buy(t.key)}
                 className="mt-3 rounded bg-mos-accent px-4 py-2 text-sm text-black disabled:opacity-50"
               >
-                Оплатить через ЮMoney
+                Оплатить через ЮKassa
               </button>
             </li>
           ))}

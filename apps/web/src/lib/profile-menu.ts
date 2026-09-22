@@ -84,7 +84,7 @@ export function getSettingsTabs(roles: UserRole[]): SettingsTabItem[] {
     tabs.push({ id: "coach", label: "Кабинет тренера" });
   }
   if (hasRole(roles, "guardian")) {
-    tabs.push({ id: "guardian", label: "Кабинет опекуна" });
+    tabs.push({ id: "guardian", label: "Кабинет представителя" });
   }
   if (hasRole(roles, "renter")) {
     tabs.push({ id: "renter", label: "Кабинет арендатора" });

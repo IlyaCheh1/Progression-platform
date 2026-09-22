@@ -41,3 +41,19 @@ func TestSimulateWebhook(t *testing.T) {
 		t.Fatalf("webhook: %v %s", err, st)
 	}
 }
+
+func TestNewClientFromEnvSandbox(t *testing.T) {
+	t.Setenv("YOOKASSA_SHOP_ID", "")
+	t.Setenv("YOOKASSA_SECRET_KEY", "")
+	c := yoomoney.NewClientFromEnv()
+	if c.IsLive() {
+		t.Fatal("expected sandbox without credentials")
+	}
+}
+
+func TestLiveClientFlag(t *testing.T) {
+	c := yoomoney.NewLiveClient("shop", "secret")
+	if !c.IsLive() {
+		t.Fatal("expected live client")
+	}
+}

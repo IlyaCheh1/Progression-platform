@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import CharacterStage from "@/components/character-stage";
 import DailyTasks from "@/components/daily-tasks";
 import { useProfileShell } from "@/components/profile-shell-provider";
@@ -17,6 +18,7 @@ export default function ProfilePage() {
   const level = profile?.level ?? 1;
   const currentXp = profile?.xp ?? 0;
   const xpToNext = profile?.xpToNextLevel ?? 500;
+
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] flex-col overflow-hidden xl:h-[calc(100dvh-4.5rem)]">
@@ -46,24 +48,24 @@ export default function ProfilePage() {
         />
 
         <div className="absolute bottom-3 right-3 z-20 flex flex-wrap justify-end gap-2">
-          <a
+          <Link
             href="/legal/offer"
             className="font-golos text-[8px] font-medium leading-3 text-mos-text underline opacity-50 transition-opacity duration-200 hover:opacity-100 xl:text-xs xl:leading-4"
           >
             Публичная оферта
-          </a>
-          <a
+          </Link>
+          <Link
             href="/legal/terms"
             className="font-golos text-[8px] font-medium leading-3 text-mos-text underline opacity-50 transition-opacity duration-200 hover:opacity-100 xl:text-xs xl:leading-4"
           >
             Пользовательское соглашение
-          </a>
-          <a
+          </Link>
+          <Link
             href="/legal/privacy"
             className="font-golos text-[8px] font-medium leading-3 text-mos-text underline opacity-50 transition-opacity duration-200 hover:opacity-100 xl:text-xs xl:leading-4"
           >
             Политика конфиденциальности
-          </a>
+          </Link>
         </div>
       </CharacterStage>
     </div>

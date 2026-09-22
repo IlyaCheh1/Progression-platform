@@ -30,10 +30,40 @@ export type SessionRow = {
   id: string;
   title: string;
   hallId: string;
+  groupKey?: string;
   startsAt: string;
   endsAt: string;
   capacity: number;
   enrolled: number;
+  coachId?: string;
+  studentIds?: string[];
+  notes?: string;
+  cancelled?: boolean;
+};
+
+export type HallRow = { id: string; name: string };
+
+export type GroupRow = {
+  id: string;
+  name: string;
+  coachId?: string;
+  direction?: string;
+  studentIds?: string[];
+};
+
+export type SessionAttendanceRow = {
+  sessionId: string;
+  studentId: string;
+  present: boolean;
+  resultNotes?: string;
+  markedAt: string;
+  markedBy?: string;
+};
+
+export type PaymentListRow = PaymentRow & {
+  orderId?: string;
+  createdAt?: string;
+  currency?: string;
 };
 
 export type Tariff = {
@@ -191,8 +221,167 @@ export async function syncLearnedTalents(user: SessionUser, learnedKeys: string[
   }
 }
 
-export async function fetchPublicSchedule(): Promise<SessionRow[]> {
-  const res = await fetch(`${SCHOOL_API}/v1/schedule/sessions`);
+export async function fetchPublicSchedule(params?: {
+  from?: string;
+  to?: string;
+  coachId?: string;
+}): Promise<SessionRow[]> {
+  const q = new URLSearchParams();
+  if (params?.from) q.set("from", params.from);
+  if (params?.to) q.set("to", params.to);
+  if (params?.coachId) q.set("coachId", params.coachId);
+  const qs = q.toString();
+  const res = await fetch(`${SCHOOL_API}/v1/schedule/sessions${qs ? `?${qs}` : ""}`);
+  return parseJson(res);
+}
+
+export async function fetchHalls(): Promise<HallRow[]> {
+  const res = await fetch(`${SCHOOL_API}/v1/halls`);
+  return parseJson(res);
+}
+
+export async function upsertHall(user: SessionUser, hall: Partial<HallRow> & { name: string }): Promise<HallRow> {
+  const res = await fetch(`${SCHOOL_API}/v1/admin/halls`, {
+    method: "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify(hall),
+  });
+  return parseJson(res);
+}
+
+export async function createAdminSession(
+  user: SessionUser,
+  body: {
+    title: string;
+    hallId: string;
+    startsAt: string;
+    endsAt: string;
+    capacity?: number;
+    coachId?: string;
+    groupKey?: string;
+    studentIds?: string[];
+    notes?: string;
+  },
+): Promise<SessionRow> {
+  const res = await fetch(`${SCHOOL_API}/v1/admin/schedule/sessions`, {
+    method: "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify(body),
+  });
+  return parseJson(res);
+}
+
+export async function cancelAdminSession(user: SessionUser, sessionId: string): Promise<void> {
+  const res = await fetch(`${SCHOOL_API}/v1/admin/schedule/sessions/${encodeURIComponent(sessionId)}`, {
+    method: "DELETE",
+    headers: authHeaders(user),
+  });
+  await parseJson(res);
+}
+
+export async function enrollStudent(
+  user: SessionUser,
+  sessionId: string,
+  studentId: string,
+): Promise<SessionRow> {
+  const res = await fetch(`${SCHOOL_API}/v1/admin/schedule/sessions/${encodeURIComponent(sessionId)}/enroll`, {
+    method: "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify({ studentId }),
+  });
+  return parseJson(res);
+}
+
+export async function unenrollStudent(
+  user: SessionUser,
+  sessionId: string,
+  studentId: string,
+): Promise<SessionRow> {
+  const res = await fetch(`${SCHOOL_API}/v1/admin/schedule/sessions/${encodeURIComponent(sessionId)}/unenroll`, {
+    method: "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify({ studentId }),
+  });
+  return parseJson(res);
+}
+
+export async function fetchGroups(user: SessionUser): Promise<GroupRow[]> {
+  const res = await fetch(`${SCHOOL_API}/v1/groups`, { headers: authHeaders(user) });
+  return parseJson(res);
+}
+
+export async function upsertGroup(user: SessionUser, group: Partial<GroupRow> & { name: string }): Promise<GroupRow> {
+  const path = group.id
+    ? `${SCHOOL_API}/v1/admin/groups/${encodeURIComponent(group.id)}`
+    : `${SCHOOL_API}/v1/admin/groups`;
+  const res = await fetch(path, {
+    method: group.id ? "PUT" : "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify(group),
+  });
+  return parseJson(res);
+}
+
+export async function deleteGroup(user: SessionUser, id: string): Promise<void> {
+  const res = await fetch(`${SCHOOL_API}/v1/admin/groups/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    headers: authHeaders(user),
+  });
+  await parseJson(res);
+}
+
+export async function fetchSessionAttendance(
+  user: SessionUser,
+  sessionId: string,
+): Promise<SessionAttendanceRow[]> {
+  const res = await fetch(`${SCHOOL_API}/v1/schedule/sessions/${encodeURIComponent(sessionId)}/attendance`, {
+    headers: authHeaders(user),
+  });
+  return parseJson(res);
+}
+
+export async function markSessionAttendance(
+  user: SessionUser,
+  sessionId: string,
+  body: { studentId: string; present: boolean; resultNotes?: string },
+): Promise<SessionAttendanceRow> {
+  const res = await fetch(`${SCHOOL_API}/v1/schedule/sessions/${encodeURIComponent(sessionId)}/attendance`, {
+    method: "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify(body),
+  });
+  return parseJson(res);
+}
+
+export async function sendNotification(
+  user: SessionUser,
+  body: { purpose: string; channel: string; recipient: string; templateKey: string },
+): Promise<{ id?: string }> {
+  const res = await fetch(`${SCHOOL_API}/v1/comms/send`, {
+    method: "POST",
+    headers: authHeaders(user),
+    body: JSON.stringify({
+      purpose: body.purpose,
+      channel: body.channel,
+      recipient: body.recipient,
+      template: body.templateKey,
+    }),
+  });
+  return parseJson(res);
+}
+
+export async function fetchCommsLog(user: SessionUser): Promise<string[]> {
+  const res = await fetch(`${SCHOOL_API}/v1/comms/log`, { headers: authHeaders(user) });
+  return parseJson(res);
+}
+
+export async function fetchPayments(user: SessionUser): Promise<PaymentListRow[]> {
+  const res = await fetch(`${SCHOOL_API}/v1/commerce/payments`, { headers: authHeaders(user) });
+  return parseJson(res);
+}
+
+export async function fetchPaymentProvider(): Promise<{ provider: string; live: boolean }> {
+  const res = await fetch(`${SCHOOL_API}/v1/commerce/provider`);
   return parseJson(res);
 }
 
