@@ -334,23 +334,13 @@ function DirectionPanel({
   );
 }
 
-function SchoolLead({ text }: { text: string }) {
-  const hidden = " (и не только)";
-  const at = text.indexOf(hidden);
-  if (at < 0) return text;
-  return (
-    <>
-      {text.slice(0, at)}
-      <span className="school-slide-only">{hidden}</span>
-      {text.slice(at + hidden.length)}
-    </>
-  );
-}
-
 function SchoolSlideCopy({ slide, onOpenCourses }: { slide: SchoolSlideView; onOpenCourses: () => void }) {
   return (
     <div className="school-slide-copy relative z-10 flex h-full flex-col items-center px-6 text-center">
       <div className="flex flex-1 flex-col items-center justify-center">
+        <p className="mb-3 font-golos text-[calc(0.875rem+2pt)] font-medium leading-snug text-white/85 md:mb-4 md:text-[calc(1rem+2pt)]">
+          Школа исторического фехтования
+        </p>
         <h2
           className="mobile-fluid-hero-title flex max-w-4xl flex-col items-center gap-3 font-unbounded font-medium tracking-tight md:gap-5"
           style={{ textShadow: "0 0 60px rgba(212,168,75,0.28)" }}
@@ -362,18 +352,8 @@ function SchoolSlideCopy({ slide, onOpenCourses }: { slide: SchoolSlideView; onO
             {slide.titleAccent}
           </span>
         </h2>
-        <p className="mt-8 max-w-xl whitespace-pre-line font-golos text-[calc(0.875rem+3pt)] font-medium leading-relaxed text-white/70 md:text-[calc(0.875rem+5pt)]">
-          <SchoolLead text={slide.lead} />
-        </p>
       </div>
       <div className="school-slide-band w-full items-start">
-        <div
-          className="school-slide-facts school-slide-side text-center font-golos text-[calc(0.75rem+2pt+2px)] font-medium leading-snug text-white/80 md:text-[calc(0.875rem+2pt+2px)]"
-          style={{ textShadow: "0 2px 18px rgba(0,0,0,0.85)" }}
-        >
-          <p className="uppercase tracking-[0.08em] text-white">Направления</p>
-          <p className="mt-1">{slide.directions}</p>
-        </div>
         <div className="school-slide-cta flex items-start justify-center">
           <Button
             type="button"
@@ -384,13 +364,6 @@ function SchoolSlideCopy({ slide, onOpenCourses }: { slide: SchoolSlideView; onO
           >
             {slide.cta}
           </Button>
-        </div>
-        <div
-          className="school-slide-side text-center font-golos text-[calc(0.75rem+2pt+2px)] font-medium leading-snug text-white/80 md:text-[calc(0.875rem+2pt+2px)]"
-          style={{ textShadow: "0 2px 18px rgba(0,0,0,0.85)" }}
-        >
-          <p className="uppercase tracking-[0.08em] text-white">Арсенал</p>
-          <p className="mt-1">{slide.arsenal}</p>
         </div>
       </div>
     </div>
@@ -409,7 +382,7 @@ function CourseSlideCopy({ slide, comingSoon }: { slide: CourseSlideView; coming
         </div>
 
         <h2
-          className={`mobile-fluid-room-title mb-4 font-unbounded font-medium md:text-[calc(4.5rem-3px)] lg:text-[calc(6rem-3px)]${slide.key === "saber" ? " room-panel-title--saber" : ""}`}
+          className={`mobile-fluid-room-title room-panel-title mb-4 font-unbounded font-medium${slide.key === "saber" ? " room-panel-title--saber" : ""}`}
           style={{ color: slide.color, textShadow: `0 0 60px ${slide.glow}` }}
         >
           {slide.key === "saber" ? (

@@ -14,19 +14,16 @@ describe("directions slide layout", () => {
     assert.match(css, /#directions \.rooms-index[\s\S]*top:\s*calc\(var\(--landing-header-offset\)/);
     assert.doesNotMatch(css, /\.room-panel-text\s*\{[^}]*transform:\s*scale\(1\.5\)/);
     assert.match(tsx, /className="room-panel-copy"/);
-    assert.match(
-      css,
-      /@media \(min-width: 1921px\) \{[\s\S]*#directions \.room-panel-copy \{\s*transform:\s*scale\(1\.8\);\s*transform-origin:\s*left bottom;/,
-    );
+    assert.doesNotMatch(css, /#directions \.room-panel-copy[\s\S]{0,120}transform:\s*scale\(1\.8\)/);
+    assert.match(css, /#directions \.school-slide-band \{[\s\S]*padding-inline:\s*clamp\(1\.5rem,\s*3vw,\s*3\.5rem\)/);
+    assert.match(css, /#directions \.school-slide-side \{[\s\S]*min-width:\s*0/);
+    const header = readFileSync(fileURLToPath(new URL("../../components/header-public.tsx", import.meta.url)), "utf8");
+    assert.doesNotMatch(header, /absolute left-1\/2 hidden -translate-x-1\/2/);
+    assert.match(header, /whitespace-nowrap uppercase/);
     assert.doesNotMatch(tsx, /leading-none/);
     assert.match(tsx, /className="rooms-index /);
     assert.match(tsx, /activeRoom > 0/);
     assert.match(css, /#directions \.school-slide-copy[\s\S]*padding-top:\s*calc\(var\(--landing-header-offset\) \+ 2\.25rem\)/);
-    assert.match(tsx, /school-slide-facts/);
-    assert.match(tsx, /school-slide-side/);
-    assert.match(tsx, /uppercase tracking-\[0\.08em\] text-white">Направления/);
-    assert.match(tsx, /uppercase tracking-\[0\.08em\] text-white">Арсенал/);
-    assert.match(tsx, /school-slide-only/);
     assert.match(tsx, /flex flex-1 flex-col items-center justify-center/);
     assert.match(tsx, /school-slide-band w-full items-start/);
     assert.match(css, /#directions \.school-slide-band \{\s*display:\s*grid;/);
@@ -38,8 +35,12 @@ describe("directions slide layout", () => {
     assert.match(css, /#directions \.school-slide-band \.school-slide-cta-btn \{[\s\S]*min-height:\s*3\.5rem;/);
     assert.doesNotMatch(css, /max-width:\s*5rem/);
     assert.match(tsx, /school-slide-cta flex items-start justify-center/);
+    assert.match(css, /#directions \.school-slide-cta \{\s*margin-top:\s*4\.25rem;/);
+    const school = tsx.slice(tsx.indexOf("function SchoolSlideCopy"), tsx.indexOf("function CourseSlideCopy"));
+    assert.ok(school.indexOf("Школа исторического фехтования") < school.indexOf("{slide.title}"));
+    assert.doesNotMatch(school, /Направления|Арсенал|Учим управляться|SchoolLead|school-slide-side|school-slide-only/);
+    assert.match(school, /\{slide\.cta\}/);
     assert.match(tsx, /school-slide-cta-btn/);
-    assert.match(tsx, /whitespace-pre-line/);
     assert.doesNotMatch(tsx, /text-left/);
     assert.doesNotMatch(tsx, /text-right/);
   });

@@ -92,14 +92,14 @@ export default function Header() {
         </Link>
 
         <nav
-          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-5 text-sm font-medium text-white/70 lg:flex xl:gap-7"
+          className="hidden min-w-0 flex-1 items-center justify-center gap-x-3 px-3 text-sm font-medium text-white/70 xl:flex xl:gap-x-6"
           aria-label="Основное меню"
         >
           {nav.map((link) => (
             <Link
               key={link.href}
               href={withAudience(link.href, mode)}
-              className="uppercase transition-colors duration-200 hover:text-mos-amber"
+              className="shrink-0 whitespace-nowrap uppercase transition-colors duration-200 hover:text-mos-amber"
               onClick={(event) => go(event, link.href)}
             >
               {link.title}
@@ -107,14 +107,14 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="relative ml-auto flex items-center gap-2 sm:gap-3">
+        <div className="relative ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
           <AudienceToggle />
           <button
             type="button"
             aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((open) => !open)}
-            className="flex h-11 w-11 shrink-0 items-center justify-center lg:hidden"
+            className="flex h-11 w-11 shrink-0 items-center justify-center xl:hidden"
           >
             <MenuIcon open={menuOpen} />
           </button>
@@ -122,7 +122,7 @@ export default function Header() {
       </header>
 
       {menuOpen && (
-        <div id="mobile-public-menu" className="mobile-public-menu fixed inset-0 z-40 bg-void/95 backdrop-blur-md lg:hidden">
+        <div id="mobile-public-menu" className="mobile-public-menu fixed inset-0 z-40 bg-void/95 backdrop-blur-md xl:hidden">
           <nav className="flex flex-col gap-2" aria-label="Мобильное меню">
             {nav.map((link) => (
               <Link

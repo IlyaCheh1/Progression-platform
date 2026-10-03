@@ -351,18 +351,31 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: start;
+  box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
+  padding-inline: clamp(1.5rem, 3vw, 3.5rem);
   min-height: 16.6875rem;
 }
 
 #directions .school-slide-side {
   justify-self: center;
+  min-width: 0;
   width: min(30rem, 100%);
+  max-width: 100%;
+  overflow-wrap: break-word;
   text-align: center;
 }
 
 #directions .school-slide-side > p:first-child {
   white-space: nowrap;
+}
+
+/* Button is the only band item, centered on every width. */
+#directions .school-slide-cta {
+  margin-top: 4.25rem;
+  grid-column: 1 / -1;
+  justify-self: center;
 }
 
 #directions .school-slide-band .school-slide-cta-btn {
@@ -405,9 +418,34 @@
 
 @media (min-width: 768px) {
   #directions .room-panel-text {
+    container-type: size;
     padding-top: calc(var(--landing-header-offset) + 2.25rem);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: visible;
+  }
+
+  /* Title, body, and buttons share one viewport-sized type scale. */
+  #directions .room-panel-copy {
+    font-size: clamp(0.75rem, 1.85cqh, 1.0625rem);
+  }
+
+  /* Long titles such as «Шпага XVII века» scale to the column width and stay one line. */
+  #directions .room-panel-text .room-panel-title:not(.room-panel-title--saber) {
+    font-size: clamp(1.75rem, 9.5cqi, calc(4.5rem - 3px));
+    line-height: 1.05;
+    white-space: nowrap;
+  }
+
+  #directions .room-panel-copy .room-panel-description {
+    font-size: calc(1em + 2px);
+    line-height: 1.45;
+  }
+
+  #directions .room-panel-copy .og-btn {
+    height: auto;
+    min-height: 2.25em;
+    padding-block: 0.55em;
+    font-size: calc(0.72em + 2px);
+    line-height: 1.2;
   }
 }
 
@@ -760,19 +798,6 @@
   font-size: clamp(1.375rem, 2.2vw + 0.85rem, 4.5rem);
   line-height: 1.15;
   text-wrap: balance;
-}
-
-@media (min-width: 1921px) {
-  .mobile-fluid-hero-title {
-    font-size: 4.5rem;
-    line-height: 1.1;
-  }
-
-  /* Direction caption only. Phones and widths through 1920 stay at the unscaled size. */
-  #directions .room-panel-copy {
-    transform: scale(1.8);
-    transform-origin: left bottom;
-  }
 }
 
 @media (max-width: 767px) {

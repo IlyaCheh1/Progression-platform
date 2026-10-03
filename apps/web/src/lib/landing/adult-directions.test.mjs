@@ -18,8 +18,8 @@ describe("adult direction slides", () => {
   it("keeps school intro copy and a courses CTA", () => {
     assert.match(catalog, /title: "Мастер меча"/);
     assert.doesNotMatch(catalog, /«Мастер меча»/);
-    assert.match(catalog, /мало обычного спорта"/);
-    assert.doesNotMatch(catalog, /мало обычного спорта\./);
+    assert.match(catalog, /спорт для тех, кому мало обычного фитнеса"/);
+    assert.doesNotMatch(catalog, /мало обычного спорта/);
     assert.match(catalog, /любым клинком \(и не только\):\\nот китайского меча до европейского полуторника"/);
     assert.match(catalog, /directions: "историческое фехтование/);
     assert.match(catalog, /arsenal: "мечи \(одноручные/);
@@ -46,10 +46,10 @@ describe("adult direction slides", () => {
       true,
     );
     const directions = read("../../screens/landing/directions.tsx");
+    assert.match(directions, /Школа исторического фехтования/);
     assert.match(directions, /text-\[1\.5em\]/);
     assert.match(directions, /calc\(0\.72em\+2pt\)/);
-    assert.match(directions, /calc\(0\.875rem\+3pt\)/);
-    assert.match(directions, /calc\(0\.875rem\+5pt\)/);
+    assert.doesNotMatch(directions.slice(directions.indexOf("function SchoolSlideCopy")), /Учим управляться|school-slide-side/);
     assert.match(directions, /onOpenCourses/);
     assert.match(directions, /goToRoom\(1\)/);
   });
