@@ -1,16 +1,18 @@
 ---
-description: Git and worktree contract — hermes task branches, no direct main push
+description: Git and worktree contract — collaborators may push directly to main
 alwaysApply: true
 ---
 
 # Git and worktree workflow
 
-- Default branch is `main`. Never commit or push directly to `main` / `origin/main`. Never use `master`.
+- Default branch is `main`. Never use `master`.
+- Write collaborators (`IlyaCheh1`, `tanleshgng`) and agents working for them may commit and push directly to `main` / `origin/main` when that collaborator asked to ship the change. A merge request is not required.
+- Push to `main` starts Coolify auto-deploy for services with a configured webhook. Do not push until the change is ready to ship.
 - Product edits only in the assigned isolated Cursor worktree. Do not create worktrees inside product directory trees.
-- **New task:** base on fetched `origin/main`, branch `hermes/<task>`. If `origin/main` is unavailable, stop and agree a fallback — do not invent one.
+- **New task:** base on fetched `origin/main`. A `hermes/<task>` branch is optional. If `origin/main` is unavailable, stop and agree a fallback — do not invent one.
 - **Resume:** keep the assigned branch and baseline WIP; do not reset or recreate the worktree.
 - Before editing: confirm worktree, branch, and `git status --short`. Preserve unrelated WIP; stop on ownership conflicts.
-- Commit, push, MR/merge, deploy, and release only when explicitly requested. Never force-push, `--no-verify`, or hook bypass.
+- Never force-push, `--no-verify`, or hook bypass. Never rewrite history on `main`.
 - Instruction/docs changes ship with the next substantive product change — no standalone docs-only commit/MR.
 - Worktree cleanup is a separate authorized operation after process/dirty/untracked/unpreserved-commit checks.
 - Full contract: root `AGENTS.md` §8.

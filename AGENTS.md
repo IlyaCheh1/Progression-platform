@@ -114,14 +114,16 @@ Run only commands that exist in this repository. Do not change runners or weaken
 ## 8. Git and worktree contract
 
 - Product code is changed only inside the isolated Cursor worktree assigned to the task.
-- **NEW task:** orchestrator fetches `origin/main`, then creates/uses `hermes/<task>`. If `origin/main` is unavailable, stop, report, and explicitly agree a fallback with the user — do not invent another base.
+- **NEW task:** start from fetched `origin/main`. A `hermes/<task>` branch is optional. Direct commits on `main` are allowed (see below). If `origin/main` is unavailable, stop, report, and explicitly agree a fallback with the user — do not invent another base.
 - **RESUME:** preserve the assigned existing branch and baseline WIP; do not reset, recreate, or discard the worktree/branch.
 - Do not switch branches, rebase/reset unrelated work, or create a nested worktree inside product checkouts.
 - Before editing, verify assigned worktree, branch, and `git status --short`; record the baseline. Stop if unrelated changes overlap the task or ownership is unclear.
 - Create worktrees only under the configured **external** worktree root — never nested inside canonical product directories. Do not auto-remove worktrees: cleanup requires process/dirty/untracked/unpreserved-commit checks and **separate authorization**.
-- Commit, push, merge request, merge, deploy, and release are separate actions — only when explicitly requested. **Never** force-push, `--no-verify`, or hook bypass. **Never** push directly to `main` / `origin/main` or rewrite history to land on `main`.
+- Write collaborators of `IlyaCheh1/Progression-platform` may land work on `main` directly. Agents working for them may commit and push to `main` / `origin/main` when that collaborator asked to ship the change. A merge request is not required. Current write access: `IlyaCheh1` (admin), `tanleshgng` (write).
+- Push to `main` starts Coolify auto-deploy for services whose GitHub webhook is configured. Do not push until the requested change is ready to ship.
+- **Never** force-push, `--no-verify`, or hook bypass. **Never** rewrite history on `main`.
 - Instruction/docs edits ship with the **next substantive** product change; no standalone docs-only commit/MR. Local untracked instruction files are not delivered to fresh clones until tracked in such a change.
-- One repository ⇒ one branch/diff/MR. Multi-repo work uses separate worktrees.
+- One repository ⇒ one branch/diff when a side branch is used. Multi-repo work uses separate worktrees.
 
 ## 9. Definition of Done
 
@@ -174,7 +176,7 @@ A task is complete only when:
 ### Anti-duplication с Grok Bot
 - Этот файл — для **Cursor agent в репо** (local/cloud).
 - Оркестрация гейтов (Даша / Душнила, виджеты merge/deploy) — **ГлавГад**. Не дублируй их пинги и не открывай второй deploy-виджет.
-- В Cursor без ГлавГада: сам пройди plan → confirm у пользователя → red → green → MR; merge/deploy только по явной команде.
+- В Cursor без ГлавГада: сам пройди plan → confirm у пользователя → red → green → push в `main`, если коллаборатор с правом записи просил выложить изменение. Отдельный MR не обязателен. Deploy сверх автодеплоя Coolify — только по явной команде.
 - Статусы: `{Service} · {суть изменения} · !{MR}`
 - **og-mobile:** deploy = релиз APK + выкладка на сайт (не merge-only).
 <!-- SHIP-FLOW:END -->
